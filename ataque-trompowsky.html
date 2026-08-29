@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ataque Trompowsky — Tutorial Interactivo | by Rubén Sbarsky</title>
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f; --accent:#00d4ff; --green:#22c55e;
+  --amber:#f59e0b; --red:#ef4444; --purple:#a855f7; --text:#dbe4f3; --muted:#8fa3c0; --dim:#5b6b87;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  line-height:1.65;overflow-x:hidden;
+  background-image:radial-gradient(rgba(30,58,95,.16) 1px,transparent 1px);
+  background-size:26px 26px;
+}
+#progress{position:fixed;top:0;left:0;height:4px;width:0%;z-index:400;
+  background:linear-gradient(90deg,var(--accent),var(--purple));
+  box-shadow:0 0 12px rgba(0,212,255,.55);border-radius:0 4px 4px 0;transition:width .1s linear}
+header.nav{position:fixed;top:0;left:0;right:0;z-index:300;
+  background:rgba(10,14,26,.93);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav-top{display:flex;align-items:center;gap:10px;padding:8px 16px 0}
+.brand{font-weight:800;letter-spacing:1px;color:var(--accent);font-size:15px;white-space:nowrap}
+.brand small{color:var(--dim);font-weight:400;letter-spacing:0}
+.nav-scroll{display:flex;gap:6px;overflow-x:auto;padding:8px 14px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.nav-scroll::-webkit-scrollbar{display:none}
+.navbtn{flex:0 0 auto;padding:10px 16px;min-height:42px;border-radius:999px;border:1px solid var(--border);
+  background:var(--card);color:var(--muted);cursor:pointer;font-size:13.5px;font-family:inherit;
+  transition:all .25s ease;white-space:nowrap}
+.navbtn:hover{border-color:var(--accent);color:var(--accent)}
+.navbtn.active{background:var(--accent);color:#04121a;font-weight:700;border-color:var(--accent);box-shadow:0 0 16px rgba(0,212,255,.35)}
+.navbtn.credits{border-color:var(--purple);color:#c084fc}
+.navbtn.credits.active{background:var(--purple);color:#fff;border-color:var(--purple)}
+main{max-width:1180px;margin:0 auto;padding:78px 16px 60px}
+.page{display:none;animation:fadeIn .45s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.cover-wrap{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#070a12;
+  box-shadow:0 10px 40px rgba(0,0,0,.5),0 0 0 1px rgba(0,212,255,.08);margin-bottom:26px}
+.cover-wrap svg{display:block;width:100%;height:auto}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;
+  border:1px solid var(--accent);color:var(--accent);font-size:12.5px;letter-spacing:2px;font-weight:700;
+  background:rgba(0,212,255,.07);text-transform:uppercase}
+h1.title{font-size:clamp(32px,6vw,58px);font-weight:800;letter-spacing:1px;margin:16px 0 6px;
+  background:linear-gradient(90deg,#e8edf5,var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:clamp(17px,2.6vw,23px);color:var(--accent);font-weight:600}
+.desc{color:var(--muted);font-size:16.5px;max-width:900px;margin-top:12px}
+.quote{margin:26px 0;padding:20px 24px;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;
+  background:linear-gradient(90deg,rgba(0,212,255,.08),transparent);font-size:clamp(16px,2.4vw,20px);font-style:italic;color:#e8edf5}
+.quote small{display:block;margin-top:8px;color:var(--dim);font-style:normal}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:26px 0}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:transform .25s,border-color .25s}
+.kpi:hover{transform:translateY(-4px);border-color:var(--accent)}
+.kpi .num{font-size:30px;font-weight:800;color:var(--accent)}
+.kpi .lbl{font-size:12.5px;color:var(--muted);margin-top:4px;letter-spacing:.5px}
+.kpi.g .num{color:var(--green)}.kpi.a .num{color:var(--amber)}.kpi.r .num{color:var(--red)}.kpi.p .num{color:var(--purple)}
+.metachips{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 8px}
+.chip{padding:8px 14px;border-radius:999px;background:var(--card);border:1px solid var(--border);font-size:13.5px;color:var(--muted)}
+.chip b{color:var(--accent)}
+h2.sec{font-size:clamp(24px,4vw,34px);margin:8px 0 4px;color:#e8edf5;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h2.sec .ico{font-size:.9em}
+.sec-sub{color:var(--muted);margin-bottom:22px;font-size:15.5px}
+h3.sub{font-size:clamp(18px,3vw,22px);color:var(--accent);margin:26px 0 12px;display:flex;gap:10px;align-items:center}
+h4.sub2{font-size:16.5px;color:#e8edf5;margin:16px 0 8px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.card.hl{border-color:rgba(0,212,255,.45);box-shadow:0 0 22px rgba(0,212,255,.08)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+ul.clean{list-style:none}
+ul.clean li{padding:7px 0 7px 26px;position:relative}
+ul.clean li::before{content:"▸";position:absolute;left:6px;color:var(--accent)}
+ul.dots li::before{content:"●";font-size:9px;top:13px;color:var(--green)}
+.mv{display:inline-block;padding:3px 10px;border-radius:8px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.35);
+  color:var(--accent);font-weight:700;font-size:.95em;white-space:nowrap}
+.mv.b{background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.4);color:#c084fc}
+.mv.r{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.4);color:#f87171}
+.mv.a{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.4);color:#fbbf24}
+.mv.g{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.4);color:#4ade80}
+.moveline{font-size:clamp(16px,2.6vw,20px);font-weight:700;color:#e8edf5;background:#0b1220;border:1px solid var(--border);
+  border-radius:10px;padding:12px 16px;margin:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.callout{border-radius:10px;padding:14px 18px;margin:14px 0;border:1px solid;border-left-width:5px;font-size:15px}
+.callout .ct{font-weight:800;letter-spacing:1px;font-size:12.5px;display:block;margin-bottom:6px}
+.callout.info{border-color:rgba(0,212,255,.5);background:rgba(0,212,255,.06)}.callout.info .ct{color:var(--accent)}
+.callout.ejemplo{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.06)}.callout.ejemplo .ct{color:var(--green)}
+.callout.advertencia{border-color:rgba(245,158,11,.55);background:rgba(245,158,11,.07)}.callout.advertencia .ct{color:var(--amber)}
+.callout.error{border-color:rgba(239,68,68,.55);background:rgba(239,68,68,.07)}.callout.error .ct{color:var(--red)}
+.pre{background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;
+  font-family:Consolas,'Cascadia Mono',ui-monospace,monospace;font-size:14px;line-height:1.55;color:#9fd8ef;margin:12px 0;white-space:pre}
+.tblwrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:14px 0}
+table.tbl{width:100%;border-collapse:collapse;font-size:14.5px;min-width:560px}
+.tbl th{background:#122036;color:var(--accent);text-align:left;padding:11px 14px;letter-spacing:.5px;font-size:13px;text-transform:uppercase}
+.tbl td{padding:11px 14px;border-top:1px solid var(--border);color:var(--text);vertical-align:top}
+.tbl tr:hover td{background:rgba(0,212,255,.04)}
+.steps{counter-reset:st;list-style:none}
+.steps li{counter-increment:st;position:relative;padding:10px 0 10px 52px;min-height:44px}
+.steps li::before{content:counter(st,decimal-leading-zero);position:absolute;left:0;top:8px;width:36px;height:36px;
+  border-radius:10px;background:rgba(0,212,255,.12);border:1px solid var(--accent);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.steps li b{color:#e8edf5}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;min-height:44px;border-radius:10px;cursor:pointer;
+  border:1px solid var(--accent);background:rgba(0,212,255,.12);color:var(--accent);font-weight:700;font-family:inherit;font-size:14px;transition:all .25s}
+.btn:hover{background:var(--accent);color:#04121a}
+.btn.small{padding:8px 14px;min-height:38px;font-size:13px}
+.btn.p{border-color:var(--purple);background:rgba(168,85,247,.12);color:#c084fc}
+.btn.p:hover{background:var(--purple);color:#fff}
+.hidden-box{display:none;margin-top:12px;border:1px dashed var(--green);border-radius:10px;padding:14px 16px;background:rgba(34,197,94,.06);animation:fadeIn .35s ease}
+.hidden-box.show{display:block}
+.tree{font-family:Consolas,ui-monospace,monospace;font-size:14px;background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:18px;overflow-x:auto;color:#9fd8ef;line-height:1.9}
+.tree .t1{color:var(--accent);font-weight:700}.tree .t2{color:#fbbf24}
+.acc{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;background:var(--card)}
+.acc-head{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 18px;cursor:pointer;
+  background:transparent;border:none;color:#e8edf5;font-family:inherit;font-size:15.5px;font-weight:700;text-align:left;min-height:48px}
+.acc-head:hover{background:rgba(0,212,255,.05)}
+.acc-head .arr{color:var(--accent);transition:transform .3s;font-size:13px}
+.acc.open .acc-head .arr{transform:rotate(90deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.acc-inner{padding:4px 18px 18px}
+.qa{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.qa .q{font-weight:600;color:#e8edf5;margin-bottom:10px}
+.qa .qn{color:var(--accent);font-weight:800;margin-right:8px}
+.qa .a{border-top:1px dashed var(--border);padding-top:10px;margin-top:10px;color:var(--muted)}
+.qa .a b{color:var(--green)}
+.chklist{list-style:none}
+.chklist li{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px dashed var(--border)}
+.chklist input{width:22px;height:22px;accent-color:var(--green);flex:0 0 auto;margin-top:2px;cursor:pointer}
+.chkbar{height:10px;border-radius:999px;background:#122036;border:1px solid var(--border);overflow:hidden;margin:10px 0 4px}
+.chkbar div{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--accent));transition:width .4s ease}
+.tabbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tabbtn{padding:10px 18px;min-height:42px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-family:inherit;font-weight:700;font-size:13.5px;transition:all .25s}
+.tabbtn.active{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.08)}
+.pane{display:none;animation:fadeIn .35s}.pane.active{display:block}
+.miniboard{max-width:560px;margin:14px auto;display:block;width:100%}
+.pw{--pf:#e8edf5;--ps:#0d1526;--slit:#0d1526}
+.pb{--pf:#263452;--ps:#9fb1d1;--slit:#dfe7f5}
+footer{border-top:1px solid var(--border);background:#0b1220;padding:28px 18px;text-align:center;color:var(--muted);font-size:14.5px;margin-top:40px}
+footer .line{margin:4px 0}
+footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:600}
+#toTop{position:fixed;right:18px;bottom:18px;z-index:350;width:52px;height:52px;border-radius:12px;border:1px solid var(--accent);
+  background:rgba(15,23,42,.95);color:var(--accent);font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{background:var(--accent);color:#04121a}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.flow .arrw{color:var(--dim);font-size:18px}
+@media (max-width:640px){
+  main{padding:74px 10px 50px}
+  .card{padding:15px}
+  .tbl{font-size:13px;min-width:520px}
+  .kpi .num{font-size:24px}
+  .steps li{padding-left:46px}
+  .quote{padding:16px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ============ BIBLIOTECA DE PIEZAS SVG (compartida) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <g id="shP" fill="var(--pf)" stroke="var(--ps)" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M-10,16 H10 L7,11 H-7 Z"/><path d="M-6,11 C-6,5 -4,2 -3,-1 H3 C4,2 6,5 6,11 Z"/><circle cx="0" cy="-7" r="6"/>
+  </g>
+  <g id="shN" fill="var(--pf)" stroke="var(--ps)" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M-10,16 H10 L8,11 C13,5 14,-5 7,-11 L8,-16 L2,-12 C-5,-12 -10,-6 -9,0 L-4,-1 C-7,3 -8,7 -8,11 Z"/>
+    <circle cx="1.5" cy="-6" r="1.4" fill="var(--ps)" stroke="none"/>
+  </g>
+  <g id="shB" fill="var(--pf)" stroke="var(--ps)" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M-9,16 H9 L6,11 H-6 Z"/><path d="M0,-14 C7,-8 9,0 5,11 H-5 C-9,0 -7,-8 0,-14 Z"/><circle cx="0" cy="-15.5" r="2.5"/>
+    <path d="M0,-8 L3,-2" stroke="var(--slit)" stroke-width="2" fill="none"/>
+  </g>
+  <g id="shR" fill="var(--pf)" stroke="var(--ps)" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M-10,16 H10 L8,11 H-8 Z"/>
+    <path d="M-7,11 L-7,-5 L-9,-5 L-9,-13 L-5,-13 L-5,-9 L-2,-9 L-2,-13 L2,-13 L2,-9 L5,-9 L5,-13 L9,-13 L9,-5 L7,-5 L7,11 Z"/>
+  </g>
+  <g id="shQ" fill="var(--pf)" stroke="var(--ps)" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M-10,16 H10 L7,11 H-7 Z"/><path d="M-7,11 L-9,-7 L-4,-2 L0,-11 L4,-2 L9,-7 L7,11 Z"/>
+    <circle cx="-9" cy="-8.5" r="1.8"/><circle cx="0" cy="-12.5" r="1.8"/><circle cx="9" cy="-8.5" r="1.8"/>
+  </g>
+  <g id="shK" fill="var(--pf)" stroke="var(--ps)" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M-10,16 H10 L7,11 H-7 Z"/><path d="M-7,11 C-10,1 -6,-6 0,-6 C6,-6 10,1 7,11 Z"/>
+    <path d="M0,-8 V-16 M-4,-12 H4" stroke="var(--ps)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  </g>
+</defs>
+</svg>
+
+<!-- ============ NAVBAR ============ -->
+<header class="nav">
+  <div class="nav-top"><span class="brand">♟ TROMPOWSKY <small>· ECO A45 · by Rubén Sbarsky</small></span></div>
+  <nav class="nav-scroll" id="navScroll" aria-label="Secciones del tutorial">
+    <button class="navbtn active" data-target="home">🏠 Inicio</button>
+    <button class="navbtn" data-target="fundamentos">📘 Fundamentos</button>
+    <button class="navbtn" data-target="respuestas">🗺️ Mapa de respuestas</button>
+    <button class="navbtn" data-target="principal">⚔️ Línea principal 2...Ce4</button>
+    <button class="navbtn" data-target="secundarias">🛡️ Respuestas secundarias</button>
+    <button class="navbtn" data-target="tactica">⚡ Táctica y errores</button>
+    <button class="navbtn" data-target="estrategia">🧠 Estrategia</button>
+    <button class="navbtn" data-target="partidas">🏆 Partidas modelo</button>
+    <button class="navbtn" data-target="ejercicios">✏️ Ejercicios</button>
+    <button class="navbtn" data-target="test">📝 Mini-test</button>
+    <button class="navbtn" data-target="repertorio">🎯 Repertorio</button>
+    <button class="navbtn" data-target="resumen">📄 Resumen y checklist</button>
+    <button class="navbtn" data-target="glosario">📖 Glosario</button>
+    <button class="navbtn credits" data-target="creditos">👨💻 CRÉDITOS</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section class="page active" id="home">
+  <div class="cover-wrap" id="homeCover" aria-label="Portada animada del Ataque Trompowsky"></div>
+
+  <span class="badge">♟ Apertura de peón de dama · ECO A45</span>
+  <h1 class="title">ATAQUE TROMPOWSKY</h1>
+  <p class="subtitle">1.d4 Cf6 2.Ag5 — Curso completo, paso a paso, para jugarlo con confianza</p>
+  <p class="desc">Este es un curso completo sobre el Ataque Trompowsky: <span class="mv">1.d4 Cf6</span> <span class="mv">2.Ag5</span>.
+  Una apertura que permite a las BLANCAS decidir el tipo de posición desde la segunda jugada, evitando la enorme teoría de las defensas indias.
+  Aquí aprenderás por ideas y planes, no por memorización: estructuras de peones poco habituales, posiciones tipo Benoni, centros grandes,
+  la Variante Raptor y la trampa histórica de la diagonal a5–e1.</p>
+
+  <blockquote class="quote">"Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien."
+    <small>— Cita de cabecera de este tutorial</small>
+  </blockquote>
+
+  <div class="kpis">
+    <div class="kpi"><div class="num">6</div><div class="lbl">Respuestas negras principales</div></div>
+    <div class="kpi g"><div class="num">3</div><div class="lbl">Retiradas / defensas del alfil (Af4, Ah4, h4)</div></div>
+    <div class="kpi r"><div class="num">1</div><div class="lbl">Trampa histórica: 3.e3??</div></div>
+    <div class="kpi a"><div class="num">24</div><div class="lbl">Capítulos del curso</div></div>
+    <div class="kpi p"><div class="num">6</div><div class="lbl">Ejercicios progresivos</div></div>
+    <div class="kpi"><div class="num">15</div><div class="lbl">Preguntas del mini-test</div></div>
+  </div>
+
+  <div class="metachips">
+    <span class="chip">📅 Fecha: <b>29/08/2026</b></span>
+    <span class="chip">🕘 Hora: <b>09:44:21</b></span>
+    <span class="chip">👨‍💻 Autor: <b>Rubén Sbarsky</b></span>
+    <span class="chip">🏷️ Código ECO: <b>A45</b></span>
+    <span class="chip">🎓 Nivel: desde principiante con reglas básicas</span>
+  </div>
+</section>
+
+<!-- ================= FUNDAMENTOS ================= -->
+<section class="page" id="fundamentos">
+  <h2 class="sec"><span class="ico">📘</span> Fundamentos del Ataque Trompowsky</h2>
+  <p class="sec-sub">Antes de empezar · Qué es · La posición inicial · La secuencia fundamental · Por qué Ag5 · Ideas de ambos bandos · Principios generales</p>
+
+  <div class="card hl">
+    <h3 class="sub">📌 1. Antes de empezar — Reglas de lectura</h3>
+    <p style="color:var(--muted)">Este es un curso completo, paso a paso, sobre el Ataque Trompowsky: <span class="mv">1.d4 Cf6</span> <span class="mv">2.Ag5</span>. Antes de empezar, algunas reglas de lectura:</p>
+    <ul class="clean">
+      <li>Cada vez que se nombre una pieza, se indicará <b>su color, su tipo y su casilla</b> (por ejemplo: "el ALFIL BLANCO de g5"). Así nunca habrá dudas de quién mueve o quién captura.</li>
+      <li>Todas las jugadas mostradas en este documento son <b>legales y han sido comprobadas movimiento a movimiento</b>.</li>
+      <li>No se presentarán evaluaciones numéricas de motor (del tipo "+2.5") salvo que se identifique la fuente. En su lugar, las posiciones se explican con conceptos ajedrecísticos: <b>desarrollo, espacio, estructura, seguridad del rey, iniciativa</b>.</li>
+      <li>Se distinguirá siempre entre <b>"jugada objetivamente mejor"</b>, <b>"jugada recomendada para aprender"</b> y <b>"jugada típica/frecuente"</b>. No son lo mismo.</li>
+      <li>Las partidas modelo que aparecen en este curso son <b>partidas reales y verificables</b>; si en algún punto no se puede garantizar con certeza la secuencia exacta de una partida histórica, se indicará la idea y la posición sin inventar movimientos.</li>
+    </ul>
+    <div class="callout info"><span class="ct">ℹ️ INFO — Requisitos para el alumno</span>
+      Saber mover las piezas, conocer el jaque, el jaque mate y el enroque, y saber leer las casillas del tablero (columnas a–h, filas 1–8). <b>No se requiere ninguna teoría de aperturas previa.</b>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">♟ 2. ¿Qué es el Ataque Trompowsky?</h3>
+    <p>El Ataque Trompowsky es una <b>apertura de peón de dama para las BLANCAS</b> que comienza con:</p>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv">2. Ag5</span></div>
+    <p>En la segunda jugada, en lugar de jugar <span class="mv">2.c4</span> o <span class="mv">2.Cf3</span> (las continuaciones "normales" contra 1...Cf6), las BLANCAS sacan inmediatamente su ALFIL DE CASILLAS OSCURAS de c1 a g5, <b>atacando directamente al CABALLO NEGRO de f6</b>.</p>
+
+    <h4 class="sub2">¿Por qué se llama Trompowsky?</h4>
+    <p>Debe su nombre al ajedrecista brasileño <b>Octávio Trompowsky (1897–1984)</b>, campeón de Brasil, que empleó esta jugada en varios torneos durante las décadas de 1930 y 1940. Por eso también se la conoce a veces como <b>"Opočenský Opening"</b> (por el maestro checo Karel Opočenský, que también la practicó en los años 30) o, informalmente, <b>"The Zot"</b>. Su código ECO es <span class="mv a">A45</span>.</p>
+
+    <h4 class="sub2">¿Qué pretende esta jugada?</h4>
+    <p>El ALFIL BLANCO de g5 amenaza con capturar en f6 (<span class="mv r">Axf6</span>), lo que obligaría a las NEGRAS a recapturar con un peón, provocándoles <b>peones doblados</b>. Es una amenaza real pero no mortal: las NEGRAS tienen varias formas razonables de responder, y en muchas líneas terminan aceptando esos peones doblados a cambio de la <b>pareja de alfiles</b> y de una estructura de peones sólida.</p>
+
+    <h4 class="sub2">¿Qué tipo de posiciones produce?</h4>
+    <ul class="clean">
+      <li>Posiciones con estructuras de peones poco habituales (peones doblados, centros grandes).</li>
+      <li>Posiciones de tipo <b>Benoni</b> cuando las NEGRAS responden con ...c5.</li>
+      <li>Posiciones tranquilas y sólidas cuando las NEGRAS responden con ...e6.</li>
+      <li>Algunas líneas muy afiladas y tácticas, sobre todo tras 2...Ce4.</li>
+    </ul>
+
+    <h4 class="sub2">¿A qué tipo de jugador le puede gustar?</h4>
+    <ul class="clean">
+      <li>Evitar la enorme cantidad de teoría de las defensas indias (India de Dama, India de Rey, Nimzoindia, Grünfeld) que surgen tras 2.c4.</li>
+      <li>Jugar posiciones con planes claros en vez de memorizar variantes largas.</li>
+      <li>Sorprender a un rival que probablemente no ha estudiado esta apertura en profundidad.</li>
+    </ul>
+
+    <div class="grid2" style="margin-top:14px">
+      <div class="card" style="border-color:rgba(34,197,94,.4)">
+        <h4 class="sub2" style="color:var(--green)">✅ Ventajas</h4>
+        <ul class="dots clean"><li>Poca teoría "obligatoria": se puede aprender por ideas.</li><li>Planes claros: casi siempre BLANCAS sabe qué quiere hacer (Axf6, e4, Cd2, etc.).</li><li>Valor sorpresa.</li></ul>
+      </div>
+      <div class="card" style="border-color:rgba(239,68,68,.4)">
+        <h4 class="sub2" style="color:var(--red)">⚠️ Inconvenientes</h4>
+        <ul class="dots clean"><li>BLANCAS a veces entrega la pareja de alfiles.</li><li>Algunas líneas (como 2...Ce4) sí requieren conocer ideas concretas, o BLANCAS puede acabar peor si improvisa.</li><li>No es una apertura "de ataque directo al rey" en todas las líneas: en varias de ellas el objetivo es puramente estructural y estratégico.</li></ul>
+      </div>
+    </div>
+
+    <div class="callout info"><span class="ct">ℹ️ INFO — ¿Qué NO pretende hacer?</span>
+      El Trompowsky no busca dar mate en diez jugadas. No es una apertura de gambito puro (salvo en una línea concreta que veremos). Es, sobre todo, una manera de <b>imponer una estructura de peones y un tipo de posición</b> que las BLANCAS conocen mejor que su rival.
+      <br><b>El objetivo de este curso no es contar la historia de la apertura, sino enseñarte a jugarla.</b>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">🧩 3. La posición inicial</h3>
+    <p style="color:var(--muted)">Partimos de la posición inicial estándar del ajedrez. Sobre ella:</p>
+    <ul class="clean">
+      <li><span class="mv">1.e4 / 1...e5</span> NO es el Trompowsky: eso pertenece a las aperturas de peón de rey.</li>
+      <li><span class="mv">1.d4</span> es el movimiento inicial habitual de nuestro esquema: el PEÓN BLANCO de d2 avanza a d4.</li>
+      <li><span class="mv b">1...Cf6</span>: las NEGRAS responden desarrollando su CABALLO de g8 a f6, evitando de momento comprometer el centro con peones.</li>
+      <li><span class="mv">2.Ag5</span>: las BLANCAS desarrollan su ALFIL DE CASILLAS OSCURAS de c1 a g5.</li>
+    </ul>
+
+    <svg class="miniboard" viewBox="-30 -12 540 532" role="img" aria-label="Diagrama: posición después de 1.d4 Cf6 2.Ag5">
+      <defs>
+        <pattern id="mbChk" width="120" height="120" patternUnits="userSpaceOnUse">
+          <rect width="120" height="120" fill="#25334f"/>
+          <rect x="60" width="60" height="60" fill="#131e33"/>
+          <rect y="60" width="60" height="60" fill="#131e33"/>
+        </pattern>
+        <marker id="mbArr" markerWidth="7" markerHeight="7" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#ef4444"/></marker>
+      </defs>
+      <rect x="-8" y="-8" width="496" height="496" rx="10" fill="#0d1526" stroke="#1e3a5f" stroke-width="2"/>
+      <rect width="480" height="480" fill="url(#mbChk)"/>
+      <rect x="360" y="180" width="60" height="60" fill="rgba(0,212,255,.22)"/>
+      <rect x="300" y="120" width="60" height="60" fill="rgba(239,68,68,.22)"/>
+      <rect x="180" y="240" width="60" height="60" fill="rgba(0,212,255,.18)"/>
+      <g font-family="Segoe UI,system-ui,sans-serif" font-size="14" fill="#5b6b87">
+        <text x="24" y="506">a</text><text x="84" y="506">b</text><text x="144" y="506">c</text><text x="204" y="506">d</text><text x="264" y="506">e</text><text x="324" y="506">f</text><text x="384" y="506">g</text><text x="444" y="506">h</text>
+        <text x="-22" y="35">8</text><text x="-22" y="95">7</text><text x="-22" y="155">6</text><text x="-22" y="215">5</text><text x="-22" y="275">4</text><text x="-22" y="335">3</text><text x="-22" y="395">2</text><text x="-22" y="455">1</text>
+      </g>
+      <line x1="388" y1="208" x2="340" y2="158" stroke="#ef4444" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#mbArr)"/>
+      <!-- BLANCAS -->
+      <use href="#shR" class="pw" transform="translate(30,450)"/><use href="#shN" class="pw" transform="translate(90,450)"/>
+      <use href="#shQ" class="pw" transform="translate(210,450)"/><use href="#shK" class="pw" transform="translate(270,450)"/>
+      <use href="#shB" class="pw" transform="translate(330,450)"/><use href="#shN" class="pw" transform="translate(390,450)"/>
+      <use href="#shR" class="pw" transform="translate(450,450)"/><use href="#shB" class="pw" transform="translate(390,210)"/>
+      <use href="#shP" class="pw" transform="translate(30,390)"/><use href="#shP" class="pw" transform="translate(90,390)"/>
+      <use href="#shP" class="pw" transform="translate(150,390)"/><use href="#shP" class="pw" transform="translate(270,390)"/>
+      <use href="#shP" class="pw" transform="translate(330,390)"/><use href="#shP" class="pw" transform="translate(390,390)"/>
+      <use href="#shP" class="pw" transform="translate(450,390)"/><use href="#shP" class="pw" transform="translate(210,270)"/>
+      <!-- NEGRAS -->
+      <use href="#shR" class="pb" transform="translate(30,30)"/><use href="#shN" class="pb" transform="translate(90,30)"/>
+      <use href="#shB" class="pb" transform="translate(150,30)"/><use href="#shQ" class="pb" transform="translate(210,30)"/>
+      <use href="#shK" class="pb" transform="translate(270,30)"/><use href="#shB" class="pb" transform="translate(330,30)"/>
+      <use href="#shR" class="pb" transform="translate(450,30)"/><use href="#shN" class="pb" transform="translate(330,150)"/>
+      <use href="#shP" class="pb" transform="translate(30,90)"/><use href="#shP" class="pb" transform="translate(90,90)"/>
+      <use href="#shP" class="pb" transform="translate(150,90)"/><use href="#shP" class="pb" transform="translate(210,90)"/>
+      <use href="#shP" class="pb" transform="translate(270,90)"/><use href="#shP" class="pb" transform="translate(330,90)"/>
+      <use href="#shP" class="pb" transform="translate(390,90)"/><use href="#shP" class="pb" transform="translate(450,90)"/>
+    </svg>
+    <pre class="pre">8 | r n b q k b . r
+7 | p p p p p p p p
+6 | . . . . . n . .
+5 | . . . . . . B .
+4 | . . . P . . . .
+3 | . . . . . . . .
+2 | P P P . P P P P
+1 | R N . Q K B N R
+    a b c d e f g h</pre>
+    <p style="color:var(--dim);font-size:13.5px">(Posición después de 1.d4 Cf6 2.Ag5. Piezas mayúsculas = BLANCAS, minúsculas = NEGRAS.)</p>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">🔁 4. La secuencia fundamental</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv">2. Ag5</span></div>
+    <h4 class="sub2">Explicación verbal</h4>
+    <ul class="clean">
+      <li>Las BLANCAS han jugado el PEÓN de d2 a d4, <b>ocupando el centro</b>.</li>
+      <li>Las NEGRAS han desarrollado el CABALLO de g8 a f6, <b>controlando las casillas e4 y d5</b> y preparándose para enrocar corto.</li>
+      <li>Las BLANCAS han desarrollado su ALFIL DE CASILLAS OSCURAS de c1 a g5. Este ALFIL BLANCO <b>ataca directamente al CABALLO NEGRO de f6</b>.</li>
+    </ul>
+  </div>
+
+  <div class="card hl">
+    <h3 class="sub">🎯 5. ¿Por qué Ag5?</h3>
+    <p style="color:var(--muted)">El ALFIL BLANCO de g5 hace <b>tres cosas a la vez</b>:</p>
+    <div class="grid3" style="margin-top:10px">
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--red)">1 · Ataca al caballo</h4><p>Ataca al CABALLO NEGRO de f6. Si las NEGRAS no hacen nada al respecto, las BLANCAS pueden jugar <span class="mv r">Axf6</span>, destrozando la estructura de peones negra.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">2 · Flexibilidad</h4><p>Sale de la posición inicial antes de decidir dónde irán los peones centrales. A diferencia de 2.c4 o 2.Cf3, las BLANCAS <b>no revelan todavía su plan de peones</b>.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--green)">3 · Evita teoría</h4><p>Evita de un plumazo toda la teoría de las defensas indias. Como las NEGRAS aún no han jugado ...g6 ni ...e6 ni ...d5, las BLANCAS <b>eligen el tipo de posición</b> antes de que las NEGRAS puedan elegir su sistema favorito.</p></div>
+    </div>
+    <div class="callout ejemplo"><span class="ct">🟢 EJEMPLO — ¿Qué pretende BLANCAS?</span>
+      Ganar la pareja de alfiles a cambio de doblar los peones negros, o bien —si las NEGRAS evitan la captura— ganar tiempo y espacio mientras las NEGRAS gastan jugadas en resolver la amenaza sobre el CABALLO de f6.
+    </div>
+    <div class="callout advertencia"><span class="ct">🟡 ADVERTENCIA — ¿Qué problemas tiene NEGRAS?</span>
+      Debe decidir, ya en la segunda jugada, cómo quiere resolver la clavada... en realidad <b>no es una clavada todavía</b> (no hay dama detrás en la mayoría de líneas), sino un ataque directo a una pieza desarrollada. Las NEGRAS deben elegir entre <b>defender el caballo, moverlo, o dejar que lo capturen</b>.
+    </div>
+    <h4 class="sub2">¿Qué posibilidades tiene NEGRAS?</h4>
+    <p style="color:var(--muted)">Las principales respuestas son: <span class="mv r">2...Ce4</span> (la más popular: contraataca al alfil) · <span class="mv">2...d5</span> (ocupa el centro, acepta la posibilidad de Axf6) · <span class="mv g">2...e6</span> (defiende el caballo indirectamente por la diagonal d8–f6) · <span class="mv a">2...c5</span> (ataca el centro blanco por el flanco de dama) · <span class="mv b">2...g6</span> (fianchetto, ignorando la amenaza) · <span class="mv">2...c6</span> (jugada rara, prepara ...Db6). Cada una lleva a un tipo de partida distinto. <b>Las estudiaremos todas.</b></p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 class="sub"> 6. Las ideas de las blancas</h3>
+      <p style="color:var(--muted)">En términos generales, el plan de las BLANCAS gira en torno a:</p>
+      <ul class="clean">
+        <li>Decidir <b>cuándo capturar en f6</b> (Axf6) y cuándo retirar el alfil (a f4 o h4).</li>
+        <li>Construir un <b>centro de peones amplio</b> (con d4 y a menudo e4) cuando las NEGRAS aceptan los peones doblados.</li>
+        <li>Desarrollar con naturalidad: <b>Cd2 o Cc3, Cf3, Ac4/Ad3, y enrocar</b>.</li>
+        <li>En las líneas donde el ALFIL captura en f6, aprovechar la pareja de peones o la estructura sólida <b>a largo plazo, sin prisa por atacar</b>.</li>
+        <li>En las líneas donde las NEGRAS juegan ...Ce4, decidir entre una postura sólida (<span class="mv g">3.Af4</span>) o una postura combativa (<span class="mv r">3.h4</span>, la Variante Raptor).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 class="sub">⚫ 7. Las ideas de las negras</h3>
+      <p style="color:var(--muted)">El plan de las NEGRAS depende de la respuesta elegida en la jugada 2, pero en general busca:</p>
+      <ul class="clean">
+        <li>Si acepta los peones doblados: usar la <b>pareja de alfiles</b> y los peones doblados como arma a largo plazo (por ejemplo, el peón de f6 controla la casilla e5 y puede sostener un futuro ...e5).</li>
+        <li>Si evita los peones doblados (2...Ce4 o 2...e6): golpear el centro blanco con <b>...c5 o ...d5</b>, y a menudo hostigar el <b>peón b2</b>, que queda sin defensor natural en cuanto el ALFIL abandona c1.</li>
+        <li>Desarrollar rápido y no perder tiempo defendiendo estructuras pasivas.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card hl">
+    <h3 class="sub">🧭 8. Principios generales</h3>
+    <p>Antes de entrar en variantes, fíjate en algo importante: en el Trompowsky, casi todos los planes de las BLANCAS giran alrededor de una idea muy simple —<b>decidir el momento exacto de intercambiar el alfil por el caballo</b>—. Cámbialo demasiado pronto y regalas la pareja de alfiles sin sacar nada a cambio. Cámbialo demasiado tarde y el alfil puede quedar mal colocado o perder tiempos.</p>
+    <h4 class="sub2">Reglas prácticas para el alumno</h4>
+    <div class="callout advertencia"><span class="ct">🟡 1 · No captures en f6 automáticamente</span>Hazlo solo cuando el peón doblado resultante sea realmente una debilidad, o cuando ganes un tiempo real.</div>
+    <div class="callout advertencia"><span class="ct">🟡 2 · Vigila siempre la casilla b2</span>En muchas líneas queda sin defensa en cuanto el alfil sale de c1.</div>
+    <div class="callout info"><span class="ct">ℹ️ 3 · Desarrolla antes de atacar</span>El Trompowsky no es una apertura de "mate rápido" salvo en errores del rival.</div>
+    <div class="callout error"><span class="ct">🔴 4 · Cuidado con f3</span>No juegues f3 (para expulsar a un caballo en e4) si no estás dispuesto a asumir cierto debilitamiento de las casillas claras alrededor de tu rey.</div>
+  </div>
+</section>
+
+<!-- ================= MAPA DE RESPUESTAS ================= -->
+<section class="page" id="respuestas">
+  <h2 class="sec"><span class="ico">🗺️</span> 9. Respuestas principales de las negras</h2>
+  <p class="sec-sub">Después de 1.d4 Cf6 2.Ag5 — árbol de decisión y chuleta mental</p>
+
+  <div class="card">
+    <h3 class="sub">🌳 Árbol de decisión resumido</h3>
+    <div class="tree">1.d4 Cf6 2.Ag5
+        |
+        ├── <span class="t1">2...Ce4</span>  → Línea principal (la más jugada y más teórica)
+        ├── <span class="t1">2...d5</span>   → Acepta peones doblados, centro sólido
+        ├── <span class="t1">2...e6</span>   → Defensa Clásica, evita peones doblados
+        ├── <span class="t1">2...c5</span>   → Golpe central inmediato, tipo Benoni
+        ├── <span class="t1">2...g6</span>   → Fianchetto, ignora la amenaza
+        └── <span class="t2">2...c6</span>   → Línea rara (¡cuidado con la trampa de 3.e3??)</div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">📋 "Chuleta mental" de respuestas</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Respuesta negra</th><th>Idea negra</th><th>Plan blanco recomendado</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mv r">2...Ce4</span></td><td>Ganar tiempo atacando el alfil</td><td>3.Af4 (sólido) o 3.h4 (agresivo)</td></tr>
+        <tr><td><span class="mv">2...d5</span></td><td>Ocupar el centro</td><td>3.Axf6 exf6, luego e3/Cd2</td></tr>
+        <tr><td><span class="mv g">2...e6</span></td><td>Evitar peones doblados</td><td>3.e4, centro grande</td></tr>
+        <tr><td><span class="mv a">2...c5</span></td><td>Golpear el centro ya</td><td>3.Axf6 gxf6 o 3.d5</td></tr>
+        <tr><td><span class="mv b">2...g6</span></td><td>Fianchetto</td><td>3.Axf6 exf6, ventaja de espacio</td></tr>
+        <tr><td><span class="mv">2...c6</span></td><td>Preparar ...Db6</td><td>3.Axf6 o 3.Cf3 (¡nunca 3.e3??!)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout info"><span class="ct">ℹ️ INFO</span>No vamos a analizar todas las jugadas posibles de las negras en cada rama: nos vamos a centrar en las respuestas principales, las más frecuentes en la práctica humana y las pedagógicamente más importantes.</div>
+  </div>
+</section>
+
+<!-- ================= LÍNEA PRINCIPAL ================= -->
+<section class="page" id="principal">
+  <h2 class="sec"><span class="ico">⚔️</span> Línea principal — 2...Ce4</h2>
+  <p class="sec-sub">La respuesta más popular: el caballo contraataca al alfil · 3.Af4 · 3.Ah4 · 3.h4 (Raptor)</p>
+
+  <div class="card hl">
+    <h3 class="sub">📍 Posición inicial de la línea</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv r">2... Ce4</span></div>
+    <h4 class="sub2">¿Qué está pasando?</h4>
+    <p>El CABALLO NEGRO de f6 salta a e4, <b>atacando directamente al ALFIL BLANCO de g5</b>. Las NEGRAS "violan" un principio elemental de apertura (no mover dos veces la misma pieza en el inicio), pero a cambio ganan un tiempo real: obligan a las BLANCAS a decidir el destino de su alfil.</p>
+    <ul class="clean">
+      <li><b>¿Qué hicieron las blancas?</b> Desarrollaron el alfil a g5.</li>
+      <li><b>¿Qué hicieron las negras?</b> Atacaron ese alfil con el caballo, aceptando mover dos veces la misma pieza.</li>
+      <li><b>¿Por qué?</b> Porque así evitan que las blancas capturen tranquilamente en f6, y mantienen la iniciativa sobre el destino del alfil blanco.</li>
+      <li><b>¿Qué amenaza existe?</b> <span class="mv r">...Cxg5</span>, ganando la pieza si el alfil no se mueve.</li>
+    </ul>
+    <h4 class="sub2">Plan de las blancas — tres respuestas principales</h4>
+    <div class="grid3">
+      <div class="card" style="margin:0;border-color:rgba(34,197,94,.45)"><h4 class="sub2" style="color:var(--green)">3.Af4 ⭐ la más jugada</h4><p>Conserva el alfil activo en la diagonal c1–h6.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">3.Ah4</h4><p>Mantiene la posibilidad de una futura clavada si las negras juegan ...g5 y el alfil vuelve a g3.</p></div>
+      <div class="card" style="margin:0;border-color:rgba(239,68,68,.45)"><h4 class="sub2" style="color:var(--red)">3.h4!? Variante Raptor</h4><p>Defiende el alfil con el PEÓN de h2, aceptando que si las negras capturan con ...Cxg5, hxg5 abre la columna h para el ataque.</p></div>
+    </div>
+    <div class="quote" style="margin-top:16px">"No pierdas tiempo decidiendo: el alfil debe moverse ya, y Af4 es la opción más flexible para empezar a aprender esta apertura."</div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">🅰️ Variante 1: 3.Af4 c5 (Estructura tipo Benoni)</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv r">2. Ag5 Ce4</span><span class="mv g">3. Af4 c5</span></div>
+    <ul class="clean">
+      <li>Las BLANCAS retiraron su ALFIL a f4, conservándolo activo y fuera de peligro.</li>
+      <li>Las NEGRAS golpean inmediatamente el centro con el PEÓN de c7 a c5, atacando al PEÓN BLANCO de d4.</li>
+      <li><b>¿Qué amenaza existe?</b> <span class="mv r">...cxd4</span>, ganando el peón central blanco si las blancas no reaccionan.</li>
+      <li><b>¿Qué pieza está mejor?</b> El ALFIL BLANCO de f4 está muy activo, apuntando a la diagonal b8–h2. El CABALLO NEGRO de e4, en cambio, todavía puede ser molestado con f3.</li>
+      <li><b>¿Qué estructura de peones se ha creado?</b> Una estructura de tipo Benoni en potencia: peón negro en c5 contra peón blanco en d4.</li>
+    </ul>
+    <p style="margin-top:8px">Ahora, la posición se puede resolver de dos formas típicas: <span class="mv">4.f3</span> (expulsando al caballo) o <span class="mv a">4.d5</span> (avanzando el peón central).</p>
+
+    <div class="acc">
+      <button class="acc-head">Sub-línea A: 4.f3 Da5+ 5.c3 Cf6 6.d5 <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <div class="moveline"><span class="mv">4. f3 Da5+</span><span class="mv">5. c3 Cf6</span><span class="mv">6. d5</span></div>
+        <h4 class="sub2">Explicación paso a paso</h4>
+        <ol class="steps">
+          <li><b>4.f3:</b> el PEÓN BLANCO de f2 avanza a f3, atacando al CABALLO NEGRO de e4.</li>
+          <li><b>4...Da5+:</b> la DAMA NEGRA salta de d8 a a5 dando JAQUE al REY BLANCO de e1 a través de la diagonal a5–e1 (que está despejada).</li>
+          <li><b>5.c3:</b> el PEÓN BLANCO de c2 avanza a c3, bloqueando el jaque.</li>
+          <li><b>5...Cf6:</b> el CABALLO NEGRO, atacado por el peón f3, retrocede de e4 a f6.</li>
+          <li><b>6.d5:</b> el PEÓN BLANCO de d4 avanza a d5, ganando espacio y fijando una estructura de tipo Benoni.</li>
+        </ol>
+        <div class="grid2">
+          <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">Plan de las blancas</h4><p>Ampliar el centro con e4 más adelante, desarrollar el CABALLO de b1 a d2, enrocar y, cuando sea posible, atacar en el flanco de rey (donde el peón f3 ya está adelantado) o presionar en el flanco de dama.</p></div>
+          <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">Plan de las negras</h4><p>Presionar el PEÓN BLANCO de d5 con ...e6, desarrollar el ALFIL de f8, y a menudo hostigar el PEÓN BLANCO de b2 con ...Db6, ya que el ALFIL que lo defendía (el de c1) ya no está en su casilla original.</p></div>
+        </div>
+        <div class="callout error"><span class="ct">🔴 ERROR TÍPICO</span>Un error típico de las BLANCAS en estas posiciones es descuidar la defensa del PEÓN de b2 pensando "ya lo recuperaré con actividad": si la DAMA NEGRA lo captura sin que exista compensación suficiente, las BLANCAS pueden quedarse simplemente un peón por debajo.</div>
+        <div class="quote">"Cuando las blancas dejan avanzar ...c5 y luego juegan d5, están comprando espacio a cambio de dejar el peón b2 más vulnerable: hay que estar preparado para defenderlo con Ac1 si hace falta."</div>
+
+        <h4 class="sub2">Continuación teórica documentada — el peón b2 bajo la lupa</h4>
+        <div class="moveline"><span class="mv b">6... Db6</span><span class="mv g">7. Ac1</span></div>
+        <p>Después de 6...Db6 (la DAMA NEGRA ataca el PEÓN de b2, que ya no tiene defensor), <b>7.Ac1</b> es la jugada natural: el ALFIL BLANCO retrocede desde f4 hasta su casilla original c1, defendiendo el peón b2 sin crear más debilidades. Aunque parezca antinatural mover dos veces el mismo alfil para "deshacer camino", este recurso es típico del Trompowsky y compensa con el hecho de que la dama negra, en b6, tampoco está haciendo gran cosa por el momento.</p>
+        <p style="margin-top:8px">Una continuación conocida sigue así:</p>
+        <div class="moveline"><span class="mv b">7... e6</span><span class="mv">8. c4 exd5</span><span class="mv">9. cxd5 c4</span><span class="mv">10. e3 Ac5</span></div>
+        <p style="color:var(--muted)"><b>Explicación:</b> las NEGRAS juegan 7...e6 para golpear el PEÓN BLANCO de d5; las BLANCAS refuerzan su cadena con 8.c4; tras el cambio en d5 (8...exd5 9.cxd5), las NEGRAS avanzan 9...c4 ganando espacio en el flanco de dama; las BLANCAS juegan 10.e3, preparando terreno para que el REY BLANCO pueda apoyarse en f2 si hace falta defender el peón de e3; las NEGRAS desarrollan con 10...Ac5, apuntando a esa misma casilla e3 y a f2.</p>
+      </div></div>
+    </div>
+
+    <div class="acc">
+      <button class="acc-head">Sub-línea B: 4.d5 (sacrificio de peón por desarrollo) <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <div class="moveline"><span class="mv a">4. d5 Db6</span><span class="mv">5. Cd2 Cxd2</span><span class="mv">6. Axd2 Dxb2</span><span class="mv g">7. e4</span></div>
+        <ol class="steps">
+          <li><b>4.d5:</b> en vez de expulsar al caballo con f3, las BLANCAS avanzan directamente el PEÓN de d4 a d5.</li>
+          <li><b>4...Db6:</b> la DAMA NEGRA salta a b6, atacando el PEÓN BLANCO de b2 (que ya no tiene defensor tras la salida del alfil de c1).</li>
+          <li><b>5.Cd2:</b> el CABALLO BLANCO se desarrolla de b1 a d2, ofreciendo el cambio con el molesto CABALLO NEGRO de e4.</li>
+          <li><b>5...Cxd2:</b> el CABALLO NEGRO de e4 captura al CABALLO BLANCO de d2.</li>
+          <li><b>6.Axd2:</b> el ALFIL BLANCO de f4 recaptura en d2 (recorrido curioso: c1–g5–f4–d2).</li>
+          <li><b>6...Dxb2:</b> la DAMA NEGRA captura el PEÓN BLANCO de b2.</li>
+          <li><b>7.e4:</b> las BLANCAS, un peón por debajo, avanzan su PEÓN de e2 a e4, construyendo un enorme centro de peones (d5 + e4) a cambio del material.</li>
+        </ol>
+        <div class="quote">"En esta línea las blancas entregan el peón b2 conscientemente: el pago es un centro de peones gigante y ventaja de desarrollo. No la juegues si no te sientes cómodo jugando con un peón menos a cambio de iniciativa."</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">🅱️ Variante 2: 3.Af4 d5 (Centro sólido / idea de gambito)</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv r">2. Ag5 Ce4</span><span class="mv g">3. Af4 d5</span></div>
+    <p><b>¿Qué está pasando?</b> En lugar de golpear con ...c5, las NEGRAS ocupan el centro directamente con el PEÓN de d7 a d5, buscando una estructura sólida y sin debilidades inmediatas.</p>
+    <p style="margin-top:8px"><b>Plan de las blancas:</b> Aquí las BLANCAS tienen una idea especialmente interesante: pueden jugar de forma tranquila con <span class="mv g">4.e3</span>, o entrar en una versión propia del <b>Gambito Blackmar-Diemer</b> con <span class="mv r">4.f3</span>.</p>
+
+    <div class="acc">
+      <button class="acc-head">Línea de gambito: 4.f3 Cf6 5.e4!? <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <div class="moveline"><span class="mv">4. f3 Cf6</span><span class="mv r">5. e4!?</span></div>
+        <ul class="clean">
+          <li><b>4.f3:</b> el PEÓN de f2 avanza a f3, atacando de nuevo al CABALLO NEGRO de e4.</li>
+          <li><b>4...Cf6:</b> el CABALLO retrocede a f6 (su tercera jugada con la misma pieza).</li>
+          <li><b>5.e4!?:</b> el PEÓN BLANCO de e2 avanza dos casillas hasta e4, <b>ofreciendo un peón</b>: si las NEGRAS capturan con ...dxe4, las BLANCAS recuperan tiempo de desarrollo.</li>
+        </ul>
+        <h4 class="sub2">Continuación típica si las NEGRAS aceptan el gambito</h4>
+        <div class="moveline"><span class="mv b">5... dxe4</span><span class="mv g">6. Cc3 exf3</span><span class="mv g">7. Cxf3</span></div>
+        <ol class="steps">
+          <li><b>5...dxe4:</b> el PEÓN NEGRO de d5 captura el PEÓN BLANCO de e4.</li>
+          <li><b>6.Cc3:</b> el CABALLO BLANCO se desarrolla de b1 a c3, sin recapturar todavía, ganando tiempo y desarrollo.</li>
+          <li><b>6...exf3:</b> el PEÓN NEGRO de e4 captura ahora el PEÓN BLANCO de f3.</li>
+          <li><b>7.Cxf3:</b> el CABALLO BLANCO de g1 recaptura en f3.</li>
+        </ol>
+        <div class="callout ejemplo"><span class="ct">🟢 EJEMPLO — ¿Qué pieza está mejor?</span>
+          Al final de esta secuencia, las BLANCAS tienen <b>tres piezas desarrolladas</b> (ALFIL de f4, CABALLO de c3, CABALLO de f3) frente a <b>una sola pieza negra desarrollada</b> (el CABALLO de f6). A cambio de un peón, las BLANCAS disfrutan de una ventaja de desarrollo considerable.
+        </div>
+        <div class="quote">"Igual que en el Blackmar-Diemer, aquí sacrificas un peón por tiempo: no te apresures a recuperarlo, desarrolla primero."</div>
+      </div></div>
+    </div>
+
+    <div class="acc">
+      <button class="acc-head">Plan alternativo, más tranquilo: 4.e3 <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <p>Si las BLANCAS prefieren una partida más posicional, <span class="mv g">4.e3</span> (en vez de 4.f3) mantiene la tensión sin comprometerse tácticamente, preparando <b>Ad3 y Cd2</b>, y dejando la decisión de expulsar al caballo (con f3) para más adelante, cuando convenga.</p>
+      </div></div>
+    </div>
+    <div class="callout error"><span class="ct">🔴 ERROR TÍPICO</span>Jugar 4.f3 sin estar dispuesto a asumir el gambito de peón, y luego arrepentirse y perder tiempos tratando de recuperarlo a toda costa en vez de desarrollar con naturalidad.</div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">🦖 Variante 3: 3.h4!? — La Variante Raptor</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv r">2. Ag5 Ce4</span><span class="mv r">3. h4!?</span></div>
+    <p><b>¿Qué está pasando?</b> En vez de retirar el alfil, las BLANCAS lo defienden con el PEÓN de h2 a h4. Es la línea <b>más agresiva y menos común</b> de las tres.</p>
+    <div class="callout advertencia"><span class="ct">🟡 ADVERTENCIA — ¿Qué amenaza existe?</span>
+      Si las NEGRAS capturan con 3...Cxg5, las BLANCAS recapturan <b>4.hxg5</b>, abriendo la <b>columna h</b> para su TORRE de h1, con posibilidades de ataque directo contra el enroque corto negro.
+    </div>
+    <div class="grid2">
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">Plan de las blancas</h4><p>Utilizar la columna h abierta como arma de ataque, sobre todo si las NEGRAS enrocan corto sin cuidado. Esta línea requiere más precisión táctica y <b>no se recomienda para un principiante como primera arma</b>, aunque es importante conocerla porque aparece con frecuencia en partidas rápidas.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">Plan de las negras</h4><p>Las NEGRAS no están obligadas a capturar en g5. Pueden, por ejemplo, devolver el caballo a f6 o buscar otra estructura, evitando regalar la columna h a las blancas sin necesidad.</p></div>
+    </div>
+    <div class="quote">"3.h4 defiende el alfil con un peón en vez de retirarlo: es agresivo, abre líneas hacia el rey negro, pero también compromete la estructura de peones blanca en el flanco de rey. No es la línea recomendada para empezar a aprender el Trompowsky, pero debes saber que existe."</div>
+  </div>
+</section>
+
+<!-- ================= SECUNDARIAS ================= -->
+<section class="page" id="secundarias">
+  <h2 class="sec"><span class="ico">🛡️</span> Respuestas secundarias de las negras</h2>
+  <p class="sec-sub">2...d5 · 2...e6 · 2...c5 · 2...g6 · 2...c6 (con la trampa histórica)</p>
+
+  <div class="card">
+    <h3 class="sub">🏛️ 2...d5 — Aceptando la estructura</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv">2. Ag5 d5</span><span class="mv r">3. Axf6 exf6</span></div>
+    <ul class="clean">
+      <li>Las NEGRAS ocupan el centro con el PEÓN de d7 a d5, sin resolver todavía la amenaza sobre el CABALLO de f6.</li>
+      <li>Las BLANCAS capturan: el ALFIL BLANCO de g5 toma el CABALLO NEGRO de f6.</li>
+      <li>Las NEGRAS recapturan con el PEÓN de e7, que se traslada a f6.</li>
+    </ul>
+    <div class="callout info"><span class="ct">ℹ️ INFO — ¿Qué ha ocurrido?</span>
+      Las NEGRAS aceptan los <b>PEONES DOBLADOS</b> en la columna f (f6 y f7) a cambio de la <b>pareja de ALFILES</b> y de una estructura de peones central sólida: el peón de f6 controla la casilla e5, lo cual puede ser muy útil en el medio juego.
+    </div>
+    <div class="grid2">
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">Plan de las blancas</h4><p>Desarrollar con naturalidad (Cd2 o Cc3, Cf3, e3, Ad3 o Ae2), sin apresurarse: las BLANCAS no tienen ninguna ventaja táctica inmediata, solo una ligera comodidad estructural (las NEGRAS no pueden usar tan fácilmente la casilla e5 para un caballo, por ejemplo).</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">Plan de las negras</h4><p>Utilizar la pareja de alfiles a largo plazo, y buscar el avance central <b>...e5</b> en el momento adecuado, apoyado por el peón de f6.</p></div>
+    </div>
+    <div class="callout advertencia"><span class="ct">🟡 Nota sobre transposiciones</span>
+      Si en vez de 3.Axf6 las BLANCAS juegan <b>3.Cf3</b>, la partida transpone al <b>Ataque Torre</b>. Si juegan <b>3.Cc3</b>, se entra en el terreno del <b>Ataque Richter-Veresov</b>. La jugada 3.Axf6 es la que mantiene la partida dentro del terreno propiamente "Trompowsky".
+    </div>
+    <div class="callout error"><span class="ct">🔴 ERROR TÍPICO</span>Capturar en f6 sin ningún plan claro después, dejando que las NEGRAS desarrollen cómodamente con la pareja de alfiles y sin sufrir ninguna presión real.</div>
+    <div class="quote">"Aceptar los peones doblados no es un error de las negras: es un plan a largo plazo basado en la pareja de alfiles. Las blancas deben jugar con paciencia, no esperando una ventaja inmediata."</div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">🏰 2...e6 — Defensa Clásica (Variante del Centro Grande)</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv g">2. Ag5 e6</span><span class="mv">3. e4 h6</span><span class="mv r">4. Axf6 Dxf6</span></div>
+    <ol class="steps">
+      <li><b>2...e6:</b> las NEGRAS abren la diagonal d8–f6 para su DAMA, de modo que el CABALLO de f6 queda <b>indirectamente defendido</b>: si las BLANCAS capturan en f6, la DAMA NEGRA de d8 puede recapturar.</li>
+      <li><b>3.e4:</b> como las NEGRAS ya no amenazan con nada inmediato en el centro, las BLANCAS aprovechan para construir un <b>centro de peones grande</b>, avanzando el PEÓN de e2 a e4.</li>
+      <li><b>3...h6:</b> las NEGRAS preguntan al ALFIL BLANCO de g5 qué quiere hacer, atacándolo con el PEÓN de h7.</li>
+      <li><b>4.Axf6:</b> las BLANCAS deciden capturar, ya que retirarse (por ejemplo a h4) permitiría a las negras seguir ganando tiempo con ...g5 más adelante.</li>
+      <li><b>4...Dxf6:</b> la DAMA NEGRA de d8 recaptura en f6, como estaba previsto.</li>
+    </ol>
+    <div class="callout ejemplo"><span class="ct">🟢 EJEMPLO — ¿Qué pieza está mejor?</span>
+      Las NEGRAS conservan la pareja de alfiles y no sufren peones doblados, pero su DAMA ha salido pronto a f6, lo cual las BLANCAS pueden intentar aprovechar ganando tiempos con desarrollo natural (Cc3, Cf3, etc.), atacando esa dama.
+    </div>
+    <p><b>¿Qué estructura de peones se ha creado?</b> Un centro blanco amplio con peones en d4 y e4: por eso a esta línea se la llama a veces <b>Variante del Centro Grande</b> ("Big Center Variation").</p>
+    <div class="grid2" style="margin-top:10px">
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">Plan de las blancas</h4><p>Desarrollar rápido las piezas menores, ganar tiempos hostigando a la DAMA NEGRA de f6 si es posible, enrocar y utilizar la ventaja de espacio central.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">Plan de las negras</h4><p>Terminar el desarrollo, buscar el golpe central <b>...c5 o ...d5</b> en el momento oportuno para cuestionar el centro blanco, y aprovechar la pareja de alfiles.</p></div>
+    </div>
+    <div class="callout error"><span class="ct">🔴 ERROR TÍPICO</span>Que las BLANCAS avancen el centro (d4–e4) sin desarrollar piezas detrás: un centro de peones grande sin piezas que lo respalden puede convertirse en un objetivo de ataque para las negras.</div>
+    <div class="quote">"El centro grande es una ventaja de espacio, no una ventaja garantizada: hay que desarrollar piezas para sostenerlo, o las negras lo atacarán con ...c5 y ...d5."</div>
+    <div class="callout advertencia"><span class="ct">🟡 Nota de transposición</span>Si en vez de 3.e4 las BLANCAS juegan <b>3.Cf3</b>, la partida transpone también al <b>Ataque Torre</b>.</div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">⚡ 2...c5 — Golpe central inmediato</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv a">2. Ag5 c5</span><span class="mv r">3. Axf6 gxf6</span></div>
+    <ul class="clean">
+      <li><b>2...c5:</b> las NEGRAS atacan de inmediato el PEÓN BLANCO de d4, sin preocuparse todavía por el CABALLO de f6.</li>
+      <li><b>3.Axf6:</b> las BLANCAS aprovechan para capturar el caballo mientras las negras aún no han resuelto la tensión central.</li>
+      <li><b>3...gxf6:</b> aquí, a diferencia de la línea 2...d5, las NEGRAS recapturan con el <b>PEÓN de g7</b> (no con el de e7), manteniendo la flexibilidad de jugar más adelante ...e5 o ...e6 según convenga, y <b>abriendo la columna g</b> para su TORRE de h8 (si no ha enrocado corto) o para un futuro ataque.</li>
+    </ul>
+    <div class="callout info"><span class="ct">ℹ️ INFO — ¿Qué estructura de peones se ha creado?</span>
+      Las NEGRAS quedan con PEONES DOBLADOS en la columna f (f6 y f7), pero con una poderosa pareja de peones centrales en potencia (d7 y f6 controlando e5), la <b>pareja de alfiles</b>, y la <b>columna g semiabierta</b> para su torre.
+    </div>
+    <div class="grid2">
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">Plan de las blancas — dos caminos típicos</h4>
+        <ul class="clean"><li><span class="mv a">3.d5</span>, avanzando el peón para ganar espacio antes de decidir si capturar en f6, entrando en posiciones de tipo Benoni.</li>
+        <li><span class="mv r">3.Axf6</span>, como se ha mostrado, seguido de un desarrollo sólido (e3, Cd2/Cc3, Cf3, Ad3), apoyándose en la estructura de peones intacta de las blancas.</li></ul>
+      </div>
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">Plan de las negras</h4><p>Utilizar el peón de f6 y la pareja de alfiles; buscar el avance <b>...e5</b> en el momento adecuado; usar la <b>columna g</b> para presionar en el flanco de rey si las BLANCAS enrocan corto.</p></div>
+    </div>
+    <div class="quote">"Con 2...c5, las negras piden batalla inmediata en el centro: la recaptura gxf6 (en vez de exf6) es la clave para mantener flexibilidad y ganar la columna g."</div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">🌙 2...g6 — Fianchetto</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv b">2. Ag5 g6</span></div>
+    <p><b>¿Qué está pasando?</b> Las NEGRAS ignoran por completo la amenaza sobre el CABALLO de f6 y se preparan para fianchettar su ALFIL DE CASILLAS OSCURAS en g7, apuntando a la gran diagonal a1–h8.</p>
+    <p style="margin-top:8px">Como el PEÓN de g7 ya se ha movido a g6, si las BLANCAS capturan con <span class="mv r">3.Axf6</span>, la única recaptura posible es <b>3...exf6</b> (el PEÓN de e7), ya que el peón de g no está disponible para recapturar en f6.</p>
+    <div class="grid2" style="margin-top:10px">
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">Plan de las blancas</h4><p>Capturar en f6 (3.Axf6 exf6) y jugar contra la estructura de peones negra, o simplemente desarrollar con naturalidad si se prefiere no definir la posición tan pronto.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">Plan de las negras</h4><p>Completar el fianchetto (...Ag7), enrocar corto y utilizar el alfil de g7 junto con un futuro ...c5 o ...d5 para presionar el centro blanco.</p></div>
+    </div>
+    <div class="quote">"Cuando las negras ya han jugado ...g6, la recaptura tras Axf6 solo puede ser exf6: recuérdalo para no confundirte con la línea de 2...c5."</div>
+  </div>
+
+  <div class="card" style="border-color:rgba(239,68,68,.5)">
+    <h3 class="sub">💣 2...c6 — Línea rara (¡y una trampa histórica!)</h3>
+    <div class="moveline"><span class="mv">1. d4 Cf6</span><span class="mv">2. Ag5 c6</span></div>
+    <p><b>¿Qué está pasando?</b> Una jugada poco común: las NEGRAS preparan <b>...Db6</b>, presionando indirectamente el PEÓN de b2 y obligando a las BLANCAS a estar atentas.</p>
+    <div class="callout ejemplo"><span class="ct">🟢 EJEMPLO — Plan de las blancas (correcto)</span>
+      Las continuaciones temáticas son <span class="mv r">3.Axf6</span> o <span class="mv g">3.Cf3</span>, desarrollando con normalidad y sin miedo a ...Db6 (el PEÓN de b2 se puede defender con naturalidad, por ejemplo con Cc3 o Db3 según la posición).
+    </div>
+    <div class="callout error"><span class="ct">🔴 ¡ATENCIÓN! El error que NUNCA debes cometer aquí</span>
+      <div class="moveline" style="border-color:rgba(239,68,68,.5)"><span class="mv r">3. e3??</span><span class="mv r">Da5+</span></div>
+      Esta es, según la documentación histórica del ajedrez, <b>una de las derrotas más rápidas jamás sufridas por un maestro en partida seria</b>: la partida <b>Đorđević – Kovačević, Bela Crkva 1984</b>, terminó en solo tres jugadas por parte de las blancas.
+    </div>
+    <h4 class="sub2">¿Dónde está la trampa?</h4>
+    <ol class="steps">
+      <li><b>3.e3??:</b> el PEÓN BLANCO de e2 avanza a e3, un movimiento de desarrollo aparentemente inofensivo.</li>
+      <li><b>3...Da5+:</b> la DAMA NEGRA salta de d8 a a5, dando JAQUE al REY BLANCO de e1 por la diagonal a5–e1 (que queda completamente despejada).</li>
+      <li>El problema es que, para tapar el jaque, las BLANCAS solo disponen de movimientos que <b>no defienden al mismo tiempo al ALFIL BLANCO de g5</b> (por ejemplo, 4.c3 o 4.Cc3 o 4.Ad2). Sea cual sea el bloqueo elegido, tras él las NEGRAS juegan simplemente <span class="mv r">4...Dxg5</span>, ganando el alfil sin compensación alguna.</li>
+    </ol>
+    <p>Por esta razón, en la partida real las BLANCAS <b>se rindieron directamente</b>, sin necesidad de que se jugaran más movimientos: la pérdida del alfil sin ninguna compensación era inevitable.</p>
+    <div class="grid2" style="margin-top:10px">
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">¿Qué debe hacer el jugador de blancas?</h4><p>Jugar <b>3.Axf6 o 3.Cf3</b>, nunca 3.e3 en esta posición concreta (mientras el ALFIL siga en g5 sin estar defendido y la diagonal a5–e1 esté abierta).</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">¿Qué debe hacer el jugador de negras?</h4><p>Estar siempre atento a la posibilidad de un jaque en la diagonal a5–e1 cuando el rey blanco todavía está en e1 y el alfil blanco de g5 carece de defensa: es una <b>combinación recurrente en varias aperturas de dama</b>.</p></div>
+    </div>
+    <div class="quote">"Antes de jugar una jugada de desarrollo 'automática', pregúntate siempre: ¿estoy dejando alguna pieza sin defensa en una diagonal, fila o columna abierta? Un solo descuido puede costar una pieza entera, incluso a un maestro."</div>
+  </div>
+</section>
+
+<!-- ================= TÁCTICA Y ERRORES ================= -->
+<section class="page" id="tactica">
+  <h2 class="sec"><span class="ico">⚡</span> 10. Trampas y tácticas (resumen)</h2>
+  <p class="sec-sub">La mecánica táctica que aparece una y otra vez en el Trompowsky · Errores típicos de blancas y negras</p>
+
+  <div class="card hl">
+    <h3 class="sub">🧲 La mecánica táctica general</h3>
+    <p style="color:var(--muted)">Ya hemos visto la trampa más famosa asociada al Trompowsky (2...c6 3.e3?? Da5+). Repasemos la mecánica táctica general que aparece una y otra vez en esta apertura:</p>
+    <ol class="steps">
+      <li><b>La amenaza es la pieza:</b> cuál es la pieza que ataca (la DAMA NEGRA en a5, o en b6, o en b2).</li>
+      <li><b>Qué pieza está atacando:</b> identifica el color y la casilla exacta.</li>
+      <li><b>Qué pieza está defendiendo (o no):</b> en el Trompowsky, el PEÓN de b2 y el ALFIL de g5 son los dos elementos que con más frecuencia quedan sin defensa tras el movimiento del alfil de c1.</li>
+      <li><b>Qué ocurre si el rival acepta la captura:</b> por ejemplo, gana un peón o una pieza.</li>
+      <li><b>Qué ocurre si el rival rechaza (o intenta evitarla):</b> normalmente pierde tiempos o cede otra ventaja.</li>
+      <li><b>Cuál es la secuencia exacta:</b> siempre indicada con notación algebraica y explicación verbal.</li>
+      <li><b>Por qué funciona:</b> casi siempre, por una diagonal, columna o fila que ha quedado abierta tras un movimiento de peón.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">⚪ 11. Errores típicos de las blancas</h3>
+    <div class="acc">
+      <button class="acc-head"> Principiantes — ignorar la amenaza sobre el alfil <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <p><b>Posición:</b> después de 1.d4 Cf6 2.Ag5 Ce4.</p>
+        <p><b>Movimiento incorrecto:</b> ignorar la amenaza sobre el alfil y jugar una jugada de desarrollo cualquiera (por ejemplo, <span class="mv r">3.Cd2??</span>).</p>
+        <p><b>Por qué es incorrecto:</b> las NEGRAS simplemente capturan 3...Cxg5, ganando una pieza limpia.</p>
+        <p><b>Alternativa:</b> <span class="mv g">3.Af4</span> o <span class="mv">3.Ah4</span> o <span class="mv r">3.h4</span>.</p>
+        <div class="callout info"><span class="ct">💡 Idea que debe aprenderse</span>Cuando una pieza propia está atacada sin compensación, resolver esa amenaza es prioritario sobre cualquier plan general.</div>
+      </div></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">🎓 Jugadores intermedios — descuidar el peón b2 <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <p><b>Posición:</b> después de 1.d4 Cf6 2.Ag5 Ce4 3.Af4 c5 4.f3 Da5+ 5.c3 Cf6 6.d5 Db6.</p>
+        <p><b>Movimiento incorrecto:</b> ignorar la presión sobre el PEÓN de b2 pensando que "ya se recuperará con actividad", sin jugar 7.Ac1.</p>
+        <p><b>Por qué es incorrecto:</b> si las BLANCAS no defienden a tiempo, pueden perder el peón sin ninguna compensación real, a diferencia de la línea de gambito consciente (4.d5 Db6 5.Cd2, etc.), donde el sacrificio es intencionado y va acompañado de un plan claro (centro grande con e4).</p>
+        <p><b>Alternativa:</b> <span class="mv g">7.Ac1</span>, defendiendo con naturalidad.</p>
+        <div class="callout info"><span class="ct">💡 Idea que debe aprenderse</span>Hay una diferencia enorme entre "sacrificar un peón con un plan" y "perder un peón por descuido".</div>
+      </div></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">📚 Jugadores que memorizan sin comprender — el gambito mal jugado <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <p><b>Posición:</b> cualquier posición tras 3.Af4 d5 4.f3 Cf6 5.e4.</p>
+        <p><b>Movimiento incorrecto:</b> jugar 5.e4 (el gambito) sin saber qué hacer después si las negras aceptan con 5...dxe4, por ejemplo intentando recuperar el peón inmediatamente en vez de desarrollar.</p>
+        <p><b>Por qué es incorrecto:</b> el valor de la línea está en la ventaja de desarrollo (<span class="mv g">6.Cc3</span> antes de recapturar), no en recuperar el material a toda costa.</p>
+        <p><b>Alternativa:</b> 6.Cc3, desarrollando primero.</p>
+        <div class="callout info"><span class="ct">💡 Idea que debe aprenderse</span>Memorizar una jugada sin entender su idea lleva a errores en cuanto la partida se aparta un poco de la línea conocida.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">⚫ 12. Errores típicos de las negras</h3>
+    <div class="acc">
+      <button class="acc-head">🐣 Principiantes — ignorar la amenaza sobre el caballo <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <p><b>Posición:</b> después de 1.d4 Cf6 2.Ag5.</p>
+        <p><b>Movimiento incorrecto:</b> ignorar por completo la amenaza sobre el caballo y jugar, por ejemplo, <span class="mv a">2...d6?!</span> sin ningún plan.</p>
+        <p><b>Por qué es incorrecto:</b> no es ilegal ni pierde material inmediatamente, pero regala a las blancas la iniciativa de decidir libremente cuándo capturar en f6 sin que las negras hayan ganado nada a cambio.</p>
+        <p><b>Alternativa:</b> cualquiera de las respuestas principales estudiadas (2...Ce4, 2...d5, 2...e6, 2...c5, 2...g6).</p>
+        <div class="callout info"><span class="ct">💡 Idea que debe aprenderse</span>Cada jugada en la apertura debe responder a la pregunta "¿qué amenaza o qué plan estoy resolviendo con esto?".</div>
+      </div></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">🎓 Jugadores intermedios — insistir en ...Db6 <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <p><b>Posición:</b> después de 1.d4 Cf6 2.Ag5 c6 3.Axf6 (o 3.Cf3).</p>
+        <p><b>Movimiento incorrecto:</b> insistir en el plan de ...Db6 sin haber comprobado si las blancas ya defendieron b2 con naturalidad.</p>
+        <p><b>Por qué es incorrecto:</b> si el peón ya está defendido, la dama negra solo pierde tiempos en b6 sin ganar nada.</p>
+        <p><b>Alternativa:</b> desarrollar con normalidad y reservar ...Db6 para el momento en que realmente presione una debilidad real.</p>
+        <div class="callout info"><span class="ct">💡 Idea que debe aprenderse</span>Una amenaza solo vale la pena si el rival no puede neutralizarla fácilmente.</div>
+      </div></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">📚 Jugadores que memorizan sin comprender — la captura ilegal imaginaria <span class="arr">▶</span></button>
+      <div class="acc-body"><div class="acc-inner">
+        <p><b>Posición:</b> en la línea principal 3.Af4 c5 4.f3 Da5+ 5.c3.</p>
+        <p><b>Movimiento incorrecto:</b> jugar <span class="mv r">5...Cxc3??</span> pensando que es "ganar un peón más", sin comprobar que el CABALLO de e4 no puede capturar en c3 de ninguna manera legal (no es una jugada legal de caballo desde e4), o, si se confunde la pieza, capturar con la dama sin comprobar las consecuencias.</p>
+        <p><b>Por qué es incorrecto:</b> confundir qué pieza puede capturar qué casilla es un error de cálculo básico que puede llevar a jugar una jugada ilegal en la mente del alumno (y a perder material real sobre el tablero si se juega).</p>
+        <p><b>Alternativa:</b> <span class="mv g">5...Cf6</span>, la retirada correcta y forzada del caballo.</p>
+        <div class="callout info"><span class="ct">💡 Idea que debe aprenderse</span>Antes de jugar cualquier captura, comprueba SIEMPRE que el movimiento es legal para esa pieza concreta desde esa casilla concreta.</div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ESTRATEGIA ================= -->
+<section class="page" id="estrategia">
+  <h2 class="sec"><span class="ico">🧠</span> 13. Estrategia en la Trompowsky</h2>
+  <p class="sec-sub">Conceptos estratégicos · Planes de medio juego · Las diez preguntas prácticas</p>
+
+  <div class="card">
+    <h3 class="sub">🧱 Conceptos estratégicos más importantes</h3>
+    <p style="color:var(--muted);margin-bottom:12px">Siempre conectados con las posiciones que ya hemos visto:</p>
+    <div class="grid2">
+      <div class="card" style="margin:0"><h4 class="sub2">🚀 Desarrollo</h4><p>En las líneas de gambito (3.Af4 d5 4.f3 Cf6 5.e4), el desarrollo rápido es el argumento principal de las blancas para justificar el peón sacrificado.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🌍 Espacio</h4><p>El avance d4–d5 (tras 2...Ce4 3.Af4 c5) da a las blancas una ventaja de espacio de tipo Benoni.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🧱 Estructura de peones</h4><p>Los peones doblados de las negras (tras Axf6) son, según la línea, una debilidad a largo plazo o una fuente de control central (peón en f6 controlando e5).</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🎭 Pareja de alfiles</h4><p>Casi siempre queda en manos de las negras cuando aceptan Axf6; es su compensación estructural.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🐴 Caballo contra alfil</h4><p>En las posiciones con peones doblados, un caballo blanco bien colocado (por ejemplo, en e5 o en d4 según la estructura) puede ser tan fuerte como la pareja de alfiles negra si las negras no logran abrir la posición.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🕳️ Casillas débiles</h4><p>La casilla <b>e5</b> suele ser clave: quien la controle mejor, sea con un caballo (blancas) o con el propio peón de f6 (negras), llevará ventaja posicional.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🛤️ Columnas abiertas</h4><p>La columna g (tras 2...c5 3.Axf6 gxf6) y la columna h (en la Variante Raptor) son los ejemplos más claros en este curso.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">📐 Diagonales</h4><p>La diagonal <b>a5–e1</b> (la trampa de 2...c6) y la diagonal <b>b8–h2</b> (donde vive el alfil blanco tras Af4) son las más importantes a vigilar.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">💥 Rupturas</h4><p>...e5 para las negras (cuando tienen el peón en f6) y e4 o c4 para las blancas (para ampliar el centro) son las rupturas típicas.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🔥 Iniciativa</h4><p>En las líneas de gambito, la iniciativa (no el material) es el objetivo principal de las blancas.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">⏱️ Tiempos</h4><p>Cada movimiento repetido de una misma pieza (el alfil blanco yendo y viniendo, el caballo negro saltando varias veces) cuesta tiempo: hay que asegurarse de que ese tiempo se compensa con alguna ganancia real (estructura, espacio, o un peón).</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🛡️ Seguridad del rey</h4><p>Jugar f3 (blancas) o dar jaques tempranos con la dama (negras) puede debilitar las casillas alrededor del propio rey; hay que sopesarlo.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🎯 Centro</h4><p>El Trompowsky, en varias de sus líneas, termina siendo una batalla por quién controla mejor d4/d5 y e4/e5.</p></div>
+      <div class="card" style="margin:0"><h4 class="sub2">🔄 Cambios de piezas</h4><p>Cambiar el alfil de casillas oscuras por el caballo de f6 no es "bueno" ni "malo" en abstracto: depende de qué estructura resulte y de qué plan tenga cada bando después.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">🗺️ 14. Planes de medio juego — "¿Qué hago después de terminar el desarrollo?"</h3>
+    <p style="color:var(--muted)">Depende de la estructura resultante:</p>
+    <div class="tabbar">
+      <button class="tabbtn active" data-pane="paneA">🧱 Estructura tras Axf6 (exf6 / gxf6)</button>
+      <button class="tabbtn" data-pane="paneB">🏜️ Estructura tipo Benoni</button>
+    </div>
+    <div class="pane active" id="paneA">
+      <p style="color:var(--dim);font-size:13.5px;margin-bottom:10px">(2...d5 → 3.Axf6 exf6) o (2...c5 → 3.Axf6 gxf6)</p>
+      <ul class="clean">
+        <li><b>Dónde van las piezas (blancas):</b> caballo a d2 o c3, otro caballo a f3, alfil de casillas claras a d3 o e2, enroque corto normalmente.</li>
+        <li><b>Qué pieza cambiar:</b> las blancas, si pueden, buscan cambiar piezas menores para acercarse a un final donde la estructura de peones sanos (blancos) pese más que la pareja de alfiles negra.</li>
+        <li><b>Qué pieza conservar:</b> las negras deben evitar cambiar sus dos alfiles a la ligera: son su principal activo a largo plazo.</li>
+        <li><b>Qué ruptura buscar:</b> las negras, ...e5 en el momento adecuado; las blancas, jugar contra las debilidades de peones dobladas evitando que las negras consigan ese ...e5 cómodamente.</li>
+        <li><b>Dónde colocar las torres:</b> columnas centrales o semiabiertas (d y e, según la estructura).</li>
+        <li><b>Dónde colocar la dama:</b> en una casilla activa pero segura, normalmente d2 o e2 para las blancas.</li>
+        <li><b>Qué hacer con el rey:</b> enroque corto en la mayoría de las líneas, salvo que la posición del rival lo desaconseje.</li>
+        <li><b>Qué debilidad atacar:</b> los peones doblados de las negras, si no consiguen activarlos con ...e5.</li>
+        <li><b>Qué plan tiene el rival:</b> las negras querrán demostrar que la pareja de alfiles vale más que la estructura de peones sana blanca.</li>
+      </ul>
+    </div>
+    <div class="pane" id="paneB">
+      <p style="color:var(--dim);font-size:13.5px;margin-bottom:10px">(2...Ce4 3.Af4 c5 4.f3 / 4.d5)</p>
+      <ul class="clean">
+        <li><b>Dónde van las piezas (blancas):</b> caballo de b1 a d2, caballo de g1 a f3 o e2, alfil de f1 a d3 o e2, rey a enrocar corto (o incluso f2 en algunas líneas concretas si conviene defender e3).</li>
+        <li><b>Qué pieza cambiar:</b> en estructuras Benoni, cambiar el alfil de casillas claras blanco por un caballo negro bien situado suele ser positivo para las negras; las blancas, en cambio, prefieren conservar piezas mientras mantienen el peón avanzado en d5.</li>
+        <li><b>Qué ruptura buscar:</b> las blancas, e4–e5 en el momento oportuno; las negras, ...b5 (si la dama no está estorbando en b6) o ...f5.</li>
+        <li><b>Dónde colocar las torres:</b> columna e para las blancas (apoyando el avance e4–e5); columna c para las negras (presionando el peón blanco que quedó atrás).</li>
+        <li><b>Qué debilidad atacar:</b> la casilla d6 y la columna c son objetivos típicos para las blancas en estructuras Benoni; el peón d5 avanzado, para las negras, si logran minarlo con ...e6.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card hl">
+    <h3 class="sub">❓ 15. "¿Y ahora qué hago?" — Preguntas prácticas</h3>
+    <p style="color:var(--muted)">Después de llegar a cualquier posición típica de Trompowsky, detente y pregúntate:</p>
+    <ol class="steps">
+      <li>¿Mi rey está seguro?</li>
+      <li>¿Qué pieza negra está mal colocada?</li>
+      <li>¿Qué pieza blanca está mal colocada?</li>
+      <li>¿Quién controla el centro?</li>
+      <li>¿Qué amenaza tiene mi rival?</li>
+      <li>¿Qué ruptura de peones tengo disponible?</li>
+      <li>¿Puedo mejorar mi peor pieza?</li>
+      <li>¿Debo cambiar piezas o evitarlo?</li>
+      <li>¿Dónde están las casillas débiles del rival?</li>
+      <li>¿Cuál es mi próximo plan, en una frase?</li>
+    </ol>
+    <div class="callout info"><span class="ct">ℹ️ INFO</span>Fíjate en algo importante: estas diez preguntas sirven para <b>cualquier posición de Trompowsky</b> que hayas visto en este curso, no solo para una variante concreta. Ese es el objetivo: <b>pensar por ideas, no memorizar</b>.</div>
+  </div>
+</section>
+
+<!-- ================= PARTIDAS ================= -->
+<section class="page" id="partidas">
+  <h2 class="sec"><span class="ico">🏆</span> 16. Partidas modelo</h2>
+  <p class="sec-sub">Únicamente partidas y datos que se pueden verificar con seguridad</p>
+
+  <div class="card hl">
+    <h3 class="sub"> Partida modelo 1: Đorđević – Kovačević, Bela Crkva 1984</h3>
+    <div class="tblwrap"><table class="tbl" style="min-width:0">
+      <tbody>
+        <tr><td><b>Jugadores</b></td><td>Z. Đorđević (blancas) contra M. Kovačević (negras).</td></tr>
+        <tr><td><b>Evento</b></td><td>Torneo de Bela Crkva, 1984.</td></tr>
+        <tr><td><b>Apertura</b></td><td>Ataque Trompowsky, línea 2...c6.</td></tr>
+        <tr><td><b>Secuencia completa</b></td><td><span class="mv">1.d4 Cf6</span> <span class="mv">2.Ag5 c6</span> <span class="mv r">3.e3??</span> <span class="mv r">Da5+</span>, y las blancas se rindieron.</td></tr>
+        <tr><td><b>Posición crítica</b></td><td>Justo después de 3...Da5+, cuando las blancas comprueban que ningún bloqueo del jaque salva al mismo tiempo al alfil de g5.</td></tr>
+        <tr><td><b>Explicación</b></td><td>Ya la hemos analizado en detalle en el apartado de la Variante 2...c6.</td></tr>
+        <tr><td><b>Momento estratégico</b></td><td>Ninguno; es puramente táctico.</td></tr>
+        <tr><td><b>Momento táctico</b></td><td>El jaque en la diagonal a5–e1 combinado con el ataque sobre el alfil g5 sin defensa.</td></tr>
+        <tr><td><b>Lección principal</b></td><td>Esta partida está considerada, según el libro <i>The Quickest Chess Victories of All Time</i> de Graham Burgess, como una de las derrotas más rápidas de la historia en partida seria de maestros. Es el ejemplo perfecto de que, en ajedrez, ninguna jugada de desarrollo es automática: siempre hay que comprobar las consecuencias tácticas concretas.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">📜 Nota sobre otras partidas históricas</h3>
+    <p>El Trompowsky ha sido empleado por jugadores de primer nivel mundial, entre ellos el gran maestro inglés <b>Julian Hodgson</b> (uno de sus practicantes más famosos e influyentes desde los años 80 y 90), así como, en épocas más recientes, jugadores como <b>Antoaneta Stefanova</b> o <b>Arjun Erigaisi</b>. El propio <b>Magnus Carlsen</b> recurrió al Trompowsky en la primera partida del Campeonato del Mundo de 2016 contra Sergey Karjakin.</p>
+    <div class="callout info"><span class="ct">ℹ️ INFO</span>
+      No se incluye aquí la secuencia completa de movimientos de esas partidas porque este curso prioriza la <b>exactitud absoluta sobre la cantidad</b>: se recomienda al alumno consultar una base de datos de partidas (por ejemplo, buscando "Hodgson Trompowsky" o "Carlsen Karjakin 2016 game 1") para estudiar esos ejemplos completos por su cuenta, una vez comprendidas las ideas de este curso.
+    </div>
+  </div>
+</section>
+
+<!-- ================= EJERCICIOS ================= -->
+<section class="page" id="ejercicios">
+  <h2 class="sec"><span class="ico">✏️</span> 17. Ejercicios progresivos</h2>
+  <p class="sec-sub">Seis niveles: reconocimiento · desarrollo · plan · táctica · estrategia · partida</p>
+
+  <div class="qa"><p class="q"><span class="qn">NIVEL 1 · RECONOCIMIENTO</span><br>JUEGAN BLANCAS. Después de 1.d4 Cf6, ¿cuál es la jugada característica del Ataque Trompowsky?</p>
+    <p style="color:var(--dim);font-size:13.5px">Tu turno — ¿Qué jugarías?</p>
+    <button class="btn small reveal-btn" data-t="sol1">🔓 Ver solución</button>
+    <div class="hidden-box" id="sol1"><b>Solución:</b> <span class="mv">2.Ag5</span>, desarrollando el ALFIL BLANCO de c1 a g5 y atacando al CABALLO NEGRO de f6.</div>
+  </div>
+
+  <div class="qa"><p class="q"><span class="qn">NIVEL 2 · DESARROLLO</span><br>JUEGAN BLANCAS. Posición después de 1.d4 Cf6 2.Ag5 Ce4. ¿Dónde debe desarrollarse el ALFIL BLANCO de g5 si las blancas quieren la continuación más sólida y más jugada de todas?</p>
+    <p style="color:var(--dim);font-size:13.5px">Tu turno — ¿Qué jugarías?</p>
+    <button class="btn small reveal-btn" data-t="sol2">🔓 Ver solución</button>
+    <div class="hidden-box" id="sol2"><b>Solución:</b> <span class="mv g">3.Af4</span>. Es la retirada más flexible: mantiene el alfil activo en la diagonal c1–h6 y evita comprometer la estructura de peones con h4.</div>
+  </div>
+
+  <div class="qa"><p class="q"><span class="qn">NIVEL 3 · PLAN</span><br>JUEGAN BLANCAS. Posición después de 1.d4 Cf6 2.Ag5 Ce4 3.Af4 c5 4.f3 Da5+ 5.c3 Cf6 6.d5 Db6. ¿Cuál es el plan de las blancas para defender el peón b2 sin crear nuevas debilidades?</p>
+    <p style="color:var(--dim);font-size:13.5px">Tu turno — ¿Qué jugarías?</p>
+    <button class="btn small reveal-btn" data-t="sol3">🔓 Ver solución</button>
+    <div class="hidden-box" id="sol3"><b>Solución:</b> <span class="mv g">7.Ac1</span>, retirando el alfil a su casilla original para defender el peón b2 directamente.</div>
+  </div>
+
+  <div class="qa"><p class="q"><span class="qn">NIVEL 4 · TÁCTICA</span><br>JUEGAN NEGRAS. Posición después de 1.d4 Cf6 2.Ag5 c6 3.e3 Da5+ (las blancas deben tapar el jaque, por ejemplo con 4.c3, 4.Cc3 o 4.Ad2; en cualquier caso, ninguna de estas jugadas defiende el alfil de g5). Encuentra la combinación que gana material.</p>
+    <p style="color:var(--dim);font-size:13.5px">Tu turno — ¿Qué jugarías, suponiendo que las blancas ya han tapado el jaque de la forma que sea?</p>
+    <button class="btn small reveal-btn" data-t="sol4">🔓 Ver solución</button>
+    <div class="hidden-box" id="sol4"><b>Solución:</b> <span class="mv r">4...Dxg5</span>. La DAMA NEGRA de a5 captura el ALFIL BLANCO de g5, que ha quedado sin ninguna pieza que lo defienda.</div>
+  </div>
+
+  <div class="qa"><p class="q"><span class="qn">NIVEL 5 · ESTRATEGIA</span><br>JUEGAN NEGRAS. Posición después de 1.d4 Cf6 2.Ag5 d5 3.Axf6 exf6. Las negras tienen peones doblados en la columna f pero la pareja de alfiles. ¿Qué avance de peón central deben preparar a medio plazo para justificar su estructura?</p>
+    <p style="color:var(--dim);font-size:13.5px">Tu turno — ¿Qué plan seguirías?</p>
+    <button class="btn small reveal-btn" data-t="sol5">🔓 Ver solución</button>
+    <div class="hidden-box" id="sol5"><b>Solución:</b> Preparar el avance <span class="mv g">...e5</span> (apoyado por el peón de f6, que controla esa casilla), abriendo el juego para que la pareja de alfiles negra cobre toda su fuerza.</div>
+  </div>
+
+  <div class="qa"><p class="q"><span class="qn">NIVEL 6 · PARTIDA</span><br>JUEGAN BLANCAS. Posición después de 1.d4 Cf6 2.Ag5 Ce4 3.Af4 d5 4.f3 Cf6 5.e4 dxe4. Encuentra el mejor plan, no solo la mejor jugada suelta.</p>
+    <p style="color:var(--dim);font-size:13.5px">Tu turno — ¿Qué jugarías y por qué?</p>
+    <button class="btn small reveal-btn" data-t="sol6">🔓 Ver solución</button>
+    <div class="hidden-box" id="sol6"><b>Solución:</b> <span class="mv g">6.Cc3</span>, desarrollando una pieza más antes de preocuparse por recuperar el peón. El plan completo es: desarrollar todas las piezas menores primero (Cc3, luego Cxf3 recapturando cuando las negras tomen en f3, o similar), y solo después pensar en la seguridad del rey y la ventaja de desarrollo acumulada, en vez de perseguir el peón de inmediato.</div>
+  </div>
+</section>
+
+<!-- ================= MINI-TEST ================= -->
+<section class="page" id="test">
+  <h2 class="sec"><span class="ico">📝</span> 18. Mini-test final (15 preguntas)</h2>
+  <p class="sec-sub">Pulsa "Mostrar respuesta" en cada pregunta · <span id="testCount" style="color:var(--green);font-weight:700">0/15 reveladas</span></p>
+  <div id="testList"></div>
+</section>
+
+<!-- ================= REPERTORIO ================= -->
+<section class="page" id="repertorio">
+  <h2 class="sec"><span class="ico">🎯</span> 19. Repertorio práctico para blancas</h2>
+  <p class="sec-sub">Un pequeño repertorio, con la idea explicada en cada caso (no solo la jugada)</p>
+
+  <div class="grid2">
+    <div class="card" style="margin:0"><h4 class="sub2">Si 2...Ce4 → <span class="mv g">3.Af4</span></h4><p><b>Idea:</b> es la retirada más flexible y la que menos compromisos estructurales exige; permite aprender el resto de la apertura sin memorizar líneas forzadas de gambito.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Si 3...c5 (tras 3.Af4) → <span class="mv">4.f3</span></h4><p><b>Idea:</b> expulsar de inmediato al caballo de e4, aceptando el jaque 4...Da5+ 5.c3, para llegar a una estructura de tipo Benoni con espacio garantizado tras 6.d5.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Si 3...d5 (tras 3.Af4) → <span class="mv g">4.e3</span> o <span class="mv r">4.f3</span></h4><p><b>Idea:</b> 4.e3 (opción sólida) o 4.f3 (opción de gambito, si te gusta jugar con iniciativa a cambio de un peón). Ambas son razonables; elige según tu estilo.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Si 2...d5 → <span class="mv r">3.Axf6</span></h4><p><b>Idea:</b> aceptar dar la pareja de alfiles a cambio de doblar los peones negros, y jugar con paciencia posicional.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Si 2...e6 → <span class="mv">3.e4</span></h4><p><b>Idea:</b> construir el centro grande, ya que las negras no amenazan nada inmediato en el centro.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Si 2...c5 → <span class="mv r">3.Axf6</span></h4><p><b>Idea:</b> igual que en la línea de 2...d5, cambiar y jugar contra la estructura, sabiendo que aquí las negras recapturarán con gxf6.</p></div>
+    <div class="card" style="margin:0;border-color:rgba(239,68,68,.5)"><h4 class="sub2" style="color:var(--red)">Si 2...c6 → 3.Axf6 o 3.Cf3, NUNCA 3.e3</h4><p><b>Idea:</b> evitar a toda costa la trampa histórica ya estudiada mientras el alfil de g5 no esté defendido.</p></div>
+  </div>
+
+  <div class="card hl" style="margin-top:16px">
+    <h3 class="sub">🧠 20. Cómo aprender la Trompowsky sin memorizar 50 jugadas</h3>
+    <p style="color:var(--muted);margin-bottom:10px">La clave de este curso no es que memorices las variantes de memoria, sino que entiendas los patrones que se repiten:</p>
+    <ul class="clean">
+      <li><b>Ideas:</b> decidir cuándo cambiar el alfil por el caballo; vigilar el peón b2; buscar ...e5 (negras) o e4/d5 (blancas) como ruptura típica.</li>
+      <li><b>Patrones:</b> el jaque en la diagonal a5–e1 cuando el alfil de g5 no está defendido; la recaptura gxf6 frente a exf6 según la estructura; el recurso Ac1 para defender b2.</li>
+      <li><b>Posiciones:</b> aprende de memoria solo dos o tres posiciones clave (la de después de 3.Af4, la de después de 6.d5, la de la trampa de 2...c6), no la partida entera.</li>
+      <li><b>Planes:</b> recuerda un plan por estructura, no una lista de jugadas.</li>
+      <li><b>Errores:</b> repasa la lista de errores típicos de este curso de vez en cuando.</li>
+      <li><b>Ejercicios:</b> repite los seis niveles de ejercicios hasta que las respuestas te salgan con naturalidad.</li>
+      <li><b>Repetición:</b> vuelve a este documento después de jugar tus primeras partidas reales con el Trompowsky; las dudas concretas que te surjan en la práctica fijarán mejor las ideas que cualquier repaso teórico aislado.</li>
+    </ul>
+    <h4 class="sub2">📎 Chuleta mental (para llevar a la partida)</h4>
+    <pre class="pre">1.d4 Cf6 2.Ag5
+   Ce4 → 3.Af4
+      c5 → 4.f3 Da5+ 5.c3 Cf6 6.d5 (vigila b2: 7.Ac1 si hace falta)
+      d5 → 4.e3 (sólido) o 4.f3 (gambito con 5.e4)
+   d5  → 3.Axf6 exf6, desarrollo tranquilo
+   e6  → 3.e4 (centro grande), luego h6 4.Axf6 Dxf6
+   c5  → 3.Axf6 gxf6, desarrollo tranquilo
+   g6  → 3.Axf6 exf6
+   c6  → 3.Axf6 o 3.Cf3 (¡JAMÁS 3.e3!)</pre>
+  </div>
+</section>
+
+<!-- ================= RESUMEN ================= -->
+<section class="page" id="resumen">
+  <h2 class="sec"><span class="ico">📄</span> 21. La Trompowsky en 5 minutos</h2>
+  <p class="sec-sub">Resumen de una página · Checklist del jugador · Resumen final del curso</p>
+
+  <div class="card hl">
+    <ol class="steps">
+      <li><b>Movimiento inicial:</b> <span class="mv">1.d4 Cf6</span> <span class="mv">2.Ag5</span>.</li>
+      <li><b>Idea principal:</b> atacar de inmediato al CABALLO NEGRO de f6, amenazando con doblarle los peones (Axf6), y evitar así la inmensa teoría de las defensas indias.</li>
+      <li><b>Objetivos:</b> ganar la pareja de peones sanos a cambio de ceder (a veces) la pareja de alfiles; construir centros de peones amplios; jugar posiciones con planes claros.</li>
+      <li><b>Respuestas negras principales:</b> 2...Ce4 (la más jugada; responde con 3.Af4) · 2...d5 (acepta Axf6 exf6) · 2...e6 (Defensa Clásica, evita peones doblados; responde con 3.e4) · 2...c5 (golpe central, Axf6 gxf6) · 2...g6 (fianchetto, Axf6 exf6) · 2...c6 (rara; ¡cuidado con 3.e3??!).</li>
+      <li><b>Planes:</b> con peones doblados negros → paciencia posicional, buscar cambios de piezas, presionar la estructura. Con estructura Benoni (tras ...c5 y d5) → espacio para las blancas, ruptura ...b5/...f5 para las negras, ruptura e4–e5 para las blancas. Con centro grande (tras 2...e6 3.e4) → desarrollar rápido para sostener el centro.</li>
+      <li><b>Errores a evitar:</b> no mover el alfil atacado (perder la pieza) · 3.e3?? tras 2...c6, con el alfil de g5 indefenso · descuidar la defensa del peón b2 sin un plan de compensación · perseguir la recuperación de un peón sacrificado en vez de desarrollar.</li>
+      <li><b>Conceptos tácticos:</b> el jaque en la diagonal a5–e1; la vulnerabilidad del peón b2 tras la salida del alfil de c1; la apertura de la columna h en la Variante Raptor.</li>
+      <li><b>Conceptos estratégicos:</b> pareja de alfiles contra estructura sana; control de la casilla e5; columnas g y h semiabiertas; el momento correcto para el cambio Axf6.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3 class="sub">✅ 23. Checklist del jugador Trompowsky</h3>
+    <p style="color:var(--muted)">Antes de sentarte a jugar una partida con esta apertura, repasa: <b id="chkTxt" style="color:var(--green)">0/8 completado</b></p>
+    <div class="chkbar"><div id="chkBar"></div></div>
+    <ul class="chklist" id="chkList">
+      <li><input type="checkbox"><span>Sé cuál es mi retirada preferida de alfil tras 2...Ce4 (Af4, Ah4 o h4) y por qué.</span></li>
+      <li><input type="checkbox"><span>Sé qué hacer contra 2...d5, 2...e6, 2...c5, 2...g6 y 2...c6.</span></li>
+      <li><input type="checkbox"><span>Recuerdo que 3.e3 es un error grave tras 2...c6 mientras el alfil de g5 no esté defendido.</span></li>
+      <li><input type="checkbox"><span>Sé cuándo defender el peón b2 con Ac1 y cuándo estoy dispuesto a sacrificarlo conscientemente por desarrollo (con Cd2/Cxd2/Axd2 y e4).</span></li>
+      <li><input type="checkbox"><span>Sé qué recaptura corresponde tras Axf6 según la estructura (exf6 o gxf6).</span></li>
+      <li><input type="checkbox"><span>Tengo claro mi plan de medio juego según la estructura resultante (peones doblados, Benoni, o centro grande).</span></li>
+      <li><input type="checkbox"><span>No voy a perseguir un peón sacrificado a costa de mi desarrollo.</span></li>
+      <li><input type="checkbox"><span>Voy a comprobar SIEMPRE la legalidad y las consecuencias de cada captura antes de jugarla, tanto la mía como la de mi rival.</span></li>
+    </ul>
+  </div>
+
+  <div class="card hl">
+    <h3 class="sub">🏁 24. Resumen final</h3>
+    <p>El Ataque Trompowsky (<span class="mv">1.d4 Cf6</span> <span class="mv">2.Ag5</span>) es una apertura de peón de dama que permite a las BLANCAS <b>decidir el tipo de posición desde la segunda jugada</b>, evitando la teoría más densa de las defensas indias. Su idea central —atacar al CABALLO NEGRO de f6 y amenazar con doblar los peones negros— genera un abanico de estructuras muy distintas entre sí: <b>peones doblados con pareja de alfiles, estructuras de tipo Benoni, y centros de peones amplios</b>.</p>
+    <p style="margin-top:10px">No es una apertura de memorización pura: <b>es una apertura de planes</b>. Si has entendido, al terminar este curso, por qué se juega Af4 y no otra retirada, qué hacer tras cada una de las respuestas principales de las negras, cuándo defender el peón b2 y cuándo sacrificarlo con un propósito, y cómo evitar los errores típicos de cada nivel, entonces ya puedes sentarte frente al tablero, jugar 1.d4, esperar 1...Cf6, y jugar con confianza <span class="mv">2.Ag5</span>, sabiendo exactamente por qué lo haces.</p>
+    <div class="quote" style="margin-bottom:0">Fin del curso — ATAQUE TROMPOWSKY by Rubén Sbarsky.</div>
+  </div>
+</section>
+
+<!-- ================= GLOSARIO ================= -->
+<section class="page" id="glosario">
+  <h2 class="sec"><span class="ico">📖</span> 22. Glosario</h2>
+  <p class="sec-sub">Los términos técnicos del curso, definidos con claridad</p>
+  <div class="grid2">
+    <div class="card" style="margin:0"><h4 class="sub2">Desarrollo</h4><p>Sacar las piezas de sus casillas iniciales para que participen activamente en la partida.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Clavada</h4><p>Situación en la que una pieza no puede (o no conviene que) se mueva porque detrás de ella hay una pieza más valiosa (o el rey) en la misma línea de ataque.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Estructura de peones</h4><p>La disposición de todos los peones sobre el tablero; determina gran parte de los planes de ambos bandos.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Iniciativa</h4><p>La capacidad de dictar el ritmo de la partida obligando al rival a responder a las propias amenazas.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Tempo (o tiempo)</h4><p>Una jugada; "ganar un tiempo" significa obligar al rival a emplear una jugada en algo que no aporta desarrollo real.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Ruptura</h4><p>Un avance de peón que abre líneas y rompe la tensión de una estructura cerrada (por ejemplo, ...e5 o e4–e5).</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Casilla débil</h4><p>Una casilla que no puede ser defendida por un peón del bando que la ocupa (o que ocuparía), y que por tanto es un buen destino para una pieza enemiga.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Pareja de alfiles</h4><p>Tener ambos alfiles (de casillas claras y oscuras) frente a un rival que ha perdido uno de los suyos; suele considerarse una ventaja a largo plazo, sobre todo en posiciones abiertas.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Peones doblados</h4><p>Dos peones del mismo color en la misma columna, normalmente considerados una debilidad estructural, aunque no siempre.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Transposición</h4><p>Cuando dos secuencias distintas de jugadas llevan a la misma posición (o a una posición perteneciente a otra apertura conocida).</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Gambito</h4><p>El sacrificio voluntario de material (normalmente un peón) a cambio de ventajas de desarrollo, iniciativa o espacio.</p></div>
+    <div class="card" style="margin:0"><h4 class="sub2">Big Center / Centro Grande</h4><p>Estructura en la que un bando coloca dos peones centrales conectados y avanzados (por ejemplo, d4 y e4), ganando espacio.</p></div>
+  </div>
+</section>
+
+<!-- ================= CRÉDITOS ================= -->
+<section class="page" id="creditos">
+  <h2 class="sec"><span class="ico">👨💻</span> CRÉDITOS</h2>
+  <p class="sec-sub">El mismo SVG animado de la portada, también aquí en movimiento</p>
+  <div class="cover-wrap" id="credCover"></div>
+  <div class="card hl" style="text-align:center">
+    <h3 class="sub" style="justify-content:center">♟ ATAQUE TROMPOWSKY — Tutorial HTML interactivo</h3>
+    <p style="font-size:18px">👨‍💻 Créditos: <b style="color:var(--accent)">Rubén Sbarsky</b></p>
+    <div class="metachips" style="justify-content:center">
+      <span class="chip">📅 Fecha: <b>29/08/2026</b></span>
+      <span class="chip">🕘 Hora: <b>09:44:21</b></span>
+    </div>
+    <p style="color:var(--muted);margin-top:12px">📚 Tutorial solo con fines Educativos y de Divulgación. Este material no sustituye la práctica real frente al tablero: úsalo como guía de estudio y vuelve a él después de tus partidas.</p>
+    <p class="motto" style="margin-top:14px;color:var(--purple);font-style:italic;font-weight:700">Fiat iustitia, ruat caelum.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="line">📚 Tutorial solo con fines Educativos y Divulgación</div>
+  <div class="line">👨‍💻 Créditos: Rubén Sbarsky</div>
+  <div class="line">📅 FECHA: 29/08/2026</div>
+  <div class="line">Hora: 09:44:21</div>
+  <div class="motto">Fiat iustitia, ruat caelum.</div>
+</footer>
+
+<button id="toTop" aria-label="Volver arriba">▲</button>
+
+<!-- ============ PLANTILLA DEL SVG DE PORTADA (animado, 16:9) ============ -->
+<template id="coverTpl">
+<svg viewBox="0 0 1200 675" preserveAspectRatio="xMidYMid meet" role="img"
+     aria-label="Animación temática del Ataque Trompowsky: 1.d4, Cf6, 2.Ag5, el ataque al caballo y la captura Axf6 con peones doblados"
+     style="font-family:'Segoe UI',system-ui,-apple-system,sans-serif">
+  <defs>
+    <radialGradient id="cbBg" cx="35%" cy="30%" r="95%">
+      <stop offset="0%" stop-color="#12203c"/><stop offset="55%" stop-color="#0a0e1a"/><stop offset="100%" stop-color="#070a12"/>
+    </radialGradient>
+    <linearGradient id="cbTitle" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="cbBeam" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ef4444"/><stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="cbGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="cbChk" width="120" height="120" patternUnits="userSpaceOnUse">
+      <rect width="120" height="120" fill="#25334f"/>
+      <rect x="60" width="60" height="60" fill="#131e33"/>
+      <rect y="60" width="60" height="60" fill="#131e33"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#cbBg)"/>
+
+  <!-- decoración: diagonales que evocan la diagonal del alfil c1-g5 -->
+  <g stroke="#00d4ff" stroke-width="1.5" opacity="0.08">
+    <line x1="0" y1="660" x2="660" y2="0"/><line x1="225" y1="675" x2="900" y2="0"/><line x1="475" y1="675" x2="1150" y2="0"/>
+  </g>
+  <line x1="100" y1="700" x2="800" y2="0" stroke="#a855f7" stroke-width="1.5" opacity="0.14" stroke-dasharray="14 10">
+    <animate attributeName="stroke-dashoffset" values="0;-240" dur="18s" repeatCount="indefinite"/>
+  </line>
+  <circle r="4" fill="#00d4ff" opacity="0" filter="url(#cbGlow)">
+    <animateMotion path="M -40,690 L 760,-110" dur="18s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.7;0.7;0;0" keyTimes="0;0.05;0.15;0.75;0.85;1" dur="18s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#a855f7" opacity="0" filter="url(#cbGlow)">
+    <animateMotion path="M 300,760 L 1060,0" dur="18s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.6;0.6;0" keyTimes="0;0.45;0.55;0.9;1" dur="18s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- ================= TABLERO ================= -->
+  <g transform="translate(70,97)">
+    <rect x="-10" y="-10" width="500" height="500" rx="12" fill="#0d1526" stroke="#1e3a5f" stroke-width="2"/>
+    <rect width="480" height="480" fill="url(#cbChk)"/>
+    <g font-size="13" fill="#5b6b87">
+      <text x="24" y="500">a</text><text x="84" y="500">b</text><text x="144" y="500">c</text><text x="204" y="500">d</text>
+      <text x="264" y="500">e</text><text x="324" y="500">f</text><text x="384" y="500">g</text><text x="444" y="500">h</text>
+      <text x="-20" y="35">8</text><text x="-20" y="95">7</text><text x="-20" y="155">6</text><text x="-20" y="215">5</text>
+      <text x="-20" y="275">4</text><text x="-20" y="335">3</text><text x="-20" y="395">2</text><text x="-20" y="455">1</text>
+    </g>
+
+    <!-- casillas destacadas -->
+    <rect x="180" y="240" width="60" height="60" fill="#00d4ff" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.5;0.18;0.18;0" keyTimes="0;0.07;0.09;0.13;0.92;1" dur="18s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="360" y="180" width="60" height="60" fill="#00d4ff" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.5;0.18;0.18;0" keyTimes="0;0.33;0.35;0.40;0.92;1" dur="18s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="300" y="120" width="60" height="60" fill="#f59e0b" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.55;0.25;0.25;0" keyTimes="0;0.57;0.60;0.66;0.92;1" dur="18s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- estela de la diagonal c1-g5 -->
+    <line x1="150" y1="450" x2="390" y2="210" stroke="#00d4ff" stroke-width="2.5" stroke-dasharray="340" stroke-dashoffset="340" opacity="0">
+      <animate attributeName="stroke-dashoffset" values="340;340;0;0" keyTimes="0;0.24;0.34;1" dur="18s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.8;0.8;0.25;0" keyTimes="0;0.24;0.30;0.50;0.56;1" dur="18s" repeatCount="indefinite"/>
+    </line>
+
+    <!-- haz de ataque g5-f6 -->
+    <line x1="390" y1="210" x2="330" y2="150" stroke="url(#cbBeam)" stroke-width="5" stroke-linecap="round" stroke-dasharray="12 9" opacity="0" filter="url(#cbGlow)">
+      <animate attributeName="stroke-dashoffset" values="0;-420" dur="18s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;1;0.25;1;0.25;1;0;0" keyTimes="0;0.36;0.385;0.415;0.445;0.475;0.505;0.53;1" dur="18s" repeatCount="indefinite"/>
+    </line>
+    <circle cx="330" cy="150" r="32" fill="none" stroke="#ef4444" stroke-width="3" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.9;0.1;0.9;0.1;0.9;0;0" keyTimes="0;0.36;0.385;0.41;0.44;0.47;0.50;0.53;1" dur="18s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="32;32;24;32;24;32;24;32;32" keyTimes="0;0.36;0.385;0.41;0.44;0.47;0.50;0.53;1" dur="18s" repeatCount="indefinite"/>
+    </circle>
+    <!-- destello de captura en f6 -->
+    <circle cx="330" cy="150" r="6" fill="none" stroke="url(#cbBeam)" stroke-width="4" opacity="0" filter="url(#cbGlow)">
+      <animate attributeName="r" values="6;6;30;38;38" keyTimes="0;0.545;0.57;0.62;1" dur="18s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.545;0.56;0.62;1" dur="18s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- PIEZAS -->
+    <g class="pw" opacity="1">
+      <use href="#shP"/>
+      <animateTransform attributeName="transform" type="translate" values="210 390;210 390;210 270;210 270" keyTimes="0;0.02;0.08;1" dur="18s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0 0 1 1"/>
+      <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.92;0.97;1" dur="18s" repeatCount="indefinite"/>
+    </g>
+    <g class="pb" opacity="0">
+      <use href="#shN"/>
+      <animateTransform attributeName="transform" type="translate" values="390 30;390 30;330 150;330 150" keyTimes="0;0.12;0.20;1" dur="18s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0 0 1 1"/>
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.11;0.14;0.52;0.56;1" dur="18s" repeatCount="indefinite"/>
+    </g>
+    <g class="pw" opacity="0">
+      <use href="#shB"/>
+      <circle r="14" fill="none" stroke="#00d4ff" stroke-width="1" opacity="0.5"/>
+      <animateTransform attributeName="transform" type="translate" values="150 450;150 450;390 210;390 210;330 150;330 150" keyTimes="0;0.24;0.34;0.52;0.58;1" dur="18s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0 0 1 1;0.4 0 0.2 1;0 0 1 1"/>
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.22;0.245;0.92;0.97;1" dur="18s" repeatCount="indefinite"/>
+    </g>
+    <g class="pb" opacity="0">
+      <use href="#shP"/>
+      <animateTransform attributeName="transform" type="translate" values="270 90;270 90;330 150;330 150" keyTimes="0;0.60;0.66;1" dur="18s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0 0 1 1"/>
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.59;0.615;0.92;0.97;1" dur="18s" repeatCount="indefinite"/>
+    </g>
+    <g class="pb" transform="translate(330,90)" opacity="0">
+      <use href="#shP"/>
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.65;0.68;0.92;0.97;1" dur="18s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- corchete de peones doblados f7+f6 -->
+    <rect x="302" y="62" width="56" height="116" rx="8" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="8 6" opacity="0" filter="url(#cbGlow)">
+      <animate attributeName="opacity" values="0;0;0.95;0.4;0.95;0.4;0.95;0;0" keyTimes="0;0.67;0.70;0.74;0.78;0.82;0.86;0.92;1" dur="18s" repeatCount="indefinite"/>
+    </rect>
+
+    <text x="402" y="118" font-size="30" font-weight="800" fill="#f59e0b" opacity="0" filter="url(#cbGlow)">¡Axf6!
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.55;0.575;0.88;0.93;1" dur="18s" repeatCount="indefinite"/>
+    </text>
+    <text x="402" y="196" font-size="24" font-weight="700" fill="#e8edf5" opacity="0">exf6
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.665;0.69;0.88;0.93;1" dur="18s" repeatCount="indefinite"/>
+    </text>
+
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.68;0.72;0.93;1" dur="18s" repeatCount="indefinite"/>
+      <text x="240" y="536" text-anchor="middle" font-size="22" font-weight="800" fill="#f59e0b">PEONES DOBLADOS ↔ PAREJA DE ALFILES</text>
+      <text x="240" y="560" text-anchor="middle" font-size="14" fill="#8fa3c0">El precio y la compensación del Trompowsky</text>
+    </g>
+  </g>
+
+  <!-- ================= PANEL DERECHO ================= -->
+  <rect x="610" y="64" width="340" height="30" rx="15" fill="#0f172a" stroke="#1e3a5f"/>
+  <text x="780" y="84" text-anchor="middle" font-size="13" letter-spacing="2" fill="#00d4ff" font-weight="700">APERTURA DE PEÓN DE DAMA · ECO A45</text>
+  <text x="610" y="136" font-size="24" letter-spacing="8" fill="#8fa3c0" font-weight="600">ATAQUE</text>
+  <text x="606" y="192" font-size="58" font-weight="800" fill="url(#cbTitle)">TROMPOWSKY</text>
+  <text x="610" y="236" font-size="26" fill="#e8edf5" font-weight="700">1.d4  Cf6   <tspan fill="#00d4ff">2.Ag5</tspan></text>
+  <line x1="610" y1="258" x2="1150" y2="258" stroke="url(#cbTitle)" stroke-width="2" stroke-dasharray="6 8">
+    <animate attributeName="stroke-dashoffset" values="0;-280" dur="18s" repeatCount="indefinite"/>
+  </line>
+
+  <g opacity="0.25">
+    <animate attributeName="opacity" values="0.25;0.25;1;1;0.25" keyTimes="0;0.08;0.11;0.94;1" dur="18s" repeatCount="indefinite"/>
+    <circle cx="620" cy="294" r="5" fill="#00d4ff"/><text x="640" y="300" font-size="19" fill="#c7d3e8">1.d4 — el peón blanco ocupa el centro</text>
+  </g>
+  <g opacity="0.25">
+    <animate attributeName="opacity" values="0.25;0.25;1;1;0.25" keyTimes="0;0.20;0.23;0.94;1" dur="18s" repeatCount="indefinite"/>
+    <circle cx="620" cy="340" r="5" fill="#22c55e"/><text x="640" y="346" font-size="19" fill="#c7d3e8">1...Cf6 — el caballo negro desarrolla</text>
+  </g>
+  <g opacity="0.25">
+    <animate attributeName="opacity" values="0.25;0.25;1;1;0.25" keyTimes="0;0.34;0.37;0.94;1" dur="18s" repeatCount="indefinite"/>
+    <circle cx="620" cy="386" r="5" fill="#ef4444"/><text x="640" y="392" font-size="19" fill="#c7d3e8">2.Ag5 — ¡ataque directo al caballo de f6!</text>
+  </g>
+  <g opacity="0.25">
+    <animate attributeName="opacity" values="0.25;0.25;1;1;0.25" keyTimes="0;0.66;0.69;0.94;1" dur="18s" repeatCount="indefinite"/>
+    <circle cx="620" cy="432" r="5" fill="#f59e0b"/><text x="640" y="438" font-size="19" fill="#c7d3e8">Axf6 exf6 — peones doblados, pareja de alfiles</text>
+  </g>
+
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.68;0.71;0.93;1" dur="18s" repeatCount="indefinite"/>
+    <rect x="610" y="470" width="545" height="92" rx="12" fill="#0f172a" stroke="#f59e0b" stroke-dasharray="6 5"/>
+    <text x="632" y="506" font-size="18" font-weight="800" fill="#f59e0b">La esencia del Trompowsky:</text>
+    <text x="632" y="534" font-size="16" fill="#c7d3e8">cambiar el alfil por el caballo en el momento justo.</text>
+  </g>
+
+  <text x="1150" y="648" text-anchor="end" font-size="14" fill="#5b6b87">by Rubén Sbarsky</text>
+</svg>
+</template>
+
+<noscript><style>.page{display:block!important;margin-bottom:40px}.hidden-box{display:block}.acc-body{max-height:none}</style></noscript>
+
+<script>
+(function(){
+  "use strict";
+  /* ---------- Inyección del mismo SVG animado en HOME y CRÉDITOS ---------- */
+  var tpl = document.getElementById('coverTpl');
+  var homeCover = document.getElementById('homeCover');
+  var credCover = document.getElementById('credCover');
+  if (tpl && homeCover && credCover) {
+    homeCover.appendChild(tpl.content.cloneNode(true));
+    credCover.appendChild(tpl.content.cloneNode(true));
+  }
+
+  /* ---------- SPA: navegación entre secciones ---------- */
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+  var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navbtn'));
+  function showPage(id){
+    pages.forEach(function(p){ p.classList.toggle('active', p.id === id); });
+    navBtns.forEach(function(b){
+      var on = b.getAttribute('data-target') === id;
+      b.classList.toggle('active', on);
+      if (on && b.scrollIntoView) { try{ b.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'}); }catch(e){} }
+    });
+    window.scrollTo({top:0, behavior:'auto'});
+    var svgs = document.querySelectorAll('svg');
+    svgs.forEach(function(s){ if (s.unpauseAnimations) { try{ s.unpauseAnimations(); }catch(e){} } });
+  }
+  navBtns.forEach(function(b){
+    b.addEventListener('click', function(){ showPage(b.getAttribute('data-target')); });
+  });
+
+  /* ---------- Barra de progreso + botón volver arriba ---------- */
+  var prog = document.getElementById('progress');
+  var toTop = document.getElementById('toTop');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+    prog.style.width = pct + '%';
+    toTop.classList.toggle('show', h.scrollTop > 300);
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  onScroll();
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  /* ---------- Acordeones ---------- */
+  document.querySelectorAll('.acc-head').forEach(function(head){
+    head.addEventListener('click', function(){
+      var acc = head.parentElement;
+      var body = acc.querySelector('.acc-body');
+      if (acc.classList.contains('open')) {
+        body.style.maxHeight = '0px';
+        acc.classList.remove('open');
+      } else {
+        acc.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+
+  /* ---------- Botones revelar solución ---------- */
+  document.querySelectorAll('.reveal-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var box = document.getElementById(btn.getAttribute('data-t'));
+      if (!box) return;
+      var show = !box.classList.contains('show');
+      box.classList.toggle('show', show);
+      btn.innerHTML = show ? '🔒 Ocultar solución' : '🔓 Ver solución';
+    });
+  });
+
+  /* ---------- Tabs de estrategia ---------- */
+  var tabBtns = document.querySelectorAll('.tabbtn');
+  tabBtns.forEach(function(tb){
+    tb.addEventListener('click', function(){
+      tabBtns.forEach(function(x){ x.classList.toggle('active', x === tb); });
+      document.querySelectorAll('.pane').forEach(function(p){
+        p.classList.toggle('active', p.id === tb.getAttribute('data-pane'));
+      });
+    });
+  });
+
+  /* ---------- Mini-test (15 preguntas) ---------- */
+  var QA = [
+    ["¿Con qué movimientos comienza el Ataque Trompowsky?","1.d4 Cf6 2.Ag5."],
+    ["¿A qué jugador debe su nombre esta apertura?","Al brasileño Octávio Trompowsky."],
+    ["¿Cuál es la amenaza directa de 2.Ag5?","Capturar en f6 (Axf6), doblando los peones negros."],
+    ["¿Cuál es la respuesta más popular de las negras?","2...Ce4."],
+    ["Tras 2...Ce4, ¿cuál es la retirada de alfil más jugada y más sólida?","3.Af4."],
+    ["En la línea 3.Af4 c5 4.f3 Da5+, ¿qué jugada blanca bloquea el jaque?","5.c3."],
+    ["Tras 5.c3, ¿a qué casilla debe retirarse obligatoriamente el CABALLO NEGRO de e4?","A f6 (5...Cf6), ya que está atacado por el peón de f3."],
+    ["En la línea 6.d5 Db6, ¿qué jugada blanca defiende el peón b2?","7.Ac1."],
+    ["¿Qué error de las blancas provocó la derrota en tres jugadas de Đorđević contra Kovačević (Bela Crkva, 1984)?","3.e3??, tras 1.d4 Cf6 2.Ag5 c6, que permitió 3...Da5+ ganando el alfil de g5."],
+    ["Tras 2...d5 3.Axf6, ¿con qué pieza recapturan normalmente las negras?","Con el peón de e7 (3...exf6)."],
+    ["Tras 2...c5 3.Axf6, ¿con qué peón recapturan las negras para mantener la flexibilidad?","Con el peón de g7 (3...gxf6)."],
+    ["¿Cómo se llama la línea 3.h4!? tras 2...Ce4?","La Variante Raptor."],
+    ["En la Defensa Clásica (2...e6), ¿por qué el CABALLO NEGRO de f6 está indirectamente defendido?","Porque la DAMA NEGRA de d8 lo defiende a través de la diagonal d8–f6, que queda abierta tras ...e6."],
+    ["¿Qué estructura de peones blanca se produce típicamente en la línea 2...e6 3.e4?","Un centro de peones amplio en d4 y e4 (la llamada Variante del Centro Grande)."],
+    ["En la línea de gambito 3.Af4 d5 4.f3 Cf6 5.e4 dxe4, ¿qué deben hacer las blancas antes de recuperar el peón?","Desarrollar una pieza más, por ejemplo 6.Cc3, en vez de perseguir el peón inmediatamente."]
+  ];
+  var testList = document.getElementById('testList');
+  var revealed = 0;
+  var testCount = document.getElementById('testCount');
+  QA.forEach(function(item, i){
+    var div = document.createElement('div');
+    div.className = 'qa';
+    div.innerHTML = '<p class="q"><span class="qn">' + (i+1) + '</span>' + item[0] + '</p>' +
+      '<button class="btn small tbtn">👁️ Mostrar respuesta</button>' +
+      '<div class="hidden-box"><b>Respuesta:</b> ' + item[1] + '</div>';
+    var btn = div.querySelector('.tbtn');
+    var box = div.querySelector('.hidden-box');
+    btn.addEventListener('click', function(){
+      var show = !box.classList.contains('show');
+      box.classList.toggle('show', show);
+      btn.innerHTML = show ? '🙈 Ocultar respuesta' : '👁️ Mostrar respuesta';
+      if (show && !btn.dataset.counted) { btn.dataset.counted = "1"; revealed++; testCount.textContent = revealed + '/15 reveladas'; }
+    });
+    testList.appendChild(div);
+  });
+
+  /* ---------- Checklist ---------- */
+  var chkInputs = document.querySelectorAll('#chkList input');
+  var chkBar = document.getElementById('chkBar');
+  var chkTxt = document.getElementById('chkTxt');
+  function updChk(){
+    var n = 0; chkInputs.forEach(function(c){ if (c.checked) n++; });
+    chkBar.style.width = (n / chkInputs.length * 100) + '%';
+    chkTxt.textContent = n + '/' + chkInputs.length + ' completado';
+  }
+  chkInputs.forEach(function(c){ c.addEventListener('change', updChk); });
+  updChk();
+
+  /* ---------- Accesibilidad: prefers-reduced-motion ---------- */
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('svg').forEach(function(s){ if (s.pauseAnimations) { try{ s.pauseAnimations(); }catch(e){} } });
+  }
+})();
+</script>
+</body>
+</html>
