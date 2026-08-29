@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Del Concepto a la Práctica · Fundamentos del Ajedrez</title>
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f; --acc:#00d4ff;
+  --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --pur:#a855f7;
+  --txt:#e2e8f0; --mut:#94a3b8; --rad:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;padding-top:70px;line-height:1.6;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--acc)}
+::selection{background:#00d4ff44}
+/* ---------- Barra de progreso ---------- */
+#progressBar{position:fixed;top:0;left:0;height:4px;width:0%;z-index:300;background:linear-gradient(90deg,var(--acc),var(--pur));box-shadow:0 0 10px #00d4ff88;transition:width .1s linear}
+/* ---------- Navbar ---------- */
+.nav{position:fixed;top:4px;left:0;right:0;z-index:250;background:#0a0e1af0;border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+.navInner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:0 12px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--txt);white-space:nowrap;padding:10px 4px;font-size:15px}
+.brand .kn{color:var(--acc);font-size:22px}
+.navScroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:8px 2px;flex:1}
+.navScroll::-webkit-scrollbar{display:none}
+.navBtn{background:transparent;border:1px solid transparent;color:var(--mut);padding:9px 14px;border-radius:9px;font-size:14px;white-space:nowrap;transition:.25s;min-height:40px}
+.navBtn:hover{color:var(--txt);background:#1e3a5f33}
+.navBtn.active{color:#031018;background:var(--acc);font-weight:700;box-shadow:0 0 14px #00d4ff55}
+.navBtn.cred{border:1px solid #a855f766;color:#c084fc}
+.navBtn.cred.active{background:var(--pur);color:#fff;border-color:var(--pur)}
+/* ---------- Layout ---------- */
+main{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+.view{display:none}
+.view.active{display:block;animation:fadeUp .45s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+/* ---------- HOME ---------- */
+.coverWrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 0 40px #00d4ff22,0 18px 50px #00000066;background:var(--card)}
+.coverWrap svg{display:block;width:100%;height:auto}
+.heroBadge{display:inline-block;margin-top:22px;padding:7px 16px;border:1px solid #00d4ff66;border-radius:999px;color:var(--acc);font-size:12.5px;letter-spacing:3px;font-weight:700;background:#00d4ff0d}
+h1.hero{font-size:clamp(30px,5.4vw,54px);font-weight:800;margin:14px 0 6px;background:linear-gradient(90deg,#e2e8f0,#00d4ff 60%,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1.15}
+.heroSub{color:var(--acc);font-size:clamp(16px,2.6vw,21px);font-weight:600;margin-bottom:14px}
+.heroDesc{color:var(--mut);font-size:16px;max-width:860px}
+.quote{margin:26px 0;padding:22px 26px;border-left:4px solid var(--acc);background:linear-gradient(90deg,#00d4ff12,transparent);border-radius:0 var(--rad) var(--rad) 0;font-size:clamp(17px,2.6vw,22px);font-style:italic;color:#e8f6ff}
+.quote small{display:block;margin-top:8px;font-style:normal;color:var(--mut);font-size:12.5px;letter-spacing:2px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);padding:16px 14px;text-align:center;transition:.25s}
+.metric:hover{border-color:var(--acc);transform:translateY(-3px)}
+.metric .n{font-size:30px;font-weight:800;color:var(--acc)}
+.metric:nth-child(2) .n{color:var(--green)}.metric:nth-child(3) .n{color:var(--amber)}
+.metric:nth-child(4) .n{color:var(--pur)}.metric:nth-child(5) .n{color:var(--red)}.metric:nth-child(6) .n{color:var(--green)}
+.metric .l{font-size:12px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.roadTitle{font-size:13px;letter-spacing:3px;color:var(--mut);margin:26px 0 10px;font-weight:700}
+.roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.road{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 12px;color:var(--txt);text-align:left;transition:.25s;font-size:13.5px;display:flex;gap:10px;align-items:center;min-height:52px}
+.road:hover{border-color:var(--acc);background:#12203a}
+.road .num{background:#00d4ff1a;color:var(--acc);border:1px solid #00d4ff55;border-radius:8px;min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+.dtChips{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.dtChip{background:var(--card);border:1px solid var(--border);border-radius:999px;padding:9px 18px;font-size:14px;color:var(--txt)}
+.dtChip b{color:var(--acc)}
+/* ---------- Cabeceras de sección ---------- */
+.secHead{margin:8px 0 22px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.kicker{color:var(--acc);font-size:12px;letter-spacing:3px;font-weight:700}
+.secHead h2{font-size:clamp(24px,4vw,36px);margin:6px 0 8px}
+.lead{color:var(--mut);font-size:15.5px;max-width:860px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);padding:20px;margin:16px 0}
+.card h3{font-size:19px;margin-bottom:10px;color:#fff;display:flex;align-items:center;gap:10px}
+.card h3 .ic{color:var(--acc)}
+.card p{color:#cbd5e1;font-size:15px;margin-bottom:10px}
+.card p:last-child{margin-bottom:0}
+.card ul{margin:8px 0 8px 20px;color:#cbd5e1;font-size:15px}
+.card li{margin-bottom:6px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.chipRow{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{background:#1e3a5f33;border:1px solid var(--border);border-radius:999px;padding:6px 14px;font-size:13px;color:#dbeafe}
+.chip.acc{border-color:#00d4ff66;color:var(--acc)}
+.chip.grn{border-color:#22c55e66;color:var(--green)}
+.chip.amb{border-color:#f59e0b66;color:var(--amber)}
+.chip.red{border-color:#ef444466;color:var(--red)}
+.chip.pur{border-color:#a855f766;color:#c084fc}
+/* ---------- Callouts ---------- */
+.callout{border-radius:10px;padding:15px 18px;margin:14px 0;font-size:14.5px;border:1px solid;border-left-width:5px}
+.callout .tag{font-weight:800;font-size:12px;letter-spacing:2px;display:block;margin-bottom:5px}
+.callout.info{background:#00d4ff0d;border-color:#00d4ff55}.callout.info .tag{color:var(--acc)}
+.callout.ejemplo{background:#22c55e0d;border-color:#22c55e55}.callout.ejemplo .tag{color:var(--green)}
+.callout.advertencia{background:#f59e0b0d;border-color:#f59e0b55}.callout.advertencia .tag{color:var(--amber)}
+.callout.error{background:#ef44440d;border-color:#ef444455}.callout.error .tag{color:var(--red)}
+/* ---------- Tablas ---------- */
+.tableWrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--rad);margin:14px 0}
+table{width:100%;border-collapse:collapse;min-width:600px;font-size:14px}
+th{background:#122036;color:var(--acc);text-align:left;padding:12px 14px;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;border-bottom:2px solid var(--border)}
+td{padding:12px 14px;border-bottom:1px solid #1e3a5f55;color:#cbd5e1;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td b{color:#fff}
+/* ---------- Fichas de piezas ---------- */
+.pieceGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.pieceCard{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);padding:18px;transition:.25s;position:relative;overflow:hidden}
+.pieceCard:hover{border-color:var(--acc);transform:translateY(-3px)}
+.pieceCard .glyph{font-size:44px;line-height:1;color:#eef2f7;text-shadow:0 0 18px #00d4ff66}
+.pieceCard h4{font-size:17px;margin:8px 0 6px;color:#fff}
+.pieceCard p{color:var(--mut);font-size:14px}
+.pieceCard .uniq{margin-top:10px;font-size:12.5px;color:var(--green);border-top:1px dashed #1e3a5f;padding-top:8px}
+/* ---------- Pasos ---------- */
+ol.steps{list-style:none;counter-reset:st;margin:6px 0}
+ol.steps li{counter-increment:st;position:relative;padding:12px 14px 12px 62px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;font-size:14.5px;color:#cbd5e1}
+ol.steps li::before{content:counter(st);position:absolute;left:14px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:#00d4ff14;border:1px solid var(--acc);color:var(--acc);display:flex;align-items:center;justify-content:center;font-weight:800}
+ol.steps li b{color:#fff}
+/* ---------- Tabs ---------- */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.tabBtn{background:var(--card);border:1px solid var(--border);color:var(--mut);padding:10px 18px;border-radius:9px;font-size:14px;transition:.25s;min-height:44px}
+.tabBtn.active{background:#00d4ff18;border-color:var(--acc);color:var(--acc);font-weight:700}
+.tPanel{display:none;animation:fadeUp .35s ease}
+.tPanel.active{display:block}
+/* ---------- Acordeón ---------- */
+.acc{border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:10px;overflow:hidden}
+.accH{width:100%;background:transparent;border:none;color:var(--txt);font-size:15.5px;font-weight:600;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;min-height:52px}
+.accH .arr{color:var(--acc);transition:.3s;font-size:14px}
+.acc.open .accH .arr{transform:rotate(180deg)}
+.accB{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.acc.open .accB{grid-template-rows:1fr}
+.accB>div{overflow:hidden;padding:0 18px}
+.acc.open .accB>div{padding-bottom:16px}
+.accB p,.accB li{color:#cbd5e1;font-size:14.5px}
+/* ---------- Explorador de movimientos ---------- */
+.expWrap{display:grid;grid-template-columns:minmax(250px,420px) 1fr;gap:20px;align-items:start}
+#expBoard{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1;border:2px solid var(--border);border-radius:10px;overflow:hidden;width:100%}
+.cell{border:none;padding:0;display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4.6vw,28px);position:relative;transition:.15s;aspect-ratio:1;line-height:1}
+.cell.light{background:#1c3052}.cell.dark{background:#0d1628}
+.cell.mv{background:#22c55e2e;box-shadow:inset 0 0 0 2px #22c55e88;cursor:pointer}
+.cell.mv::after{content:'';width:26%;height:26%;border-radius:50%;background:#22c55e88}
+.cell.cap{background:#f59e0b2a;box-shadow:inset 0 0 0 2px #f59e0b99;cursor:pointer}
+.cell.cap::after{content:'';position:absolute;inset:8%;border:2px dashed #f59e0b99;border-radius:8px}
+.cell.sel{box-shadow:inset 0 0 0 3px var(--acc);background:#00d4ff22}
+.pieceBtns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.pBtn{background:var(--card);border:1px solid var(--border);color:var(--txt);border-radius:9px;padding:9px 13px;font-size:17px;min-height:46px;transition:.2s}
+.pBtn small{font-size:11px;color:var(--mut);display:block;line-height:1}
+.pBtn.active{border-color:var(--acc);background:#00d4ff18;box-shadow:0 0 10px #00d4ff33}
+#expInfo{font-size:14.5px;color:#cbd5e1;background:#0a1120;border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-top:10px}
+#expInfo b{color:var(--acc)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--mut)}
+.dotL{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* ---------- Quiz ---------- */
+.quizBox{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);padding:20px}
+.quizScore{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.scoreChip{background:#00d4ff12;border:1px solid #00d4ff55;color:var(--acc);border-radius:999px;padding:7px 16px;font-weight:700;font-size:14px}
+.qTxt{font-size:16px;font-weight:600;margin-bottom:14px}
+.qOpts{display:grid;gap:9px}
+.qOpt{background:#0a1120;border:1px solid var(--border);color:var(--txt);padding:13px 16px;border-radius:9px;font-size:14.5px;text-align:left;transition:.2s;min-height:46px}
+.qOpt:not(:disabled):hover{border-color:var(--acc)}
+.qOpt.ok{border-color:var(--green);background:#22c55e18;color:#bbf7d0}
+.qOpt.ko{border-color:var(--red);background:#ef444415;color:#fecaca}
+.qOpt:disabled{cursor:default;opacity:.9}
+.qExp{display:none;margin-top:12px;padding:13px 15px;border-radius:9px;font-size:14px;background:#0a1120;border:1px dashed var(--border);color:#cbd5e1}
+.qExp.show{display:block;animation:fadeUp .3s ease}
+.qNav{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{background:#00d4ff18;border:1px solid var(--acc);color:var(--acc);padding:10px 20px;border-radius:9px;font-size:14px;font-weight:700;transition:.2s;min-height:44px}
+.btn:hover{background:var(--acc);color:#031018}
+.btn.ghost{border-color:var(--border);color:var(--mut)}
+.btn.ghost:hover{border-color:var(--acc);color:var(--acc);background:transparent}
+/* ---------- Referencias ---------- */
+.refBar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+#refSearch{flex:1;min-width:220px;background:var(--card);border:1px solid var(--border);border-radius:9px;color:var(--txt);padding:12px 16px;font-size:15px;font-family:inherit}
+#refSearch:focus{outline:none;border-color:var(--acc)}
+#refCount{color:var(--mut);font-size:13px;white-space:nowrap}
+ol.refList{list-style:none;max-height:640px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--rad);background:#0b1120}
+ol.refList li{padding:10px 14px;border-bottom:1px solid #1e3a5f44;font-size:13.5px;display:flex;gap:10px;align-items:baseline}
+ol.refList li:last-child{border-bottom:none}
+ol.refList .rn{color:var(--acc);font-weight:700;min-width:32px;text-align:right;font-size:12px}
+ol.refList a{color:#cbd5e1;text-decoration:none;word-break:break-word}
+ol.refList a:hover{color:var(--acc);text-decoration:underline}
+ol.refList li.hidden{display:none}
+/* ---------- Créditos ---------- */
+.creditCard{background:linear-gradient(160deg,#0f172a,#0a1120);border:1px solid var(--border);border-radius:var(--rad);padding:34px 26px;text-align:center;margin-top:22px}
+.creditCard h3{font-size:clamp(20px,3.4vw,28px);margin-bottom:6px}
+.creditCard .author{color:var(--acc);font-size:20px;font-weight:800;margin:12px 0}
+.creditCard .latin{font-style:italic;color:#c084fc;font-size:17px;margin-top:16px;letter-spacing:.5px}
+.creditMeta{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+/* ---------- Diagramas mini ---------- */
+.miniDiag{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.miniRow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
+.sq{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:20px;border-radius:4px;flex:none}
+.sq.l{background:#1c3052}.sq.d{background:#0d1628;border:1px solid #1e3a5f}
+.sq.hl{box-shadow:inset 0 0 0 2px var(--acc)}
+.sq.gl{box-shadow:inset 0 0 0 2px var(--green)}
+.arrowLbl{color:var(--acc);font-weight:700}
+/* ---------- Footer / volver arriba ---------- */
+footer{border-top:1px solid var(--border);background:#0b1120;padding:30px 16px;text-align:center;color:var(--mut);font-size:14px;margin-top:30px}
+footer .fl{margin:5px 0}
+footer .latin{font-style:italic;color:#c084fc;margin-top:10px}
+#toTop{position:fixed;right:18px;bottom:18px;width:50px;height:50px;border-radius:50%;background:#00d4ff22;border:1px solid var(--acc);color:var(--acc);font-size:20px;z-index:260;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(6px)}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{background:var(--acc);color:#031018}
+/* ---------- Responsive ---------- */
+@media(max-width:820px){
+  .expWrap{grid-template-columns:1fr}
+  #expBoard{max-width:440px}
+}
+@media(max-width:560px){
+  body{padding-top:64px;font-size:15px}
+  .brand span.bt{display:none}
+  main{padding:16px 12px 30px}
+  .card{padding:16px}
+  .navBtn{padding:9px 11px;font-size:13px}
+  table{min-width:540px;font-size:13px}
+  th,td{padding:10px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<div id="progressBar"></div>
+
+<header class="nav">
+  <div class="navInner">
+    <div class="brand"><span class="kn">♞</span><span class="bt">AJEDREZ · FUNDAMENTOS</span></div>
+    <nav class="navScroll" id="navScroll" aria-label="Navegación principal">
+      <button class="navBtn active" data-sec="home">🏠 Inicio</button>
+      <button class="navBtn" data-sec="fundamentos">♟ Fundamentos</button>
+      <button class="navBtn" data-sec="especiales">🏰 Mov. Especiales</button>
+      <button class="navBtn" data-sec="resultados">🏁 Resultados</button>
+      <button class="navBtn" data-sec="estrategia">🧭 Estrategia</button>
+      <button class="navBtn" data-sec="practica">🎯 Práctica</button>
+      <button class="navBtn" data-sec="errores">⚠️ Errores y Recursos</button>
+      <button class="navBtn" data-sec="referencias">📚 Referencias</button>
+      <button class="navBtn cred" data-sec="creditos">👤 Créditos</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ==================== HOME ==================== -->
+<section class="view active" id="home">
+  <div class="coverWrap">
+  <svg id="coverMaster" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Portada animada del tutorial de ajedrez">
+    <defs>
+      <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0a0e1a"/><stop offset="0.5" stop-color="#0d1526"/><stop offset="1" stop-color="#0a0e1a"/>
+      </linearGradient>
+      <linearGradient id="gradTitle" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#e2e8f0"/><stop offset="0.55" stop-color="#00d4ff"/><stop offset="1" stop-color="#a855f7"/>
+      </linearGradient>
+      <linearGradient id="qTrail" gradientUnits="userSpaceOnUse" x1="766" y1="688" x2="1038" y2="416">
+        <stop offset="0" stop-color="#00d4ff" stop-opacity="0"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0.9"/>
+      </linearGradient>
+      <pattern id="gridPat" width="46" height="46" patternUnits="userSpaceOnUse">
+        <path d="M46 0H0V46" fill="none" stroke="#1e3a5f" stroke-opacity="0.22" stroke-width="1"/>
+      </pattern>
+      <pattern id="sqPat" width="136" height="136" patternUnits="userSpaceOnUse">
+        <rect width="136" height="136" fill="#0d1628"/>
+        <rect width="68" height="68" fill="#1c3052"/>
+        <rect x="68" y="68" width="68" height="68" fill="#1c3052"/>
+      </pattern>
+      <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <rect width="1600" height="900" rx="26" fill="url(#bgGrad)"/>
+    <rect width="1600" height="900" rx="26" fill="url(#gridPat)"/>
+
+    <!-- barra superior -->
+    <text x="60" y="48" font-size="13" letter-spacing="3" fill="#64748b" font-family="Segoe UI, system-ui, sans-serif">TUTORIAL INTERACTIVO · DEL CONCEPTO A LA PRÁCTICA</text>
+    <text x="1540" y="48" text-anchor="end" font-size="13" letter-spacing="2" fill="#00d4ff" font-family="Segoe UI, system-ui, sans-serif">29/08/2026 · 05:33:21</text>
+    <line x1="60" y1="64" x2="1540" y2="64" stroke="#1e3a5f" stroke-width="1"/>
+
+    <!-- ===== PANEL IZQUIERDO ===== -->
+    <rect x="70" y="100" width="346" height="34" rx="17" fill="#00d4ff14" stroke="#00d4ff55"/>
+    <text x="243" y="122" text-anchor="middle" font-size="13" letter-spacing="3" fill="#00d4ff" font-family="Segoe UI, system-ui, sans-serif">MARCO PEDAGÓGICO · PRINCIPIANTES</text>
+    <text x="64" y="252" font-size="84" font-weight="800" letter-spacing="2" fill="url(#gradTitle)" font-family="Segoe UI, system-ui, sans-serif">AJEDREZ</text>
+    <text x="70" y="302" font-size="28" fill="#e2e8f0" font-family="Segoe UI, system-ui, sans-serif">Del Concepto a la Práctica</text>
+    <text x="70" y="338" font-size="16" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif">Fundamentos · Reglas · Estrategia · Práctica guiada</text>
+
+    <!-- flujo concepto -> práctica -->
+    <rect x="70" y="396" width="160" height="58" rx="10" fill="#00d4ff0f" stroke="#00d4ff55"/>
+    <text x="150" y="432" text-anchor="middle" font-size="16" font-weight="700" fill="#00d4ff" font-family="Segoe UI, system-ui, sans-serif">CONCEPTO</text>
+    <rect x="310" y="396" width="160" height="58" rx="10" fill="#22c55e0f" stroke="#22c55e55"/>
+    <text x="390" y="432" text-anchor="middle" font-size="16" font-weight="700" fill="#22c55e" font-family="Segoe UI, system-ui, sans-serif">PRÁCTICA</text>
+    <line x1="232" y1="425" x2="308" y2="425" stroke="#1e3a5f" stroke-width="2" stroke-dasharray="5 5"/>
+    <circle r="5" fill="#00d4ff" filter="url(#glow)">
+      <animateMotion path="M232,425 L308,425" dur="1.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- pasos -->
+    <rect x="70" y="500" width="138" height="40" rx="9" fill="#0f172a" stroke="#00d4ff" stroke-opacity="0.3">
+      <animate attributeName="stroke-opacity" values="0.2;1;0.2" dur="6s" repeatCount="indefinite"/>
+    </rect>
+    <text x="139" y="525" text-anchor="middle" font-size="13" fill="#cbd5e1" font-family="Segoe UI, system-ui, sans-serif">01 · TEORÍA</text>
+    <rect x="216" y="500" width="138" height="40" rx="9" fill="#0f172a" stroke="#00d4ff" stroke-opacity="0.3">
+      <animate attributeName="stroke-opacity" values="0.2;1;0.2" dur="6s" begin="-2s" repeatCount="indefinite"/>
+    </rect>
+    <text x="285" y="525" text-anchor="middle" font-size="13" fill="#cbd5e1" font-family="Segoe UI, system-ui, sans-serif">02 · EJERCICIO</text>
+    <rect x="362" y="500" width="138" height="40" rx="9" fill="#0f172a" stroke="#00d4ff" stroke-opacity="0.3">
+      <animate attributeName="stroke-opacity" values="0.2;1;0.2" dur="6s" begin="-4s" repeatCount="indefinite"/>
+    </rect>
+    <text x="431" y="525" text-anchor="middle" font-size="13" fill="#cbd5e1" font-family="Segoe UI, system-ui, sans-serif">03 · PARTIDA</text>
+
+    <!-- métricas -->
+    <g font-family="Segoe UI, system-ui, sans-serif">
+      <rect x="70" y="580" width="195" height="84" rx="12" fill="#0f172a" stroke="#1e3a5f"/><rect x="70" y="596" width="4" height="52" fill="#00d4ff"/>
+      <text x="92" y="620" font-size="28" font-weight="800" fill="#00d4ff">64</text>
+      <text x="92" y="644" font-size="12" fill="#94a3b8">CASILLAS (8×8)</text>
+      <rect x="275" y="580" width="195" height="84" rx="12" fill="#0f172a" stroke="#1e3a5f"/><rect x="275" y="596" width="4" height="52" fill="#22c55e"/>
+      <text x="297" y="620" font-size="28" font-weight="800" fill="#22c55e">16</text>
+      <text x="297" y="644" font-size="12" fill="#94a3b8">PIEZAS POR BANDO</text>
+      <rect x="70" y="676" width="195" height="84" rx="12" fill="#0f172a" stroke="#1e3a5f"/><rect x="70" y="692" width="4" height="52" fill="#f59e0b"/>
+      <text x="92" y="716" font-size="28" font-weight="800" fill="#f59e0b">6</text>
+      <text x="92" y="740" font-size="12" fill="#94a3b8">TIPOS DE PIEZA</text>
+      <rect x="275" y="676" width="195" height="84" rx="12" fill="#0f172a" stroke="#1e3a5f"/><rect x="275" y="692" width="4" height="52" fill="#a855f7"/>
+      <text x="297" y="716" font-size="28" font-weight="800" fill="#a855f7">3</text>
+      <text x="297" y="740" font-size="12" fill="#94a3b8">MOVIMIENTOS ESPECIALES</text>
+    </g>
+
+    <!-- ===== TABLERO CENTRAL ===== -->
+    <circle cx="800" cy="450" fill="none" stroke="#00d4ff" stroke-width="1.5">
+      <animate attributeName="r" from="300" to="352" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" from="0.25" to="0" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="800" cy="450" fill="none" stroke="#00d4ff" stroke-width="1.5">
+      <animate attributeName="r" from="300" to="352" dur="5s" begin="-2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" from="0.25" to="0" dur="5s" begin="-2.5s" repeatCount="indefinite"/>
+    </circle>
+
+    <g transform="translate(528,178)">
+      <rect x="-14" y="-14" width="572" height="572" rx="16" fill="#0b1220" stroke="#1e3a5f" stroke-width="2"/>
+      <rect x="-14" y="-14" width="572" height="572" rx="16" fill="none" stroke="#00d4ff" stroke-opacity="0.35" stroke-width="1"/>
+      <rect width="544" height="544" fill="url(#sqPat)" stroke="#1e3a5f"/>
+
+      <!-- control del centro -->
+      <rect x="204" y="272" width="68" height="68" fill="#00d4ff"><animate attributeName="opacity" values="0.03;0.18;0.03" dur="4s" repeatCount="indefinite"/></rect>
+      <rect x="272" y="272" width="68" height="68" fill="#00d4ff"><animate attributeName="opacity" values="0.03;0.18;0.03" dur="4s" begin="-1s" repeatCount="indefinite"/></rect>
+      <rect x="204" y="204" width="68" height="68" fill="#00d4ff"><animate attributeName="opacity" values="0.03;0.18;0.03" dur="4s" begin="-2s" repeatCount="indefinite"/></rect>
+      <rect x="272" y="204" width="68" height="68" fill="#00d4ff"><animate attributeName="opacity" values="0.03;0.18;0.03" dur="4s" begin="-3s" repeatCount="indefinite"/></rect>
+
+      <!-- coordenadas -->
+      <g font-size="16" fill="#475569" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif">
+        <text x="34" y="570">a</text><text x="102" y="570">b</text><text x="170" y="570">c</text><text x="238" y="570">d</text>
+        <text x="306" y="570">e</text><text x="374" y="570">f</text><text x="442" y="570">g</text><text x="510" y="570">h</text>
+        <text x="-24" y="40">8</text><text x="-24" y="108">7</text><text x="-24" y="176">6</text><text x="-24" y="244">5</text>
+        <text x="-24" y="312">4</text><text x="-24" y="380">3</text><text x="-24" y="448">2</text><text x="-24" y="516">1</text>
+      </g>
+
+      <!-- posición inicial (sin caballo b1 ni dama d1: son los animados) -->
+      <g text-anchor="middle" dominant-baseline="central" font-size="42" font-family="Segoe UI Symbol, Segoe UI, Noto Sans Symbols 2, sans-serif">
+        <g fill="#eef2f7">
+          <text x="34" y="510">♜</text><text x="170" y="510">♝</text><text x="306" y="510">♚</text><text x="374" y="510">♝</text><text x="442" y="510">♘</text><text x="510" y="510">♜</text>
+          <text x="34" y="442">♟</text><text x="102" y="442">♟</text><text x="170" y="442">♟</text><text x="238" y="442">♟</text><text x="306" y="442">♟</text><text x="374" y="442">♟</text><text x="442" y="442">♟</text><text x="510" y="442">♟</text>
+        </g>
+        <g fill="#0b1220" stroke="#4cc3ff" stroke-width="1.4" paint-order="stroke">
+          <text x="34" y="34">♜</text><text x="102" y="34">♞</text><text x="170" y="34">♝</text><text x="238" y="34">♛</text><text x="306" y="34">♚</text><text x="374" y="34">♝</text><text x="442" y="34">♞</text><text x="510" y="34">♜</text>
+          <text x="34" y="110">♟</text><text x="102" y="110">♟</text><text x="170" y="110">♟</text><text x="238" y="110">♟</text><text x="306" y="110">♟</text><text x="374" y="110">♟</text><text x="442" y="110">♟</text><text x="510" y="110">♟</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- recorrido de dama d1->h5 -->
+    <line x1="766" y1="688" x2="1038" y2="416" stroke="url(#qTrail)" stroke-width="4" stroke-linecap="round" fill="none">
+      <animate attributeName="stroke-dasharray" values="385" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-dashoffset" values="385;0;0;385;385" keyTimes="0;0.35;0.5;0.85;1" dur="8s" repeatCount="indefinite"/>
+    </line>
+    <rect x="1004" y="382" width="68" height="68" fill="#00d4ff" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.3;0.3;0;0" keyTimes="0;0.33;0.36;0.5;0.62;1" dur="8s" repeatCount="indefinite"/>
+    </rect>
+    <text x="766" y="688" text-anchor="middle" dominant-baseline="central" font-size="46" fill="#eef2f7" filter="url(#glow)" font-family="Segoe UI Symbol, Segoe UI, Noto Sans Symbols 2, sans-serif">
+      ♛
+      <animateTransform attributeName="transform" type="translate" values="0 0;272 -272;272 -272;0 0;0 0" keyTimes="0;0.35;0.5;0.85;1" dur="8s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- recorrido de caballo b1-c3-d5-f6 -->
+    <circle cx="698" cy="552" r="6" fill="#00d4ff" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.24;0.27;0.38;0.42;1" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="766" cy="416" r="6" fill="#00d4ff" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.54;0.57;0.68;0.72;1" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="902" cy="348" r="6" fill="#00d4ff" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.82;0.85;0.97;0.99;1" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="698" cy="552" fill="none" stroke="#00d4ff" stroke-width="2" r="4" opacity="0">
+      <animate attributeName="r" values="4;4;22;22" keyTimes="0;0.24;0.3;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.24;0.26;0.31;1" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="766" cy="416" fill="none" stroke="#00d4ff" stroke-width="2" r="4" opacity="0">
+      <animate attributeName="r" values="4;4;22;22" keyTimes="0;0.54;0.6;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.54;0.56;0.61;1" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="902" cy="348" fill="none" stroke="#00d4ff" stroke-width="2" r="4" opacity="0">
+      <animate attributeName="r" values="4;4;22;22" keyTimes="0;0.82;0.88;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.82;0.84;0.89;1" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1038" cy="280" fill="none" stroke="#f59e0b" stroke-width="3" r="24" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.9;0.9;0" keyTimes="0;0.84;0.88;0.96;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="20;20;28;20;20" keyTimes="0;0.86;0.9;0.94;1" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <text x="1038" y="244" text-anchor="middle" font-size="14" fill="#f59e0b" opacity="0" font-family="Segoe UI, system-ui, sans-serif">amenaza h7
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.85;0.88;0.96;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+    <g opacity="1">
+      <text text-anchor="middle" dominant-baseline="central" font-size="46" fill="#00d4ff" filter="url(#glow)" font-family="Segoe UI Symbol, Segoe UI, Noto Sans Symbols 2, sans-serif">♞</text>
+      <animateMotion path="M630,688 L698,552 L766,416 L902,348" calcMode="linear" keyPoints="0;0;0.3333;0.3333;0.6667;0.6667;1;1" keyTimes="0;0.08;0.24;0.38;0.54;0.68;0.82;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.9;0.95;1" dur="12s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- ===== PANEL DERECHO ===== -->
+    <!-- ENROQUE -->
+    <g transform="translate(1110,100)" font-family="Segoe UI, system-ui, sans-serif">
+      <rect width="220" height="240" rx="14" fill="#0f172a" stroke="#1e3a5f"/>
+      <text x="110" y="30" text-anchor="middle" font-size="14" font-weight="700" fill="#00d4ff" letter-spacing="1">ENROQUE CORTO · O-O</text>
+      <rect x="17" y="90" width="36" height="36" fill="#1c3052"/><rect x="57" y="90" width="36" height="36" fill="#0d1628" stroke="#1e3a5f"/><rect x="97" y="90" width="36" height="36" fill="#1c3052"/><rect x="137" y="90" width="36" height="36" fill="#0d1628" stroke="#1e3a5f"/>
+      <g>
+        <text x="35" y="109" text-anchor="middle" dominant-baseline="central" font-size="26" fill="#0b1220" stroke="#4cc3ff" stroke-width="1.2" paint-order="stroke" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♚
+          <animateTransform attributeName="transform" type="translate" values="0 0;0 0;80 0;80 0;0 0" keyTimes="0;0.3;0.45;0.85;1" dur="7s" repeatCount="indefinite"/>
+        </text>
+        <text x="155" y="109" text-anchor="middle" dominant-baseline="central" font-size="26" fill="#eef2f7" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♜
+          <animateTransform attributeName="transform" type="translate" values="0 0;0 0;-80 0;-80 0;0 0" keyTimes="0;0.3;0.45;0.85;1" dur="7s" repeatCount="indefinite"/>
+        </text>
+        <animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.85;0.9;0.99;1" dur="7s" repeatCount="indefinite"/>
+      </g>
+      <text x="110" y="155" text-anchor="middle" font-size="20" fill="#22c55e" opacity="0">✓
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.48;0.52;0.8;0.86;1" dur="7s" repeatCount="indefinite"/>
+      </text>
+      <text x="110" y="190" text-anchor="middle" font-size="12" fill="#94a3b8">El rey avanza 2 casillas hacia la torre;</text>
+      <text x="110" y="208" text-anchor="middle" font-size="12" fill="#94a3b8">la torre salta a la casilla que cruzó el rey.</text>
+      <text x="110" y="228" text-anchor="middle" font-size="11" fill="#64748b">Requisitos: sin jaque · sin piezas intermedias</text>
+    </g>
+
+    <!-- PROMOCIÓN -->
+    <g transform="translate(1340,100)" font-family="Segoe UI, system-ui, sans-serif">
+      <rect width="220" height="240" rx="14" fill="#0f172a" stroke="#1e3a5f"/>
+      <text x="110" y="30" text-anchor="middle" font-size="14" font-weight="700" fill="#f59e0b" letter-spacing="1">PROMOCIÓN · ♟ → ♛</text>
+      <rect x="85" y="60" width="40" height="45" fill="#1c3052"/><rect x="85" y="105" width="40" height="45" fill="#0d1628" stroke="#1e3a5f"/><rect x="85" y="150" width="40" height="45" fill="#1c3052"/>
+      <g>
+        <text text-anchor="middle" dominant-baseline="central" font-size="26" fill="#eef2f7" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♟
+          <animateMotion path="M105,172 L105,127 L105,82" calcMode="linear" keyPoints="0;0;0.5;0.5;1;1" keyTimes="0;0.15;0.35;0.5;0.7;1" dur="6s" repeatCount="indefinite"/>
+        </text>
+        <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.68;0.72;1" dur="6s" repeatCount="indefinite"/>
+      </g>
+      <text x="105" y="82" text-anchor="middle" dominant-baseline="central" font-size="28" fill="#f59e0b" opacity="0" filter="url(#glow)" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♛
+        <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.7;0.75;1" dur="6s" repeatCount="indefinite"/>
+      </text>
+      <circle cx="105" cy="82" fill="none" stroke="#f59e0b" stroke-width="2" r="4" opacity="0">
+        <animate attributeName="r" values="4;4;30;30" keyTimes="0;0.72;0.88;1" dur="6s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;0;0.9;0;0" keyTimes="0;0.72;0.76;0.9;1" dur="6s" repeatCount="indefinite"/>
+      </circle>
+      <text x="110" y="218" text-anchor="middle" font-size="12" fill="#94a3b8">Al llegar a la última fila, el peón se cambia</text>
+      <text x="110" y="234" text-anchor="middle" font-size="12" fill="#94a3b8">por Dama, Torre, Alfil o Caballo.</text>
+    </g>
+
+    <!-- JAQUE MATE -->
+    <g transform="translate(1110,360)" font-family="Segoe UI, system-ui, sans-serif">
+      <rect width="450" height="270" rx="14" fill="#0f172a" stroke="#1e3a5f"/>
+      <text x="225" y="30" text-anchor="middle" font-size="14" font-weight="700" fill="#ef4444" letter-spacing="1">JAQUE MATE · EL OBJETIVO DEL JUEGO</text>
+      <rect x="60" y="80" width="50" height="50" fill="#1c3052"/><rect x="110" y="80" width="50" height="50" fill="#0d1628" stroke="#1e3a5f"/><rect x="160" y="80" width="50" height="50" fill="#1c3052"/><rect x="210" y="80" width="50" height="50" fill="#0d1628" stroke="#1e3a5f"/><rect x="260" y="80" width="50" height="50" fill="#1c3052"/>
+      <rect x="235" y="140" width="50" height="50" fill="#0d1628" stroke="#1e3a5f"><animate attributeName="opacity" values="1;0.35;1" dur="2.5s" repeatCount="indefinite"/></rect>
+      <rect x="285" y="140" width="50" height="50" fill="#1c3052"><animate attributeName="opacity" values="1;0.35;1" dur="2.5s" begin="-0.8s" repeatCount="indefinite"/></rect>
+      <rect x="335" y="140" width="50" height="50" fill="#0d1628" stroke="#1e3a5f"><animate attributeName="opacity" values="1;0.35;1" dur="2.5s" begin="-1.6s" repeatCount="indefinite"/></rect>
+      <rect x="235" y="140" width="150" height="50" fill="#ef4444"><animate attributeName="opacity" values="0.06;0.28;0.06" dur="2.5s" repeatCount="indefinite"/></rect>
+      <circle cx="285" cy="105" fill="#ef4444" r="26" opacity="0.3">
+        <animate attributeName="r" values="26;36;26" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.25;0.55;0.25" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <line x1="112" y1="105" x2="262" y2="105" stroke="#ef4444" stroke-width="3" stroke-dasharray="10 8" opacity="0.85">
+        <animate attributeName="stroke-dashoffset" from="0" to="-18" dur="0.6s" repeatCount="indefinite"/>
+      </line>
+      <text x="85" y="106" text-anchor="middle" dominant-baseline="central" font-size="32" fill="#eef2f7" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♜</text>
+      <text x="285" y="106" text-anchor="middle" dominant-baseline="central" font-size="32" fill="#0b1220" stroke="#ef4444" stroke-width="1.4" paint-order="stroke" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♚</text>
+      <text x="225" y="230" text-anchor="middle" font-size="26" font-weight="800" fill="#ef4444">¡JAQUE MATE!
+        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.6s" repeatCount="indefinite"/>
+      </text>
+      <text x="225" y="254" text-anchor="middle" font-size="12" fill="#94a3b8">El rey está en jaque y no tiene escapatoria: la partida termina al instante.</text>
+    </g>
+
+    <!-- VALORES -->
+    <g transform="translate(1110,660)" font-family="Segoe UI, system-ui, sans-serif">
+      <text x="0" y="-10" font-size="12" fill="#64748b" letter-spacing="1">VALOR RELATIVO DE LAS PIEZAS (GUÍA SIMPLIFICADA)</text>
+      <g>
+        <rect x="0" width="80" height="92" rx="12" fill="#0f172a" stroke="#1e3a5f"/>
+        <text x="40" y="42" text-anchor="middle" font-size="30" fill="#eef2f7" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♟</text>
+        <text x="40" y="72" text-anchor="middle" font-size="14" font-weight="700" fill="#00d4ff">1 PTO</text>
+      </g>
+      <g transform="translate(90,0)">
+        <rect width="80" height="92" rx="12" fill="#0f172a" stroke="#1e3a5f"/>
+        <text x="40" y="42" text-anchor="middle" font-size="30" fill="#eef2f7" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♞</text>
+        <text x="40" y="72" text-anchor="middle" font-size="14" font-weight="700" fill="#00d4ff">3 PTS</text>
+      </g>
+      <g transform="translate(180,0)">
+        <rect width="80" height="92" rx="12" fill="#0f172a" stroke="#1e3a5f"/>
+        <text x="40" y="42" text-anchor="middle" font-size="30" fill="#eef2f7" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♝</text>
+        <text x="40" y="72" text-anchor="middle" font-size="14" font-weight="700" fill="#00d4ff">3 PTS</text>
+      </g>
+      <g transform="translate(270,0)">
+        <rect width="80" height="92" rx="12" fill="#0f172a" stroke="#1e3a5f"/>
+        <text x="40" y="42" text-anchor="middle" font-size="30" fill="#eef2f7" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♜</text>
+        <text x="40" y="72" text-anchor="middle" font-size="14" font-weight="700" fill="#00d4ff">5 PTS</text>
+      </g>
+      <g transform="translate(360,0)">
+        <rect width="80" height="92" rx="12" fill="#0f172a" stroke="#1e3a5f"/>
+        <text x="40" y="42" text-anchor="middle" font-size="30" fill="#eef2f7" font-family="Segoe UI Symbol, Segoe UI, sans-serif">♛</text>
+        <text x="40" y="72" text-anchor="middle" font-size="14" font-weight="700" fill="#00d4ff">9 PTS</text>
+      </g>
+      <rect x="-4" y="-4" width="88" height="100" rx="14" fill="none" stroke="#00d4ff" stroke-width="2">
+        <animateTransform attributeName="transform" type="translate" values="0 0;90 0;180 0;270 0;360 0" keyTimes="0;0.2;0.4;0.6;0.8" calcMode="discrete" dur="10s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+
+    <!-- FRANJA INFERIOR -->
+    <g font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#94a3b8" text-anchor="middle">
+      <rect x="90" y="832" width="220" height="44" rx="10" fill="#0f172a" stroke="#1e3a5f"/><text x="200" y="859">TABLERO Y PIEZAS</text>
+      <rect x="330" y="832" width="220" height="44" rx="10" fill="#0f172a" stroke="#1e3a5f"/><text x="440" y="859">MOVIMIENTOS ESPECIALES</text>
+      <rect x="570" y="832" width="220" height="44" rx="10" fill="#0f172a" stroke="#1e3a5f"/><text x="680" y="859">JAQUE · MATE · TABLAS</text>
+      <rect x="810" y="832" width="220" height="44" rx="10" fill="#0f172a" stroke="#1e3a5f"/><text x="920" y="859">ESTRATEGIA INICIAL</text>
+      <rect x="1050" y="832" width="220" height="44" rx="10" fill="#0f172a" stroke="#1e3a5f"/><text x="1160" y="859">PRÁCTICA INTEGRADA</text>
+      <rect x="1290" y="832" width="220" height="44" rx="10" fill="#0f172a" stroke="#1e3a5f"/><text x="1400" y="859">ERRORES Y RECURSOS</text>
+      <rect x="86" y="828" width="228" height="52" rx="12" fill="none" stroke="#00d4ff" stroke-width="2">
+        <animateTransform attributeName="transform" type="translate" values="0 0;240 0;480 0;720 0;960 0;1200 0" keyTimes="0;0.1667;0.3333;0.5;0.6667;0.8333" calcMode="discrete" dur="12s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+  </svg>
+  </div>
+
+  <div class="heroBadge">TUTORIAL INTERACTIVO · AJEDREZ PARA PRINCIPIANTES</div>
+  <h1 class="hero">Del Concepto a la Práctica</h1>
+  <p class="heroSub">Un marco pedagógico para dominar los fundamentos del ajedrez</p>
+  <p class="heroDesc">Este informe de investigación presenta un marco detallado para la creación de un tutorial paso a paso dirigido a principiantes en ajedrez. El objetivo es facilitar la comprensión teórica y la aplicación práctica de los conceptos fundamentales del juego, basándose en principios pedagógicos sólidos extraídos de investigaciones sobre cognición y enseñanza. El enfoque se centra en una <b>progresión controlada del conocimiento</b>, la <b>integración inmediata de la práctica</b> y la <b>gestión de los errores más comunes</b> para construir una base sólida y funcional.</p>
+
+  <div class="quote">«Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.»
+    <small>PRINCIPIO GUÍA DE ESTE TUTORIAL</small>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="n">64</div><div class="l">Casillas del tablero</div></div>
+    <div class="metric"><div class="n">16</div><div class="l">Piezas por bando</div></div>
+    <div class="metric"><div class="n">6</div><div class="l">Tipos de pieza</div></div>
+    <div class="metric"><div class="n">3</div><div class="l">Movimientos especiales</div></div>
+    <div class="metric"><div class="n">5</div><div class="l">Principios de apertura</div></div>
+    <div class="metric"><div class="n">106</div><div class="l">Referencias documentales</div></div>
+  </div>
+
+  <p class="roadTitle">ITINERARIO DEL TUTORIAL · PULSA PARA IR A CADA MÓDULO</p>
+  <div class="roadmap">
+    <button class="road" data-sec="fundamentos"><span class="num">01</span>Fundamentos absolutos: tablero, piezas y objetivo</button>
+    <button class="road" data-sec="especiales"><span class="num">02</span>Movimientos especiales: enroque, promoción y captura al paso</button>
+    <button class="road" data-sec="resultados"><span class="num">03</span>Jaque, jaque mate y tablas: los resultados del juego</button>
+    <button class="road" data-sec="estrategia"><span class="num">04</span>Principios estratégicos iniciales y planificación básica</button>
+    <button class="road" data-sec="practica"><span class="num">05</span>La práctica integrada: ejercicios para consolidar</button>
+    <button class="road" data-sec="errores"><span class="num">06</span>Gestión de errores comunes y recursos adicionales</button>
+  </div>
+
+  <div class="dtChips">
+    <div class="dtChip">📅 Fecha: <b>29/08/2026</b></div>
+    <div class="dtChip">🕔 Hora: <b>05:33:21</b></div>
+    <div class="dtChip">👨‍💻 Créditos: <b>Rubén Sbarsky</b></div>
+  </div>
+</section>
+
+<!-- ==================== FUNDAMENTOS ==================== -->
+<section class="view" id="fundamentos">
+  <div class="secHead">
+    <div class="kicker">MÓDULO 01 · FUNDAMENTOS ABSOLUTOS</div>
+    <h2>El Tablero, las Piezas y el Objetivo del Juego</h2>
+    <p class="lead">El primer paso para cualquier principiante es establecer una comprensión absoluta de los elementos básicos del ajedrez. Este fundamento no solo incluye saber cómo se mueven las piezas, sino también entender la configuración del campo de batalla y el propósito final de la partida.</p>
+  </div>
+
+  <div class="callout info"><span class="tag">INFO · BASE PEDAGÓGICA</span>
+    Un enfoque pedagógico inspirado en la <b>Teoría de la Carga Cognitiva (CLT)</b> sugiere que esta información debe presentarse de forma <b>modular</b>, dividiendo el contenido en bloques manejables para evitar el sobrecalentamiento cognitivo. La CLT postula que si la cantidad de información excede la capacidad de procesamiento de la memoria de trabajo, el aprendizaje resultará deficiente. Por eso este módulo se divide en tres subsecciones lógicas: <b>el tablero y su orientación</b>, <b>el movimiento básico de cada pieza</b> y <b>el objetivo inequívoco del juego</b>. Los principiantes suelen pasar por una fase donde exploran principalmente los movimientos de las piezas antes de adentrarse en conceptos más abstractos, lo que valida este orden secuencial.
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">▦</span> 1.1 · El tablero y su orientación</h3>
+    <p>La configuración del tablero es el punto de partida. El tablero es una cuadrícula de <b>8×8 casillas</b>, alternativamente de color claro y oscuro, sumando un total de <b>64 casillas</b>.</p>
+    <p>Es crucial que los jugadores coloquen el tablero correctamente entre ellos, de modo que <b>la esquina más cercana a cada uno sea una casilla de color claro</b>. Esta convención visual ayuda a mantener la orientación durante toda la partida.</p>
+    <p>Al inicio de la partida, cada jugador dispone de <b>16 piezas</b>: <b>un Rey, una Dama, dos Torres, dos Alfiles, dos Caballos y ocho Peones</b>. Las piezas se colocan en dos filas principales: la <b>primera fila</b> (piezas mayores del blanco) y la <b>segunda fila</b> (peones del blanco); para el jugador negro, la <b>octava fila</b> (piezas mayores) y la <b>séptima fila</b> (peones).</p>
+    <p>La disposición estándar, desde la columna <b>«a»</b> hasta la <b>«h»</b>, es la siguiente en la primera fila (para el blanco):</p>
+    <div class="chipRow">
+      <span class="chip">a1 · ♜ Torre</span><span class="chip">b1 · ♘ Caballo</span><span class="chip">c1 · ♗ Alfil</span><span class="chip acc">d1 · ♕ Dama</span><span class="chip amb">e1 · ♔ Rey</span><span class="chip">f1 · ♗ Alfil</span><span class="chip">g1 · ♘ Caballo</span><span class="chip">h1 · ♜ Torre</span>
+    </div>
+    <div class="callout ejemplo"><span class="tag">EJEMPLO · REGLA MNEMOTÉCNICA</span>
+      <b>La Dama siempre ocupa la casilla de su propio color</b>: la dama blanca va en una casilla clara y la dama negra en una oscura. Un detalle mnemotécnico muy útil para colocar correctamente la posición inicial. Los peones ocupan toda la segunda fila para el blanco y la séptima para el negro.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">♟</span> 1.2 · El movimiento de cada pieza</h3>
+    <p>A continuación se enseña el movimiento de cada pieza de manera individual. Este orden de enseñanza permite al principiante asimilar <b>un patrón de movimiento a la vez</b> antes de intentar gestionar múltiples piezas simultáneamente.</p>
+    <div class="pieceGrid">
+      <div class="pieceCard"><div class="glyph">♟</div><h4>El Peón</h4><p>Avanza <b>una casilla hacia adelante</b> en la dirección de su color, <b>excepto en su primer movimiento</b>, donde puede avanzar una o dos casillas. <b>Captura moviéndose una casilla diagonalmente hacia adelante</b>.</p><div class="uniq">★ Característica única: se promociona al llegar al último rango.</div></div>
+      <div class="pieceCard"><div class="glyph">♞</div><h4>El Caballo</h4><p>Se mueve en forma de <b>«L»</b>: dos casillas en una dirección y luego una casilla perpendicular a esa dirección.</p><div class="uniq">★ Característica única: la única pieza capaz de saltar sobre otras piezas.</div></div>
+      <div class="pieceCard"><div class="glyph">♝</div><h4>El Alfil</h4><p>Se desplaza <b>cualquier número de casillas a lo largo de una diagonal</b>.</p><div class="uniq">★ Característica única: permanece siempre en casillas del mismo color.</div></div>
+      <div class="pieceCard"><div class="glyph">♜</div><h4>La Torre</h4><p>Se mueve <b>cualquier número de casillas a lo largo de la fila o columna</b> en la que se encuentra.</p><div class="uniq">★ Pieza mayor de largo alcance en líneas rectas.</div></div>
+      <div class="pieceCard"><div class="glyph">♛</div><h4>La Dama</h4><p><b>Combina los movimientos del Alfil y la Torre</b>, pudiendo moverse a lo largo de diagonales, filas o columnas.</p><div class="uniq">★ La pieza más potente en términos de movimiento.</div></div>
+      <div class="pieceCard"><div class="glyph">♚</div><h4>El Rey</h4><p>Se mueve <b>una casilla en cualquier dirección</b>: horizontal, vertical o diagonal.</p><div class="uniq">★ Su pérdida por jaque mate determina el resultado de la partida.</div></div>
+    </div>
+
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>Pieza</th><th>Movimiento principal</th><th>Característica única</th></tr></thead>
+        <tbody>
+          <tr><td><b>♟ Peón</b></td><td>Avanza una casilla hacia adelante, dos en su primer movimiento. Captura en diagonal.</td><td>Se promociona al llegar al último rango.</td></tr>
+          <tr><td><b>♞ Caballo</b></td><td>Mueve en L (dos en una dirección, una perpendicular). Salta sobre otras piezas.</td><td>Única pieza que puede saltar otras piezas.</td></tr>
+          <tr><td><b>♝ Alfil</b></td><td>Mueve cualquier número de casillas a lo largo de una diagonal.</td><td>Permanece siempre en casillas del mismo color.</td></tr>
+          <tr><td><b>♜ Torre</b></td><td>Mueve cualquier número de casillas a lo largo de una fila o columna.</td><td>Pieza de largo alcance en filas y columnas.</td></tr>
+          <tr><td><b>♛ Dama</b></td><td>Combina el movimiento de la Torre y el Alfil (diagonales, filas y columnas).</td><td>La pieza más potente en términos de movimiento.</td></tr>
+          <tr><td><b>♚ Rey</b></td><td>Mueve una casilla en cualquier dirección.</td><td>Su pérdida por jaque mate determina el resultado de la partida.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">🧭</span> Explorador interactivo de movimientos</h3>
+    <p>Selecciona una pieza y pulsa cualquier casilla para colocarla: se iluminarán sus casillas de movimiento legal (verde) y, en el caso del peón, sus capturas diagonales (ámbar). Comprueba cómo el Caballo salta, el Alfil vive en diagonales y la Dama lo combina todo.</p>
+    <div class="expWrap">
+      <div>
+        <div id="expBoard" aria-label="Tablero interactivo de movimientos"></div>
+        <div class="legend">
+          <span><span class="dotL" style="background:#00d4ff"></span>Pieza seleccionada</span>
+          <span><span class="dotL" style="background:#22c55e"></span>Movimiento legal</span>
+          <span><span class="dotL" style="background:#f59e0b"></span>Captura del peón</span>
+        </div>
+      </div>
+      <div>
+        <div class="pieceBtns" id="pieceBtns">
+          <button class="pBtn" data-p="P">♟<small>Peón</small></button>
+          <button class="pBtn active" data-p="N">♞<small>Caballo</small></button>
+          <button class="pBtn" data-p="B">♝<small>Alfil</small></button>
+          <button class="pBtn" data-p="R">♜<small>Torre</small></button>
+          <button class="pBtn" data-p="Q">♛<small>Dama</small></button>
+          <button class="pBtn" data-p="K">♚<small>Rey</small></button>
+        </div>
+        <div id="expInfo"></div>
+        <div class="callout info" style="margin-top:12px"><span class="tag">INFO · NOTA DEL EXPLORADOR</span>El tablero se muestra vacío para aislar cada patrón de movimiento. Recuerda que el peón representado avanza como un peón blanco (hacia arriba) y que, al llegar a la octava fila, promocionaría.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">🎯</span> 1.3 · El objetivo del juego: el jaque mate</h3>
+    <p>El objetivo más importante del juego es un concepto que los principiantes a menudo malinterpretan. <b>El objetivo no es capturar todas las piezas del oponente, sino alcanzar una posición llamada «jaque mate»</b>.</p>
+    <p>Esto ocurre cuando el Rey del oponente está bajo ataque directo (<b>«jaque»</b>) y se cumplen estas condiciones:</p>
+    <ol class="steps">
+      <li><b>No tiene ninguna casilla legal</b> a la que moverse para escapar.</li>
+      <li><b>Ninguna de sus propias piezas puede capturar al atacante.</b></li>
+      <li><b>Ninguna pieza puede interponerse</b> entre él y el atacante.</li>
+    </ol>
+    <p>El jugador que logra el jaque mate <b>gana la partida</b>; <b>el Rey nunca es capturado físicamente en el tablero</b>.</p>
+    <div class="callout advertencia"><span class="tag">ADVERTENCIA · ERROR CONCEPTUAL</span>Es fundamental reforzar este punto desde el principio para corregir la noción errónea de que ganar se trata de <b>acumular material</b>. Este entendimiento del objetivo principal guía todas las decisiones estratégicas posteriores.</div>
+    <div class="callout ejemplo"><span class="tag">EJEMPLO · ANALOGÍA PARA ENTENDERLO</span>Una forma efectiva de reforzarlo es mediante analogías simples: compara el Rey con <b>un niño que necesita ser protegido de un peligro</b>, y el jaque mate como el momento en que <b>ese niño está rodeado y no puede escapar ni refugiarse</b>.</div>
+  </div>
+</section>
+
+<!-- ==================== MOVIMIENTOS ESPECIALES ==================== -->
+<section class="view" id="especiales">
+  <div class="secHead">
+    <div class="kicker">MÓDULO 02 · REGLAS TRANSICIONALES</div>
+    <h2>Movimientos Especiales: Enroque, Promoción y Captura al Paso</h2>
+    <p class="lead">Una vez que un principiante domina los movimientos básicos, el siguiente paso lógico es introducir los conceptos transicionales que añaden profundidad al juego y son cruciales para una partida bien jugada. Estos movimientos especiales no deben presentarse como reglas adicionales, sino como <b>soluciones elegantes a problemas específicos del ajedrez</b>.</p>
+  </div>
+
+  <div class="callout info"><span class="tag">INFO · MÉTODO DE ENSEÑANZA</span>
+    Usar estructuras de apoyo (<b>scaffolding</b>) es particularmente eficaz aquí: proporcionan un soporte temporal que reduce la carga cognitiva mientras el estudiante comprende la lógica detrás de cada regla. El método <b>«yo lo hago, nosotros lo hacemos, tú lo haces»</b> es ideal: el tutor demuestra el movimiento, luego resuelven juntos un ejemplo, y finalmente el estudiante lo aplica por sí mismo.
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tabBtn active" data-tab="p-enroque" role="tab">🏰 Enroque</button>
+    <button class="tabBtn" data-tab="p-promo" role="tab">⭐ Promoción</button>
+    <button class="tabBtn" data-tab="p-paso" role="tab">⚔️ Captura al paso</button>
+  </div>
+
+  <div class="tPanel active" id="p-enroque">
+    <div class="card">
+      <h3><span class="ic">🏰</span> El Enroque</h3>
+      <p>El enroque es un <b>movimiento único que involucra tanto al Rey como a una Torre</b>. Su propósito principal es <b>poner al Rey en una posición más segura</b> y <b>activar una Torre</b>. Consiste en <b>mover el Rey dos casillas hacia una Torre</b>, y luego <b>la Torre se coloca en la casilla que el Rey acaba de cruzar</b>.</p>
+      <div class="grid2">
+        <div class="callout ejemplo" style="margin:0"><span class="tag">ENROQUE CORTO (DE REY) · O-O</span>Se realiza con la <b>Torre de la columna h</b> (h-file). El rey se desplaza dos casillas hacia esa torre.</div>
+        <div class="callout ejemplo" style="margin:0"><span class="tag">ENROQUE LARGO (DE DAMA) · O-O-O</span>Se realiza con la <b>Torre de la columna a</b> (a-file). El rey se desplaza dos casillas hacia esa torre.</div>
+      </div>
+      <p style="margin-top:12px">Sin embargo, el enroque <b>no siempre está permitido</b>. Para poder enrocar, deben cumplirse varias condiciones estrictas:</p>
+      <ol class="steps">
+        <li>El <b>Rey y la Torre involucradas no pueden haberse movido previamente</b> en la partida.</li>
+        <li>El <b>Rey no puede estar en jaque</b> en el momento de enrocar.</li>
+        <li>El Rey <b>no puede atravesar ni terminar en una casilla que esté bajo ataque</b> de una pieza adversaria.</li>
+        <li><b>No puede haber piezas entre el Rey y la Torre.</b></li>
+      </ol>
+      <div class="miniDiag">
+        <div class="miniRow"><span>Antes:</span><span class="sq l"></span><span class="sq d"></span><span class="sq l"></span><span class="sq d">♚</span><span class="sq l"></span><span class="sq d"></span><span class="sq l"></span><span class="sq d">♜</span></div>
+        <div class="miniRow"><span class="arrowLbl">↓ O-O</span></div>
+        <div class="miniRow"><span>Después:</span><span class="sq l"></span><span class="sq d"></span><span class="sq l"></span><span class="sq d"></span><span class="sq l"></span><span class="sq d gl">♜</span><span class="sq l gl">♚</span><span class="sq d"></span></div>
+      </div>
+      <div class="callout info"><span class="tag">INFO · ANALOGÍA HISTÓRICA</span>Explicar estas reglas con claridad es vital. Se pueden usar analogías históricas: antes los jugadores tenían que mover el Rey y la Torre por separado, lo que tomaba varios turnos, y <b>el enroque fue una regla creada para agilizar el juego</b>. Hojas de trabajo de práctica, como las que piden identificar si el enroque es legal en una posición dada, son excelentes para reforzar estos requisitos.</div>
+    </div>
+  </div>
+
+  <div class="tPanel" id="p-promo">
+    <div class="card">
+      <h3><span class="ic">⭐</span> La Promoción de Peones</h3>
+      <p>La promoción de peones es otro evento transicional que ocurre cuando <b>un peón alcanza el extremo opuesto del tablero</b> (la octava fila para el blanco, la primera para el negro). Como parte del <b>mismo movimiento</b> en que llega a esa fila, el peón <b>debe ser cambiado por una nueva Dama, Torre, Alfil o Caballo de su propio color</b>.</p>
+      <p>Aunque comúnmente se promociona a <b>Dama</b> debido a su gran poder, <b>no hay restricciones sobre qué pieza ya capturada se puede volver a tener</b>.</p>
+      <div class="callout ejemplo"><span class="tag">EJEMPLO · DECISIÓN ESTRATÉGICA</span>Este concepto introduce una <b>decisión estratégica temprana incluso en el final de la partida</b>. Un error común de los principiantes es no considerar la promoción, especialmente a un <b>Caballo</b>, que puede ser ventajoso para <b>dar jaque</b> o <b>evitar un empate por ahogado</b>.</div>
+    </div>
+  </div>
+
+  <div class="tPanel" id="p-paso">
+    <div class="card">
+      <h3><span class="ic">⚔️</span> La Captura al Paso («en passant»)</h3>
+      <p>La captura al paso es un <b>movimiento de captura especial para los peones</b>. Ocurre cuando <b>un peón avanza dos casillas desde su posición inicial y termina junto a un peón adversario</b>. El peón adversario puede entonces <b>capturarlo como si el peón hubiera avanzado solo una casilla</b>, moviéndose al <b>cuadrado que este saltó</b>.</p>
+      <div class="callout info"><span class="tag">INFO · PROPÓSITO DE LA REGLA</span>Esta regla evita que los peones puedan usar su movimiento inicial de dos casillas para <b>saltarse la oportunidad de ser capturados</b> por un peón enemigo.</div>
+      <div class="callout advertencia"><span class="tag">ADVERTENCIA · NO LA OLVIDES</span>Aunque es un movimiento menos común, es importante mencionarlo porque <b>puede surgir en partidas</b> y su omisión podría llevar a disputas.</div>
+      <p>La enseñanza de estos tres conceptos <b>completa el conjunto de reglas mecánicas necesarias para jugar una partida</b>, preparando al estudiante para abordar los aspectos estratégicos del juego.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== RESULTADOS ==================== -->
+<section class="view" id="resultados">
+  <div class="secHead">
+    <div class="kicker">MÓDULO 03 · CÓMO TERMINA UNA PARTIDA</div>
+    <h2>Jaque, Jaque Mate y Tablas: Diferenciando los Resultados</h2>
+    <p class="lead">Uno de los mayores obstáculos para los principiantes no es tanto el movimiento de las piezas, sino la comprensión de <b>cómo termina una partida</b>. La distinción entre «jaque», «jaque mate» y «tablas» (partida empatada) es fundamental para interpretar correctamente el estado del juego y tomar decisiones correctas.</p>
+  </div>
+
+  <div class="callout advertencia"><span class="tag">ADVERTENCIA · EL ERROR MÁS ARRAIGADO</span>La confusión entre <b>jaque mate y tablas</b> es, quizás, el error conceptual más arraigado y frustrante para un novato. Un tutorial efectivo debe dedicarle una atención especial, utilizando ejemplos claros y un formato comparativo para solidificar esta diferencia crítica. El objetivo es asegurar que el jugador entienda que <b>el jaque mate es la única forma de ganar</b>, mientras que <b>las tablas son un resultado válido que puede salvar una partida perdida</b>.</div>
+
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <h3><span class="ic">⚡</span> El Jaque</h3>
+      <p>El <b>«jaque»</b> describe una situación en la que el Rey de un jugador está <b>bajo amenaza de ser capturado en el siguiente movimiento</b> por una pieza adversaria. Cuando un jugador recibe jaque, <b>su obligación inmediata es salir de esa amenaza</b> en su siguiente movimiento. <b>No puede ignorar el jaque.</b></p>
+      <p>Las únicas respuestas legales a un jaque son:</p>
+      <ol class="steps">
+        <li><b>Mover el Rey</b> a una casilla que no esté atacada.</li>
+        <li><b>Capturar la pieza</b> que está dando jaque.</li>
+        <li><b>Bloquear el ataque</b> interponiendo una pieza propia (solo funciona contra piezas que se mueven en línea recta: <b>Torre, Alfil y Dama</b>).</li>
+      </ol>
+      <div class="callout error" style="margin-bottom:0"><span class="tag">ERROR · REGLA ABSOLUTA</span>Un jugador <b>nunca puede hacer un movimiento que lo deje en jaque a sí mismo</b>.</div>
+    </div>
+    <div class="card" style="margin:0">
+      <h3><span class="ic">🏁</span> El Jaque Mate</h3>
+      <p>El <b>«jaque mate»</b> es la culminación de una partida. Ocurre cuando un jugador está en jaque y <b>no tiene ninguna de las tres respuestas legales</b> mencionadas: el Rey no puede moverse a ningún lugar seguro, ninguna pieza puede capturar al atacante y no hay espacio para interponer una pieza bloqueadora.</p>
+      <p>En ese momento, <b>la partida termina inmediatamente y el jugador que dio el jaque mate gana</b>.</p>
+      <div class="callout info"><span class="tag">INFO · EL REY NUNCA SE CAPTURA</span>Es importante destacar que <b>el Rey nunca es retirado del tablero</b>; la victoria se declara simplemente porque el objetivo del juego ha sido alcanzado.</div>
+      <p>Existen <b>patrones de jaque mate muy comunes</b> que un principiante debería reconocer, como el <b>jaque mate en la arista del tablero</b>, donde una Torre o una Dama ataca al Rey atrapado por sus propias piezas en la primera o octava fila.</p>
+      <h3 style="margin-top:18px"><span class="ic">🤝</span> Las Tablas (empate)</h3>
+      <p>La más relevante para un principiante es el <b>«ahogado»</b>: ocurre cuando un jugador <b>no tiene ningún movimiento legal posible, pero su Rey no está en jaque</b>. El jugador cuyo turno es no puede hacer nada, pero no ha perdido porque su Rey no está amenazado. El resultado es <b>tablas</b> y ambos jugadores reciben <b>medio punto cada uno</b>.</p>
+      <div class="callout ejemplo" style="margin-bottom:0"><span class="tag">EJEMPLO · LA PREGUNTA CLAVE</span>Es crucial practicar la pregunta: <b>«¿El Rey está en jaque?»</b>. Si la respuesta es <b>no</b>, entonces la posición podría ser de ahogado.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">📊</span> Comparativa definitiva de resultados</h3>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>Condición</th><th>¿Está el Rey en jaque?</th><th>¿Hay movimientos legales disponibles?</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td><b>Jaque</b></td><td>Sí</td><td>Sí (mover el Rey, capturar el atacante o bloquearlo)</td><td>El jugador debe responder al jaque. <b>La partida continúa.</b></td></tr>
+          <tr><td><b>Jaque Mate</b></td><td>Sí</td><td>No</td><td><b>El jugador que da jaque gana la partida.</b></td></tr>
+          <tr><td><b>Ahogado</b></td><td>No</td><td>No</td><td><b>La partida termina en tablas.</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Otros motivos de tablas incluyen: la <b>falta de material suficiente para dar jaque mate</b> (por ejemplo, Rey contra Rey, Rey y Alfil contra Rey, etc.), el <b>acuerdo mutuo de los jugadores</b>, o la <b>repetición triple de una posición</b>.</p>
+    <div class="callout advertencia" style="margin-bottom:0"><span class="tag">ADVERTENCIA · RECURSO DEFENSIVO</span>El tutorial debe enfatizar que <b>forzar un ahogado puede ser una táctica defensiva valiosa</b> para convertir una derrota casi segura en un empate.</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">🧪</span> Autoevaluación: ¿Jaque, Jaque Mate, Ahogado…?</h3>
+    <p>Pon a prueba la distinción crítica de este módulo. Responde y recibirás retroalimentación inmediata, tal como recomienda el marco pedagógico.</p>
+    <div class="quizBox" id="quizBox"></div>
+  </div>
+</section>
+
+<!-- ==================== ESTRATEGIA ==================== -->
+<section class="view" id="estrategia">
+  <div class="secHead">
+    <div class="kicker">MÓDULO 04 · MENTALIDAD ESTRATÉGICA BÁSICA</div>
+    <h2>Principios Estratégicos Iniciales y Planificación Básica</h2>
+    <p class="lead">Superado el dominio de las reglas mecánicas, el siguiente nivel consiste en adoptar una mentalidad estratégica básica. No se trata de enseñar complejas estructuras de peones o variantes de apertura, sino de transmitir <b>principios generales que guíen las decisiones</b> de un jugador desde el inicio de la partida. Estos principios ayudan a evitar movimientos pasivos o perjudiciales y fomentan una participación coherente en el juego.</p>
+  </div>
+
+  <div class="callout info"><span class="tag">INFO · MÉTODO</span>La estrategia para enseñar estos conceptos sigue el mismo modelo de <b>reducción de carga cognitiva</b>: presentar <b>una regla simple a la vez</b> y conectarla con ejemplos prácticos.</div>
+
+  <div class="card">
+    <h3><span class="ic">⚖️</span> El valor relativo de las piezas</h3>
+    <p>Un principio fundamental es el <b>valor relativo de las piezas</b>, que sirve como guía intuitiva para las decisiones de captura. Aunque no es una regla infalible, una escala de valor simplificada es muy útil para los principiantes:</p>
+    <div class="chipRow">
+      <span class="chip acc">♟ Peón = 1 punto</span><span class="chip grn">♞ Caballo = 3 puntos</span><span class="chip grn">♝ Alfil = 3 puntos</span><span class="chip amb">♜ Torre = 5 puntos</span><span class="chip red">♛ Dama = 9 puntos</span>
+    </div>
+    <p>Este sistema ayuda a evaluar rápidamente si una captura es favorable o no. Por ejemplo, según el documento, capturar una Torre (5 puntos) con un Alfil (3 puntos) sería <b>una mala jugada a menos que exista una compensación estratégica</b>.</p>
+    <div class="callout ejemplo" style="margin-bottom:0"><span class="tag">EJEMPLO · REGLA MNEMOTÉCNICA</span>El consejo <b>«No des tu caballo por un alfil»</b> es una regla mnemotécnica derivada de este valor, aunque en muchos casos se prioriza desarrollar los Alfiles antes que los Caballos.</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">🚀</span> Los 5 principios de desarrollo inicial</h3>
+    <p>Quizás los más importantes para un novato: consejos prácticos sobre cómo utilizar las primeras jugadas de la partida de la manera más efectiva posible.</p>
+    <ol class="steps">
+      <li><b>Desarrolla tus piezas menores (Caballo y Alfil) antes que tu Dama.</b> La Dama es valiosa, pero si la sacas demasiado pronto puede ser perseguida fácilmente por piezas más pequeñas, haciendo que pierdas varios tiempos de movimiento. Es mejor empezar por mover los Caballos y los Alfiles.</li>
+      <li><b>Desarrolla tus Caballos antes que tus Alfiles.</b> Los Caballos tienen un movimiento más limitado y pueden ser bloqueados por tus propios peones en las columnas laterales. Sacarlos primero garantiza que tengan acceso a las mejores casillas centrales.</li>
+      <li><b>No muevas la misma pieza dos veces en la apertura a menos que sea necesario.</b> Cada movimiento debe servir a un propósito. Volver a mover la misma pieza consume tiempo valioso que podrías estar usando para sacar más piezas al centro del tablero.</li>
+      <li><b>Controla el centro.</b> Las cuatro casillas centrales del tablero (<b>d4, d5, e4, e5</b>) son el área más dominante. Mover peones y piezas hacia el centro les da más espacio para operar y controla más del tablero.</li>
+      <li><b>Enroca a salvo.</b> Tu rey es tu pieza más importante. No debes dejarlo vulnerable en el centro. El enroque es la mejor manera de llevarlo a un lugar seguro y al mismo tiempo <b>conectar tus torres</b>.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">🔍</span> El método de escaneo del tablero antes de cada jugada</h3>
+    <p>Además de estos principios, es vital enseñar al principiante un <b>método de escaneo del tablero antes de cada jugada</b>. Un enfoque sistemático, como el sugerido por Chess.com, es <b>revisar primero las amenazas del oponente</b>.</p>
+    <ol class="steps">
+      <li>Antes de decidir qué mover, pregúntate: <b>«¿Mi oponente puede capturar alguna de mis piezas ahora mismo?»</b></li>
+      <li><b>Responder a esas amenazas primero</b> es una regla de oro de la seguridad en el ajedrez.</li>
+      <li>Solo después de asegurarte de que tus propias piezas están a salvo, <b>puedes pensar en tus propios planes</b>.</li>
+    </ol>
+    <div class="callout ejemplo" style="margin-bottom:0"><span class="tag">EJEMPLO · HÁBITO TRANSFORMADOR</span>Este hábito de pensar <b>primero en la defensa, y luego en el ataque</b>, transforma la forma en que un principiante juega, haciéndolo mucho más resistente a errores tácticos.</div>
+  </div>
+</section>
+
+<!-- ==================== PRÁCTICA ==================== -->
+<section class="view" id="practica">
+  <div class="secHead">
+    <div class="kicker">MÓDULO 05 · CONSOLIDACIÓN DEL APRENDIZAJE</div>
+    <h2>La Práctica Integrada: Ejercicios para Consolidar</h2>
+    <p class="lead">El principio central del tutorial es que <b>el conocimiento se consolida a través de la aplicación práctica</b>. Un aprendizaje puramente teórico es frágil y difícil de recordar. Por ello, cada nuevo concepto introducido debe ir seguido de un ejercicio práctico diseñado para reforzar ese concepto específico.</p>
+  </div>
+
+  <div class="callout info"><span class="tag">INFO · ANDAMIAJE COGNITIVO</span>Este enfoque, alineado con la teoría de la carga cognitiva, utiliza la <b>práctica guiada como una forma de andamiaje</b> que ayuda al estudiante a transferir el conocimiento de la memoria a corto plazo a una forma más permanente y aplicable. <b>Los ejercicios no deben ser meramente opcionales, sino componentes inherentes e indispensables de cada lección.</b></div>
+
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <h3><span class="ic">🧩</span> Puzzles tácticos: el pilar de la práctica activa</h3>
+      <p>Los puzzles tácticos son el pilar de la práctica activa. Son problemas donde se presenta una posición y se pide al jugador que encuentre la <b>secuencia de movimientos correcta</b> para lograr un objetivo específico, como <b>dar jaque mate en un número determinado de jugadas (típicamente 1, 2 o 3)</b>.</p>
+      <p>Plataformas como <b>Lichess</b> ofrecen miles de puzzles de este tipo, organizados por dificultad. Para un principiante, es ideal comenzar con <b>puzzles de 1-2 movimientos que ilustren patrones básicos, como los jaques rápidos</b>.</p>
+      <div class="callout ejemplo" style="margin-bottom:0"><span class="tag">EJEMPLO · FEEDBACK INMEDIATO</span>El feedback inmediato es crucial: las plataformas modernas proporcionan retroalimentación instantánea, indicando si la jugada fue correcta y mostrando la solución si es necesario. Este <b>ciclo de intento-corrección</b> es extremadamente eficaz para entrenar la intuición táctica.</div>
+    </div>
+    <div class="card" style="margin:0">
+      <h3><span class="ic">🔎</span> Ejercicios de identificación y evaluación</h3>
+      <p>Ideales para conceptos específicos como el enroque o el jaque. Después de explicar las reglas del enroque, se puede proporcionar un diagrama con varias posiciones y preguntar:</p>
+      <div class="chipRow"><span class="chip acc">«¿Es legal el enroque para el blanco aquí?»</span><span class="chip acc">«¿Qué pieza está dando jaque al rey negro?»</span></div>
+      <p>Las <b>hojas de trabajo imprimibles</b>, como las encontradas en recursos educativos, son perfectas para esto. Estos ejercicios fuerzan al estudiante a <b>aplicar las reglas que acaba de aprender en un contexto práctico y aislado</b>.</p>
+      <h3 style="margin-top:16px"><span class="ic">📖</span> Estudios de ajedrez (Lichess)</h3>
+      <p>Para una práctica más integrada se pueden utilizar <b>estudios de ajedrez</b>, disponibles en plataformas como Lichess: un estudio es como un <b>libro de texto interactivo</b> donde se puede crear una serie de posiciones con <b>comentarios, flechas y preguntas</b>.</p>
+      <div class="callout ejemplo" style="margin-bottom:0"><span class="tag">EJEMPLO · PARTIDA DIDÁCTICA</span>Un tutor puede crear un estudio que guíe a un estudiante a través de una pequeña partida didáctica, donde cada posición explique un principio (por ejemplo, <i>«Primero, desarrolla un caballo hacia el centro. ¿Ves por qué?»</i>). Otra técnica es <b>analizar partidas cortas jugadas por el estudiante</b>, añadiendo comentarios y sugiriendo mejores jugadas. Este método conecta el aprendizaje teórico con el rendimiento real del jugador.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">♟</span> La práctica más importante: jugar partidas reales</h3>
+    <p>La práctica más importante es <b>jugar partidas reales</b>, aunque sean contra un amigo, un familiar o un motor de ajedrez en un nivel fácil. Después de cada partida, se debe realizar una <b>breve sesión de análisis</b>. El tutor puede preguntar:</p>
+    <div class="chipRow">
+      <span class="chip grn">«¿Qué jugada te pareció la mejor de la partida?»</span>
+      <span class="chip grn">«¿Hubo algún momento en que pensaste que podías dar jaque mate?»</span>
+      <span class="chip grn">«¿Por qué moviste tu dama allí?»</span>
+    </div>
+    <p>Este <b>análisis reflexivo</b>, aunque sea breve, es una de las formas más potentes de aprendizaje, ya que permite al jugador conectar los conceptos teóricos con sus propias experiencias en el tablero.</p>
+    <div class="callout advertencia" style="margin-bottom:0"><span class="tag">ADVERTENCIA · TABLERO FÍSICO</span>El uso de un <b>tablero físico es fundamental</b> en toda esta práctica, ya que desarrolla una <b>intuición espacial</b> que las interfaces de pantalla no pueden replicar completamente.</div>
+  </div>
+</section>
+
+<!-- ==================== ERRORES Y RECURSOS ==================== -->
+<section class="view" id="errores">
+  <div class="secHead">
+    <div class="kicker">MÓDULO 06 · ANTICIPAR, CORREGIR Y SEGUIR APRENDIENDO</div>
+    <h2>Gestión de Errores Comunes y Recursos Adicionales</h2>
+    <p class="lead">Un tutorial exitoso para principiantes no solo enseña lo que se debe hacer, sino que también <b>anticipa y corrige activamente los errores más comunes</b>. Abordar estos malos hábitos desde el principio es crucial para evitar que se consoliden y dificulten el progreso futuro. Además, proporcionar una lista de recursos de apoyo permite al estudiante continuar su aprendizaje de manera independiente y autodirigida.</p>
+  </div>
+
+  <div class="acc open">
+    <button class="accH">❌ Error nº 1 · La confusión entre jaque mate y tablas <span class="arr">▼</span></button>
+    <div class="accB"><div>
+      <p>El error más fundamental y persistente. Un principiante puede sentir que ha ganado cuando en realidad la partida ha terminado en empate porque su oponente <b>no tenía movimientos legales pero su rey no estaba en jaque</b>.</p>
+      <p>Para combatir esto, el tutorial dedica una sección específica a este tema, utilizando ejemplos visuales claros: se puede presentar <b>una posición de jaque mate y otra de tablas lado a lado</b> y preguntar al estudiante cuál es la diferencia clave: <b>«¿Está el rey atacado?»</b>. La respuesta — <b>«sí» para jaque mate y «no» para tablas</b> — debe ser el mantra para diferenciarlos.</p>
+    </div></div>
+  </div>
+  <div class="acc">
+    <button class="accH">❌ Error nº 2 · El «juego de capturas» indiscriminado <span class="arr">▼</span></button>
+    <div class="accB"><div>
+      <p>Los principiantes a menudo ven el ajedrez como un <b>juego de caza de piezas</b>, capturando cualquier cosa que ven sin pensar en las consecuencias. Esto lleva a <b>perder piezas valiosas por no defenderlas adecuadamente</b>.</p>
+      <p>El ejercicio <b>«Don't Hang Your Pieces»</b> (No dejes indefensas tus piezas) es un excelente modelo didáctico para este problema, centrando la práctica en la <b>protección de las piezas antes de pensar en atacar</b>. También se debe reforzar el principio de <b>no mover la misma pieza repetidamente en la apertura</b>, ya que esto desperdicia tiempo y deja al jugador atrás en el desarrollo.</p>
+    </div></div>
+  </div>
+  <div class="acc">
+    <button class="accH">❌ Error nº 3 · Las tablas prematuras y el miedo al empate <span class="arr">▼</span></button>
+    <div class="accB"><div>
+      <p>Algunos principiantes, al ver que su posición es débil, piensan que la única alternativa a la derrota es seguir jugando desesperadamente. Es importante enseñarles que <b>forzar un empate</b>, especialmente por falta de material suficiente para dar jaque mate, <b>es un resultado válido y a veces una victoria estratégica</b>.</p>
+      <p>Por ejemplo, si un jugador con una Dama se enfrenta a un jugador con solo un Alfil, la partida nunca podrá terminar en jaque mate por parte del jugador con el Alfil, por lo que la partida debe declararse en tablas.</p>
+    </div></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="ic">🧰</span> Recursos adicionales recomendados</h3>
+    <p>Para complementar el tutorial y continuar el aprendizaje de manera independiente:</p>
+    <div class="grid2">
+      <div class="callout info" style="margin:0"><span class="tag">🖼 HOJAS DE TRUCOS VISUALES</span>Imágenes o PDFs que resumen la información clave de una manera fácil de consultar: el <b>valor de las piezas</b>, las <b>notaciones básicas</b> (<b>+</b> para jaque, <b>#</b> para jaque mate) y los <b>diagramas de los jaques rápidos más comunes</b>.</div>
+      <div class="callout ejemplo" style="margin:0"><span class="tag">📱 APLICACIONES MÓVILES</span><b>Duolingo Chess</b> es una excelente opción para principiantes: ofrece lecciones interactivas y sencillas que explican los conceptos básicos de forma amena y rápida. Aunque su alcance es limitado, es un recurso excelente para iniciar el aprendizaje.</div>
+      <div class="callout advertencia" style="margin:0"><span class="tag">🌐 SITIOS WEB GRATUITOS</span><b>Lichess.org</b> y <b>Chess.com</b> son plataformas invaluables: ofrecen bibliotecas masivas de <b>problemas tácticos</b>, <b>partidas de grandes maestros</b> para estudiar y <b>motores de análisis gratuitos</b>. Son herramientas esenciales para la práctica continua.</div>
+      <div class="callout" style="margin:0;background:#a855f70d;border-color:#a855f755"><span class="tag" style="color:#c084fc">📚 LIBROS Y DOCUMENTOS ESTRUCTURADOS</span>La <b>FIDE</b> tiene materiales de educación gratuitos que cubren desde preescolar hasta principiantes, con lecciones estructuradas y hojas de trabajo. Asimismo, academias como la <b>India's Best Chess Academy for Kids &amp; Beginners</b> ofrecen notas de grandes maestros y hojas de ejercicios en PDF.</div>
+    </div>
+    <div class="callout info" style="margin-top:14px;margin-bottom:0"><span class="tag">INFO · CIERRE DEL MARCO</span>Al integrar estos recursos, el tutorial se convierte en el <b>inicio de un viaje de aprendizaje continuo</b>, equipando al principiante con las herramientas y el conocimiento para seguir mejorando de manera independiente.</div>
+  </div>
+</section>
+
+<!-- ==================== REFERENCIAS ==================== -->
+<section class="view" id="referencias">
+  <div class="secHead">
+    <div class="kicker">FUENTE DOCUMENTAL</div>
+    <h2>Referencias</h2>
+    <p class="lead">Listado completo de las 106 referencias conservadas del documento original. Utiliza el buscador para filtrar por título o dominio.</p>
+  </div>
+  <div class="refBar">
+    <input type="search" id="refSearch" placeholder="🔍 Buscar referencia… (ej.: lichess, castling, scaffolding)" aria-label="Buscar referencia">
+    <span id="refCount">Mostrando 106 de 106</span>
+  </div>
+  <ol class="refList" id="refList">
+    <li><span class="rn">1</span><a target="_blank" rel="noopener" href="https://www.chess.com/article/view/fastest-chess-checkmates">10 Fastest Checkmates: Notation and Diagrams</a></li>
+    <li><span class="rn">2</span><a target="_blank" rel="noopener" href="https://chessfox.com/checkmate-patterns/">Checkmate Patterns That All Chess Players Should Know</a></li>
+    <li><span class="rn">3</span><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Checkmate_pattern">Checkmate pattern</a></li>
+    <li><span class="rn">4</span><a target="_blank" rel="noopener" href="https://chessmood.com/blog/checkmate-patterns">The Complete Checkmate Patterns List [with examples]</a></li>
+    <li><span class="rn">5</span><a target="_blank" rel="noopener" href="https://shop.worldchess.com/blogs/news/how-to-win-chess-in-10-moves">How to Win Chess in 10 Moves: Fastest Checkmate Tricks</a></li>
+    <li><span class="rn">6</span><a target="_blank" rel="noopener" href="https://www.chess.com/forum/view/for-beginners/five-checkmate-patterns-you-must-know">Five Checkmate Patterns You Must Know</a></li>
+    <li><span class="rn">7</span><a target="_blank" rel="noopener" href="https://www.freecodecamp.org/news/checkmate-patterns-in-chess-for-beginners/">Checkmate Patterns in Chess for Beginners</a></li>
+    <li><span class="rn">8</span><a target="_blank" rel="noopener" href="https://www.scribd.com/document/375266490/es1m">Chess Curriculum for Children | PDF</a></li>
+    <li><span class="rn">9</span><a target="_blank" rel="noopener" href="https://www.facebook.com/ChessFIDE/posts/-scholastic-chess-in-miami-is-thriving-thanks-to-the-efforts-of-marite-espinosa-/1993930454634715/">Scholastic chess in Miami is thriving! Thanks to the efforts…</a></li>
+    <li><span class="rn">10</span><a target="_blank" rel="noopener" href="https://eduarchive.fide.com/materials/">Teaching Materials - EDU Archive - FIDE</a></li>
+    <li><span class="rn">11</span><a target="_blank" rel="noopener" href="https://archerchessacademy.com/blog/archer-chess-academy-indias-best-chess-coaching-institute">India's Best Chess Academy for Kids &amp; Beginners</a></li>
+    <li><span class="rn">12</span><a target="_blank" rel="noopener" href="http://www.newinchess.com/media/wysiwyg/product_pdf/9121.pdf">Chess for Educators</a></li>
+    <li><span class="rn">13</span><a target="_blank" rel="noopener" href="https://sanandres.uep.edu.py/Download_PDFS/T6E8xw/707864/1001_chess__exercises_for_beginners.pdf">1001 Chess Exercises For Beginners</a></li>
+    <li><span class="rn">14</span><a target="_blank" rel="noopener" href="https://www.kidsacademy.mobi/storytime/how-to-teach-kids-to-play-chess/">How to Teach your Child Chess When You Don't Know…</a></li>
+    <li><span class="rn">15</span><a target="_blank" rel="noopener" href="https://www.chess.com/blog/MattyDPerrine/3-lesser-known-websites-to-improve-your-chess-game">3 Lesser Known Websites to Improve Your Chess Game</a></li>
+    <li><span class="rn">16</span><a target="_blank" rel="noopener" href="https://www.chess.com/terms/cheat-sheet-chess">Chess Cheat Sheet - Images &amp; PDFs (Free to Download)</a></li>
+    <li><span class="rn">17</span><a target="_blank" rel="noopener" href="https://www.chess.com/forum/view/for-beginners/how-to-improve-in-over-the-board-chess">How to improve in Over the Board Chess</a></li>
+    <li><span class="rn">18</span><a target="_blank" rel="noopener" href="https://www.chess.com/forum/view/for-beginners/what-are-some-good-optionally-easy-moves-techniques-openings-to-use-as-a-beginner">What are some good (optionally easy) moves/techniques/…</a></li>
+    <li><span class="rn">19</span><a target="_blank" rel="noopener" href="https://www.chess.com/forum/view/game-analysis/feedback-after-every-move">Feedback after every move - Chess Forums</a></li>
+    <li><span class="rn">20</span><a target="_blank" rel="noopener" href="https://www.chess.com/article/view/coach-danes-beginner-improvement-guide">Coach Dane's Beginner Improvement Guide</a></li>
+    <li><span class="rn">21</span><a target="_blank" rel="noopener" href="https://www.chess.com/article/view/the-legendary-15-minute-drill">The "Legendary" 15-Minute Drill!</a></li>
+    <li><span class="rn">22</span><a target="_blank" rel="noopener" href="https://www.chess.com/blog/vitualis/chessnut-move-review-are-you-ready-for-robot-chess">Chessnut Move | Review | Are you ready for robot…</a></li>
+    <li><span class="rn">23</span><a target="_blank" rel="noopener" href="https://handbook.fide.com/chapter/e012023">FIDE Laws of Chess taking effect from 1 January 2023</a></li>
+    <li><span class="rn">24</span><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Checkmate">Checkmate</a></li>
+    <li><span class="rn">25</span><a target="_blank" rel="noopener" href="https://www.chess.com/terms/draw-chess">Draw in Chess - Chess Terms</a></li>
+    <li><span class="rn">26</span><a target="_blank" rel="noopener" href="https://www.facebook.com/groups/222216429172603/posts/1705063360887895/">Official chess draw rules by FIDE</a></li>
+    <li><span class="rn">27</span><a target="_blank" rel="noopener" href="https://www.reddit.com/r/chessbeginners/comments/wdke5o/need_tips_on_avoiding_a_stalemate/">Need tips on avoiding a stalemate: r/chessbeginners</a></li>
+    <li><span class="rn">28</span><a target="_blank" rel="noopener" href="https://www.facebook.com/groups/1121219455749820/posts/1535307077674387/">How to avoid stalemates as a beginner chess player?</a></li>
+    <li><span class="rn">29</span><a target="_blank" rel="noopener" href="https://venturechessacademy.com/blog/difference-between-stalemate-and-checkmate/">Difference between Stalemate and Checkmate</a></li>
+    <li><span class="rn">30</span><a target="_blank" rel="noopener" href="https://kaabilkids.com/blog/what-is-a-stalemate-in-chess-and-how-to-avoid-a-draw/">What Is a Stalemate in Chess and How to Avoid a Draw</a></li>
+    <li><span class="rn">31</span><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Draw_(chess)">Draw (chess)</a></li>
+    <li><span class="rn">32</span><a target="_blank" rel="noopener" href="https://chessgoals.com/draw/">5 Ways Chess Games End in a Draw: Explained Simply</a></li>
+    <li><span class="rn">33</span><a target="_blank" rel="noopener" href="https://www.houseofstaunton.com/blogs/chess-strategies/use-a-draw-in-chess">Learn To Use A Draw In Chess To Your Advantage</a></li>
+    <li><span class="rn">34</span><a target="_blank" rel="noopener" href="https://www.facebook.com/groups/504617930896872/posts/1215928696432455/">Introduction to Chess Teaching and Strategies</a></li>
+    <li><span class="rn">35</span><a target="_blank" rel="noopener" href="https://premierchess.com/chess-pedagogy/check-checkmate-and-stalemate">Check, Checkmate and Stalemate</a></li>
+    <li><span class="rn">36</span><a target="_blank" rel="noopener" href="https://www.reddit.com/r/chess/comments/b5zf8x/how_do_i_teaching_a_young_child_how_to_play_chess/">How do I teaching a Young child how to play chess?</a></li>
+    <li><span class="rn">37</span><a target="_blank" rel="noopener" href="https://suratchessclub.com/chess-rules-for-kids-explained-simply.html">Chess Rules for Kids, Explained Simply (2026)</a></li>
+    <li><span class="rn">38</span><a target="_blank" rel="noopener" href="https://www.instagram.com/p/DYk9rxSOHdo/">This is a game you will always find in my classroom! Such…</a></li>
+    <li><span class="rn">39</span><a target="_blank" rel="noopener" href="https://www.linkedin.com/posts/stephen-taylor-education_playfullearning-play-activity-7477694124247257089-UFFh">Linking hobbies to skills for playful learning</a></li>
+    <li><span class="rn">40</span><a target="_blank" rel="noopener" href="https://www.mindfulchess.org/post/how-to-teach-kids-chess">How to Teach Chess to Kids from any age - Proven Tips</a></li>
+    <li><span class="rn">41</span><a target="_blank" rel="noopener" href="https://apps.apple.com/gb/iphone/story/id1821554094">Meet Duolingo's chess mastermind - App Store - Apple</a></li>
+    <li><span class="rn">42</span><a target="_blank" rel="noopener" href="https://www.reddit.com/r/chessbeginners/comments/1to4msk/chesscom_vs_lichess_vs_duolingo_chess_vs_airlearn/">Chess.com vs Lichess vs Duolingo Chess vs Airlearn</a></li>
+    <li><span class="rn">43</span><a target="_blank" rel="noopener" href="https://davidwilliamrosales.com/2025/08/18/duolingo-chess-review/">Duolingo's Chess Course is Useless for Non-Beginners</a></li>
+    <li><span class="rn">44</span><a target="_blank" rel="noopener" href="https://www.facebook.com/groups/1671655650387605/posts/1828639504689218/">Improving at chess with practice and patience</a></li>
+    <li><span class="rn">45</span><a target="_blank" rel="noopener" href="https://shop.worldchess.com/blogs/news/best-chess-app-for-beginners">Best Chess App for Beginners: How to Start Learning…</a></li>
+    <li><span class="rn">46</span><a target="_blank" rel="noopener" href="https://www.chess.com/blog/raync910/duolingo-live-chess-experience-limitations">Why Live Chess On Duolingo Is Underwhelming</a></li>
+    <li><span class="rn">47</span><a target="_blank" rel="noopener" href="https://apps.apple.com/us/app/aimchess-learn-chess-online/id1524941307">Aimchess - Learn Chess Online - App Store</a></li>
+    <li><span class="rn">48</span><a target="_blank" rel="noopener" href="https://www.waivio.com/@samostically/learn-how-to-play-chess-with-the-duolingo-chess-course">Learn How To Play Chess with the Duolingo Chess Course</a></li>
+    <li><span class="rn">49</span><a target="_blank" rel="noopener" href="https://www.edresearch.edu.au/summaries-explainers/explainers/managing-cognitive-load-optimises-learning">Managing cognitive load optimises learning</a></li>
+    <li><span class="rn">50</span><a target="_blank" rel="noopener" href="https://my.chartered.college/impact_article/cognitive-load-theory-and-its-application-in-the-classroom/">Cognitive Load Theory and its application in the classroom</a></li>
+    <li><span class="rn">51</span><a target="_blank" rel="noopener" href="https://www.facebook.com/fivefromfive/posts/cognitive-load-theory-is-the-single-most-important-thing-for-teachers-to-know-dy/1101852205279416/">'Cognitive Load Theory is 'the single most important thing…</a></li>
+    <li><span class="rn">52</span><a target="_blank" rel="noopener" href="https://www.structural-learning.com/post/cognitive-load-theory-a-teachers-guide">Cognitive Load Theory: 12 Strategies to Reduce Overload</a></li>
+    <li><span class="rn">53</span><a target="_blank" rel="noopener" href="https://link.springer.com/article/10.1007/s10648-024-09848-3">A Cognitive Load Theory Approach to Understanding Expert…</a></li>
+    <li><span class="rn">54</span><a target="_blank" rel="noopener" href="https://readablenglish.com/blog/from-novice-to-expert-supporting-teachers-through-cognitive-load-theory">Supporting Teachers Through Cognitive Load Theory</a></li>
+    <li><span class="rn">55</span><a target="_blank" rel="noopener" href="https://www.niu.edu/citl/resources/guides/instructional-guide/instructional-scaffolding-to-improve-learning.shtml">Instructional Scaffolding to Improve Learning</a></li>
+    <li><span class="rn">56</span><a target="_blank" rel="noopener" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11852728/">Challenging Cognitive Load Theory: The Role of Educational…</a></li>
+    <li><span class="rn">57</span><a target="_blank" rel="noopener" href="https://www.innerdrive.co.uk/blog/expertise-reversal-effect-scaffolding/">The Expertise Reversal Effect and scaffolding support</a></li>
+    <li><span class="rn">58</span><a target="_blank" rel="noopener" href="https://www.facebook.com/groups/fidechessarbiters/posts/2113469545469504/">Simplified chess rules for kids</a></li>
+    <li><span class="rn">59</span><a target="_blank" rel="noopener" href="https://www.scribd.com/document/336813193/Chesskid-Curriculum">ChessKid Curriculum for Kids | PDF | Chess</a></li>
+    <li><span class="rn">60</span><a target="_blank" rel="noopener" href="https://www.kidsacademy.mobi/chess-course/">Kids Chess Course - Learn Chess the Fun</a></li>
+    <li><span class="rn">61</span><a target="_blank" rel="noopener" href="https://www.quora.com/I-am-unable-to-improve-without-a-Chess-coach-and-my-parents-cannot-afford-a-coach-What-should-I-do">I am unable to improve without a Chess coach and my…</a></li>
+    <li><span class="rn">62</span><a target="_blank" rel="noopener" href="https://www.chesshouse.com/pages/chess-rules">Chess Rules: Simple Guide With Illustrations And Videos</a></li>
+    <li><span class="rn">63</span><a target="_blank" rel="noopener" href="https://www.reddit.com/r/chess/comments/1ho9jkj/if_you_want_fide_replaced_be_careful_what_you/">If you want FIDE replaced, be careful what you wish for.</a></li>
+    <li><span class="rn">64</span><a target="_blank" rel="noopener" href="https://lichess.org/learn">Learn chess - by playing!</a></li>
+    <li><span class="rn">65</span><a target="_blank" rel="noopener" href="https://lichess.org/forum/lichess-feedback/creating-studies-how-to-let-the-opponents-move-play-instantly">Creating studies: How to let the opponents move play…</a></li>
+    <li><span class="rn">66</span><a target="_blank" rel="noopener" href="https://lichess.org/@/CheckRaiseMate/blog/the-4-lichess-studies-i-make-for-every-student/yRI4RLAh">The 4 Lichess Studies I Make For Every Student</a></li>
+    <li><span class="rn">67</span><a target="_blank" rel="noopener" href="https://lichess.org/forum/lichess-feedback/keyboard-piece-movement">Keyboard piece movement</a></li>
+    <li><span class="rn">68</span><a target="_blank" rel="noopener" href="https://lichess.org/study">All studies</a></li>
+    <li><span class="rn">69</span><a target="_blank" rel="noopener" href="https://lsa.umich.edu/technology-services/news-events/all-news/teaching-tip-of-the-week/considering-cognitive-load-refreshing-your-class-to-improve-student-learning.html">Considering Cognitive Load: Refreshing Your Class to…</a></li>
+    <li><span class="rn">70</span><a target="_blank" rel="noopener" href="https://profemagnan.com/cognitive-load-in-the-classroom/">Reduce Cognitive Load: 10 Research-Backed Classroom…</a></li>
+    <li><span class="rn">71</span><a target="_blank" rel="noopener" href="https://www.edutopia.org/article/how-reduce-cognitive-load-students-during-lessons/">How to Reduce the Cognitive Load on Students During…</a></li>
+    <li><span class="rn">72</span><a target="_blank" rel="noopener" href="https://www.mdpi.com/2227-7102/14/8/813">Enhancing Teaching Strategies through Cognitive Load…</a></li>
+    <li><span class="rn">73</span><a target="_blank" rel="noopener" href="https://education.nsw.gov.au/about-us/education-data-and-research/cese/publications/practical-guides-for-educators/cognitive-load-theory-in-practice">Cognitive load theory in practice</a></li>
+    <li><span class="rn">74</span><a target="_blank" rel="noopener" href="https://www.kidsacademy.mobi/printable-worksheets/age-4-5/chess-worksheets/special-moves-castling/">Free Special Moves: Castling Worksheets for Ages 4-5</a></li>
+    <li><span class="rn">75</span><a target="_blank" rel="noopener" href="https://www.scribd.com/document/695415792/Chess-Course">Chess Course | PDF</a></li>
+    <li><span class="rn">76</span><a target="_blank" rel="noopener" href="https://shop.worldchess.com/blogs/news/how-to-castle-in-chess">How to Castle in Chess</a></li>
+    <li><span class="rn">77</span><a target="_blank" rel="noopener" href="https://www.reddit.com/r/chess/comments/zdr168/was_vertical_castling_ever_actually_allowed/">Was vertical castling ever actually allowed historically?</a></li>
+    <li><span class="rn">78</span><a target="_blank" rel="noopener" href="https://www.facebook.com/groups/fidechessarbiters/posts/2239274439555680/">Can a player complete castling after touching the king in…</a></li>
+    <li><span class="rn">79</span><a target="_blank" rel="noopener" href="https://lichess.org/practice">Practice chess positions</a></li>
+    <li><span class="rn">80</span><a target="_blank" rel="noopener" href="https://lichess.org/@/datajunkie/blog/25-lessons-from-25-years-of-chess/5xL1Q4lj">datajunkie's Blog • 25 lessons from 25 years of chess</a></li>
+    <li><span class="rn">81</span><a target="_blank" rel="noopener" href="https://lichess.org/@/Schadenfreude__gut/blog/improve-your-blitz-results-in-eight-steps/bA1aKrDO">Improve your blitz results in eight steps</a></li>
+    <li><span class="rn">82</span><a target="_blank" rel="noopener" href="https://lichess.org/training">Puzzles</a></li>
+    <li><span class="rn">83</span><a target="_blank" rel="noopener" href="https://lichess.org/@/TheOnoZone/blog/your-2026-chess-study-plan/vYECzWbh">TheOnoZone's Blog • Your (2026) Chess Study Plan</a></li>
+    <li><span class="rn">84</span><a target="_blank" rel="noopener" href="https://lichess.org/forum/general-chess-discussion/chess-notation-helper">Chess Notation Helper</a></li>
+    <li><span class="rn">85</span><a target="_blank" rel="noopener" href="https://lichess.org/@/TheOnoZone/blog/whats-the-point-of-puzzles/biZe93DT">TheOnoZone's Blog • What's the Point of Puzzles?</a></li>
+    <li><span class="rn">86</span><a target="_blank" rel="noopener" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11360721/">Effects of adaptive scaffolding on performance, cognitive load…</a></li>
+    <li><span class="rn">87</span><a target="_blank" rel="noopener" href="https://my.chartered.college/early-career-hub/cognitive-load-theory-and-its-application-in-the-classroom/">Cognitive Load Theory and its application in the classroom</a></li>
+    <li><span class="rn">88</span><a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/377726986_A_Cognitive_Load_Theory_Approach_to_Understanding_Expert_Scaffolding_of_Visual_Problem-Solving_Tasks_A_Scoping_Review">A Cognitive Load Theory Approach to Understanding…</a></li>
+    <li><span class="rn">89</span><a target="_blank" rel="noopener" href="https://www.reddit.com/r/chess/comments/11m2ky2/what_is_the_canonical_explanation_for_castling/">What is the canonical explanation for castling?: r/chess</a></li>
+    <li><span class="rn">90</span><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Castling">Castling</a></li>
+    <li><span class="rn">91</span><a target="_blank" rel="noopener" href="https://www.chesskid.com/learn/articles/a-beginners-guide-to-castling">A Beginner's Guide to Castling</a></li>
+    <li><span class="rn">92</span><a target="_blank" rel="noopener" href="https://shop.worldchess.com/blogs/news/how-to-castle-in-chess">How to Castle in Chess</a></li>
+    <li><span class="rn">93</span><a target="_blank" rel="noopener" href="https://www.chesskid.com/learn/terms/castling-chess">Castling - Chess Terms</a></li>
+    <li><span class="rn">94</span><a target="_blank" rel="noopener" href="https://www.kidsacademy.mobi/printables/castling-protecting-king/">Protecting the King Castling Worksheet, Free Printable PDF</a></li>
+    <li><span class="rn">95</span><a target="_blank" rel="noopener" href="https://www.chess.com/terms/castling-chess">Chess Castling - Chess Terms</a></li>
+    <li><span class="rn">96</span><a target="_blank" rel="noopener" href="https://www.edutopia.org/blog/scaffolding-lessons-six-strategies-rebecca-alber">6 Scaffolding Strategies to Use With Your Students</a></li>
+    <li><span class="rn">97</span><a target="_blank" rel="noopener" href="https://pce.sandiego.edu/scaffolding-in-education-examples/">7 Scaffolding Learning Strategies for the Classroom</a></li>
+    <li><span class="rn">98</span><a target="_blank" rel="noopener" href="https://www.nwea.org/blog/2025/7-ways-to-use-zpd-and-scaffolding-to-challenge-and-support-students/">7 ways to use ZPD and scaffolding to challenge…</a></li>
+    <li><span class="rn">99</span><a target="_blank" rel="noopener" href="https://www.continentalpress.com/blog/5-scaffolding-strategies-for-ell-students/">5 Scaffolding Strategies for ELL Students</a></li>
+    <li><span class="rn">100</span><a target="_blank" rel="noopener" href="https://www.jamieleeclark.com/graphics">Guides</a></li>
+    <li><span class="rn">101</span><a target="_blank" rel="noopener" href="https://www.procaresoftware.com/blog/scaffolding-in-early-childhood-education-and-development/">Scaffolding in Early Childhood Education</a></li>
+    <li><span class="rn">102</span><a target="_blank" rel="noopener" href="https://lichess.org/@/TheOnoZone/blog/adult-beginners-guide-to-calculation-tactics-puzzles--pattern-recognition/qEEXFfa9">Adult Beginner's Guide To… Calculation, Tactics, Puzzles &amp;…</a></li>
+    <li><span class="rn">103</span><a target="_blank" rel="noopener" href="https://lichess.org/@/TheOnoZone/blog/what-the-fork-is-a-blunder-check/NATnH2B5">TheOnoZone's Blog • What the Fork is a Blunder Check?</a></li>
+    <li><span class="rn">104</span><a target="_blank" rel="noopener" href="https://lichess.org/@/PerpetualChess/blog/gm-michael-adams-and-philip-hurtado-on-how-to-think-like-a-super-gm/1afoo20K">GM Michael Adams and Philip Hurtado on How to "Think…</a></li>
+    <li><span class="rn">105</span><a target="_blank" rel="noopener" href="https://lichess.org/forum/off-topic-discussion/longest-message-ever?page=3">Longest message ever • page 3/6 • Off-Topic Discussion</a></li>
+    <li><span class="rn">106</span><a target="_blank" rel="noopener" href="https://lichess.org/@/Minckwitz/blog/review-the-hungarian-dragon-by-junior-tay/IqHCFpbq">Review: The Hungarian Dragon by Junior Tay</a></li>
+  </ol>
+</section>
+
+<!-- ==================== CRÉDITOS ==================== -->
+<section class="view" id="creditos">
+  <div class="secHead">
+    <div class="kicker">AUTORÍA Y DATOS DEL TUTORIAL</div>
+    <h2>Créditos</h2>
+    <p class="lead">La misma portada animada del tutorial, acompañando la información de autoría.</p>
+  </div>
+  <div class="coverWrap" id="creditsCover"></div>
+  <div class="creditCard">
+    <div class="kicker">TUTORIAL INTERACTIVO</div>
+    <h3>Del Concepto a la Práctica: Un Marco Pedagógico para Dominar los Fundamentos del Ajedrez</h3>
+    <div class="author">👨‍💻 Rubén Sbarsky</div>
+    <div class="creditMeta">
+      <div class="dtChip">📅 Fecha: <b>29/08/2026</b></div>
+      <div class="dtChip">🕔 Hora: <b>05:33:21</b></div>
+    </div>
+    <p style="margin-top:16px;color:#94a3b8;font-size:14px">📚 Tutorial elaborado exclusivamente con fines <b>educativos y de divulgación</b>, a partir del documento fuente proporcionado, sin información externa añadida.</p>
+    <div class="latin">Fiat iustitia, ruat caelum.</div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="fl">📚 Tutorial solo con fines Educativos y Divulgación</div>
+  <div class="fl">👨‍💻 Créditos: Rubén Sbarsky</div>
+  <div class="fl">📅 FECHA: 29/08/2026 · Hora: 05:33:21</div>
+  <div class="fl latin">Fiat iustitia, ruat caelum.</div>
+</footer>
+
+<button id="toTop" aria-label="Volver arriba">↑</button>
+
+<script>
+/* ================= SPA ================= */
+var navBtns = Array.prototype.slice.call(document.querySelectorAll('.navBtn[data-sec], .road[data-sec]'));
+function go(secId){
+  var views = document.querySelectorAll('.view');
+  for(var i=0;i<views.length;i++){ views[i].classList.remove('active'); }
+  var target = document.getElementById(secId);
+  if(target){ target.classList.add('active'); }
+  var mains = document.querySelectorAll('.navBtn[data-sec]');
+  for(var j=0;j<mains.length;j++){
+    mains[j].classList.toggle('active', mains[j].getAttribute('data-sec')===secId);
+  }
+  window.scrollTo(0,0);
+}
+navBtns.forEach(function(b){
+  b.addEventListener('click', function(){ go(b.getAttribute('data-sec')); });
+});
+
+/* ================= Progreso + volver arriba ================= */
+var pBar = document.getElementById('progressBar');
+var toTop = document.getElementById('toTop');
+function onScroll(){
+  var h = document.documentElement;
+  var max = h.scrollHeight - h.clientHeight;
+  var pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+  pBar.style.width = pct + '%';
+  toTop.classList.toggle('show', h.scrollTop > 400);
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+/* ================= SVG a CRÉDITOS (mismo SVG, clonado) ================= */
+(function(){
+  var master = document.getElementById('coverMaster');
+  var holder = document.getElementById('creditsCover');
+  if(master && holder){
+    var clone = master.cloneNode(true);
+    clone.removeAttribute('id');
+    var withIds = clone.querySelectorAll('[id]');
+    for(var k=0;k<withIds.length;k++){ withIds[k].removeAttribute('id'); }
+    holder.appendChild(clone);
+  }
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var svgs = document.querySelectorAll('svg');
+    for(var s=0;s<svgs.length;s++){ try{ svgs[s].pauseAnimations(); }catch(e){} }
+  }
+})();
+
+/* ================= Tabs ================= */
+var tabBtns = document.querySelectorAll('.tabBtn');
+tabBtns.forEach(function(tb){
+  tb.addEventListener('click', function(){
+    var group = tb.parentElement;
+    group.querySelectorAll('.tabBtn').forEach(function(x){ x.classList.remove('active'); });
+    tb.classList.add('active');
+    var container = group.parentElement;
+    container.querySelectorAll('.tPanel').forEach(function(p){ p.classList.remove('active'); });
+    var panel = document.getElementById(tb.getAttribute('data-tab'));
+    if(panel){ panel.classList.add('active'); }
+  });
+});
+
+/* ================= Acordeón ================= */
+document.querySelectorAll('.accH').forEach(function(h){
+  h.addEventListener('click', function(){
+    h.parentElement.classList.toggle('open');
+  });
+});
+
+/* ================= Explorador de movimientos ================= */
+var FILES = 'abcdefgh';
+var GLYPH = {P:'♟', N:'♞', B:'♝', R:'♜', Q:'♛', K:'♚'};
+var PNAME = {P:'Peón', N:'Caballo', B:'Alfil', R:'Torre', Q:'Dama', K:'Rey'};
+var exP = 'N', exR = 4, exC = 3;
+var cells = [];
+var boardEl = document.getElementById('expBoard');
+
+function inB(r,c){ return r>=0 && r<8 && c>=0 && c<8; }
+function exMoves(p,r,c){
+  var mv = [], cap = [];
+  function slide(dirs){
+    dirs.forEach(function(d){
+      var rr = r + d[0], cc = c + d[1];
+      while(inB(rr,cc)){ mv.push([rr,cc]); rr += d[0]; cc += d[1]; }
+    });
+  }
+  if(p==='R'){ slide([[1,0],[-1,0],[0,1],[0,-1]]); }
+  else if(p==='B'){ slide([[1,1],[1,-1],[-1,1],[-1,-1]]); }
+  else if(p==='Q'){ slide([[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]); }
+  else if(p==='N'){
+    [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(function(o){
+      if(inB(r+o[0], c+o[1])){ mv.push([r+o[0], c+o[1]]); }
+    });
+  }
+  else if(p==='K'){
+    for(var dr=-1;dr<=1;dr++){ for(var dc=-1;dc<=1;dc++){
+      if((dr!==0||dc!==0) && inB(r+dr,c+dc)){ mv.push([r+dr,c+dc]); }
+    }}
+  }
+  else if(p==='P'){
+    if(r>0){
+      mv.push([r-1,c]);
+      if(r===6){ mv.push([r-2,c]); }
+      if(c>0){ cap.push([r-1,c-1]); }
+      if(c<7){ cap.push([r-1,c+1]); }
+    }
+  }
+  return {mv:mv, cap:cap};
+}
+function same(a,b,r,c){ return a[0]===r && a[1]===c; }
+function renderExp(){
+  var res = exMoves(exP, exR, exC);
+  for(var r=0;r<8;r++){
+    for(var c=0;c<8;c++){
+      var cell = cells[r*8+c];
+      cell.className = 'cell ' + (((r+c)%2===0)?'light':'dark');
+      cell.textContent = '';
+      var isMv = res.mv.some(function(m){ return same(m,r,c); });
+      var isCap = res.cap.some(function(m){ return same(m,r,c); });
+      if(r===exR && c===exC){
+        cell.classList.add('sel');
+        cell.textContent = GLYPH[exP];
+      } else if(isCap){ cell.classList.add('cap'); }
+      else if(isMv){ cell.classList.add('mv'); }
+    }
+  }
+  var sqName = FILES[exC] + (8 - exR);
+  var info = '<b>' + GLYPH[exP] + ' ' + PNAME[exP] + '</b> colocado en <b>' + sqName + '</b> · <b>' + res.mv.length + '</b> casillas de movimiento';
+  if(exP==='P'){ info += ' · <b>' + res.cap.length + '</b> capturas diagonales'; }
+  if(exP==='P' && exR===1){ info += '<br>⚠️ Si avanza hasta la octava fila, <b>promociona</b> (Dama, Torre, Alfil o Caballo).'; }
+  if(exP==='N'){ info += '<br>El Caballo salta sobre cualquier pieza: su patrón en «L» no puede ser bloqueado.'; }
+  if(exP==='B'){ info += '<br>El Alfil permanece siempre en casillas del mismo color.'; }
+  if(exP==='Q'){ info += '<br>La Dama combina Torre + Alfil: la pieza más potente en movimiento.'; }
+  if(exP==='K'){ info += '<br>El Rey mueve una casilla en cualquier dirección… y nunca puede ponerse en jaque.'; }
+  if(exP==='R'){ info += '<br>La Torre domina filas y columnas completas.'; }
+  document.getElementById('expInfo').innerHTML = info + '<br><span style="color:#94a3b8;font-size:12.5px">Pulsa cualquier casilla para recolocar la pieza.</span>';
+}
+(function buildBoard(){
+  for(var r=0;r<8;r++){
+    for(var c=0;c<8;c++){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Casilla ' + FILES[c] + (8-r));
+      (function(rr,cc){
+        b.addEventListener('click', function(){ exR = rr; exC = cc; renderExp(); });
+      })(r,c);
+      boardEl.appendChild(b);
+      cells.push(b);
+    }
+  }
+})();
+document.querySelectorAll('#pieceBtns .pBtn').forEach(function(pb){
+  pb.addEventListener('click', function(){
+    document.querySelectorAll('#pieceBtns .pBtn').forEach(function(x){ x.classList.remove('active'); });
+    pb.classList.add('active');
+    exP = pb.getAttribute('data-p');
+    renderExp();
+  });
+});
+renderExp();
+
+/* ================= Quiz ================= */
+var QUESTIONS = [
+  {q:'El turno es del jugador negro. Su rey NO está en jaque, pero no tiene ningún movimiento legal posible. ¿Cuál es el resultado?',
+   o:['Jaque mate: gana el jugador blanco','Tablas por ahogado: medio punto para cada uno','La partida se reinicia'], a:1,
+   e:'Sin movimientos legales y sin jaque = ahogado. Cada jugador recibe medio punto. Pregunta clave del módulo: «¿El Rey está en jaque?» → No, luego podría ser ahogado.'},
+  {q:'El rey está bajo ataque directo y no puede moverse a una casilla segura, ni capturar al atacante, ni bloquear el ataque. ¿Qué ocurre?',
+   o:['Es un jaque simple y la partida continúa','Es jaque mate: la partida termina y gana quien lo da','Es tablas automáticas'], a:1,
+   e:'Es la definición exacta de jaque mate: la partida termina inmediatamente y el Rey nunca es retirado del tablero.'},
+  {q:'Una torre enemiga ataca a tu rey. ¿Cuál de estas NO es una respuesta legal al jaque?',
+   o:['Mover el rey a una casilla no atacada','Capturar la torre atacante','Ignorar el jaque y desarrollar otra pieza'], a:2,
+   e:'El jaque nunca puede ignorarse: hay que mover el rey, capturar al atacante o bloquear el ataque (el bloqueo solo funciona contra piezas de línea recta: Torre, Alfil y Dama).'},
+  {q:'Un peón blanco llega a la octava fila. ¿Qué ocurre?',
+   o:['Se retira del tablero sin más','Debe cambiarse por una nueva Dama, Torre, Alfil o Caballo blanco en el mismo movimiento','Solo puede convertirse en Dama'], a:1,
+   e:'La promoción ocurre como parte del mismo movimiento y no hay restricciones sobre piezas ya capturadas. Promocionar a Caballo puede ser ventajoso para dar jaque o evitar un ahogado.'},
+  {q:'¿En cuál de estas situaciones NO está permitido enrocar?',
+   o:['Cuando el rey está en jaque','Cuando las casillas entre el rey y la torre están libres','Cuando ni el rey ni la torre se han movido antes'], a:0,
+   e:'Con el rey en jaque no se puede enrocar. Tampoco si el rey atraviesa o termina en una casilla atacada, o si hay piezas entre el rey y la torre.'},
+  {q:'Según la escala de valor relativo del documento (Peón=1, Caballo/Alfil=3, Torre=5, Dama=9), ¿qué consejo mnemotécnico se cita?',
+   o:['«No des tu caballo por un alfil»','«Cambia siempre las damas cuanto antes»','«Los peones no tienen valor»'], a:0,
+   e:'El valor relativo sirve como guía intuitiva para evaluar capturas; el documento cita expresamente «No des tu caballo por un alfil» como regla mnemotécnica.'}
+];
+var qIdx = 0, qScore = 0, qDone = false;
+var quizBox = document.getElementById('quizBox');
+function renderQuiz(){
+  if(qIdx >= QUESTIONS.length){
+    var pct = Math.round((qScore / QUESTIONS.length) * 100);
+    var msg = pct >= 80 ? '🏆 ¡Excelente! Dominas la distinción de resultados.' : pct >= 50 ? '💪 Buen intento. Repasa la tabla comparativa y vuelve a intentarlo.' : '📖 Vuelve a leer el Módulo 03: la pregunta clave es «¿El Rey está en jaque?».';
+    quizBox.innerHTML = '<div class="quizScore"><span class="scoreChip">Resultado final: ' + qScore + ' / ' + QUESTIONS.length + ' (' + pct + '%)</span></div>' +
+      '<p class="qTxt">' + msg + '</p>' +
+      '<button class="btn" id="qReset">↺ Reiniciar la autoevaluación</button>';
+    document.getElementById('qReset').addEventListener('click', function(){ qIdx = 0; qScore = 0; renderQuiz(); });
+    return;
+  }
+  var Q = QUESTIONS[qIdx];
+  var html = '<div class="quizScore">' +
+    '<span class="scoreChip">Pregunta ' + (qIdx+1) + ' de ' + QUESTIONS.length + '</span>' +
+    '<span class="scoreChip" style="background:#22c55e12;border-color:#22c55e55;color:#22c55e">Aciertos: ' + qScore + '</span></div>' +
+    '<p class="qTxt">' + Q.q + '</p><div class="qOpts">';
+  Q.o.forEach(function(op,i){
+    html += '<button class="qOpt" data-i="' + i + '">' + op + '</button>';
+  });
+  html += '</div><div class="qExp" id="qExp"></div>' +
+    '<div class="qNav"><span style="color:#64748b;font-size:12.5px">Feedback inmediato · ciclo de intento-corrección</span>' +
+    '<button class="btn" id="qNext" style="display:none">Siguiente →</button></div>';
+  quizBox.innerHTML = html;
+  quizBox.querySelectorAll('.qOpt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var chosen = parseInt(btn.getAttribute('data-i'),10);
+      var opts = quizBox.querySelectorAll('.qOpt');
+      opts.forEach(function(o){
+        o.disabled = true;
+        var oi = parseInt(o.getAttribute('data-i'),10);
+        if(oi === Q.a){ o.classList.add('ok'); }
+        else if(oi === chosen){ o.classList.add('ko'); }
+      });
+      var exp = document.getElementById('qExp');
+      if(chosen === Q.a){ qScore++; exp.innerHTML = '✅ <b>Correcto.</b> ' + Q.e; }
+      else { exp.innerHTML = '❌ <b>No es correcto.</b> ' + Q.e; }
+      exp.classList.add('show');
+      var nx = document.getElementById('qNext');
+      nx.style.display = 'inline-block';
+      nx.textContent = (qIdx === QUESTIONS.length-1) ? 'Ver resultado →' : 'Siguiente →';
+      nx.addEventListener('click', function(){ qIdx++; renderQuiz(); });
+    });
+  });
+}
+renderQuiz();
+
+/* ================= Filtro de referencias ================= */
+var refSearch = document.getElementById('refSearch');
+var refItems = Array.prototype.slice.call(document.querySelectorAll('#refList li'));
+var refCount = document.getElementById('refCount');
+refSearch.addEventListener('input', function(){
+  var q = refSearch.value.trim().toLowerCase();
+  var visible = 0;
+  refItems.forEach(function(li){
+    var match = li.textContent.toLowerCase().indexOf(q) !== -1;
+    li.classList.toggle('hidden', !match);
+    if(match){ visible++; }
+  });
+  refCount.textContent = 'Mostrando ' + visible + ' de ' + refItems.length;
+});
+</script>
+</body>
+</html>
