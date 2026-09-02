@@ -156,6 +156,31 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
 }
+
+/* ============ TABLEROS INTERACTIVOS (spec estandar) ============ */
+.board-frame{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:16px;margin:16px 0}
+.board-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.board-top h4{margin:0;font-size:15px;color:var(--accent);font-weight:700}
+.board-area{display:flex;gap:8px;justify-content:center;align-items:flex-start}
+.board-col{flex:0 1 420px;width:100%;max-width:420px}
+.board-grid{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;
+  border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.sq{position:relative;display:flex;align-items:center;justify-content:center;
+  font-size:7.4vw}
+@media(min-width:460px){.sq{font-size:32px}}
+.sq-l{background:#1d3a5f}.sq-d{background:#0e2036}
+.sq.hl{box-shadow:inset 0 0 0 3px rgba(0,212,255,.85),inset 0 0 20px rgba(0,212,255,.35)}
+.pcw{color:#f4f8ff;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6))}
+.pcb{color:#0a0e1a;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.file-row{display:flex;justify-content:space-around;font-size:11px;color:var(--dim);padding:4px 0 0}
+.board-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;justify-content:center}
+.board-controls button{background:var(--border);color:var(--text);border:none;
+  border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.board-controls button:hover{background:var(--accent);color:#04121e}
+.board-controls input[type=range]{flex:1 1 100%;min-width:120px;accent-color:var(--accent)}
+.board-step-label{font-size:13px;color:var(--muted);flex:1 1 100%;text-align:center;margin-top:2px}
+.board-step-label b{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -370,6 +395,20 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
 1 | R N . Q K B N R
     a b c d e f g h</pre>
     <p style="color:var(--dim);font-size:13.5px">(Posición después de 1.d4 Cf6 2.Ag5. Piezas mayúsculas = BLANCAS, minúsculas = NEGRAS.)</p>
+
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 1.d4 Cf6 2.Ag5 &mdash; la secuencia fundamental</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="fund-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="fund-prev">&#9664; Anterior</button>
+      <button type="button" id="fund-next">Siguiente &#9654;</button>
+      <button type="button" id="fund-reset">&#8635; Reset</button>
+      <input type="range" id="fund-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="fund-step"><b id="fund-move"></b></div>
+    </div>
+  </div>
   </div>
 
   <div class="card">
@@ -531,6 +570,20 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
         <p style="margin-top:8px">Una continuación conocida sigue así:</p>
         <div class="moveline"><span class="mv b">7... e6</span><span class="mv">8. c4 exd5</span><span class="mv">9. cxd5 c4</span><span class="mv">10. e3 Ac5</span></div>
         <p style="color:var(--muted)"><b>Explicación:</b> las NEGRAS juegan 7...e6 para golpear el PEÓN BLANCO de d5; las BLANCAS refuerzan su cadena con 8.c4; tras el cambio en d5 (8...exd5 9.cxd5), las NEGRAS avanzan 9...c4 ganando espacio en el flanco de dama; las BLANCAS juegan 10.e3, preparando terreno para que el REY BLANCO pueda apoyarse en f2 si hace falta defender el peón de e3; las NEGRAS desarrollan con 10...Ac5, apuntando a esa misma casilla e3 y a f2.</p>
+
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 3.Af4 c5 4.f3 Da5+ 5.c3 Cf6 6.d5 Db6 7.Ac1 e6 8.c4 exd5 9.cxd5 c4 10.e3 Ac5</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="subA-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="subA-prev">&#9664; Anterior</button>
+      <button type="button" id="subA-next">Siguiente &#9654;</button>
+      <button type="button" id="subA-reset">&#8635; Reset</button>
+      <input type="range" id="subA-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="subA-step"><b id="subA-move"></b></div>
+    </div>
+  </div>
       </div></div>
     </div>
 
@@ -547,7 +600,21 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
           <li><b>6...Dxb2:</b> la DAMA NEGRA captura el PEÓN BLANCO de b2.</li>
           <li><b>7.e4:</b> las BLANCAS, un peón por debajo, avanzan su PEÓN de e2 a e4, construyendo un enorme centro de peones (d5 + e4) a cambio del material.</li>
         </ol>
-        <div class="quote">"En esta línea las blancas entregan el peón b2 conscientemente: el pago es un centro de peones gigante y ventaja de desarrollo. No la juegues si no te sientes cómodo jugando con un peón menos a cambio de iniciativa."</div>
+        
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 3.Af4 c5 4.d5 Db6 5.Cd2 Cxd2 6.Axd2 Dxb2 7.e4</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="subB-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="subB-prev">&#9664; Anterior</button>
+      <button type="button" id="subB-next">Siguiente &#9654;</button>
+      <button type="button" id="subB-reset">&#8635; Reset</button>
+      <input type="range" id="subB-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="subB-step"><b id="subB-move"></b></div>
+    </div>
+  </div>
+<div class="quote">"En esta línea las blancas entregan el peón b2 conscientemente: el pago es un centro de peones gigante y ventaja de desarrollo. No la juegues si no te sientes cómodo jugando con un peón menos a cambio de iniciativa."</div>
       </div></div>
     </div>
   </div>
@@ -578,7 +645,21 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
         <div class="callout ejemplo"><span class="ct">🟢 EJEMPLO — ¿Qué pieza está mejor?</span>
           Al final de esta secuencia, las BLANCAS tienen <b>tres piezas desarrolladas</b> (ALFIL de f4, CABALLO de c3, CABALLO de f3) frente a <b>una sola pieza negra desarrollada</b> (el CABALLO de f6). A cambio de un peón, las BLANCAS disfrutan de una ventaja de desarrollo considerable.
         </div>
-        <div class="quote">"Igual que en el Blackmar-Diemer, aquí sacrificas un peón por tiempo: no te apresures a recuperarlo, desarrolla primero."</div>
+        
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 3.Af4 d5 4.f3 Cf6 5.e4!? dxe4 6.Cc3 exf3 7.Cxf3</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="gambito-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="gambito-prev">&#9664; Anterior</button>
+      <button type="button" id="gambito-next">Siguiente &#9654;</button>
+      <button type="button" id="gambito-reset">&#8635; Reset</button>
+      <input type="range" id="gambito-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="gambito-step"><b id="gambito-move"></b></div>
+    </div>
+  </div>
+<div class="quote">"Igual que en el Blackmar-Diemer, aquí sacrificas un peón por tiempo: no te apresures a recuperarlo, desarrolla primero."</div>
       </div></div>
     </div>
 
@@ -602,6 +683,20 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
       <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">Plan de las blancas</h4><p>Utilizar la columna h abierta como arma de ataque, sobre todo si las NEGRAS enrocan corto sin cuidado. Esta línea requiere más precisión táctica y <b>no se recomienda para un principiante como primera arma</b>, aunque es importante conocerla porque aparece con frecuencia en partidas rápidas.</p></div>
       <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">Plan de las negras</h4><p>Las NEGRAS no están obligadas a capturar en g5. Pueden, por ejemplo, devolver el caballo a f6 o buscar otra estructura, evitando regalar la columna h a las blancas sin necesidad.</p></div>
     </div>
+
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 3.h4!? Cxg5 4.hxg5 (Variante Raptor)</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="raptor-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="raptor-prev">&#9664; Anterior</button>
+      <button type="button" id="raptor-next">Siguiente &#9654;</button>
+      <button type="button" id="raptor-reset">&#8635; Reset</button>
+      <input type="range" id="raptor-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="raptor-step"><b id="raptor-move"></b></div>
+    </div>
+  </div>
     <div class="quote">"3.h4 defiende el alfil con un peón en vez de retirarlo: es agresivo, abre líneas hacia el rey negro, pero también compromete la estructura de peones blanca en el flanco de rey. No es la línea recomendada para empezar a aprender el Trompowsky, pero debes saber que existe."</div>
   </div>
 </section>
@@ -630,7 +725,21 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
       Si en vez de 3.Axf6 las BLANCAS juegan <b>3.Cf3</b>, la partida transpone al <b>Ataque Torre</b>. Si juegan <b>3.Cc3</b>, se entra en el terreno del <b>Ataque Richter-Veresov</b>. La jugada 3.Axf6 es la que mantiene la partida dentro del terreno propiamente "Trompowsky".
     </div>
     <div class="callout error"><span class="ct">🔴 ERROR TÍPICO</span>Capturar en f6 sin ningún plan claro después, dejando que las NEGRAS desarrollen cómodamente con la pareja de alfiles y sin sufrir ninguna presión real.</div>
-    <div class="quote">"Aceptar los peones doblados no es un error de las negras: es un plan a largo plazo basado en la pareja de alfiles. Las blancas deben jugar con paciencia, no esperando una ventaja inmediata."</div>
+    
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 2...d5 3.Axf6 exf6</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="d5line-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="d5line-prev">&#9664; Anterior</button>
+      <button type="button" id="d5line-next">Siguiente &#9654;</button>
+      <button type="button" id="d5line-reset">&#8635; Reset</button>
+      <input type="range" id="d5line-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="d5line-step"><b id="d5line-move"></b></div>
+    </div>
+  </div>
+<div class="quote">"Aceptar los peones doblados no es un error de las negras: es un plan a largo plazo basado en la pareja de alfiles. Las blancas deben jugar con paciencia, no esperando una ventaja inmediata."</div>
   </div>
 
   <div class="card">
@@ -653,7 +762,21 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
     </div>
     <div class="callout error"><span class="ct">🔴 ERROR TÍPICO</span>Que las BLANCAS avancen el centro (d4–e4) sin desarrollar piezas detrás: un centro de peones grande sin piezas que lo respalden puede convertirse en un objetivo de ataque para las negras.</div>
     <div class="quote">"El centro grande es una ventaja de espacio, no una ventaja garantizada: hay que desarrollar piezas para sostenerlo, o las negras lo atacarán con ...c5 y ...d5."</div>
-    <div class="callout advertencia"><span class="ct">🟡 Nota de transposición</span>Si en vez de 3.e4 las BLANCAS juegan <b>3.Cf3</b>, la partida transpone también al <b>Ataque Torre</b>.</div>
+    
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 2...e6 3.e4 h6 4.Axf6 Dxf6</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="e6line-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="e6line-prev">&#9664; Anterior</button>
+      <button type="button" id="e6line-next">Siguiente &#9654;</button>
+      <button type="button" id="e6line-reset">&#8635; Reset</button>
+      <input type="range" id="e6line-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="e6line-step"><b id="e6line-move"></b></div>
+    </div>
+  </div>
+<div class="callout advertencia"><span class="ct">🟡 Nota de transposición</span>Si en vez de 3.e4 las BLANCAS juegan <b>3.Cf3</b>, la partida transpone también al <b>Ataque Torre</b>.</div>
   </div>
 
   <div class="card">
@@ -674,7 +797,21 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
       </div>
       <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">Plan de las negras</h4><p>Utilizar el peón de f6 y la pareja de alfiles; buscar el avance <b>...e5</b> en el momento adecuado; usar la <b>columna g</b> para presionar en el flanco de rey si las BLANCAS enrocan corto.</p></div>
     </div>
-    <div class="quote">"Con 2...c5, las negras piden batalla inmediata en el centro: la recaptura gxf6 (en vez de exf6) es la clave para mantener flexibilidad y ganar la columna g."</div>
+    
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 2...c5 3.Axf6 gxf6</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="c5line-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="c5line-prev">&#9664; Anterior</button>
+      <button type="button" id="c5line-next">Siguiente &#9654;</button>
+      <button type="button" id="c5line-reset">&#8635; Reset</button>
+      <input type="range" id="c5line-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="c5line-step"><b id="c5line-move"></b></div>
+    </div>
+  </div>
+<div class="quote">"Con 2...c5, las negras piden batalla inmediata en el centro: la recaptura gxf6 (en vez de exf6) es la clave para mantener flexibilidad y ganar la columna g."</div>
   </div>
 
   <div class="card">
@@ -686,7 +823,21 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
       <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">Plan de las blancas</h4><p>Capturar en f6 (3.Axf6 exf6) y jugar contra la estructura de peones negra, o simplemente desarrollar con naturalidad si se prefiere no definir la posición tan pronto.</p></div>
       <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">Plan de las negras</h4><p>Completar el fianchetto (...Ag7), enrocar corto y utilizar el alfil de g7 junto con un futuro ...c5 o ...d5 para presionar el centro blanco.</p></div>
     </div>
-    <div class="quote">"Cuando las negras ya han jugado ...g6, la recaptura tras Axf6 solo puede ser exf6: recuérdalo para no confundirte con la línea de 2...c5."</div>
+    
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 2...g6 3.Axf6 exf6</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="g6line-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="g6line-prev">&#9664; Anterior</button>
+      <button type="button" id="g6line-next">Siguiente &#9654;</button>
+      <button type="button" id="g6line-reset">&#8635; Reset</button>
+      <input type="range" id="g6line-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="g6line-step"><b id="g6line-move"></b></div>
+    </div>
+  </div>
+<div class="quote">"Cuando las negras ya han jugado ...g6, la recaptura tras Axf6 solo puede ser exf6: recuérdalo para no confundirte con la línea de 2...c5."</div>
   </div>
 
   <div class="card" style="border-color:rgba(239,68,68,.5)">
@@ -711,7 +862,21 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
       <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--accent)">¿Qué debe hacer el jugador de blancas?</h4><p>Jugar <b>3.Axf6 o 3.Cf3</b>, nunca 3.e3 en esta posición concreta (mientras el ALFIL siga en g5 sin estar defendido y la diagonal a5–e1 esté abierta).</p></div>
       <div class="card" style="margin:0"><h4 class="sub2" style="color:var(--purple)">¿Qué debe hacer el jugador de negras?</h4><p>Estar siempre atento a la posibilidad de un jaque en la diagonal a5–e1 cuando el rey blanco todavía está en e1 y el alfil blanco de g5 carece de defensa: es una <b>combinación recurrente en varias aperturas de dama</b>.</p></div>
     </div>
-    <div class="quote">"Antes de jugar una jugada de desarrollo 'automática', pregúntate siempre: ¿estoy dejando alguna pieza sin defensa en una diagonal, fila o columna abierta? Un solo descuido puede costar una pieza entera, incluso a un maestro."</div>
+    
+  <div class="board-frame">
+    <div class="board-top"><h4>&#9823; 2...c6 3.e3?? Da5+ 4.c3 Dxg5 (trampa &Djordje;ordevic&ndash;Kovacevic, 1984)</h4></div>
+    <div class="board-area">
+      <div class="board-col"><div class="board-grid" id="c6trap-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button type="button" id="c6trap-prev">&#9664; Anterior</button>
+      <button type="button" id="c6trap-next">Siguiente &#9654;</button>
+      <button type="button" id="c6trap-reset">&#8635; Reset</button>
+      <input type="range" id="c6trap-slider" min="0" value="0" step="1">
+      <div class="board-step-label" id="c6trap-step"><b id="c6trap-move"></b></div>
+    </div>
+  </div>
+<div class="quote">"Antes de jugar una jugada de desarrollo 'automática', pregúntate siempre: ¿estoy dejando alguna pieza sin defensa en una diagonal, fila o columna abierta? Un solo descuido puede costar una pieza entera, incluso a un maestro."</div>
   </div>
 </section>
 
@@ -1400,6 +1565,121 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.querySelectorAll('svg').forEach(function(s){ if (s.pauseAnimations) { try{ s.pauseAnimations(); }catch(e){} } });
   }
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var FILES = "abcdefgh";
+  var GLYPH = {K:"\u2654",Q:"\u2655",R:"\u2656",B:"\u2657",N:"\u2658",P:"\u2659",
+               k:"\u265A",q:"\u265B",r:"\u265C",b:"\u265D",n:"\u265E",p:"\u265F"};
+
+  function initialPos(){
+    var p={}, back=["R","N","B","Q","K","B","N","R"], f;
+    for(f=0; f<8; f++){
+      p[FILES[f]+"1"]=back[f];
+      p[FILES[f]+"2"]="P";
+      p[FILES[f]+"7"]="p";
+      p[FILES[f]+"8"]=back[f].toLowerCase();
+    }
+    return p;
+  }
+  function applySteps(steps){
+    var arr=[initialPos()], cur=arr[0];
+    steps.forEach(function(s){
+      var np={}; Object.keys(cur).forEach(function(k){ np[k]=cur[k]; });
+      if(s.castle){
+        if(s.castle==="w"){ delete np.e1; delete np.h1; np.g1="K"; np.f1="R"; }
+        else{ delete np.e8; delete np.h8; np.g8="k"; np.f8="r"; }
+      } else {
+        np[s.to]=np[s.from]; delete np[s.from];
+      }
+      arr.push(np); cur=np;
+    });
+    return arr;
+  }
+  function buildGrid(el){
+    el.innerHTML="";
+    for(var r=8; r>=1; r--){
+      for(var f=0; f<8; f++){
+        var sq=document.createElement("div");
+        var name=FILES[f]+r;
+        sq.className="sq " + (((f+r)%2===0) ? "sq-l" : "sq-d");
+        sq.setAttribute("data-sq", name);
+        el.appendChild(sq);
+      }
+    }
+  }
+  function renderBoard(el, pos, last){
+    var squares = el.querySelectorAll(".sq");
+    Array.prototype.forEach.call(squares, function(sq){
+      var name = sq.getAttribute("data-sq");
+      var piece = pos[name];
+      var hl = !!(last && (last.from===name || last.to===name));
+      sq.classList.toggle("hl", hl);
+      if(piece){
+        var isW = piece===piece.toUpperCase();
+        sq.innerHTML = "<span class='"+(isW?"pcw":"pcb")+"'>"+GLYPH[piece]+"</span>";
+      } else { sq.innerHTML=""; }
+    });
+  }
+  function fillFiles(root){
+    var fc = root.querySelector("[data-files]");
+    if(fc){ fc.innerHTML=""; for(var f=0; f<8; f++){ var s=document.createElement("span"); s.textContent=FILES[f]; fc.appendChild(s); } }
+  }
+  function createStepper(cfg){
+    var boardEl = document.getElementById(cfg.boardId);
+    var frame = boardEl.closest(".board-frame");
+    fillFiles(frame);
+    buildGrid(boardEl);
+    var positions = applySteps(cfg.steps);
+    var idx = 0;
+    var slider = document.getElementById(cfg.sliderId);
+    var stepLbl = document.getElementById(cfg.stepId);
+    var moveLbl = document.getElementById(cfg.moveId);
+    slider.max = positions.length - 1;
+    function label(i){
+      if(i===0) return "Posición inicial";
+      var half = i;
+      var moveNum = Math.ceil(half/2);
+      var isWhite = (half % 2 === 1);
+      var s = cfg.steps[i-1];
+      var txt = (s.from||"") + (s.to? ("\u2192"+s.to) : "");
+      return moveNum + (isWhite? "." : "...") + " " + txt;
+    }
+    function render(){
+      renderBoard(boardEl, positions[idx], idx>0 ? cfg.steps[idx-1] : null);
+      slider.value = idx;
+      moveLbl.textContent = label(idx) + "  (" + idx + "/" + (positions.length-1) + ")";
+    }
+    document.getElementById(cfg.prevId).addEventListener("click", function(){ if(idx>0){ idx--; render(); } });
+    document.getElementById(cfg.nextId).addEventListener("click", function(){ if(idx<positions.length-1){ idx++; render(); } });
+    document.getElementById(cfg.resetId).addEventListener("click", function(){ idx=0; render(); });
+    slider.addEventListener("input", function(){ idx=parseInt(slider.value,10)||0; render(); });
+    render();
+  }
+
+  var ALL_STEPS = {
+  "fund": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}],
+  "subA": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}, {"from": "f6", "to": "e4"}, {"from": "g5", "to": "f4"}, {"from": "c7", "to": "c5"}, {"from": "f2", "to": "f3"}, {"from": "d8", "to": "a5"}, {"from": "c2", "to": "c3"}, {"from": "e4", "to": "f6"}, {"from": "d4", "to": "d5"}, {"from": "a5", "to": "b6"}, {"from": "f4", "to": "c1"}, {"from": "e7", "to": "e6"}, {"from": "c3", "to": "c4"}, {"from": "e6", "to": "d5"}, {"from": "c4", "to": "d5"}, {"from": "c5", "to": "c4"}, {"from": "e2", "to": "e3"}, {"from": "f8", "to": "c5"}],
+  "subB": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}, {"from": "f6", "to": "e4"}, {"from": "g5", "to": "f4"}, {"from": "c7", "to": "c5"}, {"from": "d4", "to": "d5"}, {"from": "d8", "to": "b6"}, {"from": "b1", "to": "d2"}, {"from": "e4", "to": "d2"}, {"from": "f4", "to": "d2"}, {"from": "b6", "to": "b2"}, {"from": "e2", "to": "e4"}],
+  "gambito": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}, {"from": "f6", "to": "e4"}, {"from": "g5", "to": "f4"}, {"from": "d7", "to": "d5"}, {"from": "f2", "to": "f3"}, {"from": "e4", "to": "f6"}, {"from": "e2", "to": "e4"}, {"from": "d5", "to": "e4"}, {"from": "b1", "to": "c3"}, {"from": "e4", "to": "f3"}, {"from": "g1", "to": "f3"}],
+  "raptor": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}, {"from": "f6", "to": "e4"}, {"from": "h2", "to": "h4"}, {"from": "e4", "to": "g5"}, {"from": "h4", "to": "g5"}],
+  "d5line": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}, {"from": "d7", "to": "d5"}, {"from": "g5", "to": "f6"}, {"from": "e7", "to": "f6"}],
+  "e6line": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}, {"from": "e7", "to": "e6"}, {"from": "e2", "to": "e4"}, {"from": "h7", "to": "h6"}, {"from": "g5", "to": "f6"}, {"from": "d8", "to": "f6"}],
+  "c5line": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}, {"from": "c7", "to": "c5"}, {"from": "g5", "to": "f6"}, {"from": "g7", "to": "f6"}],
+  "g6line": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}, {"from": "g7", "to": "g6"}, {"from": "g5", "to": "f6"}, {"from": "e7", "to": "f6"}],
+  "c6trap": [{"from": "d2", "to": "d4"}, {"from": "g8", "to": "f6"}, {"from": "c1", "to": "g5"}, {"from": "c7", "to": "c6"}, {"from": "e2", "to": "e3"}, {"from": "d8", "to": "a5"}, {"from": "c2", "to": "c3"}, {"from": "a5", "to": "g5"}]
+  };
+
+  Object.keys(ALL_STEPS).forEach(function(id){
+    createStepper({
+      boardId: id+"-board", sliderId: id+"-slider", stepId: id+"-step",
+      moveId: id+"-move", prevId: id+"-prev", nextId: id+"-next", resetId: id+"-reset",
+      steps: ALL_STEPS[id]
+    });
+  });
 })();
 </script>
 </body>
