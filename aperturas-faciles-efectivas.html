@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aperturas fáciles y efectivas en Ajedrez · Tutorial Interactivo</title>
+<style>
+/* ============ BASE ============ */
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f; --acc:#00d4ff;
+  --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+  --tx:#dbe7f5; --mut:#8ea2bd; --rad:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(1100px 560px at 85% -10%, rgba(0,212,255,.07), transparent 60%),
+    radial-gradient(900px 520px at -10% 35%, rgba(168,85,247,.06), transparent 55%),
+    var(--bg);
+  color:var(--tx);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  line-height:1.55; padding-top:64px;
+}
+img,svg{max-width:100%}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--acc)}
+
+/* ============ PROGRESS BAR ============ */
+#progressBar{position:fixed;top:0;left:0;height:3px;width:0;z-index:1300;
+  background:linear-gradient(90deg,var(--acc),var(--purple));
+  box-shadow:0 0 12px rgba(0,212,255,.85)}
+
+/* ============ NAVBAR ============ */
+.nav{position:fixed;top:0;left:0;right:0;height:60px;z-index:1200;
+  background:rgba(10,14,26,.94);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;padding:0 12px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;color:#fff;
+  white-space:nowrap;font-size:14px;letter-spacing:.4px}
+.brand .kn{color:var(--acc);font-size:24px;line-height:1}
+.brand small{display:block;color:var(--mut);font-weight:600;font-size:10px;letter-spacing:1.5px}
+.nav-scroll{display:flex;gap:6px;overflow-x:auto;flex:1;padding:6px 4px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-btn{flex:0 0 auto;background:transparent;border:1px solid transparent;color:var(--mut);
+  padding:8px 13px;border-radius:9px;font-size:13px;font-weight:600;letter-spacing:.3px;
+  transition:color .2s,border-color .2s,background .2s;position:relative;white-space:nowrap}
+.nav-btn:hover{color:#fff;border-color:var(--border)}
+.nav-btn.active{color:var(--acc);background:rgba(0,212,255,.09);border-color:rgba(0,212,255,.45)}
+.nav-btn.active::after{content:'';position:absolute;left:12px;right:12px;bottom:3px;height:2px;
+  background:var(--acc);border-radius:2px;box-shadow:0 0 8px var(--acc)}
+.nav-btn.creditos{color:var(--acc);border-color:var(--acc);background:rgba(0,212,255,.08);font-weight:700}
+.nav-btn.creditos.active{background:var(--acc);color:#06121f}
+
+/* ============ LAYOUT ============ */
+main{max-width:1180px;margin:0 auto;padding:20px 16px 70px}
+.panel{display:none}
+.panel.active{display:block;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ============ COMPONENTS ============ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);padding:20px;margin-bottom:18px}
+.card h3{font-size:19px;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card h4{font-size:15.5px;color:var(--acc);margin:14px 0 8px}
+.card p{color:var(--tx);margin-bottom:10px}
+.card p:last-child{margin-bottom:0}
+.mut{color:var(--mut)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);
+  background:rgba(15,23,42,.8);border-radius:999px;padding:5px 13px;font-size:12.5px;
+  font-weight:600;color:var(--tx)}
+.chip.acc{border-color:rgba(0,212,255,.5);color:var(--acc)}
+.chip.grn{border-color:rgba(34,197,94,.5);color:var(--green)}
+.chip.amb{border-color:rgba(245,158,11,.5);color:var(--amber)}
+.chip.red{border-color:rgba(239,68,68,.5);color:var(--red)}
+.chip.pur{border-color:rgba(168,85,247,.5);color:var(--purple)}
+
+/* Section header */
+.sec-head{margin:6px 0 22px}
+.kicker{color:var(--acc);font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase}
+.sec-head h2{font-size:clamp(24px,4vw,34px);color:#fff;margin:6px 0 8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sec-ico{width:44px;height:44px;border-radius:11px;background:rgba(0,212,255,.1);
+  border:1px solid rgba(0,212,255,.45);display:inline-flex;align-items:center;justify-content:center;
+  font-size:22px;flex:0 0 auto}
+.sec-head .sub{color:var(--mut);max-width:820px}
+.sec-line{height:3px;width:90px;border-radius:3px;margin-top:12px;
+  background:linear-gradient(90deg,var(--acc),transparent)}
+
+/* Callouts */
+.callout{border-radius:10px;padding:14px 16px;margin:14px 0;border:1px solid;font-size:14.5px}
+.callout b.tag{display:block;font-size:11.5px;letter-spacing:2px;margin-bottom:5px;font-weight:800}
+.callout.info{background:rgba(0,212,255,.07);border-color:rgba(0,212,255,.4)}
+.callout.info b.tag{color:var(--acc)}
+.callout.ejemplo{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.4)}
+.callout.ejemplo b.tag{color:var(--green)}
+.callout.adv{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.4)}
+.callout.adv b.tag{color:var(--amber)}
+.callout.err{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.4)}
+.callout.err b.tag{color:var(--red)}
+
+/* ============ HERO ============ */
+.hero-cover{position:relative;margin-bottom:22px}
+.cover-slot svg{display:block;width:100%;height:auto;border-radius:16px;border:1px solid var(--border)}
+.cover-badge{position:absolute;top:12px;left:12px;z-index:5;background:rgba(10,14,26,.85);
+  border:1px solid var(--acc);color:var(--acc);border-radius:999px;padding:6px 14px;
+  font-size:11px;font-weight:800;letter-spacing:2px;backdrop-filter:blur(4px)}
+.hero-title{font-size:clamp(28px,5vw,46px);color:#fff;line-height:1.15;margin:6px 0 8px}
+.hero-title span{color:var(--acc)}
+.hero-sub{font-size:clamp(15px,2.4vw,19px);color:var(--tx);max-width:860px;margin-bottom:14px}
+.hero-desc{color:var(--mut);max-width:900px;margin-bottom:20px}
+.quote{border-left:4px solid var(--acc);background:linear-gradient(90deg,rgba(0,212,255,.09),transparent);
+  border-radius:0 10px 10px 0;padding:16px 20px;margin:18px 0;font-size:clamp(15px,2.3vw,19px);
+  font-style:italic;color:#eaf6ff}
+.quote small{display:block;margin-top:8px;color:var(--mut);font-style:normal;font-size:12px;letter-spacing:1px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:center}
+.metric .n{font-size:28px;font-weight:800;color:var(--acc);text-shadow:0 0 14px rgba(0,212,255,.4)}
+.metric .l{font-size:11.5px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;margin-top:4px;font-weight:600}
+.dt-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+/* ============ CHESS BOARDS ============ */
+.board-frame{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);
+  padding:16px;margin-bottom:20px}
+.board-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.bb-step{font-weight:800;color:#fff;font-size:14px}
+.bb-step .tw{color:var(--acc)} .bb-step .tb{color:var(--purple)}
+.bb-move{font-size:13px;color:var(--amber);font-weight:600}
+.board-area{display:flex;gap:8px;justify-content:center}
+.rank-col{display:grid;grid-template-rows:repeat(8,1fr);width:18px;font-size:11px;color:var(--mut);font-weight:700}
+.rank-col span{display:flex;align-items:center;justify-content:center}
+.board-col{flex:0 1 440px}
+.board-grid{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;
+  border:2px solid var(--border);border-radius:8px;overflow:hidden;width:100%}
+.file-row{display:grid;grid-template-columns:repeat(8,1fr);font-size:11px;color:var(--mut);font-weight:700;margin-top:4px}
+.file-row span{text-align:center}
+.sq{position:relative;display:flex;align-items:center;justify-content:center;
+  font-size:min(8.4vw,40px);line-height:1;user-select:none}
+.sq-l{background:#1d3a5f}.sq-d{background:#0e2036}
+.sq.hl{box-shadow:inset 0 0 0 3px rgba(0,212,255,.85),inset 0 0 20px rgba(0,212,255,.35)}
+.sq.sel{box-shadow:inset 0 0 0 3px rgba(34,197,94,.9),inset 0 0 20px rgba(34,197,94,.4)}
+.pcw{color:#f8fafc;text-shadow:0 2px 5px rgba(0,0,0,.65),0 0 6px rgba(0,212,255,.35)}
+.pcb{color:#060a13;-webkit-text-stroke:1.3px #9db2cc;text-shadow:0 0 7px rgba(168,85,247,.3)}
+.board-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.btn{background:rgba(0,212,255,.1);border:1px solid var(--acc);color:var(--acc);
+  border-radius:9px;padding:9px 16px;font-weight:700;font-size:13.5px;transition:background .2s,transform .1s}
+.btn:hover{background:rgba(0,212,255,.22)}
+.btn:active{transform:scale(.96)}
+.btn.ghost{border-color:var(--border);color:var(--mut)}
+.btn.ghost:hover{color:#fff;border-color:var(--mut)}
+.board-controls input[type=range]{flex:1;min-width:120px;accent-color:var(--acc)}
+.coord-readout{margin-top:10px;text-align:center;font-size:15px;min-height:26px;color:var(--green);font-weight:700}
+
+/* ============ STEP CARDS ============ */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;margin:18px 0}
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:15px;
+  border-top:3px solid var(--acc);display:flex;flex-direction:column;gap:8px}
+.step-card.black{border-top-color:var(--purple)}
+.sc-top{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sc-num{background:rgba(0,212,255,.12);color:var(--acc);border:1px solid rgba(0,212,255,.4);
+  font-weight:800;font-size:12px;border-radius:7px;padding:3px 9px}
+.step-card.black .sc-num{background:rgba(168,85,247,.12);color:var(--purple);border-color:rgba(168,85,247,.4)}
+.sc-who{font-size:11.5px;font-weight:800;letter-spacing:.8px;border-radius:7px;padding:4px 9px}
+.who-w{background:rgba(226,240,255,.1);color:#e6f3ff;border:1px solid rgba(226,240,255,.35)}
+.who-b{background:rgba(168,85,247,.12);color:#d8b4fe;border:1px solid rgba(168,85,247,.4)}
+.sc-move{font-size:13px;font-weight:800;color:var(--amber);background:rgba(245,158,11,.09);
+  border:1px solid rgba(245,158,11,.35);border-radius:7px;padding:4px 9px}
+.sc-do{font-size:14px;color:#fff;font-weight:600}
+.sc-do em{color:var(--mut);font-weight:400;font-size:12.5px}
+.sc-why,.sc-check{font-size:13.5px;border-radius:8px;padding:9px 11px}
+.sc-why{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.22)}
+.sc-check{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.22)}
+.sc-why b{color:var(--acc)} .sc-check b{color:var(--green)}
+
+/* Position summary */
+.pos-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.pos-item{background:rgba(10,14,26,.7);border:1px solid var(--border);border-radius:9px;
+  padding:9px 14px;font-size:13.5px;font-weight:600}
+.pos-item.w{border-color:rgba(0,212,255,.4);color:#d9f6ff}
+.pos-item.b{border-color:rgba(168,85,247,.4);color:#e9d5ff}
+
+/* ============ EXERCISES ============ */
+.ex{margin-bottom:12px}
+.ex details{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.ex summary{cursor:pointer;padding:15px 18px;font-weight:700;color:#fff;list-style:none;
+  display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.ex summary::-webkit-details-marker{display:none}
+.ex summary::before{content:'🎯';flex:0 0 auto}
+.ex summary::after{content:'▾';margin-left:auto;color:var(--acc);transition:transform .25s;flex:0 0 auto}
+.ex details[open] summary::after{transform:rotate(180deg)}
+.ex details[open] summary{border-bottom:1px solid var(--border);background:rgba(0,212,255,.04)}
+.ex-a{padding:15px 18px;font-size:14.5px;color:var(--tx)}
+.ex-a b{color:var(--green)}
+
+/* ============ GOLDEN RULES ============ */
+.rule-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;
+  display:flex;gap:15px;margin-bottom:14px;align-items:flex-start;transition:transform .2s,border-color .2s}
+.rule-card:hover{transform:translateX(5px);border-color:rgba(0,212,255,.55)}
+.rule-num{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:19px;font-weight:800;color:#06121f;
+  background:linear-gradient(135deg,var(--acc),#7ee8ff);box-shadow:0 0 16px rgba(0,212,255,.4)}
+.rule-card h4{color:#fff;font-size:16.5px;margin-bottom:5px}
+.rule-card p{font-size:14px;color:var(--mut);margin:0}
+
+/* ============ TABLES ============ */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:14px 0}
+table{width:100%;border-collapse:collapse;min-width:640px;font-size:13.5px}
+th{background:rgba(0,212,255,.1);color:var(--acc);text-align:left;padding:12px 14px;
+  font-size:12px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:12px 14px;border-bottom:1px solid rgba(30,58,95,.5);color:var(--tx)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(0,212,255,.03)}
+
+/* ============ TIMELINE ============ */
+.timeline{position:relative;margin:20px 0;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:9px;top:6px;bottom:6px;width:2px;
+  background:linear-gradient(180deg,var(--acc),var(--purple))}
+.tl-item{position:relative;margin-bottom:16px;background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:15px 17px}
+.tl-item::before{content:'';position:absolute;left:-25px;top:20px;width:12px;height:12px;
+  border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc)}
+.tl-item h4{color:var(--acc);font-size:15px;margin-bottom:6px}
+.tl-item p{font-size:14px;color:var(--tx);margin:0}
+
+/* ============ CHEAT CARDS ============ */
+.cheat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;
+  border-left:4px solid var(--acc)}
+.cheat.pur{border-left-color:var(--purple)}
+.cheat.grn{border-left-color:var(--green)}
+.cheat.amb{border-left-color:var(--amber)}
+.cheat h4{color:#fff;font-size:15.5px;margin-bottom:10px}
+.cheat .seq{font-family:Consolas,'Courier New',monospace;background:rgba(10,14,26,.85);
+  border:1px solid var(--border);border-radius:8px;padding:11px 13px;color:var(--amber);
+  font-size:14px;font-weight:700;margin-bottom:10px;word-spacing:2px}
+.cheat p{font-size:13.5px;color:var(--mut);margin:0}
+.cheat p b{color:var(--green)}
+
+/* ============ ERRORS ============ */
+.err-card{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.35);border-radius:10px;
+  padding:15px 17px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start}
+.err-card .x{flex:0 0 auto;width:30px;height:30px;border-radius:8px;background:rgba(239,68,68,.15);
+  color:var(--red);display:flex;align-items:center;justify-content:center;font-weight:800}
+.err-card b{color:#fecaca;display:block;margin-bottom:3px;font-size:14.5px}
+.err-card span{font-size:13.5px;color:var(--mut)}
+
+/* ============ WIZARD ============ */
+.wz-step{margin-bottom:16px}
+.wz-step .q{font-weight:700;color:#fff;margin-bottom:10px;font-size:15px}
+.wz-opts{display:flex;gap:10px;flex-wrap:wrap}
+.wz-opt{background:var(--card);border:1px solid var(--border);color:var(--tx);border-radius:10px;
+  padding:12px 18px;font-size:14px;font-weight:600;transition:all .2s}
+.wz-opt:hover{border-color:var(--acc);color:#fff}
+.wz-opt.on{background:rgba(0,212,255,.14);border-color:var(--acc);color:var(--acc)}
+.wz-result{margin-top:16px;padding:18px;border-radius:12px;border:1px solid var(--green);
+  background:rgba(34,197,94,.07);display:none}
+.wz-result.show{display:block;animation:fadeIn .35s ease}
+.wz-result h4{color:var(--green);margin-bottom:8px;font-size:17px}
+.wz-result .seq{font-family:Consolas,'Courier New',monospace;color:var(--amber);font-weight:700;
+  font-size:15px;margin:8px 0}
+
+/* ============ CHECKLIST ============ */
+.chk-item{display:flex;gap:12px;align-items:flex-start;background:var(--card);
+  border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;
+  cursor:pointer;transition:border-color .2s}
+.chk-item:hover{border-color:rgba(0,212,255,.5)}
+.chk-item input{width:20px;height:20px;accent-color:var(--acc);margin-top:2px;flex:0 0 auto;cursor:pointer}
+.chk-item label{cursor:pointer;font-size:14.5px;color:var(--tx)}
+.chk-item.done{border-color:rgba(34,197,94,.55);background:rgba(34,197,94,.05)}
+.chk-ok{display:none;margin-top:14px}
+.chk-ok.show{display:block;animation:fadeIn .4s ease}
+
+/* Piece letter cards */
+.piece-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+.piece-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:14px;text-align:center;transition:transform .2s,border-color .2s}
+.piece-card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,.6)}
+.piece-card .g{font-size:38px;line-height:1.2;color:#f1f5f9;text-shadow:0 0 10px rgba(0,212,255,.35)}
+.piece-card .lt{font-family:Consolas,monospace;font-size:24px;font-weight:800;color:var(--acc)}
+.piece-card .nm{font-size:13px;color:var(--mut);font-weight:600}
+.piece-card .ej{font-size:12px;color:var(--amber);margin-top:5px;font-family:Consolas,monospace}
+
+/* Corner mini diagram */
+.corner-demo{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.corner-grid{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);
+  border:2px solid var(--border);border-radius:8px;overflow:hidden}
+.corner-grid div{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.cg-l{background:#1d3a5f;color:#9fb8d8}.cg-d{background:#0e2036;color:#5c7391}
+.cg-star{background:rgba(34,197,94,.3)!important;color:#bbf7d0!important;box-shadow:inset 0 0 0 2px var(--green);animation:pulseG 2s infinite}
+@keyframes pulseG{0%,100%{box-shadow:inset 0 0 0 2px var(--green)}50%{box-shadow:inset 0 0 0 4px var(--green),0 0 14px rgba(34,197,94,.6)}}
+
+/* Conclusions checklist */
+.know-list{list-style:none;margin:12px 0}
+.know-list li{padding:10px 0 10px 36px;position:relative;border-bottom:1px dashed rgba(30,58,95,.6);font-size:15px}
+.know-list li::before{content:'✔';position:absolute;left:6px;color:var(--green);font-weight:800}
+
+/* ============ FOOTER / TO-TOP ============ */
+footer{border-top:1px solid var(--border);background:rgba(10,14,26,.8);text-align:center;
+  padding:30px 16px;color:var(--mut);font-size:14px}
+footer .line{margin:5px 0}
+footer .motto{margin-top:12px;color:var(--acc);font-style:italic;letter-spacing:.5px}
+#toTop{position:fixed;right:18px;bottom:18px;width:48px;height:48px;border-radius:50%;
+  background:var(--card);border:1px solid var(--acc);color:var(--acc);font-size:20px;font-weight:800;
+  z-index:1150;opacity:0;pointer-events:none;transition:opacity .3s,transform .2s;
+  box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{transform:translateY(-3px);background:rgba(0,212,255,.15)}
+
+/* Credits */
+.credit-card{text-align:center}
+.credit-card .autor{font-size:clamp(22px,4vw,30px);color:#fff;font-weight:800;margin:8px 0 2px}
+.credit-card .rol{color:var(--acc);letter-spacing:2px;font-size:12px;font-weight:700;text-transform:uppercase}
+.credit-meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:640px){
+  body{padding-top:58px}
+  .nav{height:56px;padding:0 8px;gap:6px}
+  .brand small{display:none}
+  main{padding:14px 12px 60px}
+  .card{padding:16px}
+  .steps-grid{grid-template-columns:1fr}
+  .sq{font-size:8.2vw}
+  .cover-badge{font-size:9px;padding:5px 10px;letter-spacing:1px}
+  .rule-card{padding:15px}
+  .btn{padding:10px 14px;font-size:13px}
+}
+/* ============ REDUCED MOTION ============ */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+}
+</style>
+</head>
+<body>
+
+<div id="progressBar" role="progressbar" aria-label="Progreso de lectura"></div>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="nav" aria-label="Navegación principal">
+  <div class="brand"><span class="kn">♞</span><span>AJEDREZ<small>APERTURAS FÁCILES</small></span></div>
+  <div class="nav-scroll" id="navScroll">
+    <button class="nav-btn active" data-target="inicio">INICIO</button>
+    <button class="nav-btn" data-target="fundamentos">FUNDAMENTOS</button>
+    <button class="nav-btn" data-target="reglas">REGLAS DE ORO</button>
+    <button class="nav-btn" data-target="italiana">ITALIANA</button>
+    <button class="nav-btn" data-target="londres">LONDRES</button>
+    <button class="nav-btn" data-target="negras-e4">NEGRAS vs 1.e4</button>
+    <button class="nav-btn" data-target="negras-d4">NEGRAS vs 1.d4</button>
+    <button class="nav-btn" data-target="elegir">ELEGIR APERTURA</button>
+    <button class="nav-btn" data-target="fuera">FUERA DE LÍNEA</button>
+    <button class="nav-btn" data-target="errores">ERRORES</button>
+    <button class="nav-btn" data-target="entrenamiento">ENTRENAMIENTO</button>
+    <button class="nav-btn" data-target="resumen">RESUMEN</button>
+    <button class="nav-btn" data-target="ejercicios">EJERCICIOS</button>
+    <button class="nav-btn" data-target="conclusion">CONCLUSIÓN</button>
+    <button class="nav-btn creditos" data-target="creditos">★ CRÉDITOS</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section class="panel active" id="inicio">
+  <div class="hero-cover">
+    <span class="cover-badge">TUTORIAL INTERACTIVO · DESDE CERO · PASO A PASO</span>
+    <div class="cover-slot"></div>
+  </div>
+
+  <h1 class="hero-title">Aperturas <span>fáciles y efectivas</span> en Ajedrez</h1>
+  <p class="hero-sub">Aprende, paso a paso, aperturas muy sencillas para empezar a jugar partidas reales con confianza.</p>
+  <p class="hero-desc">Bienvenido o bienvenida a este tutorial. No hace falta que sepas nada de teoría de ajedrez: solo necesitas conocer (o estar aprendiendo) cómo se mueve cada pieza. Todo lo demás se explica aquí, empezando desde cero. Vamos a avanzar un movimiento cada vez. Nunca vas a tener que adivinar qué hacer: en cada paso se indica exactamente qué pieza mover, de qué color es, desde dónde y hasta dónde.</p>
+
+  <div class="callout info"><b class="tag">ℹ️ INFO · CONSEJO</b>
+    Ten un tablero delante (físico o digital) mientras lees. Ve haciendo cada movimiento según avanzas.
+  </div>
+
+  <blockquote class="quote">«Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.»
+    <small>— CITA DESTACADA DEL TUTORIAL</small>
+  </blockquote>
+
+  <div class="metrics">
+    <div class="metric"><div class="n">4</div><div class="l">Aperturas y respuestas</div></div>
+    <div class="metric"><div class="n">39</div><div class="l">Pasos guiados</div></div>
+    <div class="metric"><div class="n">5</div><div class="l">Reglas de oro</div></div>
+    <div class="metric"><div class="n">17</div><div class="l">Ejercicios</div></div>
+    <div class="metric"><div class="n">14</div><div class="l">Secciones</div></div>
+  </div>
+
+  <div class="dt-row">
+    <span class="chip acc">📅 FECHA: 02/09/2026</span>
+    <span class="chip pur">🕐 HORA: 01:02:33</span>
+    <span class="chip grn">👤 Autor: Rubén Sbarsky</span>
+  </div>
+</section>
+
+<!-- ================= FUNDAMENTOS ================= -->
+<section class="panel" id="fundamentos">
+  <div class="sec-head">
+    <div class="kicker">Sección 1 · Antes de aprender aperturas</div>
+    <h2><span class="sec-ico">♟</span>Fundamentos del tablero</h2>
+    <p class="sub">Antes de aprender aperturas, aprende a orientarte en el tablero, a distinguir los bandos y a leer una jugada.</p>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card">
+    <h3>🧭 1.1 · Cómo orientarse en el tablero</h3>
+    <p>El tablero de ajedrez tiene <b>64 casillas</b>, en <b>8 filas y 8 columnas</b>, con colores claros y oscuros alternados.</p>
+    <p>Cuando te sientas delante del tablero, colócalo de forma que <b>la casilla de la esquina inferior derecha sea clara (blanca)</b>. Esa es la orientación correcta.</p>
+    <div class="corner-demo">
+      <div class="corner-grid" aria-hidden="true">
+        <div class="cg-l"></div><div class="cg-d"></div><div class="cg-l"></div>
+        <div class="cg-d"></div><div class="cg-l"></div><div class="cg-d"></div>
+        <div class="cg-l"></div><div class="cg-d"></div><div class="cg-l cg-star">h1 ✓</div>
+      </div>
+      <div class="callout ejemplo" style="margin:0;flex:1;min-width:240px"><b class="tag">✅ EJEMPLO</b>
+        Esquina inferior derecha = casilla <b>clara</b> (la casilla h1). Si tu esquina inferior derecha es oscura, gira el tablero.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>⚪⚫ 1.2 · BLANCAS y NEGRAS</h3>
+    <p>Cada jugador controla <b>16 piezas</b> de un color: uno juega con las piezas <b>BLANCAS</b> y el otro con las piezas <b>NEGRAS</b>.</p>
+    <div class="grid2">
+      <div class="callout info" style="margin:0"><b class="tag">⚪ BLANCAS</b>Las BLANCAS <b>siempre mueven primero</b>.</div>
+      <div class="callout" style="margin:0;background:rgba(168,85,247,.07);border-color:rgba(168,85,247,.4)"><b class="tag" style="color:var(--purple)">⚫ NEGRAS</b>Después mueven las NEGRAS. Y así, <b>alternando</b>, durante toda la partida.</div>
+    </div>
+    <div class="callout adv"><b class="tag">⚠️ ADVERTENCIA</b>En este tutorial, cada movimiento indicará siempre si lo hacen las BLANCAS o las NEGRAS. <b>Nunca vas a tener que adivinarlo.</b></div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ 1.3 · Las coordenadas del tablero</h3>
+    <p>Cada casilla tiene un <b>nombre único</b>, formado por una letra y un número:</p>
+    <ul style="margin:8px 0 12px 22px;color:var(--tx)">
+      <li>Las <b>columnas</b> (verticales) se nombran de la <b>a</b> a la <b>h</b>, de izquierda a derecha, vistas desde el lado de las BLANCAS.</li>
+      <li>Las <b>filas</b> (horizontales) se numeran del <b>1</b> al <b>8</b>, empezando por la fila más cercana a las BLANCAS.</li>
+    </ul>
+    <div class="callout ejemplo"><b class="tag">✅ EJEMPLO</b>La casilla <b>e4</b> es donde se cruzan la columna «e» y la fila «4». Las BLANCAS empiezan la partida en las filas <b>1 y 2</b>. Las NEGRAS empiezan en las filas <b>7 y 8</b>.</div>
+    <h4>🔍 Explora el tablero: toca cualquier casilla para ver su nombre</h4>
+    <div class="board-frame">
+      <div class="board-area">
+        <div class="rank-col" id="coordRanks"></div>
+        <div class="board-col">
+          <div class="board-grid" id="coordBoard"></div>
+          <div class="file-row" id="coordFiles"></div>
+        </div>
+      </div>
+      <div class="coord-readout" id="coordReadout">Toca una casilla…</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📖 1.4 · Cómo leer una jugada</h3>
+    <p>A partir de ahora vas a ver jugadas escritas de dos formas:</p>
+    <div class="grid2">
+      <div class="callout ejemplo" style="margin:0"><b class="tag">✅ EJEMPLO · LENGUAJE NORMAL</b>«El peón blanco se mueve de e2 a e4».</div>
+      <div class="callout info" style="margin:0"><b class="tag">ℹ️ NOTACIÓN ALGEBRAICA</b>Una forma abreviada muy usada en ajedrez. Cada jugada en notación siempre se explica también en lenguaje normal.</div>
+    </div>
+    <h4>Reglas de la notación algebraica</h4>
+    <ul style="margin:8px 0 12px 22px;color:var(--tx)">
+      <li>Si solo aparece una casilla (por ejemplo <b>e4</b>), significa que un <b>peón</b> se mueve a esa casilla.</li>
+      <li>Si aparece una letra mayúscula delante (por ejemplo <b>Nf3</b>), esa letra indica la pieza que se mueve.</li>
+      <li><b>O-O</b> significa «enroque corto» (el rey se pone a salvo cerca de una torre, lo verás más adelante).</li>
+    </ul>
+    <div class="piece-grid">
+      <div class="piece-card"><div class="g">♞</div><div class="lt">N</div><div class="nm">Caballo</div><div class="ej">Nf3</div></div>
+      <div class="piece-card"><div class="g">♝</div><div class="lt">B</div><div class="nm">Alfil</div><div class="ej">Bc4</div></div>
+      <div class="piece-card"><div class="g">♜</div><div class="lt">R</div><div class="nm">Torre</div><div class="ej">Rd1</div></div>
+      <div class="piece-card"><div class="g">♛</div><div class="lt">Q</div><div class="nm">Dama</div><div class="ej">Qd2</div></div>
+      <div class="piece-card"><div class="g">♚</div><div class="lt">K</div><div class="nm">Rey</div><div class="ej">Kg1</div></div>
+      <div class="piece-card"><div class="g">♟</div><div class="lt">—</div><div class="nm">Peón (sin letra)</div><div class="ej">e4</div></div>
+    </div>
+    <div class="callout adv"><b class="tag">⚠️ ADVERTENCIA</b>No te preocupes si esto no queda claro del todo ahora. Cada vez que aparezca una jugada en notación, se explicará también en lenguaje normal.</div>
+  </div>
+</section>
+
+<!-- ================= REGLAS DE ORO ================= -->
+<section class="panel" id="reglas">
+  <div class="sec-head">
+    <div class="kicker">Sección 2 · La base de todo</div>
+    <h2><span class="sec-ico">🥇</span>Las cinco reglas de oro de la apertura</h2>
+    <p class="sub">Antes de aprender jugadas concretas, aprende estas cinco ideas. Son <b>más importantes que memorizar movimientos</b>.</p>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="rule-card"><div class="rule-num">1</div><div><h4>Controla el centro</h4><p>Las casillas centrales (<b>d4, e4, d5, e5</b>) son las más valiosas. Ocuparlas o controlarlas te da más espacio y más opciones.</p></div></div>
+  <div class="rule-card"><div class="rule-num">2</div><div><h4>Desarrolla tus caballos y alfiles pronto</h4><p>«Desarrollar» significa sacar una pieza de su casilla inicial y colocarla en una casilla útil, donde controle más casillas.</p></div></div>
+  <div class="rule-card"><div class="rule-num">3</div><div><h4>Pon a tu rey a salvo cuanto antes</h4><p>Normalmente esto se hace <b>enrocando</b> (verás cómo funciona en el primer paso a paso).</p></div></div>
+  <div class="rule-card"><div class="rule-num">4</div><div><h4>No muevas la misma pieza varias veces sin motivo</h4><p>Cada movimiento que «pierdes» repitiendo una pieza es un movimiento que no usas para desarrollarte.</p></div></div>
+  <div class="rule-card"><div class="rule-num">5</div><div><h4>No saques la dama demasiado pronto</h4><p>La dama es tu pieza más valiosa. Si sale muy pronto, el rival puede atacarla y tú pierdes tiempo defendiéndola.</p></div></div>
+
+  <div class="callout ejemplo"><b class="tag">✅ EJEMPLO</b>Vas a ver estas cinco reglas aplicadas en <b>cada apertura</b> de este tutorial.</div>
+</section>
+
+<!-- ================= ITALIANA ================= -->
+<section class="panel" id="italiana">
+  <div class="sec-head">
+    <div class="kicker">Sección 3 · Primera apertura para BLANCAS</div>
+    <h2><span class="sec-ico">🇮🇹</span>Apertura Italiana</h2>
+    <p class="sub">Ocupar el centro, desarrollar dos piezas menores (caballo y alfil) y enrocar en muy pocos movimientos.</p>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0"><h3>🎯 Objetivo</h3><p>Ocupar el centro, desarrollar dos piezas menores (caballo y alfil) y enrocar en muy pocos movimientos.</p></div>
+    <div class="card" style="margin-bottom:0"><h3>💡 Idea sencilla</h3><p>Jugamos el peón al centro, sacamos el caballo, sacamos el alfil apuntando hacia el rival, y ponemos el rey a salvo. Es directo, lógico y muy usado por jugadores de todos los niveles.</p></div>
+  </div>
+  <div class="callout adv" style="margin-top:16px"><b class="tag">⚠️ PREPARACIÓN</b>Recuerda: tú juegas con las <b>BLANCAS</b>. Empieza desde la posición inicial del tablero.</div>
+
+  <div class="board-frame">
+    <div class="board-top">
+      <span class="bb-step" id="it-step"></span>
+      <span class="bb-move" id="it-move"></span>
+    </div>
+    <div class="board-area">
+      <div class="rank-col" data-ranks></div>
+      <div class="board-col"><div class="board-grid" id="it-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button class="btn ghost" id="it-prev">◀ Anterior</button>
+      <input type="range" id="it-slider" min="0" value="0" aria-label="Avanzar pasos Apertura Italiana">
+      <button class="btn" id="it-next">Siguiente ▶</button>
+      <button class="btn ghost" id="it-reset">↺ Reiniciar</button>
+    </div>
+  </div>
+
+  <h3 style="color:#fff;margin:22px 0 4px">📋 Paso a paso</h3>
+  <div class="steps-grid">
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 1</span><span class="sc-who who-w">♙ JUEGAN LAS BLANCAS</span><span class="sc-move">e2 → e4 · «1. e4»</span></div>
+      <p class="sc-do">Mueve el peón blanco de e2 a e4. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Porque este peón ocupa una casilla central y abre camino para que salgan el alfil y la dama.</div>
+      <div class="sc-check"><b>✅ Comprueba:</b> El peón blanco debe quedar en e4. Ahora le toca a tu rival.</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 2</span><span class="sc-who who-b">♟ JUEGAN LAS NEGRAS (tu rival)</span><span class="sc-move">e7 → e5</span></div>
+      <p class="sc-do">El rival mueve el peón negro de e7 a e5. <em>Haz solamente este movimiento (lo hace tu rival).</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Las NEGRAS también quieren controlar el centro, así que responden ocupando la casilla e5.</div>
+      <div class="sc-check"><b>✅ Comprueba:</b> Ahora hay un peón blanco en e4 y un peón negro en e5, uno frente al otro.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 3</span><span class="sc-who who-w">♙ JUEGAN LAS BLANCAS</span><span class="sc-move">g1 → f3 · «2. Nf3»</span></div>
+      <p class="sc-do">Mueve el caballo blanco de g1 a f3. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Estás desarrollando una pieza (sacándola de su casilla inicial) y además atacas el peón negro de e5.</div>
+      <div class="sc-check"><b>✅ Comprueba:</b> «Ahora te toca a ti» solo si estás practicando en solitario ambos bandos; si juegas contra alguien, ahora le toca a las NEGRAS.</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 4</span><span class="sc-who who-b">♟ JUEGAN LAS NEGRAS (tu rival)</span><span class="sc-move">b8 → c6</span></div>
+      <p class="sc-do">El rival mueve el caballo negro de b8 a c6. <em>Haz solamente este movimiento (lo hace tu rival).</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Las NEGRAS desarrollan su caballo y, de paso, defienden el peón de e5 que estaba amenazado.</div>
+      <div class="sc-check"><b>✅ Comprueba:</b> Mira el tablero: ya hay dos caballos desarrollados, uno de cada color.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 5</span><span class="sc-who who-w">♙ JUEGAN LAS BLANCAS</span><span class="sc-move">f1 → c4 · «3. Bc4»</span></div>
+      <p class="sc-do">Mueve el alfil blanco de f1 a c4. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> El alfil sale por la diagonal que has abierto al jugar e4, y apunta hacia el punto débil f7, cerca del rey negro.</div>
+      <div class="sc-check"><b>✅ Comprueba:</b> El camino del alfil (por e2 y d3) debe estar libre. Si tu peón e sigue en e4 y no has movido nada más, lo estará.</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 6</span><span class="sc-who who-b">♟ JUEGAN LAS NEGRAS (tu rival)</span><span class="sc-move">f8 → c5</span></div>
+      <p class="sc-do">El rival mueve el alfil negro de f8 a c5. <em>Haz solamente este movimiento (lo hace tu rival).</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Las NEGRAS hacen exactamente lo mismo que tú, en espejo: desarrollan su alfil hacia una casilla activa.</div>
+      <div class="sc-check"><b>✅ Comprueba:</b> Ahora tienes dos alfiles «enfrentados» en diagonal, uno en c4 y otro en c5.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 7</span><span class="sc-who who-w">♙ JUEGAN LAS BLANCAS</span><span class="sc-move">Enroque corto · «4. O-O»</span></div>
+      <p class="sc-do">Realiza el enroque corto (O-O): el rey blanco se mueve de e1 a g1 y la torre blanca de h1 se coloca en f1, en un solo movimiento. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Estás cumpliendo la regla de oro más importante: poner a tu rey a salvo. El enroque corto es posible porque las casillas f1 y g1 están vacías (el alfil y el caballo ya salieron de ahí) y ni el rey ni la torre se han movido antes.</div>
+      <div class="sc-check"><b>✅ Comprueba:</b> Después de este movimiento, tu rey debe estar en g1 y tu torre en f1. Tu rey ya está mucho más protegido, detrás de una fila de peones.</div></article>
+  </div>
+
+  <div class="card">
+    <h3>📸 Posición después del paso 7</h3>
+    <div class="pos-list">
+      <span class="pos-item w">⚪ Peón blanco: e4</span><span class="pos-item b">⚫ Peón negro: e5</span>
+      <span class="pos-item w">⚪ Caballo blanco: f3</span><span class="pos-item b">⚫ Caballo negro: c6</span>
+      <span class="pos-item w">⚪ Alfil blanco: c4</span><span class="pos-item b">⚫ Alfil negro: c5</span>
+      <span class="pos-item w">⚪ Rey blanco: g1 (enrocado)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>⛔ Errores que debes evitar</h3>
+    <div class="err-card"><div class="x">✕</div><div><b>No saques la dama pronto</b><span>Por ejemplo, a h5 buscando un ataque rápido: normalmente el rival se defiende fácilmente y tú pierdes tiempo.</span></div></div>
+    <div class="err-card"><div class="x">✕</div><div><b>No captures el peón de e5 con tu caballo en el paso 3 sin necesidad</b><span>Perderías el control del centro sin ganar nada, ya que el rival puede recuperar la pieza.</span></div></div>
+    <div class="err-card"><div class="x">✕</div><div><b>No repitas movimientos con la misma pieza</b><span>Por ejemplo, mover el mismo caballo dos veces seguidas si tienes otras piezas por desarrollar.</span></div></div>
+    <div class="err-card"><div class="x">✕</div><div><b>No olvides enrocar</b><span>Un rey en el centro del tablero corre mucho peligro.</span></div></div>
+  </div>
+
+  <div class="callout info"><b class="tag">ℹ️ QUÉ HACER DESPUÉS</b>Después del paso 7, sigue las reglas de oro: juega <b>c2-c3</b> (preparando ocupar más el centro con d2-d4), desarrolla tu otro caballo (<b>b1 a c3 o a d2</b>) y <b>conecta tus torres</b>. No busques un ataque inmediato: sigue desarrollando piezas.</div>
+
+  <h3 style="color:#fff;margin:20px 0 10px">✏️ Ejercicios — Apertura Italiana</h3>
+  <div class="ex"><details><summary>Ejercicio 1 · ¿Quién mueve en el Paso 5: BLANCAS o NEGRAS?</summary><div class="ex-a"><b>Respuesta:</b> Las <b>BLANCAS</b>. En el Paso 5 se mueve el alfil blanco de f1 a c4.</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 2 · Después del Paso 6, ¿qué pieza blanca todavía no ha salido de su casilla inicial: el otro caballo o el rey?</summary><div class="ex-a"><b>Respuesta:</b> En rigor, <b>ambos</b> siguen en su casilla inicial tras el Paso 6: el otro caballo (b1) y el rey (e1). El rey «saldrá» justo en el Paso 7 mediante el enroque, y el otro caballo se desarrollará después (junto con c2-c3, según el apartado «Qué hacer después»).</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 3 · ¿Cuál es el objetivo principal del Paso 7?</summary><div class="ex-a"><b>Respuesta:</b> Cumplir la regla de oro más importante: <b>poner a tu rey a salvo</b> mediante el enroque corto (rey de e1 a g1 y torre de h1 a f1, en un solo movimiento).</div></details></div>
+</section>
+
+<!-- ================= LONDRES ================= -->
+<section class="panel" id="londres">
+  <div class="sec-head">
+    <div class="kicker">Sección 4 · Segunda apertura para BLANCAS</div>
+    <h2><span class="sec-ico">🏙️</span>Sistema Londres</h2>
+    <p class="sub">Una apertura muy sólida en la que casi siempre colocas tus piezas en las mismas casillas, sin importar demasiado cómo responda el rival.</p>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0"><h3>🎯 Objetivo</h3><p>Aprender una apertura muy sólida en la que casi siempre colocas tus piezas en las mismas casillas, sin importar demasiado cómo responda el rival. <b>Ideal para no memorizar mucha teoría.</b></p></div>
+    <div class="card" style="margin-bottom:0"><h3>💡 Idea sencilla</h3><p>Colocas tu alfil de casillas claras fuera de la cadena de peones <b>antes</b> de jugar e3, desarrollas tus caballos, y enrocas. Es un <b>plan</b>, no una serie de jugadas forzadas.</p></div>
+  </div>
+
+  <div class="board-frame" style="margin-top:16px">
+    <div class="board-top">
+      <span class="bb-step" id="lo-step"></span>
+      <span class="bb-move" id="lo-move"></span>
+    </div>
+    <div class="board-area">
+      <div class="rank-col" data-ranks></div>
+      <div class="board-col"><div class="board-grid" id="lo-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button class="btn ghost" id="lo-prev">◀ Anterior</button>
+      <input type="range" id="lo-slider" min="0" value="0" aria-label="Avanzar pasos Sistema Londres">
+      <button class="btn" id="lo-next">Siguiente ▶</button>
+      <button class="btn ghost" id="lo-reset">↺ Reiniciar</button>
+    </div>
+  </div>
+
+  <h3 style="color:#fff;margin:22px 0 4px">📋 Paso a paso</h3>
+  <div class="steps-grid">
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 1</span><span class="sc-who who-w">♙ BLANCAS</span><span class="sc-move">d2 → d4 · «1. d4»</span></div>
+      <p class="sc-do">Mueve el peón blanco de d2 a d4. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Ocupas el centro con el peón de dama, igual que antes hiciste con el peón de rey.</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 2</span><span class="sc-who who-b">♟ NEGRAS (rival)</span><span class="sc-move">d7 → d5</span></div>
+      <p class="sc-do">El rival mueve el peón negro de d7 a d5. <em>Haz solamente este movimiento (lo hace tu rival).</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Las NEGRAS también disputan el centro.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 3</span><span class="sc-who who-w">♙ BLANCAS</span><span class="sc-move">g1 → f3 · «Nf3»</span></div>
+      <p class="sc-do">Mueve el caballo blanco de g1 a f3. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Desarrollas una pieza y controlas más casillas centrales.</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 4</span><span class="sc-who who-b">♟ NEGRAS (rival)</span><span class="sc-move">g8 → f6</span></div>
+      <p class="sc-do">El rival mueve el caballo negro de g8 a f6. <em>Haz solamente este movimiento (lo hace tu rival).</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Las NEGRAS hacen el desarrollo equivalente al tuyo.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 5</span><span class="sc-who who-w">♙ BLANCAS</span><span class="sc-move">c1 → f4 · «Bf4» ★</span></div>
+      <p class="sc-do">Mueve el alfil blanco de c1 a f4. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Este es el <b>movimiento clave del Sistema Londres</b>: sacas este alfil antes de cerrarle el paso con el peón e3.</div>
+      <div class="sc-check"><b>✅ Comprueba:</b> El camino (por d2 y e3) debe estar libre. Como ya jugaste d4, la casilla d2 está vacía.</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 6</span><span class="sc-who who-b">♟ NEGRAS (rival)</span><span class="sc-move">e7 → e6</span></div>
+      <p class="sc-do">El rival mueve el peón negro de e7 a e6. <em>Haz solamente este movimiento (lo hace tu rival).</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Las NEGRAS abren la diagonal para su propio alfil de casillas claras.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 7</span><span class="sc-who who-w">♙ BLANCAS</span><span class="sc-move">e2 → e3</span></div>
+      <p class="sc-do">Mueve el peón blanco de e2 a e3. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Refuerzas el centro y abres la diagonal para tu alfil de casillas claras (el que sigue en f1).</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 8</span><span class="sc-who who-b">♟ NEGRAS (rival)</span><span class="sc-move">f8 → e7</span></div>
+      <p class="sc-do">El rival mueve el alfil negro de f8 a e7. <em>Haz solamente este movimiento (lo hace tu rival).</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Las NEGRAS preparan su propio enroque.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 9</span><span class="sc-who who-w">♙ BLANCAS</span><span class="sc-move">f1 → d3 · «Bd3»</span></div>
+      <p class="sc-do">Mueve el alfil blanco de f1 a d3. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Desarrollas tu segundo alfil hacia una diagonal activa, apuntando hacia el lado del rey rival.</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 10</span><span class="sc-who who-b">♟ NEGRAS (rival)</span><span class="sc-move">Enroque corto · «O-O»</span></div>
+      <p class="sc-do">El rival enroca corto: el rey negro va de e8 a g8 y la torre de h8 a f8. <em>Haz solamente este movimiento (lo hace tu rival).</em></p></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 11</span><span class="sc-who who-w">♙ BLANCAS</span><span class="sc-move">b1 → d2 · «Nbd2»</span></div>
+      <p class="sc-do">Mueve el caballo blanco de b1 a d2. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Desarrollas tu última pieza menor que faltaba, dejando el camino libre para enrocar tú también.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 12</span><span class="sc-who who-w">♙ BLANCAS</span><span class="sc-move">Enroque corto · «O-O»</span></div>
+      <p class="sc-do">(Tras la respuesta que elija el rival) Realiza el enroque corto (O-O): tu rey va de e1 a g1 y tu torre de h1 a f1. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Completas tu desarrollo y pones tu rey a salvo, igual que en la Apertura Italiana.</div></article>
+  </div>
+
+  <div class="card">
+    <h3>📸 Posición aproximada tras el desarrollo completo</h3>
+    <div class="pos-list">
+      <span class="pos-item w">⚪ Peones blancos: d4, e3</span><span class="pos-item b">⚫ Peones negros: d5, e6</span>
+      <span class="pos-item w">⚪ Caballos blancos: f3, d2</span><span class="pos-item b">⚫ Caballo negro: f6</span>
+      <span class="pos-item w">⚪ Alfiles blancos: f4, d3</span><span class="pos-item b">⚫ Alfil negro: e7</span>
+      <span class="pos-item grn" style="border-color:rgba(34,197,94,.4);color:#bbf7d0">♚♔ Ambos reyes enrocados en el flanco de rey</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>⛔ Errores que debes evitar</h3>
+    <div class="err-card"><div class="x">✕</div><div><b>No juegues e3 antes de sacar el alfil a f4</b><span>Si lo haces, tu propio alfil quedará encerrado.</span></div></div>
+    <div class="err-card"><div class="x">✕</div><div><b>No te preocupes si el rival no juega exactamente estos movimientos</b><span>El plan (Nf3, Bf4, e3, Bd3, Nbd2, O-O) funciona casi siempre igual, sin importar mucho el orden de las jugadas del rival.</span></div></div>
+    <div class="err-card"><div class="x">✕</div><div><b>No muevas el alfil de f4 varias veces sin necesidad</b><span>Ya está bien colocado.</span></div></div>
+  </div>
+
+  <h3 style="color:#fff;margin:20px 0 10px">✏️ Ejercicios — Sistema Londres</h3>
+  <div class="ex"><details><summary>Ejercicio 1 · ¿Qué pieza sale antes que el peón e3 en el Sistema Londres?</summary><div class="ex-a"><b>Respuesta:</b> El <b>alfil de casillas claras</b>: se juega <b>Bc1-f4</b> (Paso 5) antes de cerrar su camino con el peón e3 (Paso 7).</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 2 · ¿Quién mueve en el Paso 9: BLANCAS o NEGRAS?</summary><div class="ex-a"><b>Respuesta:</b> Las <b>BLANCAS</b>: mueven el alfil de f1 a d3.</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 3 · ¿Por qué es importante el orden de las jugadas en esta apertura?</summary><div class="ex-a"><b>Respuesta:</b> Porque el alfil de c1 debe salir a f4 <b>antes</b> de jugar e3; si juegas e3 primero, el alfil queda encerrado. Respetar el orden (Nf3, Bf4, e3, Bd3, Nbd2, O-O) mantiene el plan sólido.</div></details></div>
+</section>
+
+<!-- ================= NEGRAS vs 1.e4 ================= -->
+<section class="panel" id="negras-e4">
+  <div class="sec-head">
+    <div class="kicker">Sección 5 · Respuestas sencillas para NEGRAS</div>
+    <h2><span class="sec-ico">⚫</span>Contra 1.e4</h2>
+    <p class="sub">Aprende a responder cuando el rival juega primero con las BLANCAS y elige 1.e4. Aquí tú juegas con las NEGRAS.</p>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0"><h3>🎯 Objetivo</h3><p>Aprender a responder cuando el rival juega primero con las BLANCAS y elige <b>1.e4</b>. Aquí tú juegas con las NEGRAS.</p></div>
+    <div class="card" style="margin-bottom:0"><h3>💡 Idea sencilla</h3><p>Vas a responder ocupando también el centro y desarrollando tus piezas en espejo, hasta enrocar. Recuerda: en esta sección, las BLANCAS las mueve tu rival.</p></div>
+  </div>
+
+  <div class="board-frame" style="margin-top:16px">
+    <div class="board-top">
+      <span class="bb-step" id="e4-step"></span>
+      <span class="bb-move" id="e4-move"></span>
+    </div>
+    <div class="board-area">
+      <div class="rank-col" data-ranks></div>
+      <div class="board-col"><div class="board-grid" id="e4-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button class="btn ghost" id="e4-prev">◀ Anterior</button>
+      <input type="range" id="e4-slider" min="0" value="0" aria-label="Avanzar pasos respuesta contra 1.e4">
+      <button class="btn" id="e4-next">Siguiente ▶</button>
+      <button class="btn ghost" id="e4-reset">↺ Reiniciar</button>
+    </div>
+  </div>
+
+  <h3 style="color:#fff;margin:22px 0 4px">📋 Paso a paso</h3>
+  <div class="steps-grid">
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 1</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">e2 → e4</span></div>
+      <p class="sc-do">Tu rival mueve el peón blanco de e2 a e4. <em>Esto lo hace tu rival.</em></p></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 2</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">e7 → e5</span></div>
+      <p class="sc-do">Mueve el peón negro de e7 a e5. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Disputas el centro inmediatamente, en igualdad de condiciones.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 3</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">g1 → f3</span></div>
+      <p class="sc-do">Tu rival mueve el caballo blanco de g1 a f3. <em>Esto lo hace tu rival.</em></p></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 4</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">b8 → c6</span></div>
+      <p class="sc-do">Mueve el caballo negro de b8 a c6. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Desarrollas una pieza y defiendes tu peón de e5.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 5</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">f1 → c4</span></div>
+      <p class="sc-do">Tu rival mueve el alfil blanco de f1 a c4. <em>Esto lo hace tu rival.</em></p></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 6</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">f8 → c5</span></div>
+      <p class="sc-do">Mueve el alfil negro de f8 a c5. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Haces exactamente lo mismo que tu rival, en espejo: desarrollas tu alfil hacia una diagonal activa.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 7</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">c2 → c3</span></div>
+      <p class="sc-do">Supongamos que tu rival juega el peón blanco de c2 a c3. <em>Esto lo hace tu rival.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué lo hace?</b> (para que entiendas la idea del rival) Prepara avanzar el peón a d4 más adelante.</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 8</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">g8 → f6</span></div>
+      <p class="sc-do">Mueve el caballo negro de g8 a f6. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Sigues desarrollando piezas y ya casi puedes enrocar.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 9</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">d2 → d3</span></div>
+      <p class="sc-do">Supongamos que tu rival juega el peón blanco de d2 a d3. <em>Esto lo hace tu rival.</em></p></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 10</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">Enroque corto · «O-O»</span></div>
+      <p class="sc-do">Realiza el enroque corto (O-O): tu rey va de e8 a g8 y tu torre de h8 a f8. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Pones a tu rey a salvo, cumpliendo la regla de oro más importante.</div></article>
+  </div>
+
+  <div class="callout adv"><b class="tag">⚠️ NOTA IMPORTANTE</b>Estos son los movimientos más típicos que suele jugar un rival principiante o intermedio. Si tu rival juega otra cosa en cualquier paso, no pasa nada: vuelve a las <b>cinco reglas de oro</b> (centro, desarrollo, seguridad del rey) y sigue jugando con sentido común.</div>
+
+  <div class="card">
+    <h3>⛔ Errores que debes evitar</h3>
+    <div class="err-card"><div class="x">✕</div><div><b>No captures piezas solo «porque puedes»</b><span>Comprueba siempre si es una buena idea.</span></div></div>
+    <div class="err-card"><div class="x">✕</div><div><b>No saques tu dama pronto para amenazar algo</b><span>Normalmente se puede defender fácilmente.</span></div></div>
+    <div class="err-card"><div class="x">✕</div><div><b>No olvides el contexto</b><span>Si tu rival no juega 1.e4, esta sección no se aplica: mira la sección 6 para 1.d4.</span></div></div>
+  </div>
+
+  <h3 style="color:#fff;margin:20px 0 10px">✏️ Ejercicios — Contra 1.e4</h3>
+  <div class="ex"><details><summary>Ejercicio 1 · ¿Quién mueve primero en una partida: siempre BLANCAS o siempre NEGRAS?</summary><div class="ex-a"><b>Respuesta:</b> Siempre las <b>BLANCAS</b>. Después mueven las NEGRAS, y así alternando durante toda la partida.</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 2 · En el Paso 6, ¿qué pieza desarrollas y a qué casilla va?</summary><div class="ex-a"><b>Respuesta:</b> Desarrollas el <b>alfil</b> (el de f8), que va a la casilla <b>c5</b>.</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 3 · ¿Qué deberías hacer si tu rival, en el Paso 5, no juega Bc4 sino otra jugada?</summary><div class="ex-a"><b>Respuesta:</b> No pasa nada: vuelve a las <b>cinco reglas de oro</b> (centro, desarrollo, seguridad del rey) y sigue jugando con sentido común, tal como indica la Nota importante de esta sección.</div></details></div>
+</section>
+
+<!-- ================= NEGRAS vs 1.d4 ================= -->
+<section class="panel" id="negras-d4">
+  <div class="sec-head">
+    <div class="kicker">Sección 6 · Respuestas sencillas para NEGRAS</div>
+    <h2><span class="sec-ico">🛡️</span>Contra 1.d4</h2>
+    <p class="sub">Aprende a responder cuando tu rival, con las BLANCAS, empieza la partida con 1.d4 en lugar de 1.e4.</p>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0"><h3>🎯 Objetivo</h3><p>Aprender a responder cuando tu rival, con las BLANCAS, empieza la partida con <b>1.d4</b> en lugar de 1.e4.</p></div>
+    <div class="card" style="margin-bottom:0"><h3>💡 Idea sencilla</h3><p>Ocupas el centro con tu propio peón de dama, desarrollas tus caballos y tu alfil de casillas oscuras, y enrocas cuanto antes.</p></div>
+  </div>
+
+  <div class="board-frame" style="margin-top:16px">
+    <div class="board-top">
+      <span class="bb-step" id="d4-step"></span>
+      <span class="bb-move" id="d4-move"></span>
+    </div>
+    <div class="board-area">
+      <div class="rank-col" data-ranks></div>
+      <div class="board-col"><div class="board-grid" id="d4-board"></div><div class="file-row" data-files></div></div>
+    </div>
+    <div class="board-controls">
+      <button class="btn ghost" id="d4-prev">◀ Anterior</button>
+      <input type="range" id="d4-slider" min="0" value="0" aria-label="Avanzar pasos respuesta contra 1.d4">
+      <button class="btn" id="d4-next">Siguiente ▶</button>
+      <button class="btn ghost" id="d4-reset">↺ Reiniciar</button>
+    </div>
+  </div>
+
+  <h3 style="color:#fff;margin:22px 0 4px">📋 Paso a paso</h3>
+  <div class="steps-grid">
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 1</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">d2 → d4</span></div>
+      <p class="sc-do">Tu rival mueve el peón blanco de d2 a d4. <em>Esto lo hace tu rival.</em></p></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 2</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">d7 → d5</span></div>
+      <p class="sc-do">Mueve el peón negro de d7 a d5. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Disputas el centro de forma directa, igual que hiciste contra 1.e4.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 3</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">c2 → c4</span></div>
+      <p class="sc-do">Supongamos que tu rival juega el peón blanco de c2 a c4. <em>Esto lo hace tu rival.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué lo hace?</b> (para que entiendas la idea del rival) Ataca tu peón de d5 e intenta abrir el juego a su favor. Esta jugada se llama <b>«Gambito de Dama»</b>.</div></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 4</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">e7 → e6</span></div>
+      <p class="sc-do">Mueve el peón negro de e7 a e6. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Defiendes tu peón de d5 de forma sólida y abres la diagonal para tu alfil de casillas claras. No hace falta capturar el peón de c4.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 5</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">b1 → c3</span></div>
+      <p class="sc-do">Supongamos que tu rival mueve el caballo blanco de b1 a c3. <em>Esto lo hace tu rival.</em></p></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 6</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">g8 → f6</span></div>
+      <p class="sc-do">Mueve el caballo negro de g8 a f6. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Desarrollas una pieza y controlas más casillas centrales.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 7</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">g1 → f3</span></div>
+      <p class="sc-do">Supongamos que tu rival mueve el caballo blanco de g1 a f3. <em>Esto lo hace tu rival.</em></p></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 8</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">f8 → e7</span></div>
+      <p class="sc-do">Mueve el alfil negro de f8 a e7. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Sacas tu último alfil y dejas el camino libre para enrocar.</div></article>
+
+    <article class="step-card"><div class="sc-top"><span class="sc-num">Paso 9</span><span class="sc-who who-w">♙ BLANCAS (tu rival)</span><span class="sc-move">e2 → e3</span></div>
+      <p class="sc-do">Supongamos que tu rival juega el peón blanco de e2 a e3. <em>Esto lo hace tu rival.</em></p></article>
+
+    <article class="step-card black"><div class="sc-top"><span class="sc-num">Paso 10</span><span class="sc-who who-b">♟ NEGRAS · TÚ</span><span class="sc-move">Enroque corto · «O-O»</span></div>
+      <p class="sc-do">Realiza el enroque corto (O-O): tu rey va de e8 a g8 y tu torre de h8 a f8. <em>Haz solamente este movimiento.</em></p>
+      <div class="sc-why"><b>💡 ¿Por qué?</b> Completas tu desarrollo básico y proteges a tu rey.</div></article>
+  </div>
+
+  <div class="callout adv"><b class="tag">⚠️ NOTA IMPORTANTE</b>Al igual que en la sección anterior, esta secuencia representa jugadas típicas del rival. Si tu rival juega de otra forma, aplica las reglas de oro: <b>centro, desarrollo, seguridad del rey</b>.</div>
+
+  <div class="card">
+    <h3>⛔ Errores que debes evitar</h3>
+    <div class="err-card"><div class="x">✕</div><div><b>No captures el peón de c4 en el Paso 4 sin un buen motivo</b><span>Mantener la tensión con e6 suele ser más sencillo para un principiante.</span></div></div>
+    <div class="err-card"><div class="x">✕</div><div><b>No desarrolles el alfil de casillas claras (el que está en c8) antes de jugar e6</b><span>O quedará encerrado.</span></div></div>
+    <div class="err-card"><div class="x">✕</div><div><b>No te olvides de enrocar</b><span>Es tan importante para las NEGRAS como para las BLANCAS.</span></div></div>
+  </div>
+
+  <h3 style="color:#fff;margin:20px 0 10px">✏️ Ejercicios — Contra 1.d4</h3>
+  <div class="ex"><details><summary>Ejercicio 1 · ¿Qué jugada del rival en el Paso 3 se llama «Gambito de Dama»?</summary><div class="ex-a"><b>Respuesta:</b> La jugada <b>c2 → c4</b> (el peón blanco de c2 a c4).</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 2 · ¿Por qué defendemos el peón de d5 con e6 en vez de capturar en c4?</summary><div class="ex-a"><b>Respuesta:</b> Porque con e6 defiendes tu peón de d5 <b>de forma sólida</b> y abres la diagonal para tu alfil de casillas claras; no hace falta capturar el peón de c4, y mantener la tensión con e6 suele ser más sencillo para un principiante.</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 3 · ¿Quién mueve en el Paso 8: BLANCAS o NEGRAS?</summary><div class="ex-a"><b>Respuesta:</b> Las <b>NEGRAS</b>: mueves el alfil de f8 a e7.</div></details></div>
+</section>
+
+<!-- ================= ELEGIR ================= -->
+<section class="panel" id="elegir">
+  <div class="sec-head">
+    <div class="kicker">Sección 7 · Decisiones</div>
+    <h2><span class="sec-ico">🧭</span>Cómo elegir qué apertura jugar</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card">
+    <h3>📖 La guía del tutorial</h3>
+    <ul style="margin:6px 0 6px 22px;color:var(--tx)">
+      <li>Si juegas con <b>BLANCAS</b>, puedes elegir entre la <b>Apertura Italiana</b> (sección 3) o el <b>Sistema Londres</b> (sección 4). Si te gusta un juego más <b>abierto y directo</b>, prueba la Italiana. Si prefieres un <b>plan que casi no cambia nunca</b>, prueba el Sistema Londres.</li>
+      <li>Si juegas con <b>NEGRAS</b> y tu rival abre con <b>1.e4</b>, usa la sección 5.</li>
+      <li>Si juegas con <b>NEGRAS</b> y tu rival abre con <b>1.d4</b>, usa la sección 6.</li>
+    </ul>
+    <div class="callout adv"><b class="tag">⚠️ ADVERTENCIA</b>No hace falta dominar las cuatro a la vez. Empieza por una y practícala varias partidas antes de añadir la siguiente (ver la sección 10, Plan de entrenamiento).</div>
+  </div>
+
+  <div class="card">
+    <h3>🤖 Asistente interactivo: ¿qué te conviene jugar?</h3>
+    <div class="wz-step">
+      <div class="q">1 · ¿Con qué color juegas?</div>
+      <div class="wz-opts">
+        <button class="wz-opt" id="wz-w">♙ BLANCAS</button>
+        <button class="wz-opt" id="wz-b">♟ NEGRAS</button>
+      </div>
+    </div>
+    <div class="wz-step" id="wz-q2w" style="display:none">
+      <div class="q">2 · ¿Qué estilo prefieres con BLANCAS?</div>
+      <div class="wz-opts">
+        <button class="wz-opt" id="wz-open">⚔️ Juego abierto y directo</button>
+        <button class="wz-opt" id="wz-plan">📐 Plan que casi no cambia nunca</button>
+      </div>
+    </div>
+    <div class="wz-step" id="wz-q2b" style="display:none">
+      <div class="q">2 · ¿Qué juega tu rival (BLANCAS)?</div>
+      <div class="wz-opts">
+        <button class="wz-opt" id="wz-e4">1.e4</button>
+        <button class="wz-opt" id="wz-d4">1.d4</button>
+      </div>
+    </div>
+    <div class="wz-result" id="wz-result">
+      <h4 id="wz-rt"></h4>
+      <div class="seq" id="wz-rs"></div>
+      <p id="wz-ri" style="color:var(--tx)"></p>
+      <button class="btn" id="wz-again" style="margin-top:10px">↺ Volver a elegir</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FUERA DE LÍNEA ================= -->
+<section class="panel" id="fuera">
+  <div class="sec-head">
+    <div class="kicker">Sección 8 · Improvisación con sentido común</div>
+    <h2><span class="sec-ico">🔀</span>Cómo reaccionar cuando el rival se sale de la línea</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card">
+    <p>Ningún rival está obligado a seguir las jugadas «típicas» de este tutorial. Cuando eso ocurra, <b>no te bloquees</b>: vuelve a las cinco reglas de oro (sección 2). Hazte estas cinco preguntas:</p>
+  </div>
+
+  <div class="chk-item"><input type="checkbox" id="chk1"><label for="chk1">¿Puedo ocupar o controlar más el <b>centro</b>?</label></div>
+  <div class="chk-item"><input type="checkbox" id="chk2"><label for="chk2">¿Tengo alguna <b>pieza menor</b> sin desarrollar?</label></div>
+  <div class="chk-item"><input type="checkbox" id="chk3"><label for="chk3">¿Mi <b>rey</b> ya está a salvo? Si no, ¿puedo enrocar ya?</label></div>
+  <div class="chk-item"><input type="checkbox" id="chk4"><label for="chk4">¿Estoy a punto de mover una pieza que <b>ya moví antes</b> sin necesidad?</label></div>
+  <div class="chk-item"><input type="checkbox" id="chk5"><label for="chk5">¿Estoy a punto de sacar la <b>dama demasiado pronto</b>?</label></div>
+
+  <div class="chk-ok callout ejemplo" id="chk-ok"><b class="tag">✅ RESULTADO</b>Si respondes a estas preguntas, <b>casi siempre encontrarás una buena jugada</b>, aunque el rival se haya salido de la línea que aprendiste.</div>
+</section>
+
+<!-- ================= ERRORES ================= -->
+<section class="panel" id="errores">
+  <div class="sec-head">
+    <div class="kicker">Sección 9 · Prevención</div>
+    <h2><span class="sec-ico">⛔</span>Los errores de apertura más comunes</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="err-card"><div class="x">1</div><div><b>Sacar la dama demasiado pronto</b><span>El rival la ataca con piezas de menos valor y tú pierdes tiempo moviéndola una y otra vez.</span></div></div>
+  <div class="err-card"><div class="x">2</div><div><b>Mover el mismo peón o la misma pieza varias veces sin necesidad</b><span>En vez de desarrollar piezas nuevas.</span></div></div>
+  <div class="err-card"><div class="x">3</div><div><b>Olvidarse de enrocar</b><span>Y dejar al rey en el centro del tablero, expuesto a ataques.</span></div></div>
+  <div class="err-card"><div class="x">4</div><div><b>Capturar piezas o peones sin comprobar las consecuencias</b><span>Solo porque «se puede».</span></div></div>
+  <div class="err-card"><div class="x">5</div><div><b>Avanzar peones del flanco del rey sin necesidad</b><span>Por ejemplo f2-f4 muy pronto con las BLANCAS, debilitando la protección del propio rey.</span></div></div>
+  <div class="err-card"><div class="x">6</div><div><b>No prestar atención a las amenazas del rival</b><span>Por ir demasiado rápido siguiendo «la teoría».</span></div></div>
+</section>
+
+<!-- ================= ENTRENAMIENTO ================= -->
+<section class="panel" id="entrenamiento">
+  <div class="sec-head">
+    <div class="kicker">Sección 10 · Plan de entrenamiento para principiantes</div>
+    <h2><span class="sec-ico">📅</span>Tu plan semana a semana</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item"><h4>Semana 1</h4><p>Aprende y practica solo la sección 1 (orientarte en el tablero) y la sección 2 (las cinco reglas de oro).</p></div>
+    <div class="tl-item"><h4>Semana 2</h4><p>Practica la Apertura Italiana (sección 3) en varias partidas, aunque sean partidas de entrenamiento contra ti mismo o contra un rival de nivel similar.</p></div>
+    <div class="tl-item"><h4>Semana 3</h4><p>Añade el Sistema Londres (sección 4).</p></div>
+    <div class="tl-item"><h4>Semana 4</h4><p>Aprende la respuesta contra 1.e4 (sección 5).</p></div>
+    <div class="tl-item"><h4>Semana 5</h4><p>Aprende la respuesta contra 1.d4 (sección 6).</p></div>
+    <div class="tl-item"><h4>Semana 6 en adelante</h4><p>Juega partidas completas, revisando después los errores típicos de la sección 9.</p></div>
+  </div>
+
+  <div class="callout adv"><b class="tag">⚠️ ADVERTENCIA</b>No pases a la siguiente apertura hasta sentirte cómodo con la anterior. <b>Es mejor jugar bien pocas aperturas que jugar mal muchas.</b></div>
+</section>
+
+<!-- ================= RESUMEN ================= -->
+<section class="panel" id="resumen">
+  <div class="sec-head">
+    <div class="kicker">Secciones 11 y 12 · Síntesis</div>
+    <h2><span class="sec-ico">📊</span>Resumen y chuleta rápida</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Resumen de las aperturas aprendidas</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Apertura</th><th>Color</th><th>Primer objetivo</th><th>Idea principal</th><th>Dificultad</th></tr></thead>
+        <tbody>
+          <tr><td>Apertura Italiana</td><td><span class="chip acc">BLANCAS</span></td><td>Controlar el centro con e4</td><td>Desarrollo rápido y enroque en pocos movimientos</td><td><span class="chip grn">Fácil</span></td></tr>
+          <tr><td>Sistema Londres</td><td><span class="chip acc">BLANCAS</span></td><td>Controlar el centro con d4</td><td>Plan fijo de desarrollo, casi sin memorizar teoría</td><td><span class="chip grn">Fácil</span></td></tr>
+          <tr><td>Respuesta a 1.e4</td><td><span class="chip pur">NEGRAS</span></td><td>Igualar el centro con e5</td><td>Desarrollo en espejo hasta enrocar</td><td><span class="chip grn">Fácil</span></td></tr>
+          <tr><td>Respuesta a 1.d4</td><td><span class="chip pur">NEGRAS</span></td><td>Sostener el centro con d5 y e6</td><td>Desarrollo sólido, sin ceder el centro</td><td><span class="chip grn">Fácil</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 style="color:#fff;margin:22px 0 12px">⚡ Chuleta rápida</h3>
+  <div class="grid2">
+    <div class="cheat"><h4>♙ Con BLANCAS — Apertura Italiana</h4><div class="seq">e4 → Nf3 → Bc4 → O-O</div><p>e4, luego Nf3, luego Bc4, luego enroca (O-O) en cuanto puedas. <b>Idea:</b> centro + desarrollo rápido + rey a salvo.</p></div>
+    <div class="cheat amb"><h4>♙ Con BLANCAS — Sistema Londres</h4><div class="seq">d4 → Nf3 → Bf4 → e3 → Bd3 → Nbd2 → O-O</div><p>d4, Nf3, Bf4 (antes de e3), e3, Bd3, Nbd2, enroca (O-O). <b>Idea:</b> mismo plan casi siempre, sin importar mucho lo que haga el rival.</p></div>
+    <div class="cheat pur"><h4>♟ Con NEGRAS contra 1.e4</h4><div class="seq">e5 → Nc6 → Bc5 → Nf6 → O-O</div><p>e5, Nc6, Bc5, Nf6, enroca (O-O) en cuanto puedas. <b>Idea:</b> igualar el centro y desarrollarte en espejo.</p></div>
+    <div class="cheat grn"><h4>♟ Con NEGRAS contra 1.d4</h4><div class="seq">d5 → e6 → Nf6 → Be7 → O-O</div><p>d5, e6 (defiende el centro sin capturar en c4), Nf6, Be7, enroca (O-O). <b>Idea:</b> sostener el centro con solidez.</p></div>
+  </div>
+</section>
+
+<!-- ================= EJERCICIOS FINALES ================= -->
+<section class="panel" id="ejercicios">
+  <div class="sec-head">
+    <div class="kicker">Sección 13 · Evaluación final</div>
+    <h2><span class="sec-ico">🧠</span>Ejercicios finales</h2>
+    <p class="sub">Comprueba lo aprendido. Pulsa cada ejercicio para ver la respuesta.</p>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="ex"><details><summary>Ejercicio 1 · Si juegas con BLANCAS y quieres un plan que casi no cambie nunca, ¿qué apertura de este tutorial deberías elegir?</summary><div class="ex-a"><b>Respuesta:</b> El <b>Sistema Londres</b> (sección 4): un plan fijo de desarrollo que casi no cambia nunca, sin importar demasiado lo que haga el rival.</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 2 · Si tu rival abre la partida con 1.d4 y tú juegas con NEGRAS, ¿qué sección de este tutorial deberías consultar?</summary><div class="ex-a"><b>Respuesta:</b> La <b>sección 6</b>: «Respuestas sencillas para NEGRAS contra 1.d4».</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 3 · Nombra dos de las cinco reglas de oro de la apertura.</summary><div class="ex-a"><b>Respuesta:</b> Dos cualquiera de estas cinco: <b>1)</b> controla el centro; <b>2)</b> desarrolla tus caballos y alfiles pronto; <b>3)</b> pon a tu rey a salvo cuanto antes (enrocando); <b>4)</b> no muevas la misma pieza varias veces sin motivo; <b>5)</b> no saques la dama demasiado pronto.</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 4 · ¿Por qué es una mala idea sacar la dama muy pronto?</summary><div class="ex-a"><b>Respuesta:</b> Porque la dama es tu pieza más valiosa: si sale muy pronto, el rival puede atacarla con piezas de menos valor y tú pierdes tiempo moviéndola una y otra vez para defenderla.</div></details></div>
+  <div class="ex"><details><summary>Ejercicio 5 · ¿Qué significa «enrocar» y por qué es importante hacerlo pronto?</summary><div class="ex-a"><b>Respuesta:</b> «Enrocar» es el movimiento en el que el rey se pone a salvo cerca de una torre: en el enroque corto, el rey va de e1 a g1 y la torre de h1 a f1 en un solo movimiento (con NEGRAS: de e8 a g8 y de h8 a f8). Es importante hacerlo pronto porque un rey en el centro del tablero corre mucho peligro: es la regla de oro más importante.</div></details></div>
+</section>
+
+<!-- ================= CONCLUSIÓN ================= -->
+<section class="panel" id="conclusion">
+  <div class="sec-head">
+    <div class="kicker">Sección 14 · Cierre</div>
+    <h2><span class="sec-ico">🏁</span>Conclusión</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card">
+    <h3>🎓 Con este tutorial ya sabes:</h3>
+    <ul class="know-list">
+      <li>Orientarte en el tablero y leer jugadas en notación algebraica.</li>
+      <li>Las cinco reglas de oro de toda apertura.</li>
+      <li>Dos aperturas sencillas para jugar con BLANCAS.</li>
+      <li>Dos respuestas sencillas para jugar con NEGRAS, tanto contra 1.e4 como contra 1.d4.</li>
+      <li>Los errores más comunes que debes evitar.</li>
+      <li>Un plan de entrenamiento para ir incorporando todo esto poco a poco.</li>
+    </ul>
+  </div>
+
+  <div class="callout info"><b class="tag">ℹ️ RECUERDA</b>No se trata de memorizar movimientos de memoria, sino de <b>entender por qué se juega cada uno</b>. Si entiendes las ideas, sabrás qué hacer incluso cuando tu rival se salga del guion.</div>
+
+  <div class="quote" style="border-left-color:var(--green)">¡Buena suerte en tus próximas partidas! ♞</div>
+</section>
+
+<!-- ================= CRÉDITOS ================= -->
+<section class="panel" id="creditos">
+  <div class="sec-head">
+    <div class="kicker">Créditos del tutorial</div>
+    <h2><span class="sec-ico">★</span>Créditos</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="cover-slot" style="margin-bottom:20px"></div>
+
+  <div class="card credit-card">
+    <div class="rol">Autor del contenido</div>
+    <div class="autor">Rubén Sbarsky</div>
+    <p class="mut">«Aperturas fáciles y efectivas en Ajedrez»</p>
+    <div class="credit-meta">
+      <span class="chip acc">📅 FECHA: 02/09/2026</span>
+      <span class="chip pur">🕐 HORA: 01:02:33</span>
+      <span class="chip grn">📚 Fines educativos y de divulgación</span>
+    </div>
+    <p class="mut" style="max-width:640px;margin:0 auto">Este tutorial interactivo tiene una indicación exclusivamente <b>educativa y divulgativa</b>: enseñar, paso a paso y desde cero, aperturas de ajedrez sencillas para empezar a jugar partidas reales con confianza.</p>
+    <p style="margin-top:16px;color:var(--acc);font-style:italic;font-weight:600">Fiat iustitia, ruat caelum.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="line">📚 Tutorial solo con fines Educativos y Divulgación</div>
+  <div class="line">👨‍💻 Créditos: Rubén Sbarsky</div>
+  <div class="line">📅 FECHA: 02/09/2026</div>
+  <div class="line">Hora: 01:02:33</div>
+  <div class="line motto">Fiat iustitia, ruat caelum.</div>
+</footer>
+
+<button id="toTop" aria-label="Volver arriba">↑</button>
+
+<script>
+/* =====================================================
+   SVG DE PORTADA — mismo SVG en HOME y CRÉDITOS
+   Animación temática: la Apertura Italiana completa
+   e4 · e5 · Nf3 · Nc6 · Bc4 · Bc5 · O-O
+===================================================== */
+var COVER_SVG = [
+'<svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animación de la Apertura Italiana: e4, Nf3, Bc4 y enroque corto sobre un tablero de ajedrez" preserveAspectRatio="xMidYMid meet">',
+'<defs>',
+'<radialGradient id="cv-bg" cx="28%" cy="18%" r="95%"><stop offset="0%" stop-color="#13233f"/><stop offset="55%" stop-color="#0a0e1a"/><stop offset="100%" stop-color="#070b14"/></radialGradient>',
+'<linearGradient id="cv-acc" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#a855f7"/></linearGradient>',
+'<filter id="cv-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>',
+'</defs>',
+'<style>',
+'.cvt{font-family:"Segoe UI",system-ui,sans-serif}.cvm{font-family:Consolas,"Courier New",monospace}.cvc{font-family:"Segoe UI Symbol","Segoe UI",system-ui,sans-serif}',
+'.cv-m{animation-duration:14s;animation-timing-function:linear;animation-iteration-count:infinite}',
+'.cv-pw{animation-name:cv-k-pw}.cv-pb{animation-name:cv-k-pb}.cv-nw{animation-name:cv-k-nw}.cv-nb{animation-name:cv-k-nb}',
+'.cv-bw{animation-name:cv-k-bw}.cv-bb{animation-name:cv-k-bb}.cv-kg{animation-name:cv-k-kg}.cv-rk{animation-name:cv-k-rk}',
+'@keyframes cv-k-pw{0%{transform:translate(0,0);opacity:0}3%{transform:translate(0,0);opacity:1}4%{transform:translate(0,0)}7%{transform:translate(0,-140px)}90%{transform:translate(0,-140px);opacity:1}93%{transform:translate(0,-140px);opacity:0}94%{transform:translate(0,0);opacity:0}97%{transform:translate(0,0);opacity:0}100%{transform:translate(0,0);opacity:1}}',
+'@keyframes cv-k-pb{0%{transform:translate(0,0);opacity:0}3%{transform:translate(0,0);opacity:1}8%{transform:translate(0,0)}11%{transform:translate(0,140px)}90%{transform:translate(0,140px);opacity:1}93%{transform:translate(0,140px);opacity:0}94%{transform:translate(0,0);opacity:0}97%{transform:translate(0,0);opacity:0}100%{transform:translate(0,0);opacity:1}}',
+'@keyframes cv-k-nw{0%{transform:translate(0,0);opacity:0}3%{transform:translate(0,0);opacity:1}14%{transform:translate(0,0)}16%{transform:translate(-35px,-170px)}18%{transform:translate(-70px,-140px)}90%{transform:translate(-70px,-140px);opacity:1}93%{transform:translate(-70px,-140px);opacity:0}94%{transform:translate(0,0);opacity:0}97%{transform:translate(0,0);opacity:0}100%{transform:translate(0,0);opacity:1}}',
+'@keyframes cv-k-nb{0%{transform:translate(0,0);opacity:0}3%{transform:translate(0,0);opacity:1}19%{transform:translate(0,0)}21%{transform:translate(35px,170px)}23%{transform:translate(70px,140px)}90%{transform:translate(70px,140px);opacity:1}93%{transform:translate(70px,140px);opacity:0}94%{transform:translate(0,0);opacity:0}97%{transform:translate(0,0);opacity:0}100%{transform:translate(0,0);opacity:1}}',
+'@keyframes cv-k-bw{0%{transform:translate(0,0);opacity:0}3%{transform:translate(0,0);opacity:1}26%{transform:translate(0,0)}31%{transform:translate(-210px,-210px)}90%{transform:translate(-210px,-210px);opacity:1}93%{transform:translate(-210px,-210px);opacity:0}94%{transform:translate(0,0);opacity:0}97%{transform:translate(0,0);opacity:0}100%{transform:translate(0,0);opacity:1}}',
+'@keyframes cv-k-bb{0%{transform:translate(0,0);opacity:0}3%{transform:translate(0,0);opacity:1}32%{transform:translate(0,0)}37%{transform:translate(-210px,210px)}90%{transform:translate(-210px,210px);opacity:1}93%{transform:translate(-210px,210px);opacity:0}94%{transform:translate(0,0);opacity:0}97%{transform:translate(0,0);opacity:0}100%{transform:translate(0,0);opacity:1}}',
+'@keyframes cv-k-kg{0%{transform:translate(0,0);opacity:0}3%{transform:translate(0,0);opacity:1}41%{transform:translate(0,0)}47%{transform:translate(140px,0)}90%{transform:translate(140px,0);opacity:1}93%{transform:translate(140px,0);opacity:0}94%{transform:translate(0,0);opacity:0}97%{transform:translate(0,0);opacity:0}100%{transform:translate(0,0);opacity:1}}',
+'@keyframes cv-k-rk{0%{transform:translate(0,0);opacity:0}3%{transform:translate(0,0);opacity:1}41%{transform:translate(0,0)}47%{transform:translate(-140px,0)}90%{transform:translate(-140px,0);opacity:1}93%{transform:translate(-140px,0);opacity:0}94%{transform:translate(0,0);opacity:0}97%{transform:translate(0,0);opacity:0}100%{transform:translate(0,0);opacity:1}}',
+'.cv-tr{animation-duration:14s;animation-timing-function:linear;animation-iteration-count:infinite}',
+'@keyframes cv-k-trb{0%,26%{stroke-dashoffset:100;opacity:0}27%{opacity:.9}31%{stroke-dashoffset:0;opacity:.9}60%{opacity:.4}86%{opacity:.35}90%{opacity:0}100%{opacity:0}}',
+'@keyframes cv-k-anw{0%,14%{stroke-dashoffset:100;opacity:0}15%{opacity:.9}18%{stroke-dashoffset:0;opacity:.9}60%{opacity:.4}86%{opacity:.35}90%{opacity:0}100%{opacity:0}}',
+'@keyframes cv-k-anb{0%,19%{stroke-dashoffset:100;opacity:0}20%{opacity:.9}23%{stroke-dashoffset:0;opacity:.9}60%{opacity:.4}86%{opacity:.35}90%{opacity:0}100%{opacity:0}}',
+'.cv-fl{animation:cv-k-fl 14s linear infinite}',
+'@keyframes cv-k-fl{0%{opacity:0}46%{opacity:0}50%{opacity:.55}54%{opacity:0}100%{opacity:0}}',
+'.cv-d1{animation-delay:-6.02s}.cv-d2{animation-delay:-5.46s}.cv-d3{animation-delay:-4.48s}.cv-d4{animation-delay:-3.78s}.cv-d5{animation-delay:-2.66s}.cv-d6{animation-delay:-1.82s}.cv-d7{animation-delay:-.42s}',
+'.cv-ln{animation-duration:14s;animation-timing-function:ease-out;animation-iteration-count:infinite}',
+'@keyframes cv-k-l1{0%,11.4%{opacity:0;transform:translateX(-16px)}13%{opacity:1;transform:translateX(0)}88%{opacity:1}91%{opacity:0}100%{opacity:0}}',
+'@keyframes cv-k-l2{0%,23.4%{opacity:0;transform:translateX(-16px)}25%{opacity:1;transform:translateX(0)}88%{opacity:1}91%{opacity:0}100%{opacity:0}}',
+'@keyframes cv-k-l3{0%,37.4%{opacity:0;transform:translateX(-16px)}39%{opacity:1;transform:translateX(0)}88%{opacity:1}91%{opacity:0}100%{opacity:0}}',
+'@keyframes cv-k-l4{0%,48%{opacity:0;transform:translateX(-16px)}50%{opacity:1;transform:translateX(0)}88%{opacity:1}91%{opacity:0}100%{opacity:0}}',
+'.cv-l1{animation-name:cv-k-l1}.cv-l2{animation-name:cv-k-l2}.cv-l3{animation-name:cv-k-l3}.cv-l4{animation-name:cv-k-l4}',
+'.cv-bdg{animation:cv-k-bdg 14s ease-out infinite}',
+'@keyframes cv-k-bdg{0%,47.5%{opacity:0;transform:translateY(-10px)}50.5%{opacity:1;transform:translateY(0)}88%{opacity:1}92%{opacity:0}100%{opacity:0}}',
+'.cv-sh{animation:cv-k-sh 14s linear infinite}',
+'@keyframes cv-k-sh{0%,46.5%{opacity:0}49%{opacity:1}88%{opacity:1}92%{opacity:0}100%{opacity:0}}',
+'.cv-ring{transform-box:fill-box;transform-origin:center;animation:cv-k-ring 14s ease-out infinite}',
+'@keyframes cv-k-ring{0%,46.9%{transform:scale(.2);opacity:0}47.5%{opacity:.9}53%{transform:scale(2.4);opacity:0}100%{transform:scale(2.4);opacity:0}}',
+'.cv-ch{animation-duration:14s;animation-timing-function:ease-out;animation-iteration-count:infinite}',
+'@keyframes cv-k-c1{0%,2%{opacity:0}4%{opacity:1}90%{opacity:1}94%{opacity:0}100%{opacity:0}}',
+'@keyframes cv-k-c2{0%,3.2%{opacity:0}5.2%{opacity:1}90%{opacity:1}94%{opacity:0}100%{opacity:0}}',
+'@keyframes cv-k-c3{0%,4.4%{opacity:0}6.4%{opacity:1}90%{opacity:1}94%{opacity:0}100%{opacity:0}}',
+'@keyframes cv-k-c4{0%,5.6%{opacity:0}7.6%{opacity:1}90%{opacity:1}94%{opacity:0}100%{opacity:0}}',
+'@keyframes cv-k-c5{0%,6.8%{opacity:0}8.8%{opacity:1}90%{opacity:1}94%{opacity:0}100%{opacity:0}}',
+'.cv-c1{animation-name:cv-k-c1}.cv-c2{animation-name:cv-k-c2}.cv-c3{animation-name:cv-k-c3}.cv-c4{animation-name:cv-k-c4}.cv-c5{animation-name:cv-k-c5}',
+'.cv-cp{animation:cv-k-cp 3.2s ease-in-out infinite}',
+'@keyframes cv-k-cp{0%,100%{opacity:.06}50%{opacity:.2}}',
+'.cv-cpd1{animation-delay:-.8s}.cv-cpd2{animation-delay:-1.6s}.cv-cpd3{animation-delay:-2.4s}',
+'@media (prefers-reduced-motion: reduce){[class^="cv-"]{animation:none!important}.cv-tr,.cv-ln{opacity:0!important}}',
+'</style>',
+'<rect width="1600" height="900" fill="url(#cv-bg)"/>',
+'<text class="cvc" x="870" y="880" font-size="380" fill="#00d4ff" opacity="0.045" text-anchor="middle">&#9822;</text>',
+/* ---- Textos izquierdos ---- */
+'<rect x="70" y="52" width="350" height="38" rx="19" fill="none" stroke="#00d4ff" stroke-opacity=".6"/><text class="cvt" x="245" y="77" text-anchor="middle" font-size="16" font-weight="700" fill="#00d4ff" letter-spacing="4">TUTORIAL INTERACTIVO</text>',
+'<text class="cvt" x="66" y="170" font-size="88" font-weight="800" fill="#e8f2fc" filter="url(#cv-glow)">APERTURAS</text>',
+'<text class="cvt" x="66" y="248" font-size="60" font-weight="800" fill="#00d4ff" filter="url(#cv-glow)">F&#193;CILES Y EFECTIVAS</text>',
+'<text class="cvt" x="68" y="292" font-size="22" font-weight="700" fill="#f59e0b" letter-spacing="6">EN AJEDREZ &#183; GU&#205;A PASO A PASO DESDE CERO</text>',
+/* ---- Panel notaci&#243;n ---- */
+'<rect x="70" y="322" width="700" height="242" rx="14" fill="#0f172a" stroke="#1e3a5f"/>',
+'<rect x="70" y="322" width="700" height="40" rx="14" fill="#0d2237"/><rect x="70" y="348" width="700" height="14" fill="#0d2237"/>',
+'<text class="cvt" x="92" y="349" font-size="16" font-weight="700" fill="#00d4ff" letter-spacing="2">APERTURA ITALIANA &#183; SECUENCIA ANIMADA</text>',
+'<text class="cvm cv-ln cv-l1" x="100" y="404" font-size="29" font-weight="700" fill="#e2e8f0">1. e4&#160;&#160;&#160;&#160;e5</text>',
+'<text class="cvm cv-ln cv-l2" x="100" y="446" font-size="29" font-weight="700" fill="#e2e8f0">2. Nf3&#160;&#160;&#160;Nc6</text>',
+'<text class="cvm cv-ln cv-l3" x="100" y="488" font-size="29" font-weight="700" fill="#e2e8f0">3. Bc4&#160;&#160;&#160;Bc5</text>',
+'<text class="cvm cv-ln cv-l4" x="100" y="530" font-size="29" font-weight="800" fill="#22c55e">4. O-O&#160;&#160;&#160;&#9003; enroque corto</text>',
+/* ---- Chips reglas de oro ---- */
+'<text class="cvt" x="70" y="610" font-size="15" font-weight="700" fill="#8ea2bd" letter-spacing="3">LAS 5 REGLAS DE ORO</text>',
+'<g class="cv-ch cv-c1"><rect x="70" y="624" width="150" height="44" rx="22" fill="#0f172a" stroke="#00d4ff" stroke-opacity=".5"/><text class="cvt" x="145" y="652" text-anchor="middle" font-size="16" font-weight="700" fill="#dbe7f5">&#9312; CENTRO</text></g>',
+'<g class="cv-ch cv-c2"><rect x="232" y="624" width="180" height="44" rx="22" fill="#0f172a" stroke="#22c55e" stroke-opacity=".5"/><text class="cvt" x="322" y="652" text-anchor="middle" font-size="16" font-weight="700" fill="#dbe7f5">&#9313; DESARROLLO</text></g>',
+'<g class="cv-ch cv-c3"><rect x="424" y="624" width="192" height="44" rx="22" fill="#0f172a" stroke="#f59e0b" stroke-opacity=".5"/><text class="cvt" x="520" y="652" text-anchor="middle" font-size="16" font-weight="700" fill="#dbe7f5">&#9314; REY A SALVO</text></g>',
+'<g class="cv-ch cv-c4"><rect x="70" y="682" width="224" height="44" rx="22" fill="#0f172a" stroke="#ef4444" stroke-opacity=".5"/><text class="cvt" x="182" y="710" text-anchor="middle" font-size="16" font-weight="700" fill="#dbe7f5">&#9315; NO REPETIR PIEZAS</text></g>',
+'<g class="cv-ch cv-c5"><rect x="306" y="682" width="214" height="44" rx="22" fill="#0f172a" stroke="#a855f7" stroke-opacity=".5"/><text class="cvt" x="413" y="710" text-anchor="middle" font-size="16" font-weight="700" fill="#dbe7f5">&#9316; DAMA AL FINAL</text></g>',
+'<text class="cvt" x="70" y="772" font-size="14" fill="#5c7391" letter-spacing="1">BLANCAS mueven primero &#183; controla el centro &#183; desarrolla &#183; enroca</text>',
+/* ---- Marco y tablero ---- */
+'<rect x="942" y="132" width="596" height="616" rx="14" fill="#0d1526" stroke="#00d4ff" stroke-opacity=".35" filter="url(#cv-glow)"/>',
+'<g>',
+(function(){return "";})(),
+'</g>'
+].join("");
+
+/* Generar casillas del tablero SVG de forma programática (manteniendo COVER_SVG ligero) */
+(function(){
+  var boardX=960, boardY=150, cell=70, sq="", labels="", FILES="abcdefgh", r, f;
+  for(r=8;r>=1;r--){
+    for(f=0;f<8;f++){
+      var x=boardX+f*cell, y=boardY+(8-r)*cell;
+      var light=((f+r)%2===0);
+      sq+='<rect x="'+x+'" y="'+y+'" width="'+cell+'" height="'+cell+'" fill="'+(light?'#1d3a5f':'#0e2036')+'"/>';
+    }
+  }
+  for(f=0;f<8;f++){labels+='<text class="cvt" x="'+(boardX+f*cell+cell/2)+'" y="736" text-anchor="middle" font-size="17" font-weight="700" fill="#5c7391">'+FILES[f]+'</text>';}
+  for(r=1;r<=8;r++){labels+='<text class="cvt" x="948" y="'+(boardY+(8-r)*cell+cell/2+6)+'" text-anchor="end" font-size="17" font-weight="700" fill="#5c7391">'+r+'</text>';}
+  /* Pulsos del centro */
+  var centers='<rect class="cv-cp" x="1170" y="430" width="70" height="70" fill="#00d4ff"/>'
+    +'<rect class="cv-cp cv-cpd1" x="1240" y="430" width="70" height="70" fill="#00d4ff"/>'
+    +'<rect class="cv-cp cv-cpd2" x="1170" y="360" width="70" height="70" fill="#00d4ff"/>'
+    +'<rect class="cv-cp cv-cpd3" x="1240" y="360" width="70" height="70" fill="#00d4ff"/>'
+    +'<text class="cvt" x="1240" y="352" text-anchor="middle" font-size="13" font-weight="800" fill="#00d4ff" letter-spacing="2" opacity=".8">EL CENTRO</text>';
+  /* Flashes de casillas destino */
+  var flashes='<rect class="cv-fl cv-d1" x="1240" y="430" width="70" height="70" fill="#00d4ff"/>'
+    +'<rect class="cv-fl cv-d2" x="1240" y="360" width="70" height="70" fill="#a855f7"/>'
+    +'<rect class="cv-fl cv-d3" x="1310" y="500" width="70" height="70" fill="#00d4ff"/>'
+    +'<rect class="cv-fl cv-d4" x="1100" y="290" width="70" height="70" fill="#a855f7"/>'
+    +'<rect class="cv-fl cv-d5" x="1100" y="430" width="70" height="70" fill="#00d4ff"/>'
+    +'<rect class="cv-fl cv-d6" x="1100" y="360" width="70" height="70" fill="#a855f7"/>'
+    +'<rect class="cv-fl cv-d7" x="1380" y="640" width="70" height="70" fill="#22c55e"/>';
+  /* Trayectorias */
+  var trails='<path class="cv-tr" style="animation-name:cv-k-anw" d="M1415,675 Q1353,551 1345,535" pathLength="100" fill="none" stroke="#a855f7" stroke-width="3" stroke-dasharray="100" stroke-linecap="round"/>'
+    +'<path class="cv-tr" style="animation-name:cv-k-anb" d="M1065,185 Q1127,309 1135,325" pathLength="100" fill="none" stroke="#a855f7" stroke-width="3" stroke-dasharray="100" stroke-linecap="round"/>'
+    +'<path class="cv-tr" style="animation-name:cv-k-trb" d="M1345,675 L1135,465" pathLength="100" fill="none" stroke="#00d4ff" stroke-width="3" stroke-dasharray="100" stroke-linecap="round"/>';
+  /* Piezas estáticas tenues */
+  function pc(x,y,g,dark){return '<g transform="translate('+x+','+y+')" opacity="0.38"><text class="cvc" text-anchor="middle" dominant-baseline="central" font-size="54" fill="'+(dark?'#060a13':'#f1f5f9')+'" stroke="'+(dark?'#8fa3bf':'#0b1526')+'" stroke-width="1.5" paint-order="stroke">'+g+'</text></g>';}
+  var ghosts="";
+  var FX={a:995,b:1065,c:1135,d:1205,e:1275,f:1345,g:1415,h:1485};
+  "abcdefg".split("").forEach(function(f){ghosts+=pc(FX[f],605,"&#9823;",false)+pc(FX[f],255,"&#9823;",true);});
+  ghosts+=pc(FX.a,675,"&#9820;",false)+pc(FX.b,675,"&#9822;",false)+pc(FX.c,675,"&#9821;",false)+pc(FX.d,675,"&#9819;",false);
+  ghosts+=pc(FX.a,185,"&#9820;",true)+pc(FX.h,185,"&#9820;",true)+pc(FX.g,185,"&#9822;",true)+pc(FX.c,185,"&#9821;",true)+pc(FX.d,185,"&#9819;",true)+pc(FX.e,185,"&#9818;",true);
+  /* Piezas animadas */
+  function apc(x,y,g,dark,cls){return '<g transform="translate('+x+','+y+')"><g class="cv-m '+cls+'"><text class="cvc" text-anchor="middle" dominant-baseline="central" font-size="54" fill="'+(dark?'#060a13':'#f1f5f9')+'" stroke="'+(dark?'#8fa3bf':'#00d4ff')+'" stroke-width="1.5" paint-order="stroke">'+g+'</text></g></g>';}
+  var actors=apc(1275,605,"&#9823;",false,"cv-pw")+apc(1275,255,"&#9823;",true,"cv-pb")
+    +apc(1415,675,"&#9822;",false,"cv-nw")+apc(1065,185,"&#9822;",true,"cv-nb")
+    +apc(1345,675,"&#9821;",false,"cv-bw")+apc(1345,185,"&#9821;",true,"cv-bb")
+    +apc(1275,675,"&#9818;",false,"cv-kg")+apc(1485,675,"&#9820;",false,"cv-rk");
+  /* Efecto enroque */
+  var fx='<circle class="cv-ring" cx="1415" cy="675" r="34" fill="none" stroke="#22c55e" stroke-width="4"/>'
+    +'<path class="cv-sh" d="M1360,700 A58,58 0 0 1 1470,700" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round" opacity="0" filter="url(#cv-glow)"/>'
+    +'<g class="cv-bdg" opacity="0"><rect x="1075" y="82" width="330" height="46" rx="23" fill="#0f172a" stroke="#22c55e"/><circle cx="1103" cy="105" r="7" fill="#22c55e"/><text class="cvt" x="1252" y="112" text-anchor="middle" font-size="19" font-weight="800" fill="#22c55e" letter-spacing="2">REY A SALVO &#183; 4. O-O</text></g>';
+  COVER_SVG += sq+centers+labels+flashes+trails+ghosts+actors+fx+'</svg>';
+})();
+
+/* Inyectar el MISMO SVG en HOME y CRÉDITOS */
+(function(){
+  var slots=document.querySelectorAll('.cover-slot'), i=0;
+  slots.forEach?slots.forEach(inject):Array.prototype.forEach.call(slots,inject);
+  function inject(el){
+    i++;
+    /* sufijo único de IDs para evitar colisiones entre las dos instancias */
+    el.innerHTML=COVER_SVG.replace(/cv-bg/g,'cv-bg-'+i).replace(/cv-acc/g,'cv-acc-'+i).replace(/cv-glow/g,'cv-glow-'+i);
+  }
+})();
+
+/* =====================================================
+   NAVEGACIÓN SPA
+===================================================== */
+var navBtns=Array.prototype.slice.call(document.querySelectorAll('.nav-btn'));
+var panels=Array.prototype.slice.call(document.querySelectorAll('.panel'));
+var navScroll=document.getElementById('navScroll');
+
+function go(id, push){
+  var found=false;
+  panels.forEach(function(p){
+    var on=(p.id===id);
+    p.classList.toggle('active',on);
+    if(on)found=true;
+  });
+  if(!found){document.getElementById('inicio').classList.add('active');id='inicio';}
+  navBtns.forEach(function(b){b.classList.toggle('active',b.getAttribute('data-target')===id);});
+  var act=document.querySelector('.nav-btn[data-target="'+id+'"]');
+  if(act&&navScroll){navScroll.scrollTo({left:act.offsetLeft-navScroll.clientWidth/2+act.clientWidth/2,behavior:'smooth'});}
+  window.scrollTo({top:0,behavior:'auto'});
+  if(push!==false){try{history.replaceState(null,'','#'+id);}catch(e){}}
+}
+navBtns.forEach(function(b){
+  b.addEventListener('click',function(){go(b.getAttribute('data-target'));});
+});
+window.addEventListener('hashchange',function(){
+  var h=location.hash.replace('#','');
+  if(h)go(h,false);
+});
+(function(){var h=location.hash.replace('#','');if(h&&document.getElementById(h))go(h,false);})();
+
+/* =====================================================
+   BARRA DE PROGRESO + VOLVER ARRIBA
+===================================================== */
+var bar=document.getElementById('progressBar'), toTop=document.getElementById('toTop');
+function onScroll(){
+  var st=window.scrollY||document.documentElement.scrollTop;
+  var dh=document.documentElement.scrollHeight-window.innerHeight;
+  bar.style.width=(dh>0?(st/dh*100):0)+'%';
+  toTop.classList.toggle('show',st>400);
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+
+/* =====================================================
+   TABLEROS INTERACTIVOS
+===================================================== */
+var FILES='abcdefgh';
+var GLYPH={K:'\u265A',Q:'\u265B',R:'\u265C',B:'\u265D',N:'\u265E',P:'\u265F'};
+
+function initialPos(){
+  var p={},back=['R','N','B','Q','K','B','N','R'],f;
+  for(f=0;f<8;f++){
+    p[FILES[f]+'1']=back[f];
+    p[FILES[f]+'2']='P';
+    p[FILES[f]+'7']='p';
+    p[FILES[f]+'8']=back[f].toLowerCase();
+  }
+  return p;
+}
+function applySteps(steps){
+  var arr=[initialPos()],cur=arr[0];
+  steps.forEach(function(s){
+    var np={};Object.keys(cur).forEach(function(k){np[k]=cur[k];});
+    if(s.castle){
+      if(s.castle==='w'){delete np.e1;delete np.h1;np.g1='K';np.f1='R';}
+      else{delete np.e8;delete np.h8;np.g8='k';np.f8='r';}
+    }else{
+      np[s.to]=np[s.from];delete np[s.from];
+    }
+    arr.push(np);cur=np;
+  });
+  return arr;
+}
+function buildGrid(el){
+  el.innerHTML='';
+  for(var r=8;r>=1;r--){
+    for(var f=0;f<8;f++){
+      var sq=document.createElement('div');
+      var name=FILES[f]+r;
+      sq.className='sq '+((((f+r)%2===0))?'sq-l':'sq-d');
+      sq.setAttribute('data-sq',name);
+      el.appendChild(sq);
+    }
+  }
+}
+function renderBoard(el,pos,last){
+  var squares=el.querySelectorAll('.sq');
+  Array.prototype.forEach.call(squares,function(sq){
+    var name=sq.getAttribute('data-sq');
+    var piece=pos[name];
+    var hl=!!(last&&(last.from===name||last.to===name));
+    sq.classList.toggle('hl',hl);
+    if(piece){
+      var isW=piece===piece.toUpperCase();
+      sq.innerHTML='<span class="'+(isW?'pcw':'pcb')+'">'+GLYPH[piece.toUpperCase()]+'</span>';
+    }else{sq.innerHTML='';}
+  });
+}
+function fillCoords(root){
+  var rc=root.querySelector('[data-ranks]'),fc=root.querySelector('[data-files]');
+  if(rc){rc.innerHTML='';for(var r=8;r>=1;r--){var s=document.createElement('span');s.textContent=r;rc.appendChild(s);}}
+  if(fc){fc.innerHTML='';for(var f=0;f<8;f++){var s2=document.createElement('span');s2.textContent=FILES[f];fc.appendChild(s2);}}
+}
+function createStepper(cfg){
+  var root=document.getElementById(cfg.frameId);
+  fillCoords(root);
+  var boardEl=document.getElementById(cfg.boardId);
+  buildGrid(boardEl);
+  var positions=applySteps(cfg.steps);
+  var idx=0;
+  var stepEl=document.getElementById(cfg.stepId),moveEl=document.getElementById(cfg.moveId),slider=document.getElementById(cfg.sliderId);
+  slider.max=cfg.steps.length;
+  function draw(){
+    var info=idx===0?null:cfg.steps[idx-1];
+    renderBoard(boardEl,positions[idx],info);
+    if(idx===0){
+      stepEl.textContent='Posición inicial';
+      moveEl.textContent='Prepara el tablero y avanza paso a paso';
+    }else{
+      var s=cfg.steps[idx-1];
+      var who=s.color==='w'?'BLANCAS':'NEGRAS';
+      stepEl.innerHTML='Paso '+idx+' / '+cfg.steps.length+' · <b class="'+(s.color==='w'?'tw':'tb')+'">'+who+'</b>';
+      moveEl.textContent=s.desc;
+    }
+    slider.value=idx;
+  }
+  function goStep(n){idx=Math.max(0,Math.min(cfg.steps.length,n));draw();}
+  document.getElementById(cfg.prevId).addEventListener('click',function(){goStep(idx-1);});
+  document.getElementById(cfg.nextId).addEventListener('click',function(){goStep(idx+1);});
+  document.getElementById(cfg.resetId).addEventListener('click',function(){goStep(0);});
+  slider.addEventListener('input',function(e){goStep(parseInt(e.target.value,10)||0);});
+  draw();
+}
+
+/* Datos de las 4 líneas (fieles al tutorial) */
+var IT_STEPS=[
+ {color:'w',from:'e2',to:'e4',desc:'Peón e2 → e4 · «1. e4»'},
+ {color:'b',from:'e7',to:'e5',desc:'Peón negro e7 → e5 (rival)'},
+ {color:'w',from:'g1',to:'f3',desc:'Caballo g1 → f3 · «2. Nf3»'},
+ {color:'b',from:'b8',to:'c6',desc:'Caballo negro b8 → c6 (rival)'},
+ {color:'w',from:'f1',to:'c4',desc:'Alfil f1 → c4 · «3. Bc4»'},
+ {color:'b',from:'f8',to:'c5',desc:'Alfil negro f8 → c5 (rival)'},
+ {color:'w',castle:'w',from:'e1',to:'g1',desc:'Enroque corto (O-O): rey e1→g1, torre h1→f1 · «4. O-O»'}
+];
+var LO_STEPS=[
+ {color:'w',from:'d2',to:'d4',desc:'Peón d2 → d4 · «1. d4»'},
+ {color:'b',from:'d7',to:'d5',desc:'Peón negro d7 → d5 (rival)'},
+ {color:'w',from:'g1',to:'f3',desc:'Caballo g1 → f3 · «2. Nf3»'},
+ {color:'b',from:'g8',to:'f6',desc:'Caballo negro g8 → f6 (rival)'},
+ {color:'w',from:'c1',to:'f4',desc:'Alfil c1 → f4 · «Bf4» ★ jugada clave'},
+ {color:'b',from:'e7',to:'e6',desc:'Peón negro e7 → e6 (rival)'},
+ {color:'w',from:'e2',to:'e3',desc:'Peón e2 → e3'},
+ {color:'b',from:'f8',to:'e7',desc:'Alfil negro f8 → e7 (rival)'},
+ {color:'w',from:'f1',to:'d3',desc:'Alfil f1 → d3 · «Bd3»'},
+ {color:'b',castle:'b',from:'e8',to:'g8',desc:'El rival enroca corto (O-O)'},
+ {color:'w',from:'b1',to:'d2',desc:'Caballo b1 → d2 · «Nbd2»'},
+ {color:'w',castle:'w',from:'e1',to:'g1',desc:'Enroque corto (O-O): rey e1→g1, torre h1→f1 · tras la respuesta del rival'}
+];
+var E4_STEPS=[
+ {color:'w',from:'e2',to:'e4',desc:'El rival juega peón e2 → e4'},
+ {color:'b',from:'e7',to:'e5',desc:'Tú: peón e7 → e5'},
+ {color:'w',from:'g1',to:'f3',desc:'El rival juega caballo g1 → f3'},
+ {color:'b',from:'b8',to:'c6',desc:'Tú: caballo b8 → c6'},
+ {color:'w',from:'f1',to:'c4',desc:'El rival juega alfil f1 → c4'},
+ {color:'b',from:'f8',to:'c5',desc:'Tú: alfil f8 → c5'},
+ {color:'w',from:'c2',to:'c3',desc:'El rival juega peón c2 → c3'},
+ {color:'b',from:'g8',to:'f6',desc:'Tú: caballo g8 → f6'},
+ {color:'w',from:'d2',to:'d3',desc:'El rival juega peón d2 → d3'},
+ {color:'b',castle:'b',from:'e8',to:'g8',desc:'Tú: enroque corto (O-O), rey e8→g8, torre h8→f8'}
+];
+var D4_STEPS=[
+ {color:'w',from:'d2',to:'d4',desc:'El rival juega peón d2 → d4'},
+ {color:'b',from:'d7',to:'d5',desc:'Tú: peón d7 → d5'},
+ {color:'w',from:'c2',to:'c4',desc:'El rival juega peón c2 → c4 · Gambito de Dama'},
+ {color:'b',from:'e7',to:'e6',desc:'Tú: peón e7 → e6'},
+ {color:'w',from:'b1',to:'c3',desc:'El rival juega caballo b1 → c3'},
+ {color:'b',from:'g8',to:'f6',desc:'Tú: caballo g8 → f6'},
+ {color:'w',from:'g1',to:'f3',desc:'El rival juega caballo g1 → f3'},
+ {color:'b',from:'f8',to:'e7',desc:'Tú: alfil f8 → e7'},
+ {color:'w',from:'e2',to:'e3',desc:'El rival juega peón e2 → e3'},
+ {color:'b',castle:'b',from:'e8',to:'g8',desc:'Tú: enroque corto (O-O), rey e8→g8, torre h8→f8'}
+];
+createStepper({frameId:'italiana',boardId:'it-board',stepId:'it-step',moveId:'it-move',sliderId:'it-slider',prevId:'it-prev',nextId:'it-next',resetId:'it-reset',steps:IT_STEPS});
+createStepper({frameId:'londres',boardId:'lo-board',stepId:'lo-step',moveId:'lo-move',sliderId:'lo-slider',prevId:'lo-prev',nextId:'lo-next',resetId:'lo-reset',steps:LO_STEPS});
+createStepper({frameId:'negras-e4',boardId:'e4-board',stepId:'e4-step',moveId:'e4-move',sliderId:'e4-slider',prevId:'e4-prev',nextId:'e4-next',resetId:'e4-reset',steps:E4_STEPS});
+createStepper({frameId:'negras-d4',boardId:'d4-board',stepId:'d4-step',moveId:'d4-move',sliderId:'d4-slider',prevId:'d4-prev',nextId:'d4-next',resetId:'d4-reset',steps😀4_STEPS});
+
+/* =====================================================
+   EXPLORADOR DE COORDENADAS (Fundamentos)
+===================================================== */
+(function(){
+  var wrap=document.getElementById('fundamentos');
+  var rc=document.getElementById('coordRanks'),fc=document.getElementById('coordFiles');
+  for(var r=8;r>=1;r--){var s=document.createElement('span');s.textContent=r;rc.appendChild(s);}
+  for(var f=0;f<8;f++){var s2=document.createElement('span');s2.textContent=FILES[f];fc.appendChild(s2);}
+  var b=document.getElementById('coordBoard');
+  buildGrid(b);
+  var e4sq=b.querySelector('[data-sq="e4"]');
+  if(e4sq)e4sq.classList.add('hl');
+  var out=document.getElementById('coordReadout');
+  b.addEventListener('click',function(ev){
+    var t=ev.target.closest('.sq');
+    if(!t)return;
+    var prev=b.querySelector('.sel');
+    if(prev)prev.classList.remove('sel');
+    t.classList.add('sel');
+    out.textContent='Casilla '+t.getAttribute('data-sq')+' · columna «'+t.getAttribute('data-sq')[0]+'», fila «'+t.getAttribute('data-sq')[1]+'»';
+  });
+})();
+
+/* =====================================================
+   ASISTENTE: CÓMO ELEGIR APERTURA
+===================================================== */
+(function(){
+  var q2w=document.getElementById('wz-q2w'),q2b=document.getElementById('wz-q2b'),res=document.getElementById('wz-result');
+  var bt={w:document.getElementById('wz-w'),b:document.getElementById('wz-b'),
+          open:document.getElementById('wz-open'),plan:document.getElementById('wz-plan'),
+          e4:document.getElementById('wz-e4'),d4:document.getElementById('wz-d4')};
+  function clearOn(group){group.forEach(function(x){x.classList.remove('on');});}
+  function showResult(title,seq,info){
+    document.getElementById('wz-rt').textContent=title;
+    document.getElementById('wz-rs').textContent=seq;
+    document.getElementById('wz-ri').textContent=info;
+    res.classList.add('show');
+  }
+  bt.w.addEventListener('click',function(){clearOn([bt.w,bt.b]);bt.w.classList.add('on');q2w.style.display='block';q2b.style.display='none';res.classList.remove('show');});
+  bt.b.addEventListener('click',function(){clearOn([bt.w,bt.b]);bt.b.classList.add('on');q2b.style.display='block';q2w.style.display='none';res.classList.remove('show');});
+  bt.open.addEventListener('click',function(){clearOn([bt.open,bt.plan]);bt.open.classList.add('on');
+    showResult('⚔️ Tu apertura: Apertura Italiana (Sección 3)','e4 → Nf3 → Bc4 → O-O','Juego abierto y directo: centro + desarrollo rápido + rey a salvo.');});
+  bt.plan.addEventListener('click',function(){clearOn([bt.open,bt.plan]);bt.plan.classList.add('on');
+    showResult('📐 Tu apertura: Sistema Londres (Sección 4)','d4 → Nf3 → Bf4 → e3 → Bd3 → Nbd2 → O-O','Un plan que casi no cambia nunca, sin importar mucho lo que haga el rival.');});
+  bt.e4.addEventListener('click',function(){clearOn([bt.e4,bt.d4]);bt.e4.classList.add('on');
+    showResult('⚫ Tu respuesta contra 1.e4 (Sección 5)','e5 → Nc6 → Bc5 → Nf6 → O-O','Idea: igualar el centro y desarrollarte en espejo.');});
+  bt.d4.addEventListener('click',function(){clearOn([bt.e4,bt.d4]);bt.d4.classList.add('on');
+    showResult('⚫ Tu respuesta contra 1.d4 (Sección 6)','d5 → e6 → Nf6 → Be7 → O-O','Idea: sostener el centro con solidez (e6 defiende el centro sin capturar en c4).');});
+  document.getElementById('wz-again').addEventListener('click',function(){
+    clearOn([bt.w,bt.b,bt.open,bt.plan,bt.e4,bt.d4]);
+    q2w.style.display='none';q2b.style.display='none';res.classList.remove('show');
+  });
+})();
+
+/* =====================================================
+   CHECKLIST: FUERA DE LÍNEA
+===================================================== */
+(function(){
+  var checks=[document.getElementById('chk1'),document.getElementById('chk2'),document.getElementById('chk3'),document.getElementById('chk4'),document.getElementById('chk5')];
+  var ok=document.getElementById('chk-ok');
+  function upd(){
+    var n=0;
+    checks.forEach(function(c){
+      c.closest('.chk-item').classList.toggle('done',c.checked);
+      if(c.checked)n++;
+    });
+    ok.classList.toggle('show',n===5);
+  }
+  checks.forEach(function(c){c.addEventListener('change',upd);});
+})();
+</script>
+</body>
+</html>
