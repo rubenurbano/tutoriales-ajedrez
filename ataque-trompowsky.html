@@ -1432,13 +1432,45 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
 <script>
 (function(){
   "use strict";
-  /* ---------- Inyección del mismo SVG animado en HOME y CRÉDITOS ---------- */
+  /* ---------- Inyección del mismo SVG animado en HOME y CRÉDITOS ----------
+     Cada clon recibe IDs únicos (sufijo) para que sus <defs> (gradientes,
+     filtros, patrones) no colisionen entre sí: si dos SVG en el mismo
+     documento comparten el mismo id="cbTitle" etc., el navegador resuelve
+     url(#cbTitle) siempre contra la PRIMERA coincidencia del documento,
+     rompiendo visualmente la segunda copia (Créditos). */
+  function cloneCoverWithUniqueIds(tpl, suffix){
+    var frag = tpl.content.cloneNode(true);
+    var idMap = {};
+    Array.prototype.forEach.call(frag.querySelectorAll('[id]'), function(el){
+      var oldId = el.id, newId = oldId + '-' + suffix;
+      idMap[oldId] = newId;
+      el.id = newId;
+    });
+    var refAttrs = ['fill','stroke','filter','clip-path','mask'];
+    Array.prototype.forEach.call(frag.querySelectorAll('*'), function(el){
+      refAttrs.forEach(function(attr){
+        var val = el.getAttribute && el.getAttribute(attr);
+        if (val && val.indexOf('url(#') === 0){
+          var id = val.slice(5, -1);
+          if (idMap[id]) el.setAttribute(attr, 'url(#' + idMap[id] + ')');
+        }
+      });
+      ['href','xlink:href'].forEach(function(attr){
+        var val = el.getAttribute && el.getAttribute(attr);
+        if (val && val.charAt(0) === '#'){
+          var id = val.slice(1);
+          if (idMap[id]) el.setAttribute(attr, '#' + idMap[id]);
+        }
+      });
+    });
+    return frag;
+  }
   var tpl = document.getElementById('coverTpl');
   var homeCover = document.getElementById('homeCover');
   var credCover = document.getElementById('credCover');
   if (tpl && homeCover && credCover) {
-    homeCover.appendChild(tpl.content.cloneNode(true));
-    credCover.appendChild(tpl.content.cloneNode(true));
+    homeCover.appendChild(cloneCoverWithUniqueIds(tpl, 'home'));
+    credCover.appendChild(cloneCoverWithUniqueIds(tpl, 'cred'));
   }
 
   /* ---------- SPA: navegación entre secciones ---------- */
