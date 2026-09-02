@@ -1471,6 +1471,13 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
   if (tpl && homeCover && credCover) {
     homeCover.appendChild(cloneCoverWithUniqueIds(tpl, 'home'));
     credCover.appendChild(cloneCoverWithUniqueIds(tpl, 'cred'));
+    var homeSvg = homeCover.querySelector('svg');
+    if (homeSvg) {
+      try{
+        if (homeSvg.setCurrentTime) { homeSvg.setCurrentTime(0); }
+        if (homeSvg.unpauseAnimations) { homeSvg.unpauseAnimations(); }
+      }catch(e){}
+    }
   }
 
   /* ---------- SPA: navegación entre secciones ---------- */
@@ -1484,8 +1491,19 @@ footer .motto{margin-top:12px;color:var(--purple);font-style:italic;font-weight:
       if (on && b.scrollIntoView) { try{ b.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'}); }catch(e){} }
     });
     window.scrollTo({top:0, behavior:'auto'});
-    var svgs = document.querySelectorAll('svg');
-    svgs.forEach(function(s){ if (s.unpauseAnimations) { try{ s.unpauseAnimations(); }catch(e){} } });
+    /* Reinicia explícitamente el reloj SMIL del/de los SVG de la página que
+       se acaba de mostrar: si la página estaba en display:none, algunos
+       navegadores no reanudan automáticamente la animación solo con
+       unpauseAnimations(); forzar setCurrentTime(0) garantiza que siempre
+       arranque desde el principio al entrar a la sección. */
+    var activePage = document.getElementById(id);
+    var svgs = activePage ? activePage.querySelectorAll('svg') : [];
+    svgs.forEach(function(s){
+      try{
+        if (s.setCurrentTime) { s.setCurrentTime(0); }
+        if (s.unpauseAnimations) { s.unpauseAnimations(); }
+      }catch(e){}
+    });
   }
   navBtns.forEach(function(b){
     b.addEventListener('click', function(){ showPage(b.getAttribute('data-target')); });
