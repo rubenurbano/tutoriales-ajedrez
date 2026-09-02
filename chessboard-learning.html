@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chessboard by Rubén Sbarsky</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --panel-bg: #ffffff;
+            --text-main: #2c3e50;
+            --primary: #3498db;
+            --primary-hover: #2980b9;
+            --secondary: #2ecc71;
+            --secondary-hover: #27ae60;
+            --danger: #e74c3c;
+            --board-light: #f0d9b5;
+            --board-dark: #b58863;
+            --highlight-selected: rgba(255, 255, 51, 0.6);
+            --highlight-legal: rgba(0, 0, 0, 0.15);
+            --highlight-last: rgba(155, 199, 0, 0.41);
+            --highlight-check: rgba(231, 76, 60, 0.8);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* TABLERO */
+        .board-container {
+            flex: 0 0 auto;
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid #34495e;
+            position: relative;
+        }
+
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            cursor: default;
+            position: relative;
+            user-select: none;
+        }
+
+        .square.light { background-color: var(--board-light); }
+        .square.dark { background-color: var(--board-dark); }
+        
+        .square.selected { background-color: var(--highlight-selected); }
+        .square.last-move { background-color: var(--highlight-last); }
+        .square.in-check { background-color: var(--highlight-check); }
+
+        .legal-dot {
+            width: 25%;
+            height: 25%;
+            background-color: var(--highlight-legal);
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .piece {
+            cursor: pointer;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* Coordenadas */
+        .coord-rank {
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .coord-file {
+            position: absolute;
+            bottom: 1px;
+            right: 3px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .light .coord-rank, .light .coord-file { color: var(--board-dark); }
+        .dark .coord-rank, .dark .coord-file { color: var(--board-light); }
+
+        /* PANELES DE CONTROL */
+        .panel-container {
+            flex: 1 1 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 500px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background 0.2s;
+            flex: 1;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-secondary:hover { background: var(--secondary-hover); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline.active { background: var(--primary); color: white; }
+        
+        button:disabled { background: #bdc3c7; cursor: not-allowed; border-color: #bdc3c7; color: white;}
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+
+        .info-box {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .info-title {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .info-content {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .explanation {
+            font-style: italic;
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+
+        .move-history {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+
+        .move-pill {
+            padding: 3px 8px;
+            background: #e9ecef;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .move-pill.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .status-bar {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            background: #ecf0f1;
+        }
+        .status-alert {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Modal Promoción */
+        #promotion-modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            border-radius: 10px;
+        }
+        .promotion-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .promotion-pieces {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 3rem;
+        }
+        .promotion-piece {
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f0f0f0;
+        }
+        .promotion-piece:hover { background: #e0e0e0; }
+
+        @media (max-width: 600px) {
+            .square { font-size: 2rem; }
+            .container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Chessboard by Rubén Sbarsky</h1>
+        <div class="subtitle">Aprende y juega al ajedrez</div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Zona del Tablero -->
+        <div class="board-container">
+            <div id="board" class="board">
+                <!-- Se genera por JS -->
+                <div id="promotion-modal">
+                    <div class="promotion-content">
+                        <h3>Elige tu pieza</h3>
+                        <div class="promotion-pieces" id="promo-pieces-container">
+                            <!-- Generado dinámicamente según color -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="status-bar" class="status-bar">Turno de las Blancas</div>
+            
+            <!-- Controles de navegación integrados en el tablero -->
+            <div id="board-controls" class="controls" style="display: none;">
+                <button class="btn-secondary" id="btn-prev" onclick="prevMove()" disabled>◄ Anterior</button>
+                <button class="btn-secondary" id="btn-next" onclick="nextMove()">Siguiente ►</button>
+            </div>
+        </div>
+
+        <!-- Zona de Controles e Información -->
+        <div class="panel-container">
+            
+            <div class="panel">
+                <div class="mode-selector">
+                    <button id="btn-mode-free" class="btn-outline active" onclick="setMode('free')">Modo Libre</button>
+                    <button id="btn-mode-learn" class="btn-outline" onclick="setMode('learn')">Modo Aprendizaje</button>
+                </div>
+
+                <!-- Panel Modo Libre -->
+                <div id="panel-free">
+                    <p style="margin-bottom: 15px; color: #555;">Juega una partida normal siguiendo todas las reglas oficiales del ajedrez. Selecciona una pieza y haz clic en su destino.</p>
+                    <button class="btn-primary" onclick="startFreeMode()">Nueva Partida</button>
+                </div>
+
+                <!-- Panel Modo Aprendizaje -->
+                <div id="panel-learn" style="display: none;">
+                    <div class="info-title">Aprender aperturas</div>
+                    <select id="opening-select" onchange="loadOpening(this.value)">
+                        <!-- Generado por JS -->
+                    </select>
+
+                    <div class="info-box">
+                        <div class="info-title">Movimiento</div>
+                        <div class="info-content" id="learn-move-info">Inicio</div>
+                        <div class="info-title">Explicación</div>
+                        <div class="explanation" id="learn-explanation">Selecciona una apertura para comenzar a aprender.</div>
+                    </div>
+
+                    <div class="info-title">Lista de Movimientos</div>
+                    <div class="move-history" id="learn-history">
+                        <!-- Generado por JS -->
+                    </div>
+
+                    <button class="btn-primary" style="margin-top: 15px; width: 100%;" onclick="resetLearning()">Reiniciar Apertura</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        /****************************************************************
+         * 1. BASE DE DATOS DE APERTURAS
+         ****************************************************************/
+        const openings = [
+            {
+                id: 'italiana', name: '1. Apertura Italiana',
+                desc: 'Controla el centro y desarrolla piezas rápidamente hacia el flanco de rey.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Las blancas avanzan el peón de rey dos casillas, controlando el centro (d5 y f5) y abriendo líneas para la dama y el alfil.' },
+                    { m: 'e7-e5', san: '1... e5', expl: 'Las negras responden de la misma manera, luchando por el centro.' },
+                    { m: 'g1-f3', san: '2. Cf3', expl: 'El caballo blanco se desarrolla atacando el peón negro central.' },
+                    { m: 'b8-c6', san: '2... Cc6', expl: 'Las negras defienden su peón y desarrollan su caballo hacia el centro.' },
+                    { m: 'f1-c4', san: '3. Ac4', expl: 'El alfil blanco apunta a f7, la casilla más débil de las negras porque solo la defiende el rey.' },
+                    { m: 'f8-c5', san: '3... Ac5', expl: 'Variante clásica (Giuoco Piano). Las negras también desarrollan su alfil a una diagonal muy activa.' }
+                ]
+            },
+            {
+                id: 'gambito_rey', name: '2. Gambito de Rey',
+                desc: 'Una apertura agresiva que sacrifica un peón para dominar el centro.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Las blancas ocupan el centro.' },
+                    { m: 'e7-e5', san: '1... e5', expl: 'Las negras responden igual.' },
+                    { m: 'f2-f4', san: '2. f4', expl: 'Las blancas ofrecen un peón (gambito) para desviar el peón negro del centro y dominarlo con d4 más adelante.' },
+                    { m: 'e5-f4', san: '2... exf4', expl: 'Las negras aceptan el reto y capturan. El rey blanco queda algo expuesto, pero a cambio hay potencial de ataque.' },
+                    { m: 'g1-f3', san: '3. Cf3', expl: 'Desarrollo crucial que además evita que la dama negra dé un jaque peligroso en h4.' }
+                ]
+            },
+            {
+                id: 'espanola', name: '3. Apertura Española (Ruy López)',
+                desc: 'Una de las aperturas más estudiadas. Pone presión directa sobre la defensa negra.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Control central clásico.' },
+                    { m: 'e7-e5', san: '1... e5', expl: 'Respuesta central clásica.' },
+                    { m: 'g1-f3', san: '2. Cf3', expl: 'Desarrollo y ataque al peón e5.' },
+                    { m: 'b8-c6', san: '2... Cc6', expl: 'Defensa del peón.' },
+                    { m: 'f1-b5', san: '3. Ab5', expl: 'La jugada clave de la Española. Ataca al caballo que defiende el peón, creando presión a largo plazo.' },
+                    { m: 'a7-a6', san: '3... a6', expl: 'Defensa Morphy. Las negras cuestionan inmediatamente al alfil blanco.' }
+                ]
+            },
+            {
+                id: 'escocesa', name: '4. Apertura Escocesa',
+                desc: 'Apertura que abre el centro rápidamente.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Control central.' },
+                    { m: 'e7-e5', san: '1... e5', expl: 'Control central.' },
+                    { m: 'g1-f3', san: '2. Cf3', expl: 'Ataque al peón.' },
+                    { m: 'b8-c6', san: '2... Cc6', expl: 'Defensa del peón.' },
+                    { m: 'd2-d4', san: '3. d4', expl: 'Las blancas rompen el centro inmediatamente, buscando abrir líneas para sus piezas.' },
+                    { m: 'e5-d4', san: '3... exd4', expl: 'La captura es la mejor respuesta. Mantener la tensión suele ser desventajoso para las negras aquí.' },
+                    { m: 'f3-d4', san: '4. Cxd4', expl: 'Las blancas recuperan el material y centralizan su caballo poderosamente.' }
+                ]
+            },
+            {
+                id: 'cuatro_caballos', name: '5. Apertura de los Cuatro Caballos',
+                desc: 'Desarrollo sólido y simétrico, ideal para principiantes.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Ocupación del centro.' },
+                    { m: 'e7-e5', san: '1... e5', expl: 'Simetría.' },
+                    { m: 'g1-f3', san: '2. Cf3', expl: 'Primer caballo.' },
+                    { m: 'b8-c6', san: '2... Cc6', expl: 'Segundo caballo.' },
+                    { m: 'b1-c3', san: '3. Cc3', expl: 'Tercer caballo al centro.' },
+                    { m: 'g8-f6', san: '3... Cf6', expl: 'Cuarto caballo. Posición simétrica y muy sólida, con buen control central por ambos bandos.' }
+                ]
+            },
+            {
+                id: 'tres_caballos', name: '6. Apertura de los Tres Caballos',
+                desc: 'Variante que rompe la simetría antes del cuarto caballo.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Centro.' },
+                    { m: 'e7-e5', san: '1... e5', expl: 'Centro.' },
+                    { m: 'g1-f3', san: '2. Cf3', expl: 'Caballo ataca.' },
+                    { m: 'b8-c6', san: '2... Cc6', expl: 'Caballo defiende.' },
+                    { m: 'b1-c3', san: '3. Cc3', expl: 'Desarrollo sólido protegiendo e4.' },
+                    { m: 'f8-b4', san: '3... Ab4', expl: 'En lugar de simetría con Cf6, las negras clavan el caballo blanco, preparando una rápida presión.' }
+                ]
+            },
+            {
+                id: 'vienesa', name: '7. Apertura Vienesa',
+                desc: 'Las blancas desarrollan el flanco de dama primero, manteniendo opciones de atacar por el centro o el rey.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'El peón de rey toma el centro.' },
+                    { m: 'e7-e5', san: '1... e5', expl: 'Las negras responden igual.' },
+                    { m: 'b1-c3', san: '2. Cc3', expl: 'La jugada que define la Vienesa. Se defiende e4 pasivamente y se prepara f4 para atacar.' },
+                    { m: 'g8-f6', san: '2... Cf6', expl: 'Respuesta principal, desarrollando una pieza y preparando contraataque en d5.' },
+                    { m: 'f1-c4', san: '3. Ac4', expl: 'Desarrollo clásico del alfil.' }
+                ]
+            },
+            {
+                id: 'gambito_dama', name: '8. Gambito de Dama',
+                desc: 'Estrategia posicional basada en el control del centro con peones de dama.',
+                moves: [
+                    { m: 'd2-d4', san: '1. d4', expl: 'Las blancas ocupan el centro con el peón de dama. Es más cerrado que e4 porque el peón está protegido por su dama.' },
+                    { m: 'd7-d5', san: '1... d5', expl: 'Las negras impiden que el peón blanco siga avanzando.' },
+                    { m: 'c2-c4', san: '2. c4', expl: 'El Gambito de Dama. Se ofrece el peón de c4 para desviar al peón negro del centro y dominar.' }
+                ]
+            },
+            {
+                id: 'gambito_dama_rehusado', name: '9. Gambito de Dama Rehusado',
+                desc: 'Las negras priorizan la solidez central sobre el peón extra.',
+                moves: [
+                    { m: 'd2-d4', san: '1. d4', expl: 'Control central.' },
+                    { m: 'd7-d5', san: '1... d5', expl: 'Respuesta.' },
+                    { m: 'c2-c4', san: '2. c4', expl: 'Ofrecimiento del gambito.' },
+                    { m: 'e7-e6', san: '2... e6', expl: 'Las negras rehúsan el sacrificio, reforzando su centro. Si el peón "d" es capturado, recapturarán con el peón "e", manteniendo presencia central.' }
+                ]
+            },
+            {
+                id: 'gambito_dama_aceptado', name: '10. Gambito de Dama Aceptado',
+                desc: 'Las negras aceptan el reto temporalmente.',
+                moves: [
+                    { m: 'd2-d4', san: '1. d4', expl: 'Control.' },
+                    { m: 'd7-d5', san: '1... d5', expl: 'Respuesta.' },
+                    { m: 'c2-c4', san: '2. c4', expl: 'El gambito.' },
+                    { m: 'd5-c4', san: '2... dxc4', expl: 'Las negras aceptan el peón. No intentarán conservarlo, sino que aprovecharán el tiempo para desarrollarse libremente.' },
+                    { m: 'g1-f3', san: '3. Cf3', expl: 'Previene que las negras golpeen el centro con e5.' }
+                ]
+            },
+            {
+                id: 'siciliana', name: '11. Defensa Siciliana',
+                desc: 'La defensa más popular contra e4. Lucha asimétrica por el centro.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Control central.' },
+                    { m: 'c7-c5', san: '1... c5', expl: 'Defensa Siciliana. Las negras atacan el centro (d4) desde el flanco, buscando crear desequilibrio y evitar posiciones simétricas.' },
+                    { m: 'g1-f3', san: '2. Cf3', expl: 'Las blancas preparan el avance d4.' },
+                    { m: 'd7-d6', san: '2... d6', expl: 'Las negras controlan casillas centrales y preparan el desarrollo.' },
+                    { m: 'd2-d4', san: '3. d4', expl: 'Ruptura central, característica de la Siciliana Abierta.' }
+                ]
+            },
+            {
+                id: 'francesa', name: '12. Defensa Francesa',
+                desc: 'Sólida y resiliente, construyendo una fuerte cadena de peones.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Las blancas toman iniciativa.' },
+                    { m: 'e7-e6', san: '1... e6', expl: 'Defensa Francesa. Prepara el avance d5 para disputar el centro apoyado por el peón e.' },
+                    { m: 'd2-d4', san: '2. d4', expl: 'Ocupación total del centro.' },
+                    { m: 'd7-d5', san: '2... d5', expl: 'Las negras golpean el centro. La presión sobre e4 define la partida.' }
+                ]
+            },
+            {
+                id: 'carokann', name: '13. Defensa Caro-Kann',
+                desc: 'Similar a la Francesa pero permite un desarrollo más fácil del alfil de dama.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Centro blanco.' },
+                    { m: 'c7-c6', san: '1... c6', expl: 'Defensa Caro-Kann. Sólida preparación para d5. A diferencia de e6 en la Francesa, no bloquea al alfil de casillas claras.' },
+                    { m: 'd2-d4', san: '2. d4', expl: 'Las blancas toman espacio.' },
+                    { m: 'd7-d5', san: '2... d5', expl: 'Las negras retan el centro fuertemente.' }
+                ]
+            },
+            {
+                id: 'pirc', name: '14. Defensa Pirc',
+                desc: 'Apertura hipermoderna donde las negras permiten a las blancas el centro para luego atacarlo.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Ocupación.' },
+                    { m: 'd7-d6', san: '1... d6', expl: 'Preparación flexible.' },
+                    { m: 'd2-d4', san: '2. d4', expl: 'Las blancas construyen un gran centro.' },
+                    { m: 'g8-f6', san: '2... Cf6', expl: 'Ataca e4 y obliga a las blancas a defenderlo.' },
+                    { m: 'b1-c3', san: '3. Cc3', expl: 'Defensa lógica del peón.' },
+                    { m: 'g7-g6', san: '3... g6', expl: 'La marca de la Pirc. Preparando fianchetto (alfil a g7) para presionar a distancia.' }
+                ]
+            },
+            {
+                id: 'alekhine', name: '15. Defensa Alekhine',
+                desc: 'Provocativa. Invita a los peones blancos a avanzar para dejarlos sobreextendidos.',
+                moves: [
+                    { m: 'e2-e4', san: '1. e4', expl: 'Peón de rey.' },
+                    { m: 'g8-f6', san: '1... Cf6', expl: 'Defensa Alekhine. Inmediatamente ataca e4, invitando a su avance.' },
+                    { m: 'e4-e5', san: '2. e5', expl: 'Las blancas aceptan el reto y atacan el caballo ganando espacio.' },
+                    { m: 'f6-d5', san: '2... Cd5', expl: 'El caballo salta a una casilla central.' },
+                    { m: 'd2-d4', san: '3. d4', expl: 'Las blancas refuerzan y amplían su centro.' }
+                ]
+            },
+            {
+                id: 'india_rey', name: '16. Defensa India de Rey',
+                desc: 'Agresiva respuesta contra d4. Las negras preparan un asalto al rey blanco.',
+                moves: [
+                    { m: 'd2-d4', san: '1. d4', expl: 'Apertura de dama.' },
+                    { m: 'g8-f6', san: '1... Cf6', expl: 'Evita e4 inmediato.' },
+                    { m: 'c2-c4', san: '2. c4', expl: 'Toma más espacio y controla d5.' },
+                    { m: 'g7-g6', san: '2... g6', expl: 'Preparando el fianchetto.' },
+                    { m: 'b1-c3', san: '3. Cc3', expl: 'Desarrollo para apoyar el centro.' },
+                    { m: 'f8-g7', san: '3... Ag7', expl: 'El alfil domina la gran diagonal. Pronto las negras enrocarán y golpearán el centro.' }
+                ]
+            },
+            {
+                id: 'nimzoindia', name: '17. Defensa Nimzoindia',
+                desc: 'Sólida y flexible, basada en paralizar el desarrollo blanco.',
+                moves: [
+                    { m: 'd2-d4', san: '1. d4', expl: 'Peón dama.' },
+                    { m: 'g8-f6', san: '1... Cf6', expl: 'Control.' },
+                    { m: 'c2-c4', san: '2. c4', expl: 'Espacio.' },
+                    { m: 'e7-e6', san: '2... e6', expl: 'Prepara el desarrollo del alfil de rey.' },
+                    { m: 'b1-c3', san: '3. Cc3', expl: 'Desarrollo clásico.' },
+                    { m: 'f8-b4', san: '3... Ab4', expl: 'La Nimzoindia. Clava al caballo que defiende d4, controlando el centro indirectamente.' }
+                ]
+            },
+            {
+                id: 'india_dama', name: '18. Defensa India de Dama',
+                desc: 'Busca el control central mediante piezas a distancia, no con peones.',
+                moves: [
+                    { m: 'd2-d4', san: '1. d4', expl: 'Inicio de dama.' },
+                    { m: 'g8-f6', san: '1... Cf6', expl: 'Control pasivo.' },
+                    { m: 'c2-c4', san: '2. c4', expl: 'Expansión.' },
+                    { m: 'e7-e6', san: '2... e6', expl: 'Prepara salir con el alfil.' },
+                    { m: 'g1-f3', san: '3. Cf3', expl: 'Las blancas evitan la Nimzoindia (Cc3).' },
+                    { m: 'b7-b6', san: '3... b6', expl: 'India de Dama. Prepara llevar el alfil a b7 o a6 para presionar el centro desde lejos.' }
+                ]
+            },
+            {
+                id: 'grunfeld', name: '19. Defensa Grünfeld',
+                desc: 'Dinámica. Permite un centro blanco masivo para luego dinamitarlo.',
+                moves: [
+                    { m: 'd2-d4', san: '1. d4', expl: 'Centro.' },
+                    { m: 'g8-f6', san: '1... Cf6', expl: 'Control.' },
+                    { m: 'c2-c4', san: '2. c4', expl: 'Espacio.' },
+                    { m: 'g7-g6', san: '2... g6', expl: 'Preparando fianchetto.' },
+                    { m: 'b1-c3', san: '3. Cc3', expl: 'Apoyando el centro y preparando e4.' },
+                    { m: 'd7-d5', san: '3... d5', expl: 'La ruptura Grünfeld. En lugar de jugar pasivo, las negras atacan c4 de inmediato.' }
+                ]
+            },
+            {
+                id: 'eslava', name: '20. Defensa Eslava',
+                desc: 'Defensa rocosa contra el Gambito de Dama.',
+                moves: [
+                    { m: 'd2-d4', san: '1. d4', expl: 'Peón dama.' },
+                    { m: 'd7-d5', san: '1... d5', expl: 'Respuesta.' },
+                    { m: 'c2-c4', san: '2. c4', expl: 'Gambito de Dama.' },
+                    { m: 'c7-c6', san: '2... c6', expl: 'Defensa Eslava. Mantiene el centro sólido con peones y a diferencia de e6, el alfil de casillas claras negro queda libre para salir.' },
+                    { m: 'g1-f3', san: '3. Cf3', expl: 'Desarrollo lógico y control de e5.' },
+                    { m: 'g8-f6', san: '3... Cf6', expl: 'Desarrollo sólido.' }
+                ]
+            }
+        ];
+
+        /****************************************************************
+         * 2. CONSTANTES Y UTILIDADES
+         ****************************************************************/
+        // Unicode piezas
+        const PIECES = {
+            'wK': '♔', 'wQ': '♕', 'wR': '♖', 'wB': '♗', 'wN': '♘', 'wP': '♙',
+            'bK': '♚', 'bQ': '♛', 'bR': '♜', 'bB': '♝', 'bN': '♞', 'bP': '♟'
+        };
+        const pieceColors = { 'wK':'w', 'wQ':'w', 'wR':'w', 'wB':'w', 'wN':'w', 'wP':'w',
+                              'bK':'b', 'bQ':'b', 'bR':'b', 'bB':'b', 'bN':'b', 'bP':'b' };
+        
+        const FILES = ['a','b','c','d','e','f','g','h'];
+        const RANKS = ['8','7','6','5','4','3','2','1'];
+
+        // Conversión a1 -> index (0 a 63, donde 0 es a8 y 63 es h1)
+        function coordToIndex(coord) {
+            const f = coord.charCodeAt(0) - 97; // a=0
+            const r = 8 - parseInt(coord[1]);   // 8=0, 1=7
+            return r * 8 + f;
+        }
+
+        function indexToCoord(idx) {
+            const f = idx % 8;
+            const r = 8 - Math.floor(idx / 8);
+            return FILES[f] + r;
+        }
+
+        /****************************************************************
+         * 3. ESTADO DEL JUEGO
+         ****************************************************************/
+        let currentMode = 'free'; // 'free' o 'learn'
+        
+        let board = new Array(64).fill(null);
+        let turn = 'w';
+        let castling = { wK: true, wQ: true, bK: true, bQ: true };
+        let enPassantTarget = null;
+        
+        let moveHistory = [];
+        let selectedSquare = null;
+        let validMoves = []; // array of {to: idx, flag: ''}
+
+        // Variables Modo Aprendizaje
+        let learnStates = []; // Guarda instantáneas enteras
+        let learnCurrentIdx = 0;
+        let activeOpening = null;
+
+        function cloneState() {
+            return {
+                board: [...board],
+                turn,
+                castling: {...castling},
+                enPassantTarget,
+                lastMove: moveHistory.length > 0 ? moveHistory[moveHistory.length-1] : null
+            };
+        }
+
+        function restoreState(state) {
+            board = [...state.board];
+            turn = state.turn;
+            castling = {...state.castling};
+            enPassantTarget = state.enPassantTarget;
+        }
+
+        function initStartingPosition() {
+            board.fill(null);
+            const setup = [
+                'bR','bN','bB','bQ','bK','bB','bN','bR',
+                'bP','bP','bP','bP','bP','bP','bP','bP',
+                null,null,null,null,null,null,null,null,
+                null,null,null,null,null,null,null,null,
+                null,null,null,null,null,null,null,null,
+                null,null,null,null,null,null,null,null,
+                'wP','wP','wP','wP','wP','wP','wP','wP',
+                'wR','wN','wB','wQ','wK','wB','wN','wR'
+            ];
+            for(let i=0; i<64; i++) board[i] = setup[i];
+            
+            turn = 'w';
+            castling = { wK: true, wQ: true, bK: true, bQ: true };
+            enPassantTarget = null;
+            moveHistory = [];
+            selectedSquare = null;
+            validMoves = [];
+        }
+
+        /****************************************************************
+         * 4. MOTOR LÓGICO DE AJEDREZ
+         ****************************************************************/
+        
+        // Direcciones de movimiento
+        const dirs = {
+            R: [-8, 8, -1, 1],
+            B: [-9, -7, 7, 9],
+            Q: [-9, -8, -7, -1, 1, 7, 8, 9],
+            K: [-9, -8, -7, -1, 1, 7, 8, 9],
+            N: [-17, -15, -10, -6, 6, 10, 15, 17]
+        };
+
+        // Ver si un salto cambia de columna legalmente
+        function isLegalStep(startIdx, step) {
+            const startCol = startIdx % 8;
+            const endIdx = startIdx + step;
+            if (endIdx < 0 || endIdx > 63) return false;
+            const endCol = endIdx % 8;
+            const colDiff = Math.abs(startCol - endCol);
+            
+            if (Math.abs(step) === 17 || Math.abs(step) === 15 || Math.abs(step) === 10 || Math.abs(step) === 6) {
+                return colDiff === 1 || colDiff === 2; // Caballo
+            } else {
+                return colDiff <= 1; // Otros
+            }
+        }
+
+        // Generar movimientos seudo-legales (no comprueba jaque propio)
+        function getPseudoMoves(b, color, checkAttackOnly = false) {
+            let moves = []; // array of {from, to, flag}
+            
+            for(let i=0; i<64; i++) {
+                const p = b[i];
+                if (!p || pieceColors[p] !== color) continue;
+                const type = p[1];
+                
+                if (type === 'P') {
+                    const dir = color === 'w' ? -8 : 8;
+                    const startRank = color === 'w' ? 6 : 1;
+                    const row = Math.floor(i / 8);
+                    
+                    // Movimiento adelante (no para ataques)
+                    if (!checkAttackOnly) {
+                        if (!b[i + dir]) {
+                            moves.push({from: i, to: i + dir, flag: isPromotion(i+dir, color) ? 'promo' : ''});
+                            // Movimiento doble
+                            if (row === startRank && !b[i + dir * 2]) {
+                                moves.push({from: i, to: i + dir * 2, flag: 'double'});
+                            }
+                        }
+                    }
+                    
+                    // Capturas
+                    const captures = color === 'w' ? [-9, -7] : [7, 9];
+                    captures.forEach(c => {
+                        if (isLegalStep(i, c)) {
+                            const t = i + c;
+                            if (b[t] && pieceColors[b[t]] !== color) {
+                                moves.push({from: i, to: t, flag: isPromotion(t, color) ? 'promo' : ''});
+                            } else if (checkAttackOnly) {
+                                moves.push({from: i, to: t, flag: ''}); // Para calcular casillas atacadas
+                            } else if (t === enPassantTarget) {
+                                moves.push({from: i, to: t, flag: 'ep'});
+                            }
+                        }
+                    });
+                } 
+                else if (type === 'N' || type === 'K') {
+                    dirs[type].forEach(step => {
+                        if (isLegalStep(i, step)) {
+                            const t = i + step;
+                            if (!b[t] || pieceColors[b[t]] !== color) {
+                                moves.push({from: i, to: t, flag: ''});
+                            }
+                        }
+                    });
+                } 
+                else { // R, B, Q
+                    dirs[type].forEach(step => {
+                        let curr = i;
+                        while (isLegalStep(curr, step)) {
+                            curr += step;
+                            if (!b[curr]) {
+                                moves.push({from: i, to: curr, flag: ''});
+                            } else {
+                                if (pieceColors[b[curr]] !== color) {
+                                    moves.push({from: i, to: curr, flag: ''});
+                                }
+                                break; // Chocamos
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Enroques (solo si no es para calcular ataques)
+            if (!checkAttackOnly && typeCount(b, color+'K') > 0) {
+                const kIdx = b.indexOf(color+'K');
+                const oppColor = color === 'w' ? 'b' : 'w';
+                if (!isAttacked(b, kIdx, oppColor)) {
+                    if (color === 'w') {
+                        if (castling.wK && !b[61] && !b[62] && !isAttacked(b, 61, oppColor) && !isAttacked(b, 62, oppColor)) {
+                            moves.push({from: 60, to: 62, flag: 'castling'});
+                        }
+                        if (castling.wQ && !b[59] && !b[58] && !b[57] && !isAttacked(b, 59, oppColor) && !isAttacked(b, 58, oppColor)) {
+                            moves.push({from: 60, to: 58, flag: 'castling'});
+                        }
+                    } else {
+                        if (castling.bK && !b[5] && !b[6] && !isAttacked(b, 5, oppColor) && !isAttacked(b, 6, oppColor)) {
+                            moves.push({from: 4, to: 6, flag: 'castling'});
+                        }
+                        if (castling.bQ && !b[3] && !b[2] && !b[1] && !isAttacked(b, 3, oppColor) && !isAttacked(b, 2, oppColor)) {
+                            moves.push({from: 4, to: 2, flag: 'castling'});
+                        }
+                    }
+                }
+            }
+
+            return moves;
+        }
+
+        function isPromotion(idx, color) {
+            const row = Math.floor(idx / 8);
+            return (color === 'w' && row === 0) || (color === 'b' && row === 7);
+        }
+
+        function typeCount(b, pce) {
+            return b.includes(pce) ? 1 : 0;
+        }
+
+        function isAttacked(b, square, attackerColor) {
+            const attacks = getPseudoMoves(b, attackerColor, true);
+            return attacks.some(m => m.to === square);
+        }
+
+        // Generar movimientos 100% legales
+        function getLegalMoves(fromIdx) {
+            const color = turn;
+            if (!board[fromIdx] || pieceColors[board[fromIdx]] !== color) return [];
+            
+            const pseudo = getPseudoMoves(board, color, false).filter(m => m.from === fromIdx);
+            const oppColor = color === 'w' ? 'b' : 'w';
+            
+            let legal = [];
+            for (let m of pseudo) {
+                // Simular
+                let bCopy = [...board];
+                bCopy[m.to] = bCopy[m.from];
+                bCopy[m.from] = null;
+                
+                if (m.flag === 'ep') {
+                    const epCaptureIdx = color === 'w' ? m.to + 8 : m.to - 8;
+                    bCopy[epCaptureIdx] = null;
+                }
+
+                // Rey propio en jaque tras mover?
+                const kIdx = bCopy.indexOf(color+'K');
+                if (kIdx !== -1 && !isAttacked(bCopy, kIdx, oppColor)) {
+                    legal.push(m);
+                }
+            }
+            return legal;
+        }
+
+        function getAllLegalMoves(color) {
+            let all = [];
+            for(let i=0; i<64; i++) {
+                if(board[i] && pieceColors[board[i]] === color) {
+                    all.push(...getLegalMoves(i));
+                }
+            }
+            return all;
+        }
+
+        function isCheckmate(color) {
+            const opp = color === 'w' ? 'b' : 'w';
+            const kIdx = board.indexOf(color+'K');
+            if (isAttacked(board, kIdx, opp)) {
+                return getAllLegalMoves(color).length === 0;
+            }
+            return false;
+        }
+
+        function isStalemate(color) {
+            const opp = color === 'w' ? 'b' : 'w';
+            const kIdx = board.indexOf(color+'K');
+            if (!isAttacked(board, kIdx, opp)) {
+                return getAllLegalMoves(color).length === 0;
+            }
+            return false;
+        }
+
+        function executeMove(m, promotionPiece = 'Q') {
+            const pce = board[m.from];
+            const color = pieceColors[pce];
+            
+            // Historial visual
+            moveHistory.push(m);
+            
+            board[m.to] = board[m.from];
+            board[m.from] = null;
+
+            // En passant
+            if (m.flag === 'ep') {
+                const epIdx = color === 'w' ? m.to + 8 : m.to - 8;
+                board[epIdx] = null;
+            }
+            
+            // Promoción
+            if (m.flag === 'promo') {
+                board[m.to] = color + promotionPiece;
+            }
+
+            // Enroque
+            if (m.flag === 'castling') {
+                if (m.to === 62) { board[61] = board[63]; board[63] = null; } // wK
+                else if (m.to === 58) { board[59] = board[56]; board[56] = null; } // wQ
+                else if (m.to === 6) { board[5] = board[7]; board[7] = null; } // bK
+                else if (m.to === 2) { board[3] = board[0]; board[0] = null; } // bQ
+            }
+
+            // Actualizar variables de estado
+            enPassantTarget = null;
+            if (m.flag === 'double') {
+                enPassantTarget = color === 'w' ? m.from - 8 : m.from + 8;
+            }
+
+            if (pce === 'wK') { castling.wK = false; castling.wQ = false; }
+            if (pce === 'bK') { castling.bK = false; castling.bQ = false; }
+            if (pce === 'wR' && m.from === 63) castling.wK = false;
+            if (pce === 'wR' && m.from === 56) castling.wQ = false;
+            if (pce === 'bR' && m.from === 7) castling.bK = false;
+            if (pce === 'bR' && m.from === 0) castling.bQ = false;
+
+            turn = turn === 'w' ? 'b' : 'w';
+        }
+
+        /****************************************************************
+         * 5. RENDERIZADO UI
+         ****************************************************************/
+        function renderBoard() {
+            const boardDiv = document.getElementById('board');
+            boardDiv.innerHTML = '';
+            
+            // Modal de promoción
+            const promoHtml = `
+                <div id="promotion-modal" style="display:none;">
+                    <div class="promotion-content">
+                        <h3>Elige tu pieza</h3>
+                        <div class="promotion-pieces" id="promo-pieces-container"></div>
+                    </div>
+                </div>`;
+            boardDiv.innerHTML += promoHtml;
+
+            const lastM = moveHistory.length > 0 ? moveHistory[moveHistory.length-1] : null;
+            const oppColor = turn === 'w' ? 'b' : 'w';
+            const kIdx = board.indexOf(turn+'K');
+            const inCheck = kIdx !== -1 && isAttacked(board, kIdx, oppColor);
+
+            for (let i = 0; i < 64; i++) {
+                const row = Math.floor(i / 8);
+                const col = i % 8;
+                const isLight = (row + col) % 2 === 0;
+                
+                const sq = document.createElement('div');
+                sq.className = `square ${isLight ? 'light' : 'dark'}`;
+                sq.dataset.index = i;
+                
+                if (selectedSquare === i) sq.classList.add('selected');
+                if (lastM && (lastM.from === i || lastM.to === i)) sq.classList.add('last-move');
+                if (inCheck && i === kIdx) sq.classList.add('in-check');
+
+                // Pieza
+                if (board[i]) {
+                    const pce = document.createElement('div');
+                    pce.className = 'piece';
+                    pce.textContent = PIECES[board[i]];
+                    pce.style.color = pieceColors[board[i]] === 'w' ? '#fff' : '#000';
+                    sq.appendChild(pce);
+                }
+
+                // Dot de movimiento legal
+                if (validMoves.some(m => m.to === i)) {
+                    const dot = document.createElement('div');
+                    dot.className = 'legal-dot';
+                    sq.appendChild(dot);
+                }
+
+                // Coordenadas
+                if (col === 0) {
+                    const rankLbl = document.createElement('div');
+                    rankLbl.className = 'coord-rank';
+                    rankLbl.textContent = RANKS[row];
+                    sq.appendChild(rankLbl);
+                }
+                if (row === 7) {
+                    const fileLbl = document.createElement('div');
+                    fileLbl.className = 'coord-file';
+                    fileLbl.textContent = FILES[col];
+                    sq.appendChild(fileLbl);
+                }
+
+                // Click listener
+                sq.onclick = () => onSquareClick(i);
+                
+                boardDiv.appendChild(sq);
+            }
+
+            updateStatus(inCheck);
+        }
+
+        function updateStatus(inCheck) {
+            const sb = document.getElementById('status-bar');
+            sb.classList.remove('status-alert');
+            
+            if (isCheckmate(turn)) {
+                sb.textContent = `¡Jaque Mate! Ganan las ${turn === 'w' ? 'negras' : 'blancas'}.`;
+                sb.classList.add('status-alert');
+            } else if (isStalemate(turn)) {
+                sb.textContent = "Tablas por ahogado.";
+            } else if (inCheck) {
+                sb.textContent = `¡Jaque! Turno de las ${turn === 'w' ? 'blancas' : 'negras'}.`;
+                sb.classList.add('status-alert');
+            } else {
+                sb.textContent = `Turno de las ${turn === 'w' ? 'blancas' : 'negras'}`;
+            }
+        }
+
+        /****************************************************************
+         * 6. INTERACCIÓN MODO LIBRE
+         ****************************************************************/
+        let pendingPromoMove = null;
+
+        function onSquareClick(idx) {
+            if (currentMode !== 'free') return; // En modo aprendizaje no se clica el tablero
+            if (isCheckmate(turn) || isStalemate(turn)) return;
+
+            // Hay pieza seleccionada y clic en destino válido
+            const move = validMoves.find(m => m.to === idx);
+            if (selectedSquare !== null && move) {
+                if (move.flag === 'promo') {
+                    showPromotionModal(move);
+                } else {
+                    executeMove(move);
+                    selectedSquare = null;
+                    validMoves = [];
+                    renderBoard();
+                }
+            } else {
+                // Seleccionar pieza propia
+                if (board[idx] && pieceColors[board[idx]] === turn) {
+                    selectedSquare = idx;
+                    validMoves = getLegalMoves(idx);
+                } else {
+                    selectedSquare = null;
+                    validMoves = [];
+                }
+                renderBoard();
+            }
+        }
+
+        function showPromotionModal(move) {
+            pendingPromoMove = move;
+            const modal = document.getElementById('promotion-modal');
+            const container = document.getElementById('promo-pieces-container');
+            container.innerHTML = '';
+            
+            const piecesToPromo = ['Q', 'R', 'B', 'N'];
+            piecesToPromo.forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'promotion-piece';
+                el.textContent = PIECES[turn + p];
+                el.style.color = turn === 'w' ? '#fff' : '#000';
+                el.onclick = (e) => {
+                    e.stopPropagation();
+                    executeMove(pendingPromoMove, p);
+                    pendingPromoMove = null;
+                    selectedSquare = null;
+                    validMoves = [];
+                    modal.style.display = 'none';
+                    renderBoard();
+                };
+                container.appendChild(el);
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        function startFreeMode() {
+            initStartingPosition();
+            renderBoard();
+        }
+
+        /****************************************************************
+         * 7. MODO APRENDIZAJE
+         ****************************************************************/
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-mode-free').classList.toggle('active', mode === 'free');
+            document.getElementById('btn-mode-learn').classList.toggle('active', mode === 'learn');
+            document.getElementById('panel-free').style.display = mode === 'free' ? 'block' : 'none';
+            document.getElementById('panel-learn').style.display = mode === 'learn' ? 'block' : 'none';
+            
+            // Mostrar u ocultar controles junto al tablero
+            document.getElementById('board-controls').style.display = mode === 'learn' ? 'flex' : 'none';
+            
+            if (mode === 'free') {
+                startFreeMode();
+            } else {
+                populateOpenings();
+                loadOpening(openings[0].id);
+            }
+        }
+
+        function populateOpenings() {
+            const sel = document.getElementById('opening-select');
+            if (sel.options.length > 0) return;
+            openings.forEach(op => {
+                const opt = document.createElement('option');
+                opt.value = op.id;
+                opt.textContent = op.name;
+                sel.appendChild(opt);
+            });
+        }
+
+        function loadOpening(id) {
+            activeOpening = openings.find(o => o.id === id);
+            
+            // Generar los estados para navegar rápido
+            initStartingPosition();
+            learnStates = [cloneState()];
+            
+            for (let mv of activeOpening.moves) {
+                // Parse 'e2-e4'
+                const [fStr, tStr] = mv.m.split('-');
+                const fromIdx = coordToIndex(fStr);
+                const toIdx = coordToIndex(tStr);
+                
+                // Necesitamos el flag para ejecutar, lo inferimos rápido:
+                const pce = board[fromIdx];
+                let flag = '';
+                if (pce[1] === 'P') {
+                    if (Math.abs(fromIdx - toIdx) === 16) flag = 'double';
+                    if (Math.abs(fromIdx % 8 - toIdx % 8) > 0 && !board[toIdx]) flag = 'ep';
+                    if (isPromotion(toIdx, pieceColors[pce])) flag = 'promo';
+                }
+                if (pce[1] === 'K' && Math.abs(fromIdx - toIdx) === 2) flag = 'castling';
+
+                executeMove({from: fromIdx, to: toIdx, flag}, 'Q');
+                learnStates.push(cloneState());
+            }
+
+            learnCurrentIdx = 0;
+            applyLearningState();
+            renderHistoryUI();
+        }
+
+        function applyLearningState() {
+            restoreState(learnStates[learnCurrentIdx]);
+            selectedSquare = null;
+            validMoves = [];
+            renderBoard();
+            
+            // UI
+            document.getElementById('btn-prev').disabled = learnCurrentIdx === 0;
+            document.getElementById('btn-next').disabled = learnCurrentIdx === activeOpening.moves.length;
+            
+            if (learnCurrentIdx === 0) {
+                document.getElementById('learn-move-info').textContent = "Posición inicial";
+                document.getElementById('learn-explanation').textContent = activeOpening.desc;
+            } else {
+                const moveData = activeOpening.moves[learnCurrentIdx - 1];
+                document.getElementById('learn-move-info').textContent = `${moveData.san} (${learnCurrentIdx} de ${activeOpening.moves.length})`;
+                document.getElementById('learn-explanation').textContent = moveData.expl;
+            }
+
+            // Actualizar pills
+            const pills = document.querySelectorAll('.move-pill');
+            pills.forEach((p, idx) => {
+                if (idx === learnCurrentIdx - 1) p.classList.add('active');
+                else p.classList.remove('active');
+            });
+        }
+
+        function nextMove() {
+            if (learnCurrentIdx < learnStates.length - 1) {
+                learnCurrentIdx++;
+                applyLearningState();
+            }
+        }
+
+        function prevMove() {
+            if (learnCurrentIdx > 0) {
+                learnCurrentIdx--;
+                applyLearningState();
+            }
+        }
+
+        function resetLearning() {
+            learnCurrentIdx = 0;
+            applyLearningState();
+        }
+
+        function renderHistoryUI() {
+            const histDiv = document.getElementById('learn-history');
+            histDiv.innerHTML = '';
+            
+            activeOpening.moves.forEach((m, idx) => {
+                const p = document.createElement('div');
+                p.className = 'move-pill';
+                p.textContent = m.san;
+                p.onclick = () => {
+                    learnCurrentIdx = idx + 1;
+                    applyLearningState();
+                };
+                histDiv.appendChild(p);
+            });
+        }
+
+        // INIT
+        window.onload = () => {
+            startFreeMode();
+        };
+
+    </script>
+</body>
+</html>
