@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Arte del Cálculo y la Partida de las Ideas Ocultas — Tutorial Interactivo de Ajedrez</title>
+<meta name="description" content="Tutorial interactivo de ajedrez: el sistema de cálculo estratégico, la detección de señales y el sacrificio Ab6 con doble variante (Desviación y Bloqueo).">
+<style>
+/* ============ BASE ============ */
+:root{
+  --bg:#0a0e1a;
+  --card:#0f172a;
+  --card2:#101c36;
+  --border:#1e3a5f;
+  --accent:#00d4ff;
+  --green:#22c55e;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --purple:#a855f7;
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+  --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+  line-height:1.6;
+  padding-top:70px;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{line-height:1.25;font-weight:700;}
+button{font-family:inherit;}
+
+/* ============ PROGRESS BAR ============ */
+#progressBar{
+  position:fixed;top:0;left:0;height:4px;width:0%;
+  background:linear-gradient(90deg,var(--accent),var(--purple));
+  z-index:400;box-shadow:0 0 10px rgba(0,212,255,.7);
+  transition:width .08s linear;
+}
+
+/* ============ NAVBAR ============ */
+#topbar{
+  position:fixed;top:4px;left:0;right:0;z-index:300;
+  background:rgba(10,14,26,.92);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;
+}
+.brand{
+  display:flex;align-items:center;gap:8px;
+  font-weight:800;font-size:14px;letter-spacing:.6px;
+  color:var(--accent);white-space:nowrap;cursor:pointer;
+  background:none;border:none;flex-shrink:0;
+}
+.brand .knight{font-size:22px;}
+#mainNav{
+  display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;padding:2px;flex:1;
+}
+#mainNav::-webkit-scrollbar{display:none;}
+.nav-link{
+  background:transparent;border:1px solid transparent;color:var(--muted);
+  padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;
+  font-size:14px;font-weight:600;letter-spacing:.4px;
+  transition:color .2s, background .2s, border-color .2s;
+}
+.nav-link:hover{color:var(--text);background:rgba(0,212,255,.08);}
+.nav-link.active{
+  color:var(--accent);border-color:var(--border);
+  background:rgba(0,212,255,.1);
+  box-shadow:inset 0 -2px 0 var(--accent);
+}
+.nav-link.credits-btn{
+  border-color:var(--purple);color:#d8b4fe;
+}
+.nav-link.credits-btn.active{background:rgba(168,85,247,.15);box-shadow:inset 0 -2px 0 var(--purple);}
+
+/* ============ LAYOUT / SPA ============ */
+main{max-width:1100px;margin:0 auto;padding:10px 16px 60px;}
+.page{display:none;}
+.page.active{display:block;animation:pageIn .45s ease;}
+@keyframes pageIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+
+/* ============ COVER (HOME) ============ */
+.cover-wrap{margin:-6px 0 22px;}
+.cover-svg{
+  width:100%;display:block;border-radius:var(--radius);
+  border:1px solid var(--border);
+  box-shadow:0 0 40px rgba(0,212,255,.08), 0 10px 30px rgba(0,0,0,.5);
+  background:var(--bg);
+}
+.home-head{ text-align:center; margin-top:6px;}
+.badge{
+  display:inline-block;font-size:12px;font-weight:700;letter-spacing:2.5px;
+  color:var(--accent);border:1px solid var(--border);
+  background:rgba(0,212,255,.07);padding:7px 16px;border-radius:999px;
+  text-transform:uppercase;margin-bottom:16px;
+}
+.home-head h1{
+  font-size:clamp(30px,5.5vw,54px);
+  background:linear-gradient(90deg,#e2e8f0,var(--accent));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.home-head .subtitle{
+  font-size:clamp(16px,2.5vw,22px);color:var(--purple);
+  font-weight:600;margin-top:4px;letter-spacing:.5px;
+}
+.home-desc{
+  max-width:760px;margin:18px auto 0;color:var(--muted);font-size:16px;
+}
+.quote-box{
+  max-width:760px;margin:26px auto 0;padding:18px 22px;
+  border-left:4px solid var(--accent);border-radius:0 10px 10px 0;
+  background:var(--card);font-size:17px;font-style:italic;color:#cbd5e1;
+}
+.quote-box .author{display:block;margin-top:8px;font-style:normal;font-size:13px;color:var(--muted);letter-spacing:1px;}
+.metrics{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;margin-top:26px;
+}
+.metric{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:14px;text-align:center;
+}
+.metric .mv{font-size:22px;font-weight:800;color:var(--accent);}
+.metric .ml{font-size:12px;color:var(--muted);letter-spacing:.6px;margin-top:2px;}
+.dt-chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px;}
+.chip{
+  border:1px solid var(--border);background:var(--card);
+  padding:8px 16px;border-radius:999px;font-size:13px;color:#cbd5e1;
+}
+.chip b{color:var(--accent);}
+
+/* ============ SECTIONS ============ */
+.sec-header{
+  display:flex;align-items:center;gap:14px;margin:26px 0 20px;flex-wrap:wrap;
+}
+.sec-icon{
+  width:52px;height:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:26px;background:var(--card);border:1px solid var(--border);border-radius:12px;
+  box-shadow:0 0 18px rgba(0,212,255,.12);
+}
+.sec-header h2{font-size:clamp(22px,3.4vw,30px);}
+.sec-header .sec-tag{font-size:11px;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:4px;}
+.lead{color:#cbd5e1;font-size:16.5px;margin-bottom:18px;}
+p.mut{color:var(--muted);}
+
+/* ============ CARDS / GRIDS ============ */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px;
+}
+.card h3{font-size:18px;margin-bottom:8px;color:var(--text);}
+.card h3 .hl-accent{color:var(--accent);}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px;}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:16px;}
+.piece-card{border-top:3px solid var(--accent);transition:transform .2s, box-shadow .2s;}
+.piece-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,212,255,.12);}
+.piece-card .glyph{font-size:40px;line-height:1;}
+.piece-card.pq{border-top-color:var(--accent);}
+.piece-card.pb{border-top-color:var(--purple);}
+.piece-card.pr{border-top-color:var(--green);}
+.piece-card .sq-tag{
+  display:inline-block;margin-top:6px;font-size:12px;font-weight:700;
+  color:var(--accent);background:rgba(0,212,255,.08);
+  border:1px solid var(--border);border-radius:6px;padding:2px 10px;letter-spacing:1px;
+}
+.kicker{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;}
+
+/* signal card */
+.signal-card{
+  border:1px solid rgba(239,68,68,.5);
+  background:linear-gradient(135deg, rgba(239,68,68,.10), var(--card) 60%);
+}
+.signal-card .sig-badge{
+  display:inline-block;background:rgba(239,68,68,.15);color:#fca5a5;
+  border:1px solid rgba(239,68,68,.5);padding:4px 12px;border-radius:999px;
+  font-size:11px;font-weight:800;letter-spacing:2px;margin-bottom:10px;
+  animation:pulseBadge 2.4s ease-in-out infinite;
+}
+@keyframes pulseBadge{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35);}50%{box-shadow:0 0 0 8px rgba(239,68,68,0);}}
+
+/* compare */
+.vs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px;}
+.vs-card ul{list-style:none;margin-top:10px;}
+.vs-card li{padding:7px 0 7px 26px;position:relative;color:#cbd5e1;font-size:14.5px;border-bottom:1px dashed rgba(30,58,95,.6);}
+.vs-card li:last-child{border-bottom:none;}
+.vs-card.good{border-left:4px solid var(--green);}
+.vs-card.bad{border-left:4px solid var(--red);}
+.vs-card.good li::before{content:'✔';position:absolute;left:0;color:var(--green);}
+.vs-card.bad li::before{content:'✘';position:absolute;left:0;color:var(--red);}
+
+/* chips row */
+.chip-row{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 18px;}
+.sig-chip{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card2);border:1px solid var(--border);border-radius:999px;
+  padding:8px 16px;font-size:14px;color:#cbd5e1;
+}
+.sig-chip .dot{width:9px;height:9px;border-radius:50%;}
+
+/* ============ CALLOUTS ============ */
+.callout{
+  border-radius:10px;padding:16px 18px;margin:16px 0;
+  border:1px solid;display:flex;gap:14px;align-items:flex-start;
+}
+.callout .co-icon{font-size:22px;line-height:1.2;}
+.callout .co-title{font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.callout p{font-size:14.5px;color:#cbd5e1;}
+.callout.info{border-color:rgba(0,212,255,.45);background:rgba(0,212,255,.07);}
+.callout.info .co-title{color:var(--accent);}
+.callout.example{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.07);}
+.callout.example .co-title{color:var(--green);}
+.callout.warn{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.07);}
+.callout.warn .co-title{color:var(--amber);}
+.callout.error{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.08);}
+.callout.error .co-title{color:var(--red);}
+
+/* ============ TABLE ============ */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:16px 0;}
+table{width:100%;border-collapse:collapse;min-width:480px;background:var(--card);}
+th{
+  background:var(--card2);color:var(--accent);text-align:left;
+  font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  padding:12px 16px;border-bottom:1px solid var(--border);
+}
+td{padding:13px 16px;border-bottom:1px solid rgba(30,58,95,.5);font-size:14.5px;color:#cbd5e1;vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+td b{color:var(--text);}
+.tdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;}
+
+/* priority chain */
+.prio-chain{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 4px;}
+.prio{
+  padding:9px 16px;border-radius:8px;font-weight:800;font-size:13.5px;letter-spacing:1px;
+  border:1px solid;
+}
+.prio.p1{color:#fecaca;border-color:rgba(239,68,68,.6);background:rgba(239,68,68,.12);}
+.prio.p2{color:#fde68a;border-color:rgba(245,158,11,.6);background:rgba(245,158,11,.12);}
+.prio.p3{color:#bae6fd;border-color:rgba(0,212,255,.6);background:rgba(0,212,255,.10);}
+.prio.p4{color:#d9f99d;border-color:rgba(34,197,94,.6);background:rgba(34,197,94,.10);}
+.prio-arrow{color:var(--muted);font-size:18px;}
+
+/* ============ VARIANT TABS ============ */
+.vtabs{display:flex;gap:10px;margin:20px 0 14px;flex-wrap:wrap;}
+.vtab{
+  flex:1;min-width:220px;padding:13px 16px;border-radius:10px;cursor:pointer;
+  background:var(--card);border:1px solid var(--border);color:var(--muted);
+  font-weight:800;font-size:14px;letter-spacing:1px;transition:all .2s;
+}
+.vtab small{display:block;font-weight:600;font-size:12px;letter-spacing:0;margin-top:3px;}
+.vtab:hover{color:var(--text);}
+.vtab.active-a{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.08);box-shadow:0 0 16px rgba(0,212,255,.15);}
+.vtab.active-b{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.08);box-shadow:0 0 16px rgba(34,197,94,.15);}
+.vpanel{display:none;}
+.vpanel.show{display:block;animation:pageIn .35s ease;}
+
+/* ============ CHESSBOARD ============ */
+.board-frame{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;margin-bottom:26px;
+}
+.board-title{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.board-title h3{font-size:17px;}
+.board-title .bt-badge{
+  font-size:11px;font-weight:800;letter-spacing:2px;padding:4px 12px;border-radius:999px;
+}
+.bt-badge.ba{background:rgba(0,212,255,.12);color:var(--accent);border:1px solid rgba(0,212,255,.5);}
+.bt-badge.bb{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.5);}
+.bt-badge.bs{background:rgba(168,85,247,.12);color:#d8b4fe;border:1px solid rgba(168,85,247,.5);}
+.board-layout{display:grid;gap:20px;}
+@media(min-width:980px){.board-layout{grid-template-columns:minmax(300px,500px) 1fr;align-items:start;}}
+.board-area{display:flex;gap:6px;max-width:500px;margin:0 auto;width:100%;}
+.rank-coords{
+  display:grid;grid-template-rows:repeat(8,1fr);width:20px;flex-shrink:0;
+}
+.rank-coords span{display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);font-weight:700;}
+.board-col{flex:1;min-width:0;}
+.board-grid{
+  display:grid;grid-template-columns:repeat(8,1fr);
+  aspect-ratio:1/1;width:100%;
+  border:2px solid var(--border);border-radius:8px;overflow:hidden;
+  box-shadow:0 8px 26px rgba(0,0,0,.45);
+}
+.sq{display:flex;align-items:center;justify-content:center;position:relative;user-select:none;}
+.sq.light{background:#93a7c4;}
+.sq.dark{background:#4a5d80;}
+.sq span{font-size:clamp(19px,5.4vw,38px);line-height:1;}
+.piece-w{color:#f8fafc;text-shadow:0 1px 2px rgba(0,0,0,.85), 0 0 7px rgba(0,212,255,.28);}
+.piece-b{color:#101827;text-shadow:0 0 3px rgba(226,232,240,.45);}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--accent), inset 0 0 16px rgba(0,212,255,.55);}
+.sq.chk{box-shadow:inset 0 0 0 3px var(--red), inset 0 0 18px rgba(239,68,68,.65);animation:chkPulse 1.2s ease-in-out infinite;}
+@keyframes chkPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.35);}}
+.file-coords{display:grid;grid-template-columns:repeat(8,1fr);margin-left:26px;margin-top:4px;}
+.file-coords span{text-align:center;font-size:12px;color:var(--muted);font-weight:700;}
+
+/* stepper controls */
+.board-controls{margin-top:16px;}
+.ctrl-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.ctrl-btn{
+  flex:1;min-width:96px;padding:12px 10px;border-radius:9px;cursor:pointer;
+  background:var(--card2);border:1px solid var(--border);color:var(--text);
+  font-weight:700;font-size:14px;transition:all .18s;min-height:46px;
+}
+.ctrl-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);box-shadow:0 0 12px rgba(0,212,255,.2);}
+.ctrl-btn:disabled{opacity:.35;cursor:not-allowed;}
+.ctrl-btn.primary{background:rgba(0,212,255,.12);border-color:rgba(0,212,255,.5);color:var(--accent);}
+.step-slider{width:100%;margin:16px 0 6px;accent-color:var(--accent);height:26px;cursor:pointer;}
+.step-indicators{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:13px;color:var(--muted);}
+.step-indicators b{color:var(--accent);}
+
+/* move panel */
+.move-panel{
+  background:var(--card2);border:1px solid var(--border);border-radius:10px;
+  padding:18px;min-height:220px;
+}
+.mp-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.mp-badge{
+  font-size:11px;font-weight:800;letter-spacing:1.6px;padding:5px 12px;border-radius:999px;
+}
+.mp-badge.w{background:rgba(226,232,240,.12);color:#f1f5f9;border:1px solid rgba(226,232,240,.4);}
+.mp-badge.b{background:rgba(148,163,184,.14);color:#cbd5e1;border:1px solid rgba(148,163,184,.45);}
+.mp-badge.tag{background:rgba(168,85,247,.12);color:#d8b4fe;border:1px solid rgba(168,85,247,.45);}
+.mp-move{font-size:19px;font-weight:800;margin:6px 0 4px;}
+.mp-move b{color:var(--accent);}
+.mp-capt{font-size:13px;color:#fca5a5;margin-bottom:4px;}
+.mp-san{
+  display:inline-block;font-size:12.5px;color:var(--muted);
+  border:1px dashed var(--border);border-radius:6px;padding:3px 10px;margin:6px 0 12px;
+}
+.mp-block{margin-top:12px;padding-left:12px;border-left:3px solid var(--border);}
+.mp-block h5{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.mp-block.que{border-left-color:var(--accent);}
+.mp-block.por{border-left-color:var(--purple);}
+.mp-block p{font-size:14.5px;color:#cbd5e1;}
+.mp-flag{
+  margin-top:14px;padding:10px 14px;border-radius:8px;font-weight:800;letter-spacing:1.5px;font-size:14px;text-align:center;
+}
+.mp-flag.check{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.55);color:var(--amber);}
+.mp-flag.mate{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.6);color:#fca5a5;animation:chkPulse 1.4s infinite;}
+.mp-flag.diag{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.5);color:var(--accent);font-size:12px;letter-spacing:2px;}
+.board-caption{font-size:13px;color:var(--muted);margin-top:10px;text-align:center;}
+
+/* ============ QUIZ ============ */
+.quiz-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;}
+.quiz-item h4{font-size:15.5px;margin-bottom:10px;}
+.q-toggle{
+  background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.5);color:#d8b4fe;
+  padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;min-height:42px;
+}
+.q-answer{
+  display:none;margin-top:12px;padding:12px 14px;border-radius:8px;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.4);
+  color:#bbf7d0;font-size:14.5px;
+}
+.q-answer.open{display:block;animation:pageIn .3s ease;}
+
+/* ============ CREDITS ============ */
+.credit-card{
+  text-align:center;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:34px 22px;margin-top:22px;
+}
+.credit-card .c-name{font-size:clamp(26px,4vw,36px);color:var(--accent);font-weight:800;margin:6px 0;}
+.credit-card .c-role{color:var(--muted);letter-spacing:2px;font-size:12px;text-transform:uppercase;}
+.credit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:22px auto;max-width:560px;}
+.credit-grid .metric .mv{font-size:17px;}
+.latin{
+  font-style:italic;font-size:18px;color:#d8b4fe;margin-top:18px;letter-spacing:.5px;
+}
+
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--border);background:var(--card);margin-top:30px;}
+.foot-inner{max-width:1100px;margin:0 auto;padding:26px 16px;text-align:center;}
+.foot-inner p{font-size:14px;color:var(--muted);margin:4px 0;}
+.foot-inner .lat{font-style:italic;color:#d8b4fe;margin-top:10px;}
+
+/* ============ TO TOP ============ */
+#toTop{
+  position:fixed;right:18px;bottom:18px;z-index:350;
+  width:50px;height:50px;border-radius:50%;cursor:pointer;
+  background:var(--card);border:1px solid var(--accent);color:var(--accent);
+  font-size:20px;display:none;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px rgba(0,212,255,.3);transition:transform .2s;
+}
+#toTop:hover{transform:translateY(-3px);}
+#toTop.visible{display:flex;}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:640px){
+  body{padding-top:64px;}
+  #topbar{padding:6px 8px;gap:6px;}
+  .brand span{display:none;}
+  .brand .knight{font-size:26px;}
+  main{padding:8px 10px 50px;}
+  .card{padding:16px;}
+  .file-coords{margin-left:24px;}
+  .rank-coords{width:18px;}
+}
+/* ============ REDUCED MOTION ============ */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation-duration:.001s !important;animation-iteration-count:1 !important;transition-duration:.001s !important;}
+}
+</style>
+</head>
+<body>
+
+<div id="progressBar"></div>
+
+<!-- ==================== NAVBAR ==================== -->
+<header id="topbar">
+  <button class="brand" data-page="inicio" aria-label="Ir al inicio">
+    <span class="knight">♞</span><span>EL ARTE DEL CÁLCULO</span>
+  </button>
+  <nav id="mainNav" aria-label="Navegación principal">
+    <button class="nav-link active" data-page="inicio">Inicio</button>
+    <button class="nav-link" data-page="sistema">Sistema de Cálculo</button>
+    <button class="nav-link" data-page="posicion">La Posición</button>
+    <button class="nav-link" data-page="jugada">La Jugada Ab6</button>
+    <button class="nav-link" data-page="pilares">Los 4 Pilares</button>
+    <button class="nav-link" data-page="conclusion">Conclusión</button>
+    <button class="nav-link credits-btn" data-page="creditos">★ Créditos</button>
+  </nav>
+</header>
+
+<!-- ==================== SVG COVER SYMBOL (reutilizado en HOME y CRÉDITOS) ==================== -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<symbol id="coverArt" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="cvBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0e1a"/>
+      <stop offset="0.5" stop-color="#0d1830"/>
+      <stop offset="1" stop-color="#0a0e1a"/>
+    </linearGradient>
+    <linearGradient id="cvAcc" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00d4ff"/>
+      <stop offset="1" stop-color="#a855f7"/>
+    </linearGradient>
+    <radialGradient id="cvGlowR" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ef4444" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#ef4444" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="cvGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="cvGrid" width="46" height="46" patternUnits="userSpaceOnUse">
+      <path d="M46 0H0V46" fill="none" stroke="#1e3a5f" stroke-width="1" opacity="0.35"/>
+    </pattern>
+    <pattern id="cvBoard" x="940" y="146" width="152" height="152" patternUnits="userSpaceOnUse">
+      <rect width="152" height="152" fill="#182a4d"/>
+      <rect width="76" height="76" fill="#32477a"/>
+      <rect x="76" y="76" width="76" height="76" fill="#32477a"/>
+    </pattern>
+  </defs>
+
+  <!-- fondo -->
+  <rect width="1600" height="900" fill="url(#cvBg)"/>
+  <rect width="1600" height="900" fill="url(#cvGrid)"/>
+  <rect x="10" y="10" width="1580" height="880" rx="18" fill="none" stroke="#1e3a5f" stroke-width="2"/>
+
+  <!-- esquinas HUD -->
+  <g stroke="#00d4ff" stroke-width="3" fill="none" opacity="0.65">
+    <path d="M30 78 V40 Q30 30 40 30 H78"/>
+    <path d="M1522 30 H1560 Q1570 30 1570 40 V78"/>
+    <path d="M30 822 V860 Q30 870 40 870 H78"/>
+    <path d="M1570 822 V860 Q1570 870 1560 870 H1522"/>
+  </g>
+
+  <!-- textos HUD fijos -->
+  <text x="60" y="62" font-size="17" font-weight="700" letter-spacing="4" fill="#7dd3fc" opacity="0.9">SISTEMA DE CÁLCULO ESTRATÉGICO</text>
+  <text x="60" y="86" font-size="13" letter-spacing="2" fill="#94a3b8">SEÑAL → CÁLCULO → REMATE</text>
+  <g>
+    <circle cx="1398" cy="56" r="6" fill="#22c55e">
+      <animate attributeName="opacity" values="1;0.15;1" dur="1.4s" repeatCount="indefinite"/>
+    </circle>
+    <text x="1540" y="62" text-anchor="end" font-size="14" font-weight="700" letter-spacing="3" fill="#94a3b8">CÁLCULO ACTIVO</text>
+  </g>
+
+  <!-- ===== Pipeline del algoritmo (persistente) ===== -->
+  <g>
+    <text x="100" y="150" font-size="20" font-weight="800" letter-spacing="4" fill="#7dd3fc">ALGORITMO MENTAL</text>
+    <line x1="134" y1="244" x2="134" y2="518" stroke="#1e3a5f" stroke-width="2" stroke-dasharray="4 6"/>
+    <!-- nodo 1 -->
+    <g>
+      <rect x="100" y="170" width="430" height="74" rx="12" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle cx="134" cy="207" r="7" fill="#ef4444">
+        <animate attributeName="r" values="7;10;7" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="162" y="201" font-size="19" font-weight="800" fill="#e2e8f0">SEÑAL TÁCTICA</text>
+      <text x="162" y="226" font-size="13.5" fill="#94a3b8">Rey negro débil · sin casillas de escape</text>
+    </g>
+    <!-- nodo 2 -->
+    <g>
+      <rect x="100" y="286" width="430" height="74" rx="12" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle cx="134" cy="323" r="7" fill="#f59e0b">
+        <animate attributeName="r" values="7;10;7" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+      </circle>
+      <text x="162" y="317" font-size="19" font-weight="800" fill="#e2e8f0">RANKING DE FUERZA</text>
+      <text x="162" y="342" font-size="13" fill="#94a3b8">Jaque › Amenaza de mate › Captura › Amenaza</text>
+    </g>
+    <!-- nodo 3 -->
+    <g>
+      <rect x="100" y="402" width="430" height="74" rx="12" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle cx="134" cy="439" r="7" fill="#00d4ff">
+        <animate attributeName="r" values="7;10;7" dur="2s" begin="1s" repeatCount="indefinite"/>
+      </circle>
+      <text x="162" y="433" font-size="19" font-weight="800" fill="#e2e8f0">JUGADAS CANDIDATAS</text>
+      <text x="162" y="458" font-size="13.5" fill="#94a3b8">El sacrificio de ruptura 1. Ab6!!</text>
+    </g>
+    <!-- nodo 4 -->
+    <g>
+      <rect x="100" y="518" width="430" height="74" rx="12" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle cx="134" cy="555" r="7" fill="#22c55e">
+        <animate attributeName="r" values="7;10;7" dur="2s" begin="1.5s" repeatCount="indefinite"/>
+      </circle>
+      <text x="162" y="549" font-size="19" font-weight="800" fill="#e2e8f0">REMATE</text>
+      <text x="162" y="574" font-size="13.5" fill="#94a3b8">2. Dd8# — Jaque mate</text>
+    </g>
+    <!-- punto viajero -->
+    <circle r="5" fill="#00d4ff" filter="url(#cvGlow)">
+      <animateMotion path="M134 250 L134 518" dur="3.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="3.2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="100" y="636" font-size="13" letter-spacing="3" fill="#94a3b8" opacity="0.85">CÁLCULO METÓDICO = PRECISIÓN QUIRÚRGICA</text>
+  </g>
+
+  <!-- ===== ESCENA DEL TABLERO (con fundido de bucle) ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.04;0.87;0.95;1" dur="12s" repeatCount="indefinite"/>
+
+    <!-- marco y tablero -->
+    <rect x="930" y="136" width="628" height="628" rx="16" fill="none" stroke="#1e3a5f" stroke-width="2"/>
+    <rect x="940" y="146" width="608" height="608" fill="url(#cvBoard)"/>
+    <path d="M1016 146V754M1092 146V754M1168 146V754M1244 146V754M1320 146V754M1396 146V754M1472 146V754M940 222H1548M940 298H1548M940 374H1548M940 450H1548M940 526H1548M940 602H1548M940 678H1548" stroke="#0a0e1a" stroke-width="1.5" opacity="0.45"/>
+    <!-- línea de escaneo -->
+    <rect x="940" width="608" height="2" fill="#00d4ff" opacity="0.16">
+      <animate attributeName="y" values="146;752;146" dur="7s" repeatCount="indefinite"/>
+    </rect>
+    <text x="1244" y="782" text-anchor="middle" font-size="13" letter-spacing="3" fill="#94a3b8">POSICIÓN DE ESTUDIO — JUEGAN BLANCAS</text>
+
+    <!-- rutas previstas -->
+    <line x1="1130" y1="412" x2="1054" y2="336" stroke="#00d4ff" stroke-width="2" stroke-dasharray="6 6" opacity="0.5">
+      <animate attributeName="stroke-dashoffset" values="0;-48" dur="1.8s" repeatCount="indefinite"/>
+    </line>
+    <line x1="1510" y1="184" x2="1206" y2="184" stroke="url(#cvAcc)" stroke-width="2" stroke-dasharray="6 6" opacity="0.5">
+      <animate attributeName="stroke-dashoffset" values="0;-48" dur="1.8s" repeatCount="indefinite"/>
+    </line>
+
+    <!-- señal: rey débil -->
+    <circle cx="1282" cy="260" r="40" fill="url(#cvGlowR)">
+      <animate attributeName="opacity" values="0.3;0.75;0.3" dur="2.6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1282" cy="260" r="26" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 6">
+      <animateTransform attributeName="transform" type="rotate" values="0 1282 260;360 1282 260" dur="9s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1282" cy="260" fill="none" stroke="#ef4444" stroke-width="2.5">
+      <animate attributeName="r" values="20;54" dur="2.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.9;0" dur="2.2s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- piezas estáticas -->
+    <g text-anchor="middle" dominant-baseline="central">
+      <text x="1282" y="260" font-size="52" fill="#050a14" stroke="#94a3b8" stroke-width="1">♚</text>
+      <text x="978" y="412" font-size="52" fill="#050a14" stroke="#94a3b8" stroke-width="1">♛</text>
+      <text x="978" y="260" font-size="46" fill="#050a14" stroke="#94a3b8" stroke-width="1">♟</text>
+      <text x="1206" y="336" font-size="46" fill="#050a14" stroke="#94a3b8" stroke-width="1">♟</text>
+      <text x="1358" y="260" font-size="46" fill="#050a14" stroke="#94a3b8" stroke-width="1">♟</text>
+      <text x="1434" y="260" font-size="46" fill="#050a14" stroke="#94a3b8" stroke-width="1">♟</text>
+      <text x="1282" y="336" font-size="48" fill="#e8f2ff" filter="url(#cvGlow)">♘</text>
+      <text x="1282" y="716" font-size="44" fill="#e8f2ff">♖</text>
+    </g>
+
+    <!-- alfil que se sacrifica c5 -> b6 -->
+    <g>
+      <text x="1130" y="412" font-size="52" fill="#e8f2ff" text-anchor="middle" dominant-baseline="central" filter="url(#cvGlow)">♗</text>
+      <animateMotion path="M0 0 L-76 -76" dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.14;0.26;1"/>
+    </g>
+    <!-- dama blanca h8 -> d8 -->
+    <g>
+      <text x="1510" y="184" font-size="56" fill="#e8f2ff" text-anchor="middle" dominant-baseline="central" filter="url(#cvGlow)">♕</text>
+      <animateMotion path="M0 0 L-304 0" dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.46;0.58;1"/>
+    </g>
+
+    <!-- explosión en b6 -->
+    <circle cx="1054" cy="336" fill="none" stroke="#00d4ff" stroke-width="3">
+      <animate attributeName="r" values="0;0;56;0" keyTimes="0;0.26;0.33;0.4" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.95;0" keyTimes="0;0.26;0.3;0.4" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <!-- ondas de choque en d8 -->
+    <circle cx="1206" cy="184" fill="none" stroke="#22c55e" stroke-width="3">
+      <animate attributeName="r" values="0;0;72;0" keyTimes="0;0.58;0.66;0.74" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.95;0" keyTimes="0;0.58;0.61;0.74" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1206" cy="184" fill="none" stroke="#ef4444" stroke-width="2.5">
+      <animate attributeName="r" values="0;0;50;0" keyTimes="0;0.61;0.69;0.77" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.9;0" keyTimes="0;0.61;0.64;0.77" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <!-- flash sobre el rey -->
+    <circle cx="1282" cy="260" fill="none" stroke="#ef4444" stroke-width="3">
+      <animate attributeName="r" values="0;0;48;0" keyTimes="0;0.60;0.68;0.76" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.95;0" keyTimes="0;0.6;0.63;0.76" dur="12s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- etiquetas -->
+    <text x="1054" y="296" text-anchor="middle" font-size="30" font-weight="800" fill="#00d4ff" filter="url(#cvGlow)">1. ¡Ab6!
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.27;0.30;0.88;0.95" dur="12s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- chips de respuesta -->
+    <g>
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.34;0.38;0.88;0.95" dur="12s" repeatCount="indefinite"/>
+      <rect x="950" y="806" width="286" height="52" rx="10" fill="#0f172a" stroke="#00d4ff" stroke-width="1.5"/>
+      <text x="1093" y="838" text-anchor="middle" font-size="18" font-weight="700" fill="#7dd3fc">Dxb6 · DESVIACIÓN</text>
+      <rect x="1262" y="806" width="286" height="52" rx="10" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="1405" y="838" text-anchor="middle" font-size="18" font-weight="700" fill="#86efac">axb6 · BLOQUEO</text>
+    </g>
+
+    <!-- Dd8# -->
+    <g transform="translate(1206,118)">
+      <text x="0" y="0" text-anchor="middle" font-size="46" font-weight="800" fill="#22c55e" filter="url(#cvGlow)">2. Dd8#</text>
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.59;0.62;0.88;0.95" dur="12s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="scale" additive="sum" values="0.6;0.6;1.18;1;1" keyTimes="0;0.59;0.64;0.68;1" dur="12s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- banner JAQUE MATE -->
+    <g>
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.66;0.70;0.88;0.95" dur="12s" repeatCount="indefinite"/>
+      <text x="320" y="800" text-anchor="middle" font-size="48" font-weight="800" letter-spacing="8" fill="#ef4444" filter="url(#cvGlow)">JAQUE MATE</text>
+      <text x="320" y="838" text-anchor="middle" font-size="15" fill="#94a3b8">El bloqueo del peón en b6 corta la defensa de la dama negra</text>
+    </g>
+  </g>
+
+  <text x="1540" y="872" text-anchor="end" font-size="12" letter-spacing="2" fill="#94a3b8" opacity="0.6">EL ARTE DEL CÁLCULO · ESTUDIO TÁCTICO</text>
+</symbol>
+</svg>
+
+<main>
+
+<!-- ==================== HOME ==================== -->
+<section class="page active" id="inicio">
+  <div class="cover-wrap">
+    <svg class="cover-svg" viewBox="0 0 1600 900" role="img" aria-label="Portada animada: el sacrificio Ab6 y el mate Dd8#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <use href="#coverArt" xlink:href="#coverArt"></use>
+    </svg>
+  </div>
+
+  <div class="home-head">
+    <span class="badge">Tutorial de Ajedrez · Cálculo Táctico de Alto Rendimiento</span>
+    <h1>El Arte del Cálculo</h1>
+    <div class="subtitle">y la Partida de las Ideas Ocultas</div>
+    <p class="home-desc">
+      Una clase magistral sobre el cálculo estratégico: cuándo activar el algoritmo mental,
+      cómo leer las señales de la posición y cómo ejecutar el sacrificio <b style="color:var(--accent)">Ab6</b>
+      que transforma una defensa aparentemente sólida en un jaque mate inevitable.
+    </p>
+
+    <blockquote class="quote-box">
+      “Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.”
+      <span class="author">— CITA DEL TUTORIAL</span>
+    </blockquote>
+
+    <div class="metrics">
+      <div class="metric"><div class="mv">5</div><div class="ml">SECCIONES DIDÁCTICAS</div></div>
+      <div class="metric"><div class="mv">2</div><div class="ml">TABLEROS INTERACTIVOS</div></div>
+      <div class="metric"><div class="mv">2</div><div class="ml">VARIANTES: DESVIACIÓN Y BLOQUEO</div></div>
+      <div class="metric"><div class="mv">4</div><div class="ml">PILARES DEL CÁLCULO</div></div>
+      <div class="metric"><div class="mv">1</div><div class="ml">JUGADA CLAVE: 1. Ab6!!</div></div>
+    </div>
+
+    <div class="dt-chips">
+      <span class="chip">📅 FECHA: <b>03/09/2026</b></span>
+      <span class="chip">🕐 HORA: <b>16:45:22</b></span>
+      <span class="chip">👨‍💻 Créditos: <b>Rubén Sbarsky</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECCIÓN 1: SISTEMA ==================== -->
+<section class="page" id="sistema">
+  <div class="sec-header">
+    <div class="sec-icon">🧠</div>
+    <div>
+      <span class="sec-tag">Capítulo 1</span>
+      <h2>Introducción al Sistema de Cálculo Estratégico</h2>
+    </div>
+  </div>
+
+  <p class="lead">
+    En el ajedrez de alto rendimiento, el cálculo no es una labor que deba ejecutarse de forma
+    impulsiva o constante. Como su entrenador, la primera lección es clara:
+    <b>calcular consume una energía cognitiva preciosa</b>; hacerlo sin un objetivo claro es la
+    receta perfecta para el error decisivo.
+  </p>
+
+  <div class="callout warn">
+    <div class="co-icon">⚠️</div>
+    <div>
+      <div class="co-title">Advertencia</div>
+      <p>Calcular sin un objetivo claro divaga entre múltiples opciones, agota al jugador y conduce al error decisivo. La energía cognitiva es un recurso limitado: adminístrela.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <span class="kicker">El secreto de los maestros</span>
+      <h3>El <span class="hl-accent">algoritmo mental</span></h3>
+      <p class="mut">
+        El secreto de los maestros no reside en ver veinte jugadas hacia adelante en cada turno,
+        sino en activar un <b>“algoritmo mental” específico</b>. Este algoritmo funciona como un
+        filtro: <b>solo se enciende cuando percibimos una “señal” táctica</b>.
+      </p>
+    </div>
+    <div class="card">
+      <span class="kicker">Las señales que activan el cálculo</span>
+      <h3>Detectores del filtro</h3>
+      <p class="mut">El algoritmo se dispara al percibir una de estas señales tácticas:</p>
+      <div class="chip-row">
+        <span class="sig-chip"><span class="dot" style="background:var(--red)"></span>Debilidad estructural</span>
+        <span class="sig-chip"><span class="dot" style="background:var(--amber)"></span>Pieza desprotegida</span>
+        <span class="sig-chip"><span class="dot" style="background:var(--accent)"></span>Patrón de mate</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:10px 0 12px;">Cálculo metódico vs. cálculo desordenado</h3>
+  <p class="mut" style="margin-bottom:12px;">
+    La diferencia entre ambos es la <b>precisión quirúrgica</b>. El cálculo metódico utiliza un
+    sistema de prioridades para ahorrar energía y aumentar la exactitud.
+  </p>
+  <div class="vs-grid">
+    <div class="card vs-card good">
+      <h3>✔ Cálculo metódico</h3>
+      <ul>
+        <li>Precisión quirúrgica.</li>
+        <li>Utiliza un sistema de prioridades.</li>
+        <li>Ahorra energía cognitiva.</li>
+        <li>Aumenta la exactitud del cálculo.</li>
+        <li>Solo se activa cuando la posición “habla”.</li>
+      </ul>
+    </div>
+    <div class="card vs-card bad">
+      <h3>✘ Cálculo desordenado</h3>
+      <ul>
+        <li>Se ejecuta de forma impulsiva o constante.</li>
+        <li>Divaga entre múltiples opciones.</li>
+        <li>Agota al jugador.</li>
+        <li>Reduce la precisión.</li>
+        <li>Es la receta perfecta para el error decisivo.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="co-icon">ℹ️</div>
+    <div>
+      <div class="co-title">Info</div>
+      <p>Antes de mover, debemos aprender a identificar si la posición <b>“nos está hablando”</b>. Si no hay señales, no hay necesidad de profundizar en variantes complejas.</p>
+    </div>
+  </div>
+
+  <p class="mut">
+    En los próximos capítulos analizaremos una posición real donde este sistema nos permite
+    encontrar una solución que parece <b>invisible para el ojo no entrenado</b>.
+  </p>
+</section>
+
+<!-- ==================== SECCIÓN 2: POSICIÓN ==================== -->
+<section class="page" id="posicion">
+  <div class="sec-header">
+    <div class="sec-icon">🔍</div>
+    <div>
+      <span class="sec-tag">Capítulo 2</span>
+      <h2>Análisis de la Posición y Detección de Señales</h2>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="kicker">El primer paso del algoritmo</span>
+    <h3>El <span class="hl-accent">diagnóstico</span></h3>
+    <p class="mut">
+      Antes de tocar una pieza, debemos <b>leer los defectos en la posición del oponente</b>.
+      En este estudio, la señal es absoluta.
+    </p>
+  </div>
+
+  <div class="card signal-card">
+    <span class="sig-badge">🚨 SEÑAL ABSOLUTA DETECTADA</span>
+    <h3>La extrema debilidad del rey negro</h3>
+    <p style="color:#e2e8f0;">
+      A pesar del enroque, el monarca <b>carece de casillas de escape</b> y su red defensiva
+      está <b>a punto de colapsar</b>.
+    </p>
+  </div>
+
+  <h3 style="margin:16px 0 6px;">Las piezas activas en puestos estratégicos clave</h3>
+  <p class="mut" style="margin-bottom:14px;">Para que el ataque sea efectivo, debemos coordinar nuestras piezas activas:</p>
+  <div class="grid-3">
+    <div class="card piece-card pq">
+      <div class="glyph">♕</div>
+      <h3>Dama blanca</h3>
+      <span class="sq-tag">CASILLA h8</span>
+      <p class="mut" style="margin-top:8px;">Nuestra pieza más poderosa, lista para infiltrarse en la octava fila o lanzar jaques laterales.</p>
+    </div>
+    <div class="card piece-card pb">
+      <div class="glyph">♗</div>
+      <h3>Alfil blanco</h3>
+      <span class="sq-tag">CASILLA c5</span>
+      <p class="mut" style="margin-top:8px;">Situado en una diagonal agresiva, listo para maniobras de desviación o sacrificio.</p>
+    </div>
+    <div class="card piece-card pr">
+      <div class="glyph">♖</div>
+      <h3>Torre blanca</h3>
+      <span class="sq-tag">COLUMNA CENTRAL</span>
+      <p class="mut" style="margin-top:8px;">Controla la columna central y ejerce una presión latente sobre la retaguardia enemiga.</p>
+    </div>
+  </div>
+
+  <div class="board-frame">
+    <div class="board-title">
+      <span class="bt-badge bs">POSICIÓN DE ESTUDIO</span>
+      <h3>El tablero bajo la lupa del diagnóstico</h3>
+    </div>
+    <div id="boardStudy"></div>
+    <p class="board-caption">El resplandor rojo marca la señal: el rey negro, vulnerable y sin casillas de escape. Las piezas blancas ya ocupan sus puestos de combate.</p>
+  </div>
+
+  <div class="callout info">
+    <div class="co-icon">🎯</div>
+    <div>
+      <div class="co-title">Siguiente paso</div>
+      <p>Con la señal detectada y nuestras piezas en posición de combate, el siguiente paso es <b>ejecutar la secuencia de jugadas candidatas</b> basándonos en la fuerza de las mismas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECCIÓN 3: LA JUGADA ==================== -->
+<section class="page" id="jugada">
+  <div class="sec-header">
+    <div class="sec-icon">♗</div>
+    <div>
+      <span class="sec-tag">Capítulo 3</span>
+      <h2>Reconstrucción de la Partida: Movimiento a Movimiento</h2>
+    </div>
+  </div>
+
+  <p class="lead">
+    El cálculo se nutre de las <b>“jugadas forzadas”</b>. Un jaque, una captura o una amenaza
+    directa limitan las opciones del rival, permitiéndonos predecir su respuesta con total exactitud.
+  </p>
+
+  <div class="card" style="border-color:rgba(0,212,255,.5);">
+    <span class="kicker">La ruptura de “locura absoluta”</span>
+    <h3>El sacrificio del Alfil en b6 — <span class="hl-accent">1. Ab6!!</span></h3>
+    <p class="mut">
+      Para resolver esta posición utilizaremos un movimiento de ruptura extraordinario.
+      Analizaremos las <b>dos variantes principales</b> que demuestran por qué este orden de
+      jugadas es <b>el único que conduce a la victoria</b>.
+    </p>
+    <div class="prio-chain" aria-label="Orden de fuerzas">
+      <span class="prio p1">JAQUE</span><span class="prio-arrow">➜</span>
+      <span class="prio p2">AMENAZA DE MATE</span><span class="prio-arrow">➜</span>
+      <span class="prio p3">CAPTURA</span><span class="prio-arrow">➜</span>
+      <span class="prio p4">AMENAZA</span>
+    </div>
+    <p class="mut" style="font-size:13px;margin-top:8px;">Ranking de fuerza: las jugadas forzadas se calculan siempre en este orden de prioridad.</p>
+  </div>
+
+  <div class="vtabs" role="tablist">
+    <button class="vtab active-a" id="tabA" data-variant="varA">VARIANTE A — DESVIACIÓN<small>1… Dxb6 · 2. Dh4+</small></button>
+    <button class="vtab" id="tabB" data-variant="varB">VARIANTE B — BLOQUEO<small>1… axb6 · 2. Dd8#</small></button>
+  </div>
+
+  <div class="vpanel show" id="varA">
+    <div class="card" style="border-left:4px solid var(--accent);">
+      <h3>El Motivo de la <span class="hl-accent">Desviación</span></h3>
+      <p class="mut">
+        Si las negras capturan el alfil con la dama, la defensora queda <b>desviada</b>:
+        abandona su puesto defensivo y, al alejarse, deja de proteger el flanco de rey.
+        Eso permite que la dama blanca ejecute un jaque decisivo en la cuarta fila
+        (<b>Dh4+</b>), iniciando una secuencia que termina en mate o ganancia masiva de material.
+      </p>
+    </div>
+    <div class="board-frame">
+      <div class="board-title">
+        <span class="bt-badge ba">VARIANTE A · PASO A PASO</span>
+        <h3>Tablero interactivo — La Desviación</h3>
+      </div>
+      <div id="boardA"></div>
+      <p class="board-caption">Use los controles para avanzar o retroceder movimiento a movimiento.</p>
+    </div>
+  </div>
+
+  <div class="vpanel" id="varB">
+    <div class="card" style="border-left:4px solid var(--green);">
+      <h3>El Motivo del <span style="color:var(--green)">Bloqueo</span></h3>
+      <p class="mut">
+        Si las negras capturan con el peón, se produce la respuesta más sutil… y la más
+        autodestructiva: el propio peón <b>bloquea la línea de defensa de su dama</b>, que
+        protegía la octava fila. Al quedar obstruida la comunicación de la dama negra con la
+        casilla d8, el mate se vuelve inevitable.
+      </p>
+    </div>
+    <div class="board-frame">
+      <div class="board-title">
+        <span class="bt-badge bb">VARIANTE B · PASO A PASO</span>
+        <h3>Tablero interactivo — El Bloqueo</h3>
+      </div>
+      <div id="boardB"></div>
+      <p class="board-caption">Use los controles para avanzar o retroceder movimiento a movimiento.</p>
+    </div>
+  </div>
+
+  <noscript><p style="color:var(--amber)">Active JavaScript para utilizar los tableros interactivos.</p></noscript>
+</section>
+
+<!-- ==================== SECCIÓN 4: PILARES ==================== -->
+<section class="page" id="pilares">
+  <div class="sec-header">
+    <div class="sec-icon">🏛️</div>
+    <div>
+      <span class="sec-tag">Capítulo 4 · El “So What?”</span>
+      <h2>Lecciones del Maestro para el Principiante</h2>
+    </div>
+  </div>
+
+  <p class="lead">
+    Este remate <b>no es fruto de la suerte</b>, sino de un sistema lógico de descarte.
+    La jugada <b>Ab6</b> funciona porque <b>prepara la geometría del tablero</b>.
+  </p>
+
+  <div class="callout error">
+    <div class="co-icon">⛔</div>
+    <div>
+      <div class="co-title">Error</div>
+      <p>Intentar el mate directamente con <b>Dd8</b> fallaría de inmediato porque <b>la dama negra lo capturaría</b>. Por ello, necesitamos primero <b>desviar o bloquear</b> a esa defensa.</p>
+    </div>
+  </div>
+
+  <div class="callout example">
+    <div class="co-icon">💡</div>
+    <div>
+      <div class="co-title">Ejemplo clave</div>
+      <p>La técnica del <b>“Cambio de orden de jugadas”</b> fue la clave aquí: al jugar el Alfil a b6 antes que cualquier otra acción, forzamos al rival a elegir entre <b>dos venenos</b>, ambos conducentes al mate.</p>
+    </div>
+  </div>
+
+  <h3 style="margin:20px 0 6px;">Los 4 pilares del cálculo</h3>
+  <p class="mut" style="margin-bottom:10px;">Para integrar este nivel de juego, usted debe dominar los 4 pilares del cálculo:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Concepto</th><th>Impacto en la Partida</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tdot" style="background:var(--red)"></span><b>Señales</b></td>
+          <td>Activan el cálculo solo cuando hay debilidades, ahorrando energía vital.</td>
+        </tr>
+        <tr>
+          <td><span class="tdot" style="background:var(--amber)"></span><b>Ranking de Fuerza</b></td>
+          <td>Algoritmo de prioridades: <b>Jaque &gt; Amenaza de Mate &gt; Captura &gt; Amenaza</b>.</td>
+        </tr>
+        <tr>
+          <td><span class="tdot" style="background:var(--accent)"></span><b>Jugadas Candidatas</b></td>
+          <td>Filtra los movimientos más prometedores para no perderse en variantes inútiles.</td>
+        </tr>
+        <tr>
+          <td><span class="tdot" style="background:var(--purple)"></span><b>Puntos de Parada</b></td>
+          <td>Pausa mental para reevaluar el “árbol de variantes” y evitar errores acumulativos.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <span class="kicker">Pilar 1 · Señales</span>
+      <h3>🚨 El interruptor del cálculo</h3>
+      <p class="mut">Las señales (debilidad estructural, pieza desprotegida, patrón de mate) son el único motivo legítimo para encender el algoritmo y gastar energía cognitiva.</p>
+    </div>
+    <div class="card">
+      <span class="kicker">Pilar 2 · Ranking de Fuerza</span>
+      <h3>⚖️ El orden de examen</h3>
+      <p class="mut">Examine siempre las jugadas en este orden:</p>
+      <div class="prio-chain">
+        <span class="prio p1">JAQUE</span><span class="prio-arrow">›</span>
+        <span class="prio p2">MATE</span><span class="prio-arrow">›</span>
+        <span class="prio p3">CAPTURA</span><span class="prio-arrow">›</span>
+        <span class="prio p4">AMENAZA</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="kicker">Pilar 3 · Jugadas Candidatas</span>
+      <h3>🧭 El filtro selectivo</h3>
+      <p class="mut">Solo los movimientos más prometedores merecen cálculo profundo. El resto se descarta sin gastar energía: así se evita uno perderse en variantes inútiles.</p>
+    </div>
+    <div class="card">
+      <span class="kicker">Pilar 4 · Puntos de Parada</span>
+      <h3>⏸️ La pausa de verificación</h3>
+      <p class="mut">Deténgase, respire y reevalúe el “árbol de variantes” antes de mover. Es la defensa definitiva contra los errores acumulativos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECCIÓN 5: CONCLUSIÓN ==================== -->
+<section class="page" id="conclusion">
+  <div class="sec-header">
+    <div class="sec-icon">🎓</div>
+    <div>
+      <span class="sec-tag">Capítulo 5</span>
+      <h2>Conclusión y Resumen de la Idea General</h2>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:rgba(0,212,255,.5);">
+    <span class="kicker">La lección fundamental</span>
+    <h3>Precisión corta &gt; cálculo largo</h3>
+    <p style="color:#e2e8f0;font-size:16.5px;">
+      La precisión en <b>secuencias cortas (de 2 o 3 jugadas)</b> es mucho más valiosa que el
+      cálculo de variantes largas y confusas.
+    </p>
+  </div>
+
+  <blockquote class="quote-box" style="margin-left:0;margin-right:0;border-left-color:var(--purple);">
+    “Como su entrenador, le aseguro que la maestría no consiste en predecir el futuro lejano,
+    sino en ver con claridad meridiana las debilidades presentes bajo sus ojos.”
+    <span class="author">— EL MAESTRO</span>
+  </blockquote>
+
+  <div class="card" style="margin-top:18px;border-color:rgba(34,197,94,.5);">
+    <span class="kicker">📌 Su tarea para seguir progresando</span>
+    <h3>Entrenar la identificación de señales</h3>
+    <p class="mut">
+      Su tarea es entrenar la identificación de señales mediante el <b>estudio de los patrones
+      de mate</b>. Cuantos más patrones conozca, más rápido su mente detectará las señales de
+      vulnerabilidad en el rey rival, permitiéndole activar su algoritmo de cálculo en el
+      momento preciso para <b>reclamar la victoria</b>.
+    </p>
+  </div>
+
+  <div class="card">
+    <span class="kicker">Resumen ejecutivo</span>
+    <h3>Ideas que debe llevarse</h3>
+    <ul style="list-style:none;margin-top:8px;">
+      <li style="padding:7px 0 7px 28px;position:relative;color:#cbd5e1;"><span style="position:absolute;left:0;color:var(--accent);">➤</span>El cálculo se activa solo ante señales tácticas: debilidad estructural, pieza desprotegida o patrón de mate.</li>
+      <li style="padding:7px 0 7px 28px;position:relative;color:#cbd5e1;"><span style="position:absolute;left:0;color:var(--accent);">➤</span>La señal de este estudio: la extrema debilidad del rey negro, sin casillas de escape.</li>
+      <li style="padding:7px 0 7px 28px;position:relative;color:#cbd5e1;"><span style="position:absolute;left:0;color:var(--accent);">➤</span>La jugada clave: el sacrificio Ab6, una ruptura que prepara la geometría del tablero.</li>
+      <li style="padding:7px 0 7px 28px;position:relative;color:#cbd5e1;"><span style="position:absolute;left:0;color:var(--accent);">➤</span>Dos venenos: Dxb6 conduce a la desviación y Dh4+; axb6 conduce al bloqueo y Dd8#.</li>
+      <li style="padding:7px 0 7px 28px;position:relative;color:#cbd5e1;"><span style="position:absolute;left:0;color:var(--accent);">➤</span>El mate directo con Dd8 falla: primero hay que desviar o bloquear a la dama defensora.</li>
+    </ul>
+  </div>
+
+  <h3 style="margin:22px 0 10px;">🧪 Autoevaluación rápida</h3>
+  <div class="quiz-item">
+    <h4>1. ¿Cuándo debe activarse el cálculo profundo?</h4>
+    <button class="q-toggle" aria-expanded="false">Ver respuesta</button>
+    <div class="q-answer">Solo cuando percibimos una señal táctica: una debilidad estructural, una pieza desprotegida o un patrón de mate. Si no hay señales, no hay necesidad de profundizar en variantes complejas.</div>
+  </div>
+  <div class="quiz-item">
+    <h4>2. ¿Cuál es el ranking de fuerza de las jugadas candidatas?</h4>
+    <button class="q-toggle" aria-expanded="false">Ver respuesta</button>
+    <div class="q-answer">Jaque &gt; Amenaza de Mate &gt; Captura &gt; Amenaza. Las jugadas forzadas limitan las opciones del rival y permiten predecir su respuesta con exactitud.</div>
+  </div>
+  <div class="quiz-item">
+    <h4>3. ¿Por qué fracasa el mate directo con Dd8?</h4>
+    <button class="q-toggle" aria-expanded="false">Ver respuesta</button>
+    <div class="q-answer">Porque la dama negra lo capturaría. Por eso primero hay que desviarla (1… Dxb6 → 2. Dh4+) o provocar que su propia línea defensiva quede bloqueada (1… axb6 → 2. Dd8#).</div>
+  </div>
+</section>
+
+<!-- ==================== CRÉDITOS ==================== -->
+<section class="page" id="creditos">
+  <div class="sec-header">
+    <div class="sec-icon">★</div>
+    <div>
+      <span class="sec-tag">Sección final</span>
+      <h2>Créditos</h2>
+    </div>
+  </div>
+
+  <div class="cover-wrap">
+    <svg class="cover-svg" viewBox="0 0 1600 900" role="img" aria-label="Portada animada: el sacrificio Ab6 y el mate Dd8#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <use href="#coverArt" xlink:href="#coverArt"></use>
+    </svg>
+  </div>
+
+  <div class="credit-card">
+    <span class="kicker">Tutorial de Ajedrez</span>
+    <h3 style="font-size:clamp(19px,3vw,26px);">El Arte del Cálculo y la Partida de las Ideas Ocultas</h3>
+    <div class="c-name">Rubén Sbarsky</div>
+    <div class="c-role">Autor · Diseño didáctico</div>
+
+    <div class="credit-grid">
+      <div class="metric"><div class="mv">03/09/2026</div><div class="ml">📅 FECHA</div></div>
+      <div class="metric"><div class="mv">16:45:22</div><div class="ml">🕐 HORA</div></div>
+    </div>
+
+    <p class="mut" style="max-width:640px;margin:0 auto;">
+      📚 Material exclusivamente educativo y de divulgación: un recorrido interactivo por el
+      sistema de cálculo estratégico, la detección de señales tácticas y el sacrificio Ab6
+      con sus dos motivos, la Desviación y el Bloqueo.
+    </p>
+
+    <p class="latin">Fiat iustitia, ruat caelum.</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="foot-inner">
+    <p>📚 Tutorial solo con fines Educativos y Divulgación</p>
+    <p>👨‍💻 Créditos: Rubén Sbarsky</p>
+    <p>📅 FECHA: 03/09/2026</p>
+    <p>Hora: 16:45:22</p>
+    <p class="lat">Fiat iustitia, ruat caelum.</p>
+  </div>
+</footer>
+
+<button id="toTop" aria-label="Volver arriba">↑</button>
+
+<script>
+/* ================================================================
+   EL ARTE DEL CÁLCULO — Motor SPA + Tableros interactivos
+   ================================================================ */
+
+/* ---------- utilidades ---------- */
+var GLYPHS = {K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+var FILES_STR = 'abcdefgh';
+
+/* ---------- posición inicial del estudio ----------
+   Reconstrucción didáctica coherente con el documento:
+   La dama negra defiende la octava fila a través de la casilla b6;
+   el sacrificio Ab6 le ofrece dos capturas, ambas venenosas. */
+var STUDY_START = {
+  a2:'P', b2:'P', c6:'P', f2:'P', g2:'P', h2:'P',
+  g1:'K', e1:'R', e6:'N', c5:'B', h8:'Q',
+  e7:'k', a5:'q', a7:'p', b7:'p', d6:'p', f7:'p', g7:'p'
+};
+
+/* ---------- movimientos (cada paso = movimiento de un solo bando) ---------- */
+var MV_AB6 = {
+  from:'c5', to:'b6', color:'BLANCAS', pieceName:'Alfil blanco', san:'Ab6',
+  what:'El alfil blanco se desplaza de c5 a b6 y se entrega en sacrificio: queda al alcance tanto del peón negro de a7 como de la dama negra.',
+  why:'Es la ruptura de “locura absoluta” que prepara la geometría del tablero. Obliga al rival a elegir entre dos venenos y es el único orden de jugadas que conduce a la victoria: el mate directo con Dd8 fallaría porque la dama negra lo capturaría.'
+};
+
+var STEPS_A = [
+  MV_AB6,
+  { from:'a5', to:'b6', color:'NEGRAS', pieceName:'Dama negra', san:'Dxb6', captured:'Alfil blanco',
+    what:'La dama negra captura el alfil en b6 y abandona su puesto defensivo.',
+    why:'Motivo de la DESVIACIÓN: al alejarse, la dama deja de proteger el flanco de rey. Con la defensora fuera de posición, la dama blanca queda lista para ejecutar el jaque decisivo en la cuarta fila.' },
+  { from:'h8', to:'h4', color:'BLANCAS', pieceName:'Dama blanca', san:'Dh4+', check:true, checkSq:'e7',
+    what:'La dama blanca desciende de h8 a h4 por la columna h y lanza el jaque Dh4+.',
+    why:'Jaque decisivo: con la dama negra desviada en b6, se inicia una secuencia que termina en mate o en ganancia masiva de material.' }
+];
+
+var STEPS_B = [
+  MV_AB6,
+  { from:'a7', to:'b6', color:'NEGRAS', pieceName:'Peón negro', san:'axb6', captured:'Alfil blanco',
+    what:'El peón negro de a7 captura el alfil en b6. Es la respuesta más sutil.',
+    why:'Motivo del BLOQUEO: al situarse en b6, el peón obstruye accidentalmente la línea defensiva de su propia dama, que protegía la octava fila. La comunicación de la dama negra con la casilla d8 queda cortada.' },
+  { from:'h8', to:'d8', color:'BLANCAS', pieceName:'Dama blanca', san:'Dd8#', check:true, mate:true, checkSq:'e7',
+    what:'La dama blanca penetra de h8 a d8. El rey negro está en jaque y no existe respuesta posible.',
+    why:'Remate final: gracias al bloqueo creado por el propio peón negro en b6, la dama negra ya no puede capturar en d8. El rey no puede huir (carece de casillas de escape), no puede capturar a la dama ni bloquear el jaque: JAQUE MATE.' }
+];
+
+var DIAG = {
+  title:'POSICIÓN INICIAL — DIAGNÓSTICO',
+  text:'Antes de tocar una pieza, lea los defectos de la posición rival. Aquí la señal es absoluta: la extrema debilidad del rey negro. A pesar del enroque, el monarca carece de casillas de escape y su red defensiva está a punto de colapsar.',
+  chips:['♕ Dama blanca · h8','♗ Alfil blanco · c5','♖ Torre blanca · columna central','♚ Rey negro · vulnerable']
+};
+
+/* ---------- construcción del tablero ---------- */
+function buildGrid(el){
+  el.innerHTML='';
+  for(var r=8;r>=1;r--){
+    for(var f=0;f<8;f++){
+      var d=document.createElement('div');
+      var nm=FILES_STR[f]+r;
+      d.className='sq '+(((f+r)%2===0)?'light':'dark');
+      d.dataset.sq=nm;
+      el.appendChild(d);
+    }
+  }
+}
+function fillCoords(root){
+  var rk=root.querySelector('.rank-coords');
+  var fl=root.querySelector('.file-coords');
+  if(rk){ rk.innerHTML=''; for(var i=8;i>=1;i--){var s=document.createElement('span');s.textContent=i;rk.appendChild(s);} }
+  if(fl){ fl.innerHTML=''; for(var j=0;j<8;j++){var s2=document.createElement('span');s2.textContent=FILES_STR[j];fl.appendChild(s2);} }
+}
+function clonePos(p){ var o={}; for(var k in p){ o[k]=p[k]; } return o; }
+function applySteps(start,steps){
+  var out=[clonePos(start)];
+  steps.forEach(function(st){
+    var cur=clonePos(out[out.length-1]);
+    var pc=cur[st.from];
+    delete cur[st.from];
+    cur[st.to]=pc;
+    out.push(cur);
+  });
+  return out;
+}
+function renderBoard(gridEl,pos){
+  var cells=gridEl.children;
+  for(var i=0;i<cells.length;i++){
+    var cell=cells[i];
+    cell.textContent='';
+    cell.classList.remove('hl','chk');
+    var p=pos[cell.dataset.sq];
+    if(p){
+      var sp=document.createElement('span');
+      sp.textContent=GLYPHS[p];
+      sp.className=(p===p.toUpperCase())?'piece-w':'piece-b';
+      cell.appendChild(sp);
+    }
+  }
+}
+
+/* ---------- stepper genérico ---------- */
+function createStepper(cfg){
+  var root=document.getElementById(cfg.id);
+  if(!root) return;
+  var positions=applySteps(cfg.start,cfg.steps);
+
+  /* estructura */
+  var html='';
+  html+='<div class="board-layout">';
+  html+='<div>';
+  html+='<div class="board-area">';
+  html+='<div class="rank-coords"></div>';
+  html+='<div class="board-col"><div class="board-grid"></div><div class="file-coords"></div></div>';
+  html+='</div>';
+  if(!cfg.viewOnly){
+    html+='<div class="board-controls">';
+    html+='<div class="ctrl-btns">';
+    html+='<button class="ctrl-btn btn-reset" type="button">⏮ Reset</button>';
+    html+='<button class="ctrl-btn btn-prev" type="button">◀ Anterior</button>';
+    html+='<button class="ctrl-btn btn-next primary" type="button">Siguiente ▶</button>';
+    html+='</div>';
+    html+='<input class="step-slider" type="range" min="0" max="'+cfg.steps.length+'" value="0" step="1" aria-label="Deslizar movimientos">';
+    html+='<div class="step-indicators"><span class="ind-step"></span><span class="ind-move"></span></div>';
+    html+='</div>';
+  }
+  html+='</div>'; /* fin columna tablero */
+  html+='<div class="move-panel"></div>';
+  html+='</div>'; /* fin layout */
+  root.innerHTML=html;
+
+  var grid=root.querySelector('.board-grid');
+  var panel=root.querySelector('.move-panel');
+  buildGrid(grid);
+  fillCoords(root);
+
+  var idx=0;
+  var btnPrev=root.querySelector('.btn-prev');
+  var btnNext=root.querySelector('.btn-next');
+  var btnReset=root.querySelector('.btn-reset');
+  var slider=root.querySelector('.step-slider');
+  var indStep=root.querySelector('.ind-step');
+  var indMove=root.querySelector('.ind-move');
+
+  function updatePanel(){
+    if(idx===0){
+      var ch='';
+      cfg.diag.chips.forEach(function(c){ ch+='<span class="sig-chip">'+c+'</span>'; });
+      panel.innerHTML=
+        '<div class="mp-badges"><span class="mp-badge tag">DIAGNÓSTICO</span></div>'+
+        '<div class="mp-move">'+cfg.diag.title+'</div>'+
+        '<div class="mp-block que"><h5>¿Qué se observa?</h5><p>'+cfg.diag.text+'</p></div>'+
+        '<div class="chip-row" style="margin-top:14px;">'+ch+'</div>'+
+        '<div class="mp-flag diag">PULSE «SIGUIENTE ▶» PARA COMENZAR LA SECUENCIA</div>';
+      return;
+    }
+    var st=cfg.steps[idx-1];
+    var num=Math.ceil(idx/2);
+    var moveTag=(st.color==='BLANCAS')?num+'. BLANCAS':num+'… NEGRAS';
+    var captHtml=st.captured?'<div class="mp-capt">⚔ Captura: '+st.captured+'</div>':'';
+    var flag='';
+    if(st.mate){ flag='<div class="mp-flag mate">♚ JAQUE MATE — NO HAY RESPUESTA POSIBLE</div>'; }
+    else if(st.check){ flag='<div class="mp-flag check">⚡ ¡JAQUE!</div>'; }
+    panel.innerHTML=
+      '<div class="mp-badges">'+
+        '<span class="mp-badge '+(st.color==='BLANCAS'?'w':'b')+'">MOVIMIENTO '+idx+' — '+st.color+'</span>'+
+        '<span class="mp-badge tag">Jugada '+num+' · '+moveTag+'</span>'+
+      '</div>'+
+      '<div class="mp-move">'+st.pieceName+': <b>'+st.from+' → '+st.to+'</b></div>'+
+      captHtml+
+      '<span class="mp-san">Notación: '+st.san+'</span>'+
+      '<div class="mp-block que"><h5>¿Qué ocurre?</h5><p>'+st.what+'</p></div>'+
+      '<div class="mp-block por"><h5>¿Por qué es importante?</h5><p>'+st.why+'</p></div>'+
+      flag;
+  }
+
+  function render(){
+    renderBoard(grid,positions[idx]);
+    if(idx>0){
+      var st=cfg.steps[idx-1];
+      var f=grid.querySelector('[data-sq="'+st.from+'"]');
+      var t=grid.querySelector('[data-sq="'+st.to+'"]');
+      if(f) f.classList.add('hl');
+      if(t) t.classList.add('hl');
+      if(st.checkSq){
+        var c=grid.querySelector('[data-sq="'+st.checkSq+'"]');
+        if(c) c.classList.add('chk');
+      }
+    } else if(cfg.staticHl){
+      cfg.staticHl.forEach(function(sq){
+        var c=grid.querySelector('[data-sq="'+sq+'"]');
+        if(c) c.classList.add('chk');
+      });
+    }
+    updatePanel();
+    if(!cfg.viewOnly){
+      btnPrev.disabled=(idx===0);
+      btnNext.disabled=(idx===positions.length-1);
+      slider.value=idx;
+      indStep.innerHTML=(idx===0)?'Posición inicial':'Movimiento <b>'+idx+'</b> de '+cfg.steps.length;
+      if(idx===0){ indMove.textContent='Juegan BLANCAS'; }
+      else{
+        var st2=cfg.steps[idx-1];
+        var n=Math.ceil(idx/2);
+        indMove.innerHTML=(st2.color==='BLANCAS')?'Jugada completa: <b>'+n+'. BLANCAS</b>':'Jugada completa: <b>'+n+'… NEGRAS</b>';
+      }
+    }
+  }
+
+  if(!cfg.viewOnly){
+    btnNext.addEventListener('click',function(){ if(idx<cfg.steps.length){ idx++; render(); } });
+    btnPrev.addEventListener('click',function(){ if(idx>0){ idx--; render(); } });
+    btnReset.addEventListener('click',function(){ idx=0; render(); });
+    slider.addEventListener('input',function(){ idx=parseInt(slider.value,10); render(); });
+  }
+  render();
+}
+
+/* ---------- instanciar los tres tableros ---------- */
+createStepper({ id:'boardStudy', start:STUDY_START, steps:[], diag:DIAG, viewOnly:true, staticHl:['e7'] });
+createStepper({ id:'boardA', start:STUDY_START, steps:STEPS_A, diag:DIAG });
+createStepper({ id:'boardB', start:STUDY_START, steps:STEPS_B, diag:DIAG });
+
+/* ---------- tabs de variantes ---------- */
+var vtabs=document.querySelectorAll('.vtab');
+vtabs.forEach(function(tb){
+  tb.addEventListener('click',function(){
+    vtabs.forEach(function(o){ o.classList.remove('active-a','active-b'); });
+    tb.classList.add(tb.dataset.variant==='varA'?'active-a':'active-b');
+    document.getElementById('varA').classList.toggle('show',tb.dataset.variant==='varA');
+    document.getElementById('varB').classList.toggle('show',tb.dataset.variant==='varB');
+  });
+});
+
+/* ---------- SPA ---------- */
+var pages=document.querySelectorAll('.page');
+var navBtns=document.querySelectorAll('[data-page]');
+function showPage(id){
+  pages.forEach(function(p){ p.classList.toggle('active',p.id===id); });
+  navBtns.forEach(function(b){
+    if(b.classList.contains('nav-link')){
+      b.classList.toggle('active',b.dataset.page===id);
+      if(b.dataset.page===id){
+        try{ b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'}); }catch(e){}
+      }
+    }
+  });
+  window.scrollTo({top:0,behavior:'auto'});
+}
+navBtns.forEach(function(b){
+  b.addEventListener('click',function(){ showPage(b.dataset.page); });
+});
+
+/* ---------- barra de progreso ---------- */
+var prog=document.getElementById('progressBar');
+function updateProgress(){
+  var h=document.documentElement;
+  var max=h.scrollHeight-window.innerHeight;
+  var pct=(max>0)?(window.scrollY/max)*100:0;
+  prog.style.width=Math.min(100,Math.max(0,pct))+'%';
+}
+window.addEventListener('scroll',updateProgress,{passive:true});
+window.addEventListener('resize',updateProgress);
+updateProgress();
+
+/* ---------- botón volver arriba ---------- */
+var toTop=document.getElementById('toTop');
+window.addEventListener('scroll',function(){
+  toTop.classList.toggle('visible',window.scrollY>320);
+},{passive:true});
+toTop.addEventListener('click',function(){
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ---------- quiz ---------- */
+document.querySelectorAll('.q-toggle').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var ans=btn.nextElementSibling;
+    var open=ans.classList.toggle('open');
+    btn.textContent=open?'Ocultar respuesta':'Ver respuesta';
+    btn.setAttribute('aria-expanded',open?'true':'false');
+  });
+});
+
+/* ---------- accesibilidad: movimiento reducido ---------- */
+if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.querySelectorAll('svg').forEach(function(sv){
+    if(typeof sv.pauseAnimations==='function'){ sv.pauseAnimations(); }
+  });
+}
+</script>
+</body>
+</html>
