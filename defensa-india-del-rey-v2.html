@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Guía Maestra de la Defensa India de Rey: tutorial interactivo paso a paso para principiantes.">
+<title>Defensa India de Rey · Guía Maestra Interactiva</title>
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --card2:#0b1224; --border:#1e3a5f;
+  --accent:#00d4ff; --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+  --text:#e2e8f0; --muted:#94a3b8; --dim:#64748b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#0a0e1a;background:var(--bg);color:#e2e8f0;color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;overflow-x:hidden;line-height:1.55}
+/* ============ TOPBAR ============ */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,14,26,.96);border-bottom:1px solid var(--border)}
+.progress-track{height:4px;background:#0e1729;pointer-events:none}
+#progressBar{height:100%;width:0%;background:#00d4ff;background:linear-gradient(90deg,var(--accent),var(--purple));pointer-events:none}
+.navbar{display:flex;align-items:center;gap:10px;height:60px;padding:0 14px}
+.brand{font-weight:800;white-space:nowrap;font-size:15px;letter-spacing:.5px;color:var(--text)}
+.brand small{display:block;font-size:9.5px;color:var(--dim);font-weight:600;letter-spacing:2px}
+.nav-scroll{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1;padding:4px 2px}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-btn{flex:0 0 auto;background:transparent;border:1px solid transparent;color:var(--muted);font-weight:600;font-size:13px;font-family:'Segoe UI',system-ui,sans-serif;padding:11px 14px;min-height:44px;border-radius:8px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.nav-btn:hover{color:var(--text);border-color:var(--border);background:var(--card)}
+.nav-btn.active{color:#04121c;background:var(--accent);border-color:var(--accent)}
+.nav-btn.credits{border-color:var(--purple);color:#d8b4fe}
+.nav-btn.credits.active{background:var(--purple);color:#fff;border-color:var(--purple)}
+/* ============ LAYOUT ============ */
+main{padding-top:78px}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.container{max-width:1120px;margin:0 auto;padding:26px 16px 60px}
+.sec-head{margin:6px 0 22px}
+.sec-kicker{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--accent);text-transform:uppercase;border:1px solid var(--border);background:var(--card);padding:6px 12px;border-radius:20px}
+.sec-head h2{font-size:28px;font-size:clamp(24px,4.5vw,34px);margin:14px 0 8px;line-height:1.2}
+.sec-head p{color:var(--muted);max-width:850px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.grid3,.grid4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+h3.block-title{font-size:19px;margin-bottom:12px}
+h4{font-size:15.5px;margin-bottom:8px}
+p{color:var(--muted);margin-bottom:10px}
+p:last-child{margin-bottom:0}
+strong{color:var(--text)}
+.bridge{border-left:3px solid var(--purple);background:rgba(168,85,247,.07);padding:12px 16px;border-radius:0 10px 10px 0;font-style:italic;color:#c4b5fd;margin:22px 0}
+/* ============ HOME ============ */
+.home-badge{display:inline-block;background:rgba(0,212,255,.12);border:1px solid var(--border);color:var(--accent);font-size:11.5px;font-weight:700;letter-spacing:2.5px;padding:8px 16px;border-radius:24px;text-transform:uppercase}
+.cover-slot{margin:18px 0}
+.cover-slot svg{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--border)}
+.home-title{font-size:42px;font-size:clamp(32px,6vw,54px);font-weight:800;line-height:1.08;letter-spacing:-.5px}
+.home-title span{color:var(--accent)}
+.home-sub{font-size:18px;font-size:clamp(16px,2.6vw,21px);color:#7dd3fc;margin:10px 0 16px;font-weight:600}
+.quote{border-left:4px solid var(--accent);background:var(--card);border-radius:0 12px 12px 0;padding:18px 22px;margin:22px 0;font-size:17px;font-size:clamp(15px,2.4vw,19px);font-style:italic;color:var(--text)}
+.quote small{display:block;margin-top:8px;color:var(--dim);font-style:normal;font-size:12px;letter-spacing:1px}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.metric .num{font-size:30px;font-size:clamp(24px,4vw,34px);font-weight:800;color:var(--accent)}
+.metric .lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.dt-chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.dt-chip{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-weight:700;font-size:14px}
+.dt-chip small{display:block;font-size:10px;letter-spacing:2px;color:var(--dim);font-weight:600}
+/* ============ CALLOUTS ============ */
+.callout{border-radius:12px;padding:16px 18px;margin:18px 0;border:1px solid}
+.callout .co-tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:2px;padding:4px 10px;border-radius:6px;margin-bottom:10px}
+.callout.info{background:rgba(0,212,255,.06);border-color:rgba(0,212,255,.4)}
+.callout.info .co-tag{background:rgba(0,212,255,.15);color:var(--accent)}
+.callout.example{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.4)}
+.callout.example .co-tag{background:rgba(34,197,94,.15);color:var(--green)}
+.callout.warn{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.45)}
+.callout.warn .co-tag{background:rgba(245,158,11,.15);color:var(--amber)}
+.callout.error{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.5)}
+.callout.error .co-tag{background:rgba(239,68,68,.15);color:var(--red)}
+.callout.analysis{background:rgba(168,85,247,.07);border-color:rgba(168,85,247,.5)}
+.callout.analysis .co-tag{background:rgba(168,85,247,.18);color:#d8b4fe}
+.callout p{color:#cbd5e1}
+.callout ul{margin:8px 0 8px 20px;color:#cbd5e1}
+.callout li{margin-bottom:6px}
+/* ============ SEQUENCE CARDS ============ */
+.seq-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.seq-card .sq-head{padding:10px 16px;background:#101b33;border-bottom:1px solid var(--border);font-weight:800;font-size:13px;letter-spacing:2px;color:var(--accent)}
+.side{padding:12px 16px;border-bottom:1px solid rgba(30,58,95,.5)}
+.side:last-child{border-bottom:none}
+.side .who{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px;margin-bottom:4px}
+.dot{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+.dot.w{background:#f8fafc;border:1px solid #94a3b8}
+.dot.b{background:#111827;border:1px solid #7dd3fc}
+.side .mv-line{font-size:15px;font-weight:700;color:var(--text)}
+.side p{font-size:13.5px;margin:4px 0 0}
+/* ============ CHESS BOARD ============ */
+.board-frame{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:20px 0}
+.board-titlebar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:13px 16px;background:#101b33;border-bottom:1px solid var(--border)}
+.board-titlebar .bt-title{font-weight:800;font-size:14px;letter-spacing:1.5px}
+.board-titlebar .bt-sub{font-size:12px;color:var(--dim)}
+.bt-chip{font-size:10px;font-weight:800;letter-spacing:1.5px;padding:5px 10px;border-radius:6px}
+.bt-chip.ok{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.5)}
+.bt-chip.part{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.5)}
+.bt-chip.note{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.5)}
+.board-body{display:grid;grid-template-columns:minmax(300px,490px) 1fr;gap:22px;padding:20px;align-items:start}
+@media(max-width:920px){.board-body{grid-template-columns:1fr}}
+.board-col{display:flex;flex-direction:column;align-items:center;min-width:0}
+.board-area{display:flex;gap:8px;width:100%;max-width:478px;justify-content:center}
+.rank-coords{display:flex;flex-direction:column;justify-content:space-around;font-size:11px;color:var(--dim);font-weight:700;padding-bottom:20px;text-align:right;min-width:14px}
+.board-wrap{flex:1;max-width:440px;min-width:0}
+.board-grid{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);aspect-ratio:1/1;border:2px solid #24446b;border-radius:8px;overflow:hidden}
+.sq{position:relative;display:flex;align-items:center;justify-content:center}
+.sq.light{background:#2e4a6e}
+.sq.dark{background:#152438}
+.pc{font-size:26px;font-size:clamp(19px,8vw,36px);line-height:1;-webkit-user-select:none;user-select:none;position:relative;z-index:2}
+.pc-w{color:#f8fafc;text-shadow:0 2px 3px rgba(0,0,0,.75)}
+.pc-b{color:#0b1120;text-shadow:0 0 4px rgba(203,213,225,.95),0 0 1px rgba(203,213,225,.95)}
+.sq.hl-from{box-shadow:inset 0 0 0 3px rgba(0,212,255,.55),inset 0 0 14px rgba(0,212,255,.35)}
+.sq.hl-to{box-shadow:inset 0 0 0 3px rgba(0,212,255,.95),inset 0 0 20px rgba(0,212,255,.55)}
+.sq.hl-to.cap{box-shadow:inset 0 0 0 3px rgba(239,68,68,.95),inset 0 0 20px rgba(239,68,68,.55)}
+.file-coords{display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-size:11px;color:var(--dim);font-weight:700;padding-top:5px}
+/* ---- Controles PEGADOS al tablero ---- */
+.board-deck{width:100%;max-width:478px;margin-top:8px;background:#0d1529;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.board-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px}
+.step-ind{margin-left:auto;text-align:right;font-size:12px;color:var(--muted);font-weight:700}
+.step-ind b{color:var(--accent)}
+.slider-row{padding:4px 12px 10px;border-top:1px solid rgba(30,58,95,.6)}
+input[type=range]{width:100%;height:30px;accent-color:var(--accent);cursor:pointer;touch-action:manipulation}
+.move-chips{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;border-top:1px solid rgba(30,58,95,.6);scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.mchip{flex:0 0 auto;background:#101d36;border:1px solid var(--border);color:var(--muted);font-weight:700;font-size:11.5px;font-family:'Segoe UI',system-ui,sans-serif;padding:12px 12px;min-height:44px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.mchip:hover{color:var(--text);border-color:var(--accent)}
+.mchip.cur{background:var(--accent);color:#04121c;border-color:var(--accent)}
+.legend-row{width:100%;max-width:478px;display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--dim)}
+.legend-row span{display:inline-flex;align-items:center;gap:6px}
+.leg-box{width:13px;height:13px;border-radius:3px;display:inline-block}
+.leg-box.lb{background:#152438;box-shadow:inset 0 0 0 2.5px var(--accent)}
+.leg-box.cp{background:#152438;box-shadow:inset 0 0 0 2.5px var(--red)}
+/* ---- Botones ---- */
+.btn{background:#13223d;border:1px solid var(--border);color:var(--text);font-weight:700;font-size:13px;font-family:'Segoe UI',system-ui,sans-serif;padding:12px 16px;min-height:44px;border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.disabled,.btn[disabled]{opacity:.35;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:#04121c;border-color:var(--accent)}
+.btn.primary:hover{color:#04121c}
+/* ---- Panel explicativo ---- */
+.board-panel{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:18px;min-height:300px}
+.mv-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.mv-num{font-weight:800;letter-spacing:1.5px;font-size:13px}
+.color-chip{font-size:10.5px;font-weight:800;letter-spacing:1.5px;padding:4px 10px;border-radius:6px}
+.color-chip.cw{background:#f8fafc;color:#0f172a}
+.color-chip.cb{background:#111827;color:#7dd3fc;border:1px solid #38bdf8}
+.jugada-chip{font-size:11px;color:var(--dim);border:1px solid var(--border);padding:4px 9px;border-radius:6px}
+.mv-piece{font-size:17px;font-size:clamp(16px,2.5vw,19px);font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.mv-piece .glyph{font-size:26px}
+.san-chip{font-size:12px;font-weight:700;color:#7dd3fc;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.35);padding:3px 9px;border-radius:6px}
+.cap-chip{font-size:11px;font-weight:800;color:#fca5a5;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.5);padding:3px 9px;border-radius:6px}
+.note-chip{display:inline-block;font-size:10px;font-weight:800;letter-spacing:1px;color:#fcd34d;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.45);padding:3px 8px;border-radius:6px;margin-bottom:8px}
+.mv-block{border-left:3px solid var(--border);padding:8px 12px;margin-top:10px;background:rgba(15,23,42,.5);border-radius:0 8px 8px 0}
+.mv-block.why{border-left-color:var(--purple)}
+.mv-block.what{border-left-color:var(--accent)}
+.mv-block h5{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+.mv-block p{font-size:13.8px;color:#cbd5e1;margin:0}
+/* ============ CHECKLIST ============ */
+.check-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.check-item:hover{border-color:var(--accent)}
+.check-item .box{width:26px;height:26px;border:2px solid var(--border);border-radius:7px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:15px;color:transparent;margin-top:2px}
+.check-item.done{border-color:rgba(34,197,94,.6);background:rgba(34,197,94,.05)}
+.check-item.done .box{background:var(--green);border-color:var(--green);color:#04121c}
+.check-item h4{margin-bottom:3px}
+.check-item p{font-size:13.5px;margin:0}
+.check-progress{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+.cp-bar{height:10px;background:#0e1729;border-radius:6px;overflow:hidden;margin-top:10px}
+.cp-fill{height:100%;width:0%;background:#00d4ff;background:linear-gradient(90deg,var(--accent),var(--green))}
+.cp-done-msg{display:none;margin-top:12px;padding:12px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.5);border-radius:10px;color:#86efac;font-weight:700}
+.cp-done-msg.show{display:block}
+.crit-card{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:12px;padding:18px}
+.crit-card .crit-n{font-size:12px;font-weight:800;letter-spacing:2px;color:var(--amber)}
+.crit-card h4{margin:6px 0}
+/* ============ CREDITS ============ */
+.credit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+@media(max-width:600px){.credit-grid{grid-template-columns:1fr}}
+.credit-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.credit-item small{display:block;font-size:10px;letter-spacing:2.5px;color:var(--dim);font-weight:700;margin-bottom:5px}
+.credit-item .val{font-size:17px;font-weight:800}
+.latin{text-align:center;font-style:italic;font-size:20px;font-size:clamp(17px,3vw,23px);color:#d8b4fe;margin:26px 0 6px;letter-spacing:1px}
+/* ============ FOOTER / MISC ============ */
+footer{border-top:1px solid var(--border);background:#080c16;padding:30px 16px;text-align:center}
+footer p{font-size:13.5px;margin:6px 0;color:var(--muted)}
+footer .latin-f{color:#a78bfa;font-style:italic;margin-top:12px}
+#backTop{position:fixed;right:16px;bottom:16px;width:48px;height:48px;border-radius:12px;background:var(--accent);color:#04121c;border:none;font-size:20px;font-weight:800;cursor:pointer;display:none;z-index:900;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#backTop.show{display:block}
+@media(max-width:640px){
+  .brand small{display:none}
+  .navbar{padding:0 8px}
+  .board-body{padding:14px}
+  .step-ind{margin-left:0;width:100%;text-align:left}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="progress-track"><div id="progressBar"></div></div>
+  <nav class="navbar">
+    <div class="brand">♞ INDIA DE REY<small>GUÍA MAESTRA INTERACTIVA</small></div>
+    <div class="nav-scroll" id="navScroll">
+      <button class="nav-btn active" data-target="home">🏠 Inicio</button>
+      <button class="nav-btn" data-target="base">🧱 La Base</button>
+      <button class="nav-btn" data-target="bd3">🎯 Castigo a Ad3</button>
+      <button class="nav-btn" data-target="e5">⚔️ Sacrificio en e5</button>
+      <button class="nav-btn" data-target="be2">🔄 Variante Ae2</button>
+      <button class="nav-btn" data-target="variantes">🛡️ Saemisch y 4 Peones</button>
+      <button class="nav-btn" data-target="checklist">✅ Checklist</button>
+      <button class="nav-btn credits" data-target="creditos">🏛️ Créditos</button>
+    </div>
+  </nav>
+</div>
+
+<main>
+<!-- ==================== HOME ==================== -->
+<section class="page active" id="home">
+  <div class="container">
+    <span class="home-badge">♞ Guía Maestra · Tutorial Interactivo para Principiantes</span>
+    <div class="cover-slot" id="cover-home"></div>
+    <h1 class="home-title">Defensa <span>India de Rey</span></h1>
+    <p class="home-sub">El «Muro con Pinchos»: absorber la presión, resistir y lanzar el contraataque.</p>
+    <div class="card">
+      <p>Como Maestro Internacional y pedagogo especializado en la enseñanza de aperturas, mi misión es que dejes de memorizar jugadas sin sentido y comiences a comprender la <strong>arquitectura profunda del ajedrez</strong>. La Defensa India de Rey no es simplemente una respuesta al Peón de Dama; es un <strong>sistema universal y elástico</strong> diseñado para absorber la presión enemiga y lanzarla de vuelta en un contraataque táctico fulminante.</p>
+      <p>Ceder el centro inicialmente es una decisión deliberada: estamos ante una <strong>«invitación estratégica»</strong> donde permitimos que el blanco se sobreextienda para luego demoler su estructura desde los flancos.</p>
+    </div>
+    <blockquote class="quote">«Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.»<small>— LEMA PEDAGÓGICO DE ESTE TUTORIAL</small></blockquote>
+    <div class="grid4">
+      <div class="metric"><div class="num">6</div><div class="lbl">Capítulos didácticos</div></div>
+      <div class="metric"><div class="num">6</div><div class="lbl">Tableros interactivos paso a paso</div></div>
+      <div class="metric"><div class="num">79</div><div class="lbl">Movimientos individuales explicados</div></div>
+      <div class="metric"><div class="num">2</div><div class="lbl">Variantes agresivas desmanteladas</div></div>
+    </div>
+    <div class="dt-chips">
+      <div class="dt-chip"><small>FECHA</small>📅 02/09/2026</div>
+      <div class="dt-chip"><small>HORA</small>🕕 18:25:56</div>
+      <div class="dt-chip"><small>AUTOR</small>👨‍💻 Rubén Sbarsky</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== LA BASE ==================== -->
+<section class="page" id="base">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-kicker">Capítulo 1</span>
+      <h2>Introducción a la Arquitectura del «Muro con Pinchos»</h2>
+      <p>La construcción de lo que yo denomino el <strong>«muro con pinchos»</strong> sigue una secuencia lógica que busca la máxima coordinación entre piezas menores y peones. Este muro no es pasivo; los «pinchos» son nuestras piezas menores preparadas para saltar ante el menor síntoma de debilidad rival.</p>
+    </div>
+
+    <h3 class="block-title">🧱 Construcción de la Base (Jugadas 1–4)</h3>
+    <div class="grid2">
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 1</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Peón de d2 → d4 (d4)</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Caballo de g8 → f6 (Cf6)</div><p><strong>Propósito:</strong> El blanco ocupa el centro y el negro desarrolla su pieza más activa, controlando la casilla crítica e4.</p></div>
+      </div>
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 2</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Peón de c2 → c4 (c4)</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Peón de g7 → g6 (g6)</div><p><strong>Propósito:</strong> El blanco refuerza su control central mientras el negro prepara el «fianchetto» de su alfil de casillas negras.</p></div>
+      </div>
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 3</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Caballo de b1 → c3 (Cc3)</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Alfil de f8 → g7 (Ag7)</div><p><strong>Propósito:</strong> El blanco prepara el avance e4; el negro sitúa el «alma» de su defensa en la diagonal larga, ejerciendo una presión de Rayos X indirecta sobre d4.</p></div>
+      </div>
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 4</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Peón de e2 → e4 (e4)</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Peón de d7 → d6 (d6)</div><p><strong>Propósito:</strong> El blanco completa su gran centro de peones; el negro establece el «ancla» vital que detiene el avance enemigo.</p></div>
+      </div>
+    </div>
+
+    <h3 class="block-title">♟ Tablero interactivo · La Base</h3>
+    <div id="board-base"></div>
+
+    <div class="callout analysis">
+      <span class="co-tag">ANÁLISIS · «SO WHAT?»</span>
+      <h4>El papel del ancla en d6</h4>
+      <p>El movimiento del peón a d6 es la <strong>piedra angular de nuestra estructura</strong>. Actúa como un freno preventivo crítico: sin este ancla, las blancas podrían avanzar su peón a e5 sin oposición, expulsando a nuestro caballo de f6 y provocando un colapso prematuro de toda la estructura defensiva. Al fijar d6, garantizamos la estabilidad necesaria para preparar nuestras futuras rupturas.</p>
+    </div>
+    <div class="bridge">Una vez establecida la base, el siguiente paso es aprender a castigar con severidad las imprecisiones conceptuales del oponente.</div>
+  </div>
+</section>
+
+<!-- ==================== CASTIGO Bd3 ==================== -->
+<section class="page" id="bd3">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-kicker">Capítulo 2</span>
+      <h2>La Variante de la Imprecisión: Castigo al Alfil en d3</h2>
+      <p>Es común encontrar jugadores que, buscando un desarrollo natural, cometen el <strong>error conceptual grave</strong> de colocar su alfil en d3. Esto obstruye la comunicación visual entre la dama blanca y el peón de d4, dejando este último vulnerable ante nuestros Rayos X.</p>
+    </div>
+
+    <h3 class="block-title">♟ Tablero interactivo · Secuencia de castigo (Jugadas 1–8)</h3>
+    <div id="board-bd3"></div>
+
+    <h3 class="block-title">📋 Secuencia táctica de castigo (Jugadas 5–8)</h3>
+    <div class="grid2">
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 5</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Caballo de g1 → f3 (Cf3)</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Enroque corto (0-0): rey e8 → g8, torre h8 → f8</div><p><strong>Propósito:</strong> Seguridad del rey negro y finalización del desarrollo esencial antes del contraataque.</p></div>
+      </div>
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 6</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Alfil de f1 → d3 (Ad3) ⚠</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Alfil de c8 → g4 (Ag4)</div><p><strong>Propósito:</strong> Aprovechar la imprecisión blanca clavando al caballo de f3, inmovilizando al único defensor efectivo de d4 tras la desconexión de la dama.</p></div>
+      </div>
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 7</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Peón de h2 → h3 (h3)</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Alfil de g4 captura al Caballo en f3 (Axf3)</div><p><strong>Propósito:</strong> Ante la provocación, eliminamos quirúrgicamente al protector del centro.</p></div>
+      </div>
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 8</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Dama de d1 captura al Alfil en f3 (Dxf3)</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Caballo de b8 → c6 (Cc6)</div><p><strong>Propósito:</strong> Tras la recaptura obligada, el negro lanza su caballo para asediar el peón de d4, que ahora carece de defensores sólidos.</p></div>
+      </div>
+    </div>
+
+    <div class="callout error">
+      <span class="co-tag">ANÁLISIS · «SO WHAT?» · EL COLAPSO CENTRAL</span>
+      <p>La desaparición del defensor en f3 y la presión coordinada del caballo en c6 con el alfil de g7 provocan una <strong>crisis de coordinación total</strong>. El peón de d4 queda indefenso, transformando la aparente solidez blanca en un <strong>desastre estructural</strong> que suele forzar al blanco a una posición pasiva y perdedora.</p>
+    </div>
+    <div class="bridge">Si el blanco defiende con mayor solidez, el negro debe recurrir a sacrificios posicionales más profundos para mantener la iniciativa.</div>
+  </div>
+</section>
+
+<!-- ==================== SACRIFICIO e5 ==================== -->
+<section class="page" id="e5">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-kicker">Capítulo 3</span>
+      <h2>El Sacrificio Táctico y el Ataque Doble en e5</h2>
+      <p>En la India de Rey, <strong>el material es secundario frente a la actividad de las piezas</strong>. El sacrificio es una herramienta de desequilibrio para transformar posiciones cerradas en ataques fulminantes.</p>
+    </div>
+
+    <h3 class="block-title">♟ Tablero interactivo · El sacrificio en e5</h3>
+    <div id="board-e5"></div>
+
+    <div class="grid2">
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 5</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Alfil de c1 → e3 (Ae3)</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Caballo de b8 → c6 (Cc6)</div><p><strong>Propósito:</strong> El blanco refuerza d4 y el negro aumenta la presión central para forzar una decisión.</p></div>
+      </div>
+      <div class="seq-card">
+        <div class="sq-head">JUGADA 6</div>
+        <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Caballo de g1 → e2 (Ce2)</div></div>
+        <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Caballo de f6 → e5 (Ce5)</div><p><strong>Propósito:</strong> El negro ofrece su pieza en un salto audaz para generar una crisis táctica inmediata.</p></div>
+      </div>
+    </div>
+
+    <div class="callout error">
+      <span class="co-tag">⚠ AVISO CRÍTICO · VERIFICACIÓN SOBRE EL TABLERO</span>
+      <p>El documento original describe dos movimientos más para esta secuencia:</p>
+      <ul>
+        <li><strong>Movimiento 13 — BLANCAS:</strong> «Caballo blanco de c3 captura al Caballo negro en e5 (Cxe5)».</li>
+        <li><strong>Movimiento 14 — NEGRAS:</strong> «Peón negro de d6 captura al Caballo blanco en e5 (dxe5)». Propósito: «Apertura de líneas mediante el sacrificio para castigar la posición blanca».</li>
+      </ul>
+      <p><strong>Verificación geométrica:</strong> el caballo situado en c3 no puede desplazarse hasta e5 (no es un salto posible para la geometría del caballo) y ningún otro caballo blanco de la posición mostrada alcanza esa casilla. Por integridad didáctica, este tablero interactivo <strong>se detiene en la posición anterior</strong>: no se representan movimientos ilegales ni se inventan alternativas. El concepto completo del autor se conserva íntegro a continuación.</p>
+    </div>
+
+    <div class="callout analysis">
+      <span class="co-tag">ANÁLISIS · «SO WHAT?» · EL ATAQUE DOBLE DECISIVO</span>
+      <p>La recaptura con el peón genera un <strong>ataque doble letal sobre la dama y el alfil de e3</strong>. Si la dama se retira, capturamos en e3 con jaque, lo que resulta en la pérdida definitiva del derecho al enroque. Este colapso táctico expone al monarca blanco de forma irreversible, terminando la partida rápidamente por la pérdida neta de material y seguridad.</p>
+    </div>
+    <div class="bridge">Contra planteamientos más precavidos como la variante con el alfil en e2, se requiere una reubicación de piezas más sofisticada.</div>
+  </div>
+</section>
+
+<!-- ==================== VARIANTE Be2 ==================== -->
+<section class="page" id="be2">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-kicker">Capítulo 4</span>
+      <h2>Maniobras de Reubicación y el Sacrificio de Despeje (Variante Ae2)</h2>
+      <p>Cuando el blanco juega de forma conservadora (Ae2), el negro debe demostrar flexibilidad para <strong>«dar aire» a su alfil de g7</strong>, permitiendo que su pieza más poderosa respire.</p>
+    </div>
+
+    <h3 class="block-title">♟ Tablero interactivo · Variante Ae2</h3>
+    <div id="board-be2"></div>
+
+    <div class="seq-card" style="max-width:640px">
+      <div class="sq-head">JUGADA 5</div>
+      <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Alfil de f1 → e2 (Ae2)</div></div>
+      <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Caballo de f6 → d7 (Cd7)</div><p><strong>Propósito:</strong> Reubicación estratégica para liberar la diagonal larga y preparar la ruptura central en e5.</p></div>
+    </div>
+
+    <div class="callout error">
+      <span class="co-tag">⚠ AVISO CRÍTICO · CONTINUACIÓN DESCRITA EN EL DOCUMENTO</span>
+      <p>El documento original continúa la secuencia con los siguientes movimientos, que se conservan textualmente:</p>
+      <ul>
+        <li><strong>Movimiento 11 — BLANCAS:</strong> «El blanco realiza el enroque corto (0-0)». <em>Nota de verificación: en la posición mostrada el enroque corto no es ejecutable, porque el caballo blanco sigue en g1 ocupando una casilla del trayecto real.</em></li>
+        <li><strong>Movimiento 12 — NEGRAS:</strong> «Caballo negro de b8 a c6 (Cc6)». Propósito: «Completar la coordinación de piezas menores antes del choque central».</li>
+        <li><strong>Movimiento 13 — BLANCAS:</strong> «Alfil blanco de c1 a e3 (Ae3)».</li>
+        <li><strong>Movimiento 14 — NEGRAS:</strong> «Peón negro de e7 a e5 (e5)». Propósito: «El negro finalmente desafía el corazón de la estructura blanca».</li>
+        <li><strong>Movimiento 15 — BLANCAS:</strong> «Peón blanco de d4 a d5 (d5)».</li>
+        <li><strong>Movimiento 16 — NEGRAS:</strong> «Peón negro de d6 a d3 (d3)». Propósito: «El “Sacrificio Mágico” de despeje que busca fragmentar la defensa enemiga». <em>Nota de verificación: un peón no puede avanzar tres casillas ni saltar por encima de una casilla ocupada (d5 está ocupada por el peón blanco), por lo que este movimiento no puede reproducirse sobre el tablero.</em></li>
+      </ul>
+      <p>El tablero interactivo se detiene en la última posición legal (movimiento 10). No se inventan jugadas alternativas.</p>
+    </div>
+
+    <div class="callout analysis">
+      <span class="co-tag">ANÁLISIS · «SO WHAT?» · EL PODER DEL DESPEJE</span>
+      <p>El avance del peón a d3 es un <strong>sacrificio magistral</strong>. Al regalar este peón, abrimos la diagonal del alfil de g7 para impactar directamente sobre la torre en b2. Además, si el blanco captura en d3, habilita saltos de caballo a b4 o d4 que generan <strong>ataques dobles sobre la dama y la torre</strong>, desarticulando por completo el flanco de dama blanco.</p>
+    </div>
+    <div class="bridge">Sin embargo, el blanco puede intentar asfixiarnos mediante la expansión masiva de peones; debemos estar listos.</div>
+  </div>
+</section>
+
+<!-- ==================== SAEMISCH Y 4 PEONES ==================== -->
+<section class="page" id="variantes">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-kicker">Capítulo 5</span>
+      <h2>Desmantelando las Variantes Agresivas: Saemisch y Cuatro Peones</h2>
+      <p>La <strong>sobreextensión es la debilidad intrínseca</strong> de los ataques agresivos. El blanco sacrifica desarrollo por espacio, dejando huecos que nuestras piezas ligeras deben explotar con precisión quirúrgica.</p>
+    </div>
+
+    <div class="card">
+      <h3 class="block-title">🗡 Táctica contra la Variante Saemisch (f3)</h3>
+      <div class="grid2">
+        <div class="seq-card">
+          <div class="sq-head">JUGADA 5</div>
+          <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Peón de f2 → f3 (f3)</div></div>
+          <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Peón de a7 → a5 (a5)</div><p><strong>Propósito:</strong> Frenar la expansión blanca en el flanco de dama y preparar el desarrollo del caballo.</p></div>
+        </div>
+        <div class="seq-card">
+          <div class="sq-head">JUGADA 6</div>
+          <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Dama de d1 → d2 (Dd2)</div></div>
+          <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Caballo de b8 → a6 (Ca6)</div><p><strong>Propósito:</strong> Desarrollar el caballo hacia la casilla c5 para presionar las debilidades creadas por la sobreextensión.</p></div>
+        </div>
+      </div>
+      <div id="board-saemisch"></div>
+      <div class="callout warn">
+        <span class="co-tag">ADVERTENCIA · RECONSTRUCCIÓN SEÑALIZADA</span>
+        <p>Para reproducir el «Golpe Maestro» sobre el tablero se han señalizado con fichas ámbar los puntos donde el documento es impreciso: la <strong>«jugada de desarrollo blanca aleatoria»</strong> (se muestra Ae3 como ejemplo), el salto <strong>Ca6→c5</strong> (destino anunciado por el propio texto) y las jugadas de soporte/recaptura no especificadas en el original.</p>
+      </div>
+      <div class="callout error">
+        <span class="co-tag">⚠ AVISO CRÍTICO · EL JAQUE Dh4+</span>
+        <p>El documento concluye: «Tras la recaptura blanca, la Dama negra de d8 a h4 (Dh4+) da jaque, recuperando la pieza y dejando el enroque blanco en ruinas». En la posición resultante esa maniobra <strong>no es ejecutable</strong>: la diagonal d8–h4 está bloqueada por el propio peón negro de e7 y por el caballo negro de f6. El tablero se detiene tras la recaptura y el concepto del autor se conserva íntegro en este aviso.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="block-title">🌊 Táctica contra el Ataque de los Cuatro Peones</h3>
+      <div class="grid3">
+        <div class="seq-card">
+          <div class="sq-head">POSICIÓN</div>
+          <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Peones en c4, d4, e4 y f4</div><p>La avalancha de peones más violenta del blanco.</p></div>
+        </div>
+        <div class="seq-card">
+          <div class="sq-head">JUGADA 5</div>
+          <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Enroque corto (0-0)</div><p><strong>Propósito:</strong> Asegurar el monarca antes de enfrentar la avalancha.</p></div>
+        </div>
+        <div class="seq-card">
+          <div class="sq-head">JUGADAS 6–7</div>
+          <div class="side"><div class="who"><span class="dot w"></span>BLANCAS</div><div class="mv-line">Cf3 y Ae2</div></div>
+          <div class="side"><div class="who"><span class="dot b"></span>NEGRAS</div><div class="mv-line">Ca6 y e5</div><p><strong>Propósito:</strong> Preparar la ruptura e5 controlando casillas periféricas clave y desafiar el centro.</p></div>
+        </div>
+      </div>
+      <div id="board-4p"></div>
+      <div class="callout example">
+        <span class="co-tag">EJEMPLO · LA CONTINUACIÓN PLANEADA</span>
+        <p>Tras la respuesta blanca a e5, el plan indicado en el documento utiliza el salto del <strong>Caballo negro de a6 a b4 (Cb4)</strong> y el <strong>Alfil negro de c8 a f5 (Af5)</strong> para clavar la posición.</p>
+      </div>
+      <div class="callout analysis">
+        <span class="co-tag">ANÁLISIS · «SO WHAT?» · LA RUINA DE LA SOBREEXTENSIÓN</span>
+        <p>Frente a la avalancha, el negro utiliza <strong>clavadas y la actividad de sus caballos</strong> para que el centro blanco colapse. La presión se completa con avances de peones a f5 y e4, destruyendo la «fortaleza» blanca mediante ataques descubiertos que demuestran que <strong>el espacio sin coordinación es una debilidad fatal</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CHECKLIST ==================== -->
+<section class="page" id="checklist">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-kicker">Capítulo 6</span>
+      <h2>Conclusión y Checklist Estratégico</h2>
+      <p>La India de Rey es una <strong>filosofía de contraofensiva dinámica</strong>. Su éxito no depende de memorizar líneas, sino de comprender cómo transformar el aparente dominio del rival en una vulnerabilidad explotable.</p>
+    </div>
+
+    <h3 class="block-title">✅ Checklist Estratégico para el Estudiante <span style="font-size:12px;color:#64748b;font-weight:600">(pulsa cada punto para marcarlo)</span></h3>
+    <div class="check-progress">
+      <strong id="cpText">Progreso: 0 de 4 conceptos dominados</strong>
+      <div class="cp-bar"><div class="cp-fill" id="cpFill"></div></div>
+      <div class="cp-done-msg" id="cpDone">🏆 ¡Checklist completo! Dominas la arquitectura de la India de Rey. ¡A la carga! ♞</div>
+    </div>
+    <div class="check-item"><div class="box">✓</div><div><h4>Anclaje Central</h4><p>¿He fijado mi peón en d6 para frenar el avance e5 del blanco?</p></div></div>
+    <div class="check-item"><div class="box">✓</div><div><h4>Poder del Fianchetto</h4><p>¿Mi alfil de g7 tiene diagonales abiertas y ejerce presión de Rayos X?</p></div></div>
+    <div class="check-item"><div class="box">✓</div><div><h4>Desarrollo Periférico</h4><p>¿He ubicado mis caballos (en a6 o c5) para presionar los puntos débiles y saltar a b4?</p></div></div>
+    <div class="check-item"><div class="box">✓</div><div><h4>Coordinación de Ruptura</h4><p>¿Están mis piezas listas para el golpe en e5 que fragmentará el centro rival?</p></div></div>
+
+    <h3 class="block-title" style="margin-top:30px">🔑 Resumen de Momentos Críticos</h3>
+    <div class="grid3">
+      <div class="crit-card"><span class="crit-n">MOMENTO CRÍTICO 1</span><h4>La fijación de d6</h4><p>Sin este ancla, la estructura colapsa ante el avance e5.</p></div>
+      <div class="crit-card"><span class="crit-n">MOMENTO CRÍTICO 2</span><h4>El castigo a la imprecisión</h4><p>Aprovechar la desconexión de la dama blanca cuando el alfil se mueve a d3 para asediar d4.</p></div>
+      <div class="crit-card"><span class="crit-n">MOMENTO CRÍTICO 3</span><h4>Los sacrificios de despeje</h4><p>Utilizar el peón en d3 o sacrificios en e4/e5 para activar el alfil de g7 y ganar material mediante ataques dobles.</p></div>
+    </div>
+    <div class="callout info" style="text-align:center;font-size:17px">
+      <p style="margin:0"><strong>Domina estos conceptos y verás cómo el dominio aparente de tu rival se desvanece ante la potencia de la India de Rey. ¡A la carga!</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CRÉDITOS ==================== -->
+<section class="page" id="creditos">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-kicker">🏛️ Créditos</span>
+      <h2>Guía Maestra de la Defensa India de Rey</h2>
+      <p>Tutorial interactivo paso a paso para principiantes.</p>
+    </div>
+    <div class="cover-slot" id="cover-credits"></div>
+    <div class="credit-grid">
+      <div class="credit-item"><small>AUTOR</small><div class="val">👨‍💻 Rubén Sbarsky</div></div>
+      <div class="credit-item"><small>TÍTULO DEL TUTORIAL</small><div class="val">♞ Defensa India de Rey · El «Muro con Pinchos»</div></div>
+      <div class="credit-item"><small>FECHA</small><div class="val">📅 02/09/2026</div></div>
+      <div class="credit-item"><small>HORA</small><div class="val">🕕 18:25:56</div></div>
+    </div>
+    <div class="callout info" style="margin-top:18px">
+      <span class="co-tag">INDICACIÓN EDUCATIVA</span>
+      <p>Material elaborado con fines exclusivamente <strong>educativos y de divulgación</strong>. Reproduce cada secuencia en tu propio tablero, movimiento a movimiento, tantas veces como necesites.</p>
+    </div>
+    <p class="latin">Fiat iustitia, ruat caelum.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <p>📚 Tutorial solo con fines Educativos y Divulgación</p>
+  <p>👨‍💻 Créditos: Rubén Sbarsky</p>
+  <p>📅 FECHA: 02/09/2026 · Hora: 18:25:56</p>
+  <p class="latin-f">Fiat iustitia, ruat caelum.</p>
+</footer>
+
+<button id="backTop" aria-label="Volver arriba">↑</button>
+
+<script>
+/* ================================================================
+   VERSIÓN COMPATIBLE — 100% ES5, sin forEach de NodeList, sin
+   closest(), sin scrollIntoView con opciones, sin {passive:true}.
+   El menú se conecta PRIMERO; cada tablero se aísla con try/catch.
+================================================================ */
+(function(){
+"use strict";
+
+/* ---------------- helpers ES5 ---------------- */
+function each(list,fn){
+  if(!list){return;}
+  for(var i=0;i<list.length;i++){fn(list[i],i);}
+}
+function hasClass(el,c){
+  return el && (' '+el.className+' ').indexOf(' '+c+' ')>-1;
+}
+function addClass(el,c){
+  if(el && !hasClass(el,c)){el.className=(el.className?el.className+' ':'')+c;}
+}
+function removeClass(el,c){
+  if(!el){return;}
+  el.className=(' '+el.className+' ').replace(' '+c+' ',' ').replace(/^\s+|\s+$/g,'');
+}
+function findParentAttr(node,attr){
+  var el=node;
+  while(el && el.nodeType===1){
+    if(el.getAttribute && el.getAttribute(attr)){return el;}
+    el=el.parentNode;
+  }
+  return null;
+}
+function cloneObj(o){
+  var n={},k;
+  for(k in o){if(o.hasOwnProperty(k)){n[k]=o[k];}}
+  return n;
+}
+var REDUCED=false;
+try{
+  if(window.matchMedia){REDUCED=window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
+}catch(errR){REDUCED=false;}
+
+/* ============================================================
+   PORTADA SVG ANIMADA — El Muro con Pinchos (16:9)
+============================================================ */
+function coverSVG(u){
+return '<svg viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Animación de la Defensa India de Rey: el muro con pinchos, los rayos X del alfil de g7 y el contraataque del caballo" style="width:100%;height:auto;display:block;background:#0a0e1a">'
++'<defs>'
++'<radialGradient id="bg'+u+'" cx="50%" cy="40%" r="80%"><stop offset="0%" stop-color="#132542"/><stop offset="55%" stop-color="#0c1628"/><stop offset="100%" stop-color="#0a0e1a"/></radialGradient>'
++'<linearGradient id="beam'+u+'" gradientUnits="userSpaceOnUse" x1="795" y1="145" x2="495" y2="445"><stop offset="0%" stop-color="#a855f7"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#22c55e"/></linearGradient>'
++'<pattern id="chk'+u+'" width="100" height="100" patternUnits="userSpaceOnUse" patternTransform="translate(470,70)"><rect width="100" height="100" fill="#152438"/><rect width="50" height="50" fill="#22375a"/><rect x="50" y="50" width="50" height="50" fill="#22375a"/></pattern>'
++'<pattern id="grid'+u+'" width="42" height="42" patternUnits="userSpaceOnUse"><path d="M42 0H0V42" fill="none" stroke="#11203a" stroke-width="1"/></pattern>'
++'<filter id="glow'+u+'" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
++'</defs>'
++'<rect width="960" height="540" fill="url(#bg'+u+')"/>'
++'<rect width="960" height="540" fill="url(#grid'+u+')" opacity="0.55"/>'
++'<path d="M14,40 V14 H40 M920,14 H946 V40 M946,500 V526 H920 M40,526 H14 V500" fill="none" stroke="#1e3a5f" stroke-width="2"/>'
++'<circle cx="670" cy="270" r="248" fill="none" stroke="#14263f" stroke-width="1.5" stroke-dasharray="4 14"><animateTransform attributeName="transform" type="rotate" values="0 670 270;360 670 270" dur="90s" repeatCount="indefinite"/></circle>'
++'<text x="48" y="96" font-size="12" letter-spacing="3" fill="#00d4ff" font-weight="700" font-family="Segoe UI,system-ui,sans-serif">GUÍA MAESTRA · APERTURAS DE AJEDREZ</text>'
++'<text x="45" y="152" font-size="54" font-weight="800" fill="#e2e8f0" font-family="Segoe UI,system-ui,sans-serif">DEFENSA</text>'
++'<text x="45" y="208" font-size="54" font-weight="800" fill="#00d4ff" font-family="Segoe UI,system-ui,sans-serif">INDIA DE REY</text>'
++'<rect x="48" y="224" width="190" height="4" fill="#22c55e" rx="2"/>'
++'<text x="48" y="254" font-size="15" fill="#94a3b8" font-family="Segoe UI,system-ui,sans-serif">El «Muro con Pinchos» · sistema universal y elástico</text>'
++'<g font-family="Segoe UI,system-ui,sans-serif">'
++'<rect x="46" y="288" width="252" height="42" rx="10" fill="#0f172a" stroke="#1e3a5f" stroke-width="1.5"><animate attributeName="stroke" values="#1e3a5f;#00d4ff;#00d4ff;#1e3a5f;#1e3a5f" keyTimes="0;0.05;0.28;0.4;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<circle cx="68" cy="309" r="12" fill="rgba(0,212,255,.15)" stroke="#00d4ff"/><text x="68" y="313" font-size="12" font-weight="800" fill="#00d4ff" text-anchor="middle">1</text>'
++'<text x="90" y="314" font-size="13.5" font-weight="700" fill="#cbd5e1">ABSORBER EL CENTRO</text>'
++'<rect x="46" y="340" width="252" height="42" rx="10" fill="#0f172a" stroke="#1e3a5f" stroke-width="1.5"><animate attributeName="stroke" values="#1e3a5f;#1e3a5f;#f59e0b;#f59e0b;#1e3a5f;#1e3a5f" keyTimes="0;0.32;0.36;0.6;0.66;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<circle cx="68" cy="361" r="12" fill="rgba(245,158,11,.15)" stroke="#f59e0b"/><text x="68" y="365" font-size="12" font-weight="800" fill="#f59e0b" text-anchor="middle">2</text>'
++'<text x="90" y="366" font-size="13.5" font-weight="700" fill="#cbd5e1">RESISTIR EN EL MURO</text>'
++'<rect x="46" y="392" width="252" height="42" rx="10" fill="#0f172a" stroke="#1e3a5f" stroke-width="1.5"><animate attributeName="stroke" values="#1e3a5f;#1e3a5f;#22c55e;#22c55e;#1e3a5f;#1e3a5f" keyTimes="0;0.62;0.66;0.88;0.94;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<circle cx="68" cy="413" r="12" fill="rgba(34,197,94,.15)" stroke="#22c55e"/><text x="68" y="417" font-size="12" font-weight="800" fill="#22c55e" text-anchor="middle">3</text>'
++'<text x="90" y="418" font-size="13.5" font-weight="700" fill="#cbd5e1">CONTRAATACAR</text>'
++'</g>'
++'<rect x="46" y="446" width="386" height="62" rx="10" fill="#0f172a" stroke="#1e3a5f"/>'
++'<text x="62" y="470" font-size="11" letter-spacing="2" fill="#64748b" font-weight="700" font-family="Segoe UI,system-ui,sans-serif">SECUENCIA BASE DEL MURO</text>'
++'<text x="62" y="493" font-size="15" font-weight="700" fill="#e2e8f0" font-family="Segoe UI,system-ui,sans-serif">1.d4 Cf6 · 2.c4 g6 · 3.Cc3 Ag7 · 4.e4 d6</text>'
++'<rect x="462" y="62" width="416" height="416" rx="8" fill="#0c1526" stroke="#1e3a5f"/>'
++'<rect x="470" y="70" width="400" height="400" fill="url(#chk'+u+')" stroke="#24446b"/>'
++'<rect x="620" y="170" width="50" height="50" fill="#22c55e" opacity="0"><animate attributeName="opacity" values="0;0;0.22;0.22;0" keyTimes="0;0.15;0.22;0.95;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<rect x="770" y="170" width="50" height="50" fill="#22c55e" opacity="0"><animate attributeName="opacity" values="0;0;0.22;0.22;0" keyTimes="0;0.16;0.23;0.95;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<rect x="620" y="270" width="50" height="50" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;0.28;0.28;0" keyTimes="0;0.05;0.11;0.95;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<rect x="670" y="270" width="50" height="50" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;0.28;0.28;0" keyTimes="0;0.07;0.13;0.95;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<rect x="770" y="120" width="50" height="50" fill="#a855f7" opacity="0"><animate attributeName="opacity" values="0;0;0.3;0.3;0" keyTimes="0;0.3;0.37;0.95;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<rect x="620" y="270" width="50" height="50" fill="#ef4444" opacity="0"><animate attributeName="opacity" values="0;0;0.45;0;0" keyTimes="0;0.77;0.8;0.9;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<rect x="470" y="120" width="400" height="100" fill="#22c55e" opacity="0"><animate attributeName="opacity" values="0;0;0.12;0.12;0" keyTimes="0;0.14;0.22;0.94;1" dur="8s" repeatCount="indefinite"/></rect>'
++'<path d="M482,220 l13,16 l13,-16 z M532,220 l13,16 l13,-16 z M582,220 l13,16 l13,-16 z M632,220 l13,16 l13,-16 z M682,220 l13,16 l13,-16 z M732,220 l13,16 l13,-16 z M782,220 l13,16 l13,-16 z M832,220 l13,16 l13,-16 z" fill="#22c55e" opacity="0"><animate attributeName="opacity" values="0;0;0.85;0.85;0" keyTimes="0;0.18;0.26;0.94;1" dur="8s" repeatCount="indefinite"/></path>'
++'<text x="478" y="112" font-size="11" letter-spacing="2" font-weight="700" fill="#4ade80" opacity="0" font-family="Segoe UI,system-ui,sans-serif">EL MURO CON PINCHOS<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.2;0.26;0.94;1" dur="8s" repeatCount="indefinite"/></text>'
++'<g font-size="11" fill="#64748b" font-weight="700" font-family="Segoe UI,system-ui,sans-serif">'
++'<text x="495" y="497" text-anchor="middle">a</text><text x="545" y="497" text-anchor="middle">b</text><text x="595" y="497" text-anchor="middle">c</text><text x="645" y="497" text-anchor="middle">d</text><text x="695" y="497" text-anchor="middle">e</text><text x="745" y="497" text-anchor="middle">f</text><text x="795" y="497" text-anchor="middle">g</text><text x="845" y="497" text-anchor="middle">h</text>'
++'<text x="454" y="99" text-anchor="end">8</text><text x="454" y="149" text-anchor="end">7</text><text x="454" y="199" text-anchor="end">6</text><text x="454" y="249" text-anchor="end">5</text><text x="454" y="299" text-anchor="end">4</text><text x="454" y="349" text-anchor="end">3</text><text x="454" y="399" text-anchor="end">2</text><text x="454" y="449" text-anchor="end">1</text>'
++'</g>'
++'<g font-family="Segoe UI,system-ui,sans-serif">'
++'<g><text x="595" y="307" font-size="34" text-anchor="middle" fill="#f1f5f9" filter="url(#glow'+u+')" opacity="0">♙<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.07;0.94;1" dur="8s" repeatCount="indefinite"/></text><animateTransform attributeName="transform" type="translate" values="0 16;0 0;0 0;0 16" keyTimes="0;0.07;0.94;1" dur="8s" repeatCount="indefinite"/></g>'
++'<g><text x="645" y="307" font-size="34" text-anchor="middle" fill="#f1f5f9" filter="url(#glow'+u+')" opacity="0">♙<animate attributeName="opacity" values="0;1;1;0.3;1;0.3;1;1;0" keyTimes="0;0.09;0.79;0.815;0.835;0.855;0.875;0.94;1" dur="8s" repeatCount="indefinite"/></text><animateTransform attributeName="transform" type="translate" values="0 16;0 0;0 0;0 16" keyTimes="0;0.09;0.94;1" dur="8s" repeatCount="indefinite"/></g>'
++'<g><text x="695" y="307" font-size="34" text-anchor="middle" fill="#f1f5f9" filter="url(#glow'+u+')" opacity="0">♙<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.11;0.94;1" dur="8s" repeatCount="indefinite"/></text><animateTransform attributeName="transform" type="translate" values="0 16;0 0;0 0;0 16" keyTimes="0;0.11;0.94;1" dur="8s" repeatCount="indefinite"/></g>'
++'<text x="595" y="357" font-size="34" text-anchor="middle" fill="#f1f5f9" opacity="0">♘<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.12;0.17;0.94;1" dur="8s" repeatCount="indefinite"/></text>'
++'<text x="645" y="207" font-size="34" text-anchor="middle" fill="#0b1120" stroke="#94a3b8" stroke-width="0.8" paint-order="stroke" opacity="0">♟<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.15;0.2;0.94;1" dur="8s" repeatCount="indefinite"/></text>'
++'<text x="795" y="207" font-size="34" text-anchor="middle" fill="#0b1120" stroke="#94a3b8" stroke-width="0.8" paint-order="stroke" opacity="0">♟<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.16;0.21;0.94;1" dur="8s" repeatCount="indefinite"/></text>'
++'<text x="795" y="107" font-size="34" text-anchor="middle" fill="#0b1120" stroke="#94a3b8" stroke-width="0.8" paint-order="stroke" opacity="0">♚<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.17;0.22;0.94;1" dur="8s" repeatCount="indefinite"/></text>'
++'<text x="745" y="207" font-size="34" text-anchor="middle" fill="#0b1120" stroke="#94a3b8" stroke-width="0.8" paint-order="stroke" opacity="0">♞<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.18;0.23;0.94;1" dur="8s" repeatCount="indefinite"/></text>'
++'<circle cx="795" cy="145" r="24" fill="#a855f7" opacity="0"><animate attributeName="opacity" values="0;0;0.35;0.12;0.3;0.12;0" keyTimes="0;0.3;0.36;0.5;0.66;0.85;1" dur="8s" repeatCount="indefinite"/></circle>'
++'<text x="795" y="157" font-size="34" text-anchor="middle" fill="#0b1120" stroke="#d8b4fe" stroke-width="1" paint-order="stroke" opacity="0">♝<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.31;0.37;0.94;1" dur="8s" repeatCount="indefinite"/></text>'
++'<line x1="795" y1="145" x2="495" y2="445" stroke="url(#beam'+u+')" stroke-width="9" opacity="0" filter="url(#glow'+u+')"><animate attributeName="opacity" values="0;0;0.2;0.2;0;0" keyTimes="0;0.33;0.39;0.82;0.9;1" dur="8s" repeatCount="indefinite"/></line>'
++'<line x1="795" y1="145" x2="495" y2="445" stroke="url(#beam'+u+')" stroke-width="2.5" stroke-dasharray="12 8" opacity="0"><animate attributeName="opacity" values="0;0;0.95;0.95;0;0" keyTimes="0;0.33;0.39;0.82;0.9;1" dur="8s" repeatCount="indefinite"/><animate attributeName="stroke-dashoffset" values="0;-160" dur="8s" repeatCount="indefinite"/></line>'
++'<circle r="4.5" fill="#ffffff" filter="url(#glow'+u+')" opacity="0"><animateMotion path="M795,145 L495,445" dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.33;0.5;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.33;0.36;0.48;0.52;1" dur="8s" repeatCount="indefinite"/></circle>'
++'<g opacity="0" stroke="#ef4444" fill="none"><circle cx="645" cy="295" r="20" stroke-width="2"><animate attributeName="r" values="18;23;18" dur="1.2s" repeatCount="indefinite"/></circle><circle cx="645" cy="295" r="11" stroke-width="1.5"/><path d="M645,268 v10 M645,312 v10 M618,295 h10 M662,295 h10" stroke-width="2"/><animateTransform attributeName="transform" type="rotate" values="0 645 295;360 645 295" dur="8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.48;0.52;0.6;0.63;1" dur="8s" repeatCount="indefinite"/></g>'
++'<text x="670" y="50" font-size="14" font-weight="800" letter-spacing="2" text-anchor="middle" fill="#ef4444" opacity="0" font-family="Segoe UI,system-ui,sans-serif">◉ OBJETIVO: d4<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.5;0.54;0.615;0.64;1" dur="8s" repeatCount="indefinite"/></text>'
++'<text x="670" y="50" font-size="19" font-weight="800" letter-spacing="3" text-anchor="middle" fill="#22c55e" opacity="0" filter="url(#glow'+u+')" font-family="Segoe UI,system-ui,sans-serif">¡CONTRAATAQUE!<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.76;0.8;0.93;0.97;1" dur="8s" repeatCount="indefinite"/></text>'
++'<path d="M745,195 Q690,120 695,245" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="6 9" opacity="0"><animate attributeName="opacity" values="0;0;0.7;0.7;0;0" keyTimes="0;0.625;0.66;0.8;0.86;1" dur="8s" repeatCount="indefinite"/><animate attributeName="stroke-dashoffset" values="0;-60" dur="8s" repeatCount="indefinite"/></path>'
++'<g opacity="0"><text x="0" y="12" font-size="38" text-anchor="middle" fill="#22c55e" stroke="#052e16" stroke-width="1" paint-order="stroke" filter="url(#glow'+u+')" font-family="Segoe UI,system-ui,sans-serif">♞</text><animateMotion path="M745,195 Q690,120 695,245" dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.625;0.76;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.62;0.64;0.77;0.8;1" dur="8s" repeatCount="indefinite"/></g>'
++'<circle cx="695" cy="245" fill="none" stroke="#ef4444" stroke-width="2.5" r="4" opacity="0"><animate attributeName="opacity" values="0;0;0.85;0;0" keyTimes="0;0.76;0.78;0.86;1" dur="8s" repeatCount="indefinite"/><animate attributeName="r" values="4;4;6;30;30" keyTimes="0;0.76;0.775;0.86;1" dur="8s" repeatCount="indefinite"/></circle>'
++'<line x1="695" y1="245" x2="645" y2="295" stroke="#ef4444" stroke-width="3" stroke-dasharray="5 6" opacity="0"><animate attributeName="opacity" values="0;0;0.9;0;0" keyTimes="0;0.78;0.8;0.87;1" dur="8s" repeatCount="indefinite"/></line>'
++'<text x="470" y="522" font-size="12" letter-spacing="1.5" fill="#7dd3fc" opacity="0" font-family="Segoe UI,system-ui,sans-serif">☢ RAYOS X — LA DIAGONAL LARGA g7→a1 PRESIONA d4<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.36;0.4;0.85;0.92;1" dur="8s" repeatCount="indefinite"/></text>'
++'</svg>';
+}
+function injectCover(slotId){
+  var slot=document.getElementById(slotId);
+  if(!slot){return;}
+  slot.innerHTML=coverSVG(slotId==='cover-home'?'h':'c');
+  if(REDUCED){
+    try{var sv=slot.firstChild;if(sv&&sv.pauseAnimations){sv.pauseAnimations();}}catch(errS){}
+  }
+}
+
+/* ============================================================
+   MOTOR DE AJEDREZ — tableros interactivos paso a paso
+============================================================ */
+var FILES=['a','b','c','d','e','f','g','h'];
+var GLYPH={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+var PNAME={K:'Rey',Q:'Dama',R:'Torre',B:'Alfil',N:'Caballo',P:'Peón'};
+
+function initialPos(){
+  var p={},back=['r','n','b','q','k','b','n','r'];
+  for(var i=0;i<8;i++){var f=FILES[i];p[f+'1']=back[i].toUpperCase();p[f+'2']='P';p[f+'7']='p';p[f+'8']=back[i];}
+  return p;
+}
+function applyMove(pos,mv){
+  var np=cloneObj(pos);
+  if(mv.castle){
+    if(mv.castle==='w'){delete np.e1;delete np.h1;np.g1='K';np.f1='R';}
+    else{delete np.e8;delete np.h8;np.g8='k';np.f8='r';}
+  }else{
+    var pc=np[mv.from];delete np[mv.from];np[mv.to]=pc;
+  }
+  return np;
+}
+function applySteps(initial,steps){
+  var arr=[initial];
+  for(var i=0;i<steps.length;i++){arr.push(applyMove(arr[arr.length-1],steps[i]));}
+  return arr;
+}
+function buildGrid(gridEl){
+  var sqEls={};
+  for(var r=0;r<8;r++){
+    for(var c=0;c<8;c++){
+      var sqName=FILES[c]+(8-r);
+      var d=document.createElement('div');
+      d.className='sq '+(((c+r)%2===0)?'light':'dark');
+      d.setAttribute('data-sq',sqName);
+      gridEl.appendChild(d);
+      sqEls[sqName]=d;
+    }
+  }
+  return sqEls;
+}
+function fillCoords(rankEl,fileEl){
+  for(var r=8;r>=1;r--){var s=document.createElement('div');s.innerHTML=r;rankEl.appendChild(s);}
+  for(var c=0;c<8;c++){var f=document.createElement('div');f.innerHTML=FILES[c];fileEl.appendChild(f);}
+}
+function renderBoard(sqEls,position,lastMv,captured){
+  var k,el,pc,sp;
+  for(k in sqEls){
+    if(!sqEls.hasOwnProperty(k)){continue;}
+    el=sqEls[k];
+    el.innerHTML='';
+    removeClass(el,'hl-from');removeClass(el,'hl-to');removeClass(el,'cap');
+    pc=position[k];
+    if(pc){
+      sp=document.createElement('span');
+      sp.className=(pc===pc.toUpperCase())?'pc pc-w':'pc pc-b';
+      sp.innerHTML=GLYPH[pc];
+      el.appendChild(sp);
+    }
+  }
+  if(lastMv && !lastMv.castle){
+    if(sqEls[lastMv.from]){addClass(sqEls[lastMv.from],'hl-from');}
+    if(sqEls[lastMv.to]){
+      addClass(sqEls[lastMv.to],'hl-to');
+      if(captured){addClass(sqEls[lastMv.to],'cap');}
+    }
+  }
+}
+
+function createStepper(cfg){
+  var root=document.getElementById(cfg.mount);
+  if(!root){return;}
+  var moves=cfg.moves;
+  var positions=applySteps(initialPos(),moves);
+  var captures=[];
+  for(var ci=0;ci<moves.length;ci++){
+    captures.push(moves[ci].castle ? null : (positions[ci][moves[ci].to] || null));
+  }
+  root.innerHTML=
+   '<div class="board-frame">'
+  +' <div class="board-titlebar"><div><div class="bt-title">'+cfg.title+'</div><div class="bt-sub">'+cfg.sub+'</div></div><span class="bt-chip '+cfg.chipCls+'">'+cfg.chip+'</span></div>'
+  +' <div class="board-body">'
+  +'   <div class="board-col">'
+  +'     <div class="board-area"><div class="rank-coords" id="rk-'+cfg.mount+'"></div><div class="board-wrap"><div class="board-grid" id="gr-'+cfg.mount+'"></div><div class="file-coords" id="fl-'+cfg.mount+'"></div></div></div>'
+  +'     <div class="board-deck">'
+  +'       <div class="board-controls">'
+  +'         <button class="btn" id="rs-'+cfg.mount+'" type="button">⏮ Reset</button>'
+  +'         <button class="btn" id="pv-'+cfg.mount+'" type="button">◀ Anterior</button>'
+  +'         <button class="btn primary" id="nx-'+cfg.mount+'" type="button">Siguiente ▶</button>'
+  +'         <div class="step-ind" id="si-'+cfg.mount+'"></div>'
+  +'       </div>'
+  +'       <div class="slider-row"><input type="range" id="sl-'+cfg.mount+'" min="0" max="'+moves.length+'" value="0" step="1" aria-label="Deslizar movimientos"></div>'
+  +'       <div class="move-chips" id="ch-'+cfg.mount+'"></div>'
+  +'     </div>'
+  +'     <div class="legend-row"><span><i class="leg-box lb"></i> Último movimiento (origen y destino)</span><span><i class="leg-box cp"></i> Casilla de captura</span></div>'
+  +'   </div>'
+  +'   <div class="board-panel" id="pn-'+cfg.mount+'"></div>'
+  +' </div>'
+  +'</div>';
+
+  var gridEl=document.getElementById('gr-'+cfg.mount);
+  var sqEls=buildGrid(gridEl);
+  fillCoords(document.getElementById('rk-'+cfg.mount),document.getElementById('fl-'+cfg.mount));
+  var panel=document.getElementById('pn-'+cfg.mount);
+  var slider=document.getElementById('sl-'+cfg.mount);
+  var ind=document.getElementById('si-'+cfg.mount);
+  var btnP=document.getElementById('pv-'+cfg.mount);
+  var btnN=document.getElementById('nx-'+cfg.mount);
+  var btnR=document.getElementById('rs-'+cfg.mount);
+  var chipsRow=document.getElementById('ch-'+cfg.mount);
+  var chips=[];
+  var i,b,mv0,jug;
+  for(i=0;i<=moves.length;i++){
+    b=document.createElement('button');
+    b.setAttribute('type','button');
+    b.className='mchip';
+    if(i===0){b.innerHTML='⏻ Inicial';}
+    else{
+      mv0=moves[i-1];jug=Math.ceil(i/2);
+      b.innerHTML=(mv0.m==='w'?jug+'. ':jug+'… ')+mv0.san.split(' ')[0];
+    }
+    (function(idx){
+      b.addEventListener('click',function(){idx_=idx;render();},false);
+    })(i);
+    chipsRow.appendChild(b);
+    chips.push(b);
+  }
+  var idx_=0;
+
+  function pieceLineHTML(mv,posIdx){
+    if(mv.castle){
+      var sideB=(mv.m==='b');
+      return '<span class="glyph">'+(sideB?'♚':'♔')+'</span> Enroque corto — Rey '+(sideB?'e8 → g8':'e1 → g1')+' · Torre '+(sideB?'h8 → f8':'h1 → f1');
+    }
+    var code=positions[posIdx][mv.from];
+    var name=PNAME[code.toUpperCase()];
+    var adj=(mv.m==='w')?'blanco':'negro';
+    return '<span class="glyph">'+GLYPH[code]+'</span> '+name+' '+adj+': '+mv.from+' → '+mv.to;
+  }
+
+  function render(){
+    var mv=(idx_>0)?moves[idx_-1]:null;
+    var cap=(idx_>0)?captures[idx_-1]:null;
+    renderBoard(sqEls,positions[idx_],mv,cap);
+    var html='';
+    if(idx_===0){
+      panel.innerHTML='<div class="mv-head"><span class="mv-num">POSICIÓN INICIAL</span><span class="jugada-chip">Paso 0</span></div>'
+      +'<div class="mv-piece"><span class="glyph">♟♙</span> Las 32 piezas en sus casillas de partida</div>'
+      +'<div class="mv-block what"><h5>¿Qué ocurre?</h5><p>La partida aún no ha comenzado. Las blancas ocuparán el centro; las negras preparan el «muro con pinchos».</p></div>'
+      +'<div class="mv-block why"><h5>¿Por qué es importante?</h5><p>Usa Siguiente, el deslizador o las fichas numeradas para reproducir la secuencia movimiento a movimiento, a tu ritmo.</p></div>';
+    }else{
+      var colorName=(mv.m==='w')?'BLANCAS':'NEGRAS';
+      var jugN=Math.ceil(idx_/2);
+      var chipCls=(mv.m==='w')?'cw':'cb';
+      html='<div class="mv-head"><span class="mv-num">MOVIMIENTO '+idx_+'</span><span class="color-chip '+chipCls+'">'+colorName+'</span><span class="jugada-chip">Jugada completa nº '+jugN+'</span></div>';
+      if(mv.note){html+='<span class="note-chip">ℹ '+mv.note+'</span>';}
+      html+='<div class="mv-piece">'+pieceLineHTML(mv,idx_-1)+'<span class="san-chip">Notación: '+(mv.m==='w'?jugN+'. ':jugN+'… ')+mv.san+'</span>';
+      if(cap){html+=' <span class="cap-chip">⚔ CAPTURA: '+PNAME[cap.toUpperCase()]+' '+(cap===cap.toUpperCase()?'blanco':'negro')+'</span>';}
+      if(mv.castle){html+=' <span class="san-chip" style="color:#4ade80;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)">ENROQUE</span>';}
+      html+='</div>';
+      html+='<div class="mv-block what"><h5>¿Qué ocurre?</h5><p>'+mv.q+'</p></div>';
+      html+='<div class="mv-block why"><h5>¿Por qué es importante?</h5><p>'+mv.w+'</p></div>';
+      panel.innerHTML=html;
+    }
+    btnP.disabled=(idx_===0);
+    btnN.disabled=(idx_===moves.length);
+    btnP.setAttribute('aria-disabled',idx_===0?'true':'false');
+    btnN.setAttribute('aria-disabled',idx_===moves.length?'true':'false');
+    slider.value=idx_;
+    if(idx_===0){
+      ind.innerHTML='<b>Posición inicial</b> · Paso 0 de '+moves.length;
+    }else{
+      var mv2=moves[idx_-1];var j2=Math.ceil(idx_/2);
+      ind.innerHTML='<b>Movimiento '+idx_+' de '+moves.length+'</b> · '+(mv2.m==='w'?j2+'. BLANCAS':j2+'… NEGRAS');
+    }
+    for(var cIdx=0;cIdx<chips.length;cIdx++){
+      if(cIdx===idx_){addClass(chips[cIdx],'cur');}else{removeClass(chips[cIdx],'cur');}
+    }
+    var cur=chips[idx_];
+    if(cur && chipsRow){
+      chipsRow.scrollLeft=Math.max(0,cur.offsetLeft-chipsRow.clientWidth/2+cur.clientWidth/2);
+    }
+    syncBoardHeights();
+  }
+
+  btnN.addEventListener('click',function(){if(idx_<moves.length){idx_++;render();}},false);
+  btnP.addEventListener('click',function(){if(idx_>0){idx_--;render();}},false);
+  btnR.addEventListener('click',function(){idx_=0;render();},false);
+  slider.addEventListener('input',function(){idx_=parseInt(slider.value,10)||0;render();},false);
+  slider.addEventListener('change',function(){idx_=parseInt(slider.value,10)||0;render();},false);
+  render();
+}
+
+/* altura cuadrada del tablero (fallback de aspect-ratio) */
+function syncBoardHeights(){
+  var grids=document.querySelectorAll('.board-grid');
+  for(var i=0;i<grids.length;i++){
+    var w=grids[i].offsetWidth;
+    if(w>0){grids[i].style.height=w+'px';}
+  }
+}
+
+/* ============================================================
+   DATOS DE LAS SECUENCIAS (movimientos individuales)
+============================================================ */
+function W(from,to,san,q,w,note){return{m:'w',from:from,to:to,san:san,q:q,w:w,note:note};}
+function B(from,to,san,q,w,note){return{m:'b',from:from,to:to,san:san,q:q,w:w,note:note};}
+function CB(san,q,w){return{m:'b',castle:'b',san:san,q:q,w:w};}
+
+var BASE=[
+ W('d2','d4','d4','El peón blanco avanza dos casillas, de d2 a d4, y ocupa el centro del tablero.','El blanco ocupa el centro. La India de Rey lo permite de forma deliberada: comienza la «invitación estratégica» para que el blanco se sobreextienda.'),
+ B('g8','f6','Cf6 (Nf6)','El caballo negro salta de g8 a f6.','El negro desarrolla su pieza más activa y controla la casilla crítica e4.'),
+ W('c2','c4','c4','El peón blanco avanza de c2 a c4.','El blanco refuerza su control central mientras el negro prepara el fianchetto de su alfil de casillas negras.'),
+ B('g7','g6','g6','El peón negro avanza de g7 a g6.','Se abre el camino para el fianchetto: el alfil de casillas negras será el «alma» de la defensa.'),
+ W('b1','c3','Cc3 (Nc3)','El caballo blanco salta de b1 a c3.','El blanco prepara el avance e4 para construir su gran centro de peones.'),
+ B('f8','g7','Ag7 (Bg7)','El alfil negro se instala en g7, en la diagonal larga.','El negro sitúa el «alma» de su defensa ejerciendo una presión de Rayos X indirecta sobre d4.'),
+ W('e2','e4','e4','El peón blanco avanza de e2 a e4.','El blanco completa su gran centro de peones: c4, d4 y e4.'),
+ B('d7','d6','d6','El peón negro avanza de d7 a d6.','El negro establece el «ancla» vital que detiene el avance enemigo y garantiza la estabilidad para las futuras rupturas.')
+];
+
+var BD3=BASE.concat([
+ W('g1','f3','Cf3 (Nf3)','El caballo blanco salta de g1 a f3.','Desarrollo natural: el caballo defiende d4 y será, sin saberlo, la pieza clave del castigo negro.'),
+ CB('0-0','El rey negro viaja de e8 a g8 y la torre de h8 a f8: enroque corto.','Seguridad del rey negro y finalización del desarrollo esencial antes del contraataque.'),
+ W('f1','d3','Ad3 (Bd3)','El alfil blanco se coloca en d3.','¡Imprecisión conceptual grave! Obstruye la comunicación visual entre la dama blanca y el peón de d4, dejándolo vulnerable ante los Rayos X.','IMPRECISIÓN BLANCA'),
+ B('c8','g4','Ag4 (Bg4)','El alfil negro sale de c8 a g4.','Aprovecha la imprecisión: clava al caballo de f3, inmovilizando al único defensor efectivo de d4 tras la desconexión de la dama.'),
+ W('h2','h3','h3','El peón blanco avanza de h2 a h3, provocando al alfil clavador.','El blanco intenta expulsar al alfil; el documento señala esta jugada como antesala inmediata del castigo.'),
+ B('g4','f3','Axf3 (Bxf3)','El alfil negro de g4 captura al caballo blanco en f3.','Ante la provocación, el negro elimina quirúrgicamente al protector del centro.'),
+ W('d1','f3','Dxf3 (Qxf3)','La dama blanca de d1 recaptura al alfil en f3 (captura obligada).','Con la dama en f3 se confirma la desconexión: ya nadie defiende sólidamente el peón de d4.'),
+ B('b8','c6','Cc6 (Nc6)','El caballo negro salta de b8 a c6.','El negro lanza su caballo a asediar el peón de d4, que ahora carece de defensores sólidos.')
+]);
+
+var E5=BASE.concat([
+ W('c1','e3','Ae3 (Be3)','El alfil blanco se desarrolla de c1 a e3.','El blanco refuerza d4.'),
+ B('b8','c6','Cc6 (Nc6)','El caballo negro salta de b8 a c6.','El negro aumenta la presión central para forzar una decisión.'),
+ W('g1','e2','Ce2 (Ne2)','El caballo blanco salta de g1 a e2.','El blanco mantiene el refuerzo central con un desarrollo flexible.'),
+ B('f6','e5','Ce5 (Ne5)','El caballo negro salta de f6 a e5, ofreciéndose al cambio.','El negro ofrece su pieza en un salto audaz para generar una crisis táctica inmediata.')
+]);
+
+var BE2=BASE.concat([
+ W('f1','e2','Ae2 (Be2)','El alfil blanco se desarrolla con prudencia de f1 a e2.','Planteamiento conservador del blanco. El negro debe demostrar flexibilidad para «dar aire» a su alfil de g7.'),
+ B('f6','d7','Cd7 (Nd7)','El caballo negro se reubica de f6 a d7.','Reubicación estratégica: libera la diagonal larga y prepara la ruptura central en e5.')
+]);
+
+var SAEM=BASE.concat([
+ W('f2','f3','f3','El peón blanco avanza de f2 a f3.','Variante Saemisch: el blanco refuerza e4 y prepara una expansión agresiva a costa de su propio desarrollo.'),
+ B('a7','a5','a5','El peón negro avanza de a7 a a5.','Frena la expansión blanca en el flanco de dama y prepara el desarrollo del caballo.'),
+ W('d1','d2','Dd2 (Qd2)','La dama blanca se desplaza de d1 a d2.','El blanco conecta la dama con su esquema de ataque.'),
+ B('b8','a6','Ca6 (Na6)','El caballo negro sale de b8 por a6.','Desarrollar el caballo hacia la casilla c5 para presionar las debilidades creadas por la sobreextensión.'),
+ W('c1','e3','Ae3 (Be3)','El alfil blanco se desarrolla de c1 a e3.','El documento indica aquí una «jugada de desarrollo blanca aleatoria»; se muestra Ae3 como ejemplo representativo.','JUGADA «ALEATORIA» DEL DOCUMENTO'),
+ B('a6','c5','Cc5 (Nc5)','El caballo negro continúa de a6 a c5.','El destino anunciado por el propio texto: el caballo se dirige a c5 para ejecutar el golpe.','PLAN INDICADO EN EL DOCUMENTO'),
+ W('g1','e2','Ce2 (Ne2)','El caballo blanco salta de g1 a e2.','Jugada de soporte necesaria para proseguir la demostración; el documento no la especifica.','NO ESPECIFICADA EN EL DOCUMENTO'),
+ B('c5','e4','Cxe4 (Nxe4)','El caballo negro de c5 captura al peón blanco de e4.','El «Golpe Maestro»: un sacrificio que aprovecha la falta de desarrollo blanco. El documento continúa: «Tras la recaptura blanca, la Dama negra de d8 a h4 (Dh4+) da jaque, recuperando la pieza y dejando el enroque blanco en ruinas».'),
+ W('f3','e4','fxe4','El peón blanco de f3 recaptura al caballo negro en e4.','Recaptura no especificada en el documento original; se muestra la más natural con el peón de f3.','RECAPTURA NO ESPECIFICADA')
+]);
+
+var FP=BASE.concat([
+ W('f2','f4','f4','El peón blanco avanza de f2 a f4.','Se levanta el Ataque de los Cuatro Peones: c4, d4, e4 y f4. La avalancha más violenta del blanco.'),
+ CB('0-0','El rey negro se enroca corto: e8 → g8 y torre h8 → f8.','Asegurar el monarca antes de enfrentar la avalancha de peones más violenta del blanco.'),
+ W('g1','f3','Cf3 (Nf3)','El caballo blanco salta de g1 a f3.','El blanco continúa su desarrollo detrás del muro de peones.'),
+ B('b8','a6','Ca6 (Na6)','El caballo negro sale de b8 por a6.','Preparar la ruptura e5 utilizando el caballo para controlar casillas periféricas clave.'),
+ W('f1','e2','Ae2 (Be2)','El alfil blanco se desarrolla de f1 a e2.','El blanco completa el desarrollo de sus piezas menores.'),
+ B('e7','e5','e5','El peón negro avanza de e7 a e5.','Desafiar el corazón del centro blanco. Tras la respuesta blanca, el plan es el salto Cb4 y el alfil Af5 para clavar la posición.')
+]);
+
+/* ============================================================
+   1) EL MENÚ SE CONECTA PRIMERO (delegación de eventos ES5)
+============================================================ */
+var pages=document.querySelectorAll('.page');
+var navBtns=document.querySelectorAll('.nav-btn');
+var navScroll=document.getElementById('navScroll');
+
+function showSection(id){
+  var i,activeBtn=null;
+  for(i=0;i<pages.length;i++){
+    if(pages[i].id===id){addClass(pages[i],'active');}
+    else{removeClass(pages[i],'active');}
+  }
+  for(i=0;i<navBtns.length;i++){
+    if(navBtns[i].getAttribute('data-target')===id){
+      addClass(navBtns[i],'active');
+      activeBtn=navBtns[i];
+    }else{
+      removeClass(navBtns[i],'active');
+    }
+  }
+  if(activeBtn && navScroll){
+    navScroll.scrollLeft=Math.max(0,activeBtn.offsetLeft-60);
+  }
+  window.scrollTo(0,0);
+  try{
+    if(id==='home'){
+      injectCover('cover-home');
+      var cc=document.getElementById('cover-credits');if(cc){cc.innerHTML='';}
+    }else if(id==='creditos'){
+      injectCover('cover-credits');
+      var ch=document.getElementById('cover-home');if(ch){ch.innerHTML='';}
+    }else{
+      var c1=document.getElementById('cover-home');if(c1){c1.innerHTML='';}
+      var c2=document.getElementById('cover-credits');if(c2){c2.innerHTML='';}
+    }
+  }catch(errCover){}
+  setTimeout(syncBoardHeights,60);
+  updateProgress();
+}
+
+function onNavClick(e){
+  var src=e.target||window.event.srcElement;
+  var btn=findParentAttr(src,'data-target');
+  if(btn){showSection(btn.getAttribute('data-target'));}
+}
+if(navScroll){
+  navScroll.addEventListener('click',onNavClick,false);
+}
+
+/* ============================================================
+   2) BARRA DE PROGRESO + VOLVER ARRIBA
+============================================================ */
+var progressBar=document.getElementById('progressBar');
+function updateProgress(){
+  var h=document.documentElement;
+  var max=h.scrollHeight-window.innerHeight;
+  var pct=max>0?(window.pageYOffset/max)*100:0;
+  if(pct<0){pct=0;}
+  if(pct>100){pct=100;}
+  progressBar.style.width=pct+'%';
+}
+var backTop=document.getElementById('backTop');
+function onScroll(){
+  updateProgress();
+  var y=window.pageYOffset||document.documentElement.scrollTop||0;
+  if(backTop){
+    if(y>300){addClass(backTop,'show');}
+    else{removeClass(backTop,'show');}
+  }
+}
+window.addEventListener('scroll',onScroll,false);
+window.addEventListener('resize',function(){updateProgress();syncBoardHeights();},false);
+window.addEventListener('orientationchange',function(){setTimeout(syncBoardHeights,120);},false);
+if(backTop){
+  backTop.addEventListener('click',function(){window.scrollTo(0,0);},false);
+}
+
+/* ============================================================
+   3) TABLEROS — cada uno aislado en su propio try/catch
+============================================================ */
+var boardsCfg=[
+ {mount:'board-base',title:'TABLERO 1 · CONSTRUCCIÓN DE LA BASE',sub:'Jugadas 1–4 · 8 movimientos individuales',chip:'SECUENCIA COMPLETA',chipCls:'ok',moves:BASE},
+ {mount:'board-bd3',title:'TABLERO 2 · CASTIGO AL ALFIL EN d3',sub:'Jugadas 1–8 · 16 movimientos individuales',chip:'SECUENCIA COMPLETA',chipCls:'ok',moves:BD3},
+ {mount:'board-e5',title:'TABLERO 3 · EL SACRIFICIO EN e5',sub:'14 movimientos reproducibles · ver aviso crítico',chip:'SECUENCIA PARCIAL — VER AVISO',chipCls:'part',moves:E5},
+ {mount:'board-be2',title:'TABLERO 4 · VARIANTE Ae2',sub:'10 movimientos reproducibles · ver aviso crítico',chip:'SECUENCIA PARCIAL — VER AVISO',chipCls:'part',moves:BE2},
+ {mount:'board-saemisch',title:'TABLERO 5 · VARIANTE SAEMISCH (f3)',sub:'17 movimientos · apoyos señalizados con ficha ámbar',chip:'VER NOTA DE RECONSTRUCCIÓN',chipCls:'note',moves:SAEM},
+ {mount:'board-4p',title:'TABLERO 6 · ATAQUE DE LOS CUATRO PEONES',sub:'Jugadas 1–7 · 14 movimientos individuales',chip:'SECUENCIA COMPLETA',chipCls:'ok',moves:FP}
+];
+for(var bi=0;bi<boardsCfg.length;bi++){
+  try{
+    createStepper(boardsCfg[bi]);
+  }catch(errBoard){
+    var failRoot=document.getElementById(boardsCfg[bi].mount);
+    if(failRoot){failRoot.innerHTML='<div class="callout error"><span class="co-tag">ERROR</span><p>Este tablero no pudo inicializarse en tu dispositivo.</p></div>';}
+  }
+}
+
+/* ============================================================
+   4) CHECKLIST (aislado)
+============================================================ */
+try{
+  var checkItems=document.querySelectorAll('.check-item');
+  var cpFill=document.getElementById('cpFill');
+  var cpText=document.getElementById('cpText');
+  var cpDone=document.getElementById('cpDone');
+  function refreshCheck(){
+    var doneList=document.querySelectorAll('.check-item.done');
+    var n=doneList.length;
+    if(cpFill){cpFill.style.width=(n/checkItems.length*100)+'%';}
+    if(cpText){cpText.innerHTML='Progreso: '+n+' de '+checkItems.length+' conceptos dominados';}
+    if(cpDone){
+      if(n===checkItems.length){addClass(cpDone,'show');}
+      else{removeClass(cpDone,'show');}
+    }
+  }
+  function attachCheck(item){
+    item.setAttribute('tabindex','0');
+    function toggle(){
+      if(hasClass(item,'done')){removeClass(item,'done');}
+      else{addClass(item,'done');}
+      refreshCheck();
+    }
+    item.addEventListener('click',toggle,false);
+    item.addEventListener('keydown',function(e){
+      var k=e.key||e.keyCode;
+      if(k==='Enter'||k===13||k===' '||k===32){
+        if(e.preventDefault){e.preventDefault();}
+        toggle();
+      }
+    },false);
+  }
+  for(var qi=0;qi<checkItems.length;qi++){attachCheck(checkItems[qi]);}
+}catch(errCheck){}
+
+/* ============================================================
+   5) PORTADA INICIAL + ALTURAS
+============================================================ */
+try{injectCover('cover-home');}catch(errHome){}
+setTimeout(syncBoardHeights,80);
+updateProgress();
+
+})();
+</script>
+</body>
+</html>
