@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anatomía de una Partida de Ajedrez para Principiantes · Tutorial Interactivo</title>
+<meta name="description" content="Tutorial interactivo de ajedrez basado en la obra de Rubén Sbarsky: apertura, seguridad del rey, medio juego y el ataque decisivo de la séptima fila.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cinzel/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cinzel/900.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter/700.css">
+<style>
+:root{
+  --bg0:#0f0b07; --bg1:#171108; --panel:#20170f; --panel2:#2a1e12;
+  --line:#3d2d1a; --line2:#57402a;
+  --ivory:#f2e8d5; --ivory-dim:#c9bc9f; --ivory-mut:#9d9077;
+  --gold:#d9a441; --gold-b:#f5c96b; --gold-d:#8a6420;
+  --wood-l:#f0d9b5; --wood-d:#a97a4e;
+  --ok:#8fbf6a; --bad:#e06c5a; --info:#7ea7d8;
+  --r:16px; --shadow:0 14px 34px rgba(0,0,0,.45);
+  --font-d:'Cinzel',serif; --font-b:'Lora',Georgia,serif; --font-u:'Inter',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg0); color:var(--ivory); font-family:var(--font-b);
+  font-size:1.02rem; line-height:1.75; min-height:100vh; overflow-x:hidden;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(1100px 500px at 85% -10%, rgba(217,164,65,.10), transparent 60%),
+    radial-gradient(900px 600px at -10% 110%, rgba(217,164,65,.07), transparent 60%),
+    repeating-conic-gradient(rgba(242,232,213,.022) 0% 25%, transparent 0% 50%);
+  background-size:auto,auto,120px 120px;
+}
+::selection{background:var(--gold); color:#241a08}
+.skip{position:absolute; left:-999px; top:0; background:var(--gold); color:#241a08; padding:.6rem 1rem; z-index:200; border-radius:0 0 10px 10px; font-family:var(--font-u); font-weight:700}
+.skip:focus{left:12px}
+a{color:var(--gold-b)}
+button{font-family:var(--font-u); cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-b); outline-offset:2px; border-radius:6px}
+
+/* ---------- CABECERA ---------- */
+.masthead{
+  display:flex; flex-wrap:wrap; gap:1rem 2rem; align-items:center; justify-content:space-between;
+  padding:1.1rem clamp(1rem,4vw,2.5rem) .9rem; border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#1c1409,#140e07);
+}
+.brand{display:flex; gap:.9rem; align-items:center; min-width:0}
+.logo{
+  width:56px; height:56px; flex:0 0 auto; display:grid; place-items:center; font-size:2rem; color:var(--gold-b);
+  background:radial-gradient(circle at 35% 30%, #3a2a14, #201607); border:2px solid var(--gold-d);
+  border-radius:14px; box-shadow:inset 0 0 18px rgba(217,164,65,.25), 0 6px 16px rgba(0,0,0,.5);
+}
+.overline{font-family:var(--font-u); font-size:.68rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); font-weight:700}
+h1{font-family:var(--font-d); font-weight:900; font-size:clamp(1.15rem,3vw,1.7rem); line-height:1.2; color:var(--ivory)}
+h1 span{display:block; font-size:.62em; color:var(--gold-b); font-weight:700; letter-spacing:.06em}
+.autor{font-size:.85rem; color:var(--ivory-dim)}
+.meta{display:flex; flex-wrap:wrap; gap:.5rem; list-style:none}
+.meta li{
+  font-family:var(--font-u); font-size:.78rem; font-weight:600; color:var(--ivory-dim);
+  border:1px solid var(--line2); background:var(--panel); padding:.35rem .75rem; border-radius:999px; white-space:nowrap;
+}
+.meta li strong{color:var(--gold-b)}
+.progressWrap{display:flex; align-items:center; gap:.7rem; padding:.45rem clamp(1rem,4vw,2.5rem); background:#120d06; border-bottom:1px solid var(--line)}
+.progressTrack{flex:1; height:8px; background:#241a0e; border-radius:99px; overflow:hidden; border:1px solid #332614}
+#progressBar{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--gold-d),var(--gold-b)); border-radius:99px; transition:width .6s ease}
+#progressTxt{font-family:var(--font-u); font-size:.72rem; font-weight:600; color:var(--ivory-mut); white-space:nowrap}
+
+/* ---------- PESTAÑAS ---------- */
+.tabs{
+  position:sticky; top:0; z-index:60; display:flex; gap:.15rem; overflow-x:auto; scrollbar-width:none;
+  padding:.4rem clamp(.6rem,3vw,2rem) 0; background:rgba(18,12,6,.92); backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.tabs::-webkit-scrollbar{display:none}
+.tabs [role=tab]{
+  border:none; background:transparent; color:var(--ivory-dim); font-weight:600; font-size:.86rem;
+  padding:.75rem 1rem .8rem; border-bottom:3px solid transparent; white-space:nowrap; letter-spacing:.02em;
+  display:flex; align-items:center; gap:.45rem; transition:color .2s, background .2s;
+}
+.tabs [role=tab]:hover{color:var(--gold-b); background:rgba(217,164,65,.07)}
+.tabs [role=tab][aria-selected="true"]{color:var(--gold-b); border-bottom-color:var(--gold); background:linear-gradient(180deg,transparent,rgba(217,164,65,.12))}
+.tabs .tIco{font-size:1rem}
+.tabs .tChk{font-size:.7rem; color:var(--ok); opacity:0; transition:opacity .3s}
+.tabs .tChk.on{opacity:1}
+
+/* ---------- ESTRUCTURA ---------- */
+main{max-width:1180px; margin:0 auto; padding:clamp(1rem,3vw,2rem) clamp(.8rem,3vw,2rem) 3rem}
+.panel[hidden]{display:none}
+.card{
+  background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line);
+  border-radius:var(--r); padding:clamp(1.1rem,3vw,1.8rem); box-shadow:var(--shadow);
+}
+.card + .card, .stack > * + *{margin-top:1.1rem}
+h2{font-family:var(--font-d); font-weight:700; font-size:clamp(1.15rem,2.6vw,1.55rem); color:var(--gold-b); line-height:1.3; margin-bottom:.8rem}
+h3{font-family:var(--font-d); font-size:1.02rem; color:var(--ivory); margin:1.4rem 0 .7rem; letter-spacing:.03em}
+h3:first-child{margin-top:0}
+p + p{margin-top:.8rem}
+.lead{font-size:1.05rem}
+.grid2{display:grid; grid-template-columns:1.25fr .9fr; gap:1.1rem; align-items:start; margin-top:1.1rem}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+blockquote{
+  margin:1rem 0; padding:.9rem 1.2rem; border-left:4px solid var(--gold); border-radius:0 12px 12px 0;
+  background:rgba(217,164,65,.08); font-style:italic; font-size:1.08rem; color:var(--gold-b);
+}
+blockquote cite{display:block; margin-top:.4rem; font-style:normal; font-family:var(--font-u); font-size:.75rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ivory-dim)}
+.imgFig{margin-top:1rem; border-radius:12px; overflow:hidden; border:1px solid var(--line2); position:relative}
+.imgFig img{display:block; width:100%; height:230px; object-fit:cover; transition:transform .8s ease}
+.imgFig:hover img{transform:scale(1.04)}
+.imgFig figcaption{position:absolute; inset:auto 0 0 0; padding:.5rem .8rem; font-family:var(--font-u); font-size:.72rem; color:var(--ivory); background:linear-gradient(transparent,rgba(10,6,2,.9))}
+
+/* ---------- HÉROE SVG ---------- */
+.hero{margin:0 0 1.1rem; border-radius:var(--r); overflow:hidden; border:1px solid var(--line2); box-shadow:var(--shadow); background:radial-gradient(700px 340px at 30% 40%, #2a1d0d, #150e06 75%)}
+.hero svg{display:block; width:100%; height:auto; max-height:72vh}
+.hero figcaption{padding:.6rem 1rem; font-family:var(--font-u); font-size:.8rem; color:var(--ivory-dim); background:#150e06; border-top:1px solid var(--line)}
+.hSqL{fill:var(--wood-l)} .hSqD{fill:var(--wood-d)}
+.hFrame{fill:none; stroke:var(--gold); stroke-width:3}
+.hPieceW{fill:#f7efdc; stroke:#5c3f1e; stroke-width:1.2; font-size:40px; text-anchor:middle; dominant-baseline:central; font-family:var(--font-b)}
+.hPieceB{fill:#241a10; stroke:#e8d9b8; stroke-width:1; font-size:40px; text-anchor:middle; dominant-baseline:central; font-family:var(--font-b)}
+.hPulse{fill:var(--gold); opacity:.14; animation:pulse 2.6s ease-in-out infinite}
+.hPulse:nth-child(2){animation-delay:.4s}.hPulse:nth-child(3){animation-delay:.8s}.hPulse:nth-child(4){animation-delay:1.2s}
+@keyframes pulse{0%,100%{opacity:.10}50%{opacity:.42}}
+.hScene{animation:sceneFade 18s linear infinite}
+@keyframes sceneFade{0%,93%{opacity:1}97%,100%{opacity:0}}
+.hTitle{font-family:var(--font-d); font-weight:700; fill:var(--gold-b); letter-spacing:.35em; font-size:26px; text-anchor:middle}
+.hSub{font-family:var(--font-b); font-style:italic; fill:var(--ivory-dim); font-size:17px; text-anchor:middle}
+.hMove{font-family:var(--font-u); font-weight:600; fill:var(--ivory); font-size:17px; opacity:0}
+.hKnight{fill:var(--gold); opacity:.9; font-size:200px; text-anchor:middle; dominant-baseline:central; animation:floaty 6s ease-in-out infinite; filter:drop-shadow(0 10px 18px rgba(0,0,0,.6))}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hRing{fill:none; stroke:var(--gold-b); stroke-width:3; opacity:0}
+.mv{will-change:transform}
+.mvWP{animation:mvWP 18s linear infinite}
+@keyframes mvWP{0%,6%{transform:translate(0,0)}10%,100%{transform:translate(0,-104px)}}
+.mvBP{animation:mvBP 18s linear infinite}
+@keyframes mvBP{0%,12%{transform:translate(0,0)}16%,100%{transform:translate(0,104px)}}
+.mvWN{animation:mvWN 18s linear infinite}
+@keyframes mvWN{0%,20%{transform:translate(0,0)}25%,100%{transform:translate(-52px,-104px)}}
+.mvBN{animation:mvBN 18s linear infinite}
+@keyframes mvBN{0%,28%{transform:translate(0,0)}33%,100%{transform:translate(52px,104px)}}
+.mvWB{animation:mvWB 18s linear infinite}
+@keyframes mvWB{0%,36%{transform:translate(0,0)}42%,100%{transform:translate(-156px,-156px)}}
+.mvWK{animation:mvWK 18s linear infinite}
+@keyframes mvWK{0%,48%{transform:translate(0,0)}53%,100%{transform:translate(104px,0)}}
+.mvWR{animation:mvWR 18s linear infinite}
+@keyframes mvWR{0%,48%{transform:translate(0,0)}53%,100%{transform:translate(-104px,0)}}
+.hM1{animation:showAt1 18s linear infinite}.hM2{animation:showAt2 18s linear infinite}.hM3{animation:showAt3 18s linear infinite}.hM4{animation:showAt4 18s linear infinite}
+@keyframes showAt1{0%,10%{opacity:0}13%,93%{opacity:1}97%,100%{opacity:0}}
+@keyframes showAt2{0%,33%{opacity:0}36%,93%{opacity:1}97%,100%{opacity:0}}
+@keyframes showAt3{0%,42%{opacity:0}45%,93%{opacity:1}97%,100%{opacity:0}}
+@keyframes showAt4{0%,53%{opacity:0}56%,93%{opacity:1}97%,100%{opacity:0}}
+.hRingAnim{animation:ringBurst 18s linear infinite; transform-origin:268px 252px}
+@keyframes ringBurst{0%,55%{opacity:0; transform:scale(.2)}60%{opacity:.9}68%,100%{opacity:0; transform:scale(2.4)}}
+
+/* ---------- ESTADÍSTICAS / ÍNDICE / BUSCADOR ---------- */
+.stats{display:grid; grid-template-columns:repeat(2,1fr); gap:.8rem}
+.stat{background:#1a1209; border:1px solid var(--line); border-radius:12px; padding:.8rem; text-align:center}
+.stat b{display:block; font-family:var(--font-d); font-size:1.7rem; color:var(--gold-b)}
+.stat span{font-family:var(--font-u); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ivory-mut)}
+.searchRow{display:flex; gap:.5rem; margin-top:.6rem}
+.searchRow input{
+  flex:1; background:#150e07; border:1px solid var(--line2); color:var(--ivory); border-radius:10px;
+  padding:.7rem .9rem; font-family:var(--font-u); font-size:.92rem;
+}
+.searchRow input::placeholder{color:var(--ivory-mut)}
+.btn{
+  border:none; border-radius:10px; padding:.7rem 1.1rem; font-weight:700; font-size:.88rem;
+  background:linear-gradient(180deg,var(--gold-b),var(--gold)); color:#241a08; letter-spacing:.02em;
+  box-shadow:0 4px 12px rgba(217,164,65,.25); transition:transform .15s, box-shadow .2s;
+}
+.btn:hover{transform:translateY(-2px); box-shadow:0 8px 18px rgba(217,164,65,.35)}
+.btn.ghost{background:transparent; color:var(--gold-b); border:1px solid var(--gold-d); box-shadow:none}
+.btn.small{padding:.45rem .8rem; font-size:.78rem}
+#searchResults{margin-top:.8rem; display:flex; flex-direction:column; gap:.5rem; max-height:340px; overflow:auto}
+.sRes{
+  text-align:left; background:#1a1209; border:1px solid var(--line); border-radius:10px; padding:.6rem .8rem;
+  color:var(--ivory); transition:border-color .2s, background .2s;
+}
+.sRes:hover{border-color:var(--gold); background:#221709}
+.sRes b{display:block; font-size:.88rem; color:var(--gold-b)}
+.sRes small{color:var(--ivory-mut); font-size:.76rem; line-height:1.5; display:block}
+.sRes .badge{float:right; font-size:.66rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--info); border:1px solid #2c405c; padding:.1rem .45rem; border-radius:99px}
+.toc{list-style:none; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:.8rem; counter-reset:toc}
+.toc li{counter-increment:toc}
+.tocBtn{
+  width:100%; display:flex; gap:.8rem; align-items:center; text-align:left; background:#1a1209; border:1px solid var(--line);
+  border-radius:12px; padding:.85rem 1rem; color:var(--ivory); transition:border-color .2s, transform .15s;
+}
+.tocBtn:hover{border-color:var(--gold); transform:translateY(-2px)}
+.tocBtn .n{font-family:var(--font-d); font-weight:900; color:var(--gold); font-size:1.1rem; min-width:2ch}
+.tocBtn .n::before{content:counter(toc,decimal-leading-zero)}
+.tocBtn b{display:block; font-size:.95rem; color:var(--ivory)}
+.tocBtn small{color:var(--ivory-mut); font-size:.76rem}
+.tocBtn .go{margin-left:auto; color:var(--gold-b); font-size:1.1rem}
+
+/* ---------- FASES ---------- */
+.phaseHead{display:flex; gap:1rem; align-items:center; margin:1.6rem 0 1rem}
+.phaseHead:first-child{margin-top:0}
+.phaseNum{
+  font-family:var(--font-d); font-weight:900; font-size:1.5rem; color:#241a08; min-width:64px; height:64px;
+  display:grid; place-items:center; background:linear-gradient(160deg,var(--gold-b),var(--gold-d));
+  border-radius:14px; box-shadow:0 6px 16px rgba(217,164,65,.3);
+}
+.phaseHead h2{margin:0}
+.range{font-family:var(--font-u); font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold)}
+.soWhat{
+  margin-top:1.2rem; padding:1rem 1.2rem; border:1px dashed var(--gold-d); border-radius:12px;
+  background:rgba(217,164,65,.06);
+}
+.soWhat .lbl{font-family:var(--font-u); font-size:.7rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:.4rem}
+.tableWrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px}
+table{width:100%; border-collapse:collapse; font-size:.9rem; min-width:640px}
+thead th{
+  font-family:var(--font-u); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; text-align:left;
+  background:#170f07; color:var(--gold); padding:.7rem .9rem; border-bottom:2px solid var(--gold-d);
+}
+tbody td{padding:.65rem .9rem; border-bottom:1px solid var(--line); vertical-align:top; color:var(--ivory-dim)}
+tbody tr:nth-child(odd){background:rgba(242,232,213,.025)}
+tbody tr:hover{background:rgba(217,164,65,.07)}
+td .san{font-family:var(--font-u); font-weight:700; color:var(--gold-b); background:#170f07; border:1px solid var(--line2); padding:.1rem .5rem; border-radius:6px; font-size:.8rem; white-space:nowrap}
+.pillW,.pillB{font-family:var(--font-u); font-size:.7rem; font-weight:700; padding:.15rem .55rem; border-radius:99px; letter-spacing:.06em; white-space:nowrap}
+.pillW{color:#f7efdc; border:1px solid #6b5636; background:#3a2c17}
+.pillB{color:#17110a; border:1px solid #000; background:#c9bc9f}
+.accControls{display:flex; gap:.5rem; margin:.6rem 0}
+details.jugada{border:1px solid var(--line); border-radius:12px; background:#1a1209; margin-bottom:.6rem; overflow:hidden}
+details.jugada[open]{border-color:var(--gold-d)}
+details.jugada summary{
+  list-style:none; display:flex; align-items:center; gap:.7rem; padding:.75rem 1rem; cursor:pointer; flex-wrap:wrap;
+}
+details.jugada summary::-webkit-details-marker{display:none}
+details.jugada summary:hover{background:rgba(217,164,65,.06)}
+.jNum{font-family:var(--font-d); font-weight:900; color:var(--gold); min-width:2.4ch}
+.jGlyph{font-size:1.5rem; line-height:1; filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.jGlyph.w{color:#f7efdc}.jGlyph.b{color:#8d8069}
+.jTitle{font-family:var(--font-u); font-weight:600; font-size:.92rem; color:var(--ivory)}
+.jTitle .mvTxt{color:var(--ivory-mut); font-weight:400}
+.caret{margin-left:auto; color:var(--gold); transition:transform .25s}
+details[open] .caret{transform:rotate(180deg)}
+.jBody{padding:.2rem 1.1rem 1rem; border-top:1px dashed var(--line)}
+.jBody p{color:var(--ivory-dim); margin-top:.7rem}
+.jChips{display:flex; gap:.45rem; flex-wrap:wrap; margin-top:.7rem}
+.jChips span{font-family:var(--font-u); font-size:.72rem; font-weight:600; color:var(--ivory-dim); background:#241a0e; border:1px solid var(--line2); padding:.2rem .6rem; border-radius:99px}
+.flash{animation:flash 1.6s ease}
+@keyframes flash{0%,60%{box-shadow:0 0 0 4px var(--gold-b), 0 0 30px rgba(245,201,107,.5)}100%{box-shadow:none}}
+
+/* ---------- TABLEROS ---------- */
+.boardCard{padding:1rem}
+.board{display:grid; grid-template-columns:repeat(8,1fr); border:3px solid var(--gold-d); border-radius:8px; overflow:hidden; max-width:430px; margin:0 auto; box-shadow:0 10px 26px rgba(0,0,0,.5)}
+.sq{aspect-ratio:1; display:grid; place-items:center; position:relative; font-size:clamp(1.2rem,5.2vw,2rem); line-height:1}
+.sq.l{background:var(--wood-l)} .sq.d{background:var(--wood-d)}
+.sq .pw{color:#fffaf0; text-shadow:0 2px 3px rgba(60,35,10,.8)}
+.sq .pb{color:#221709; text-shadow:0 1px 2px rgba(255,240,210,.35)}
+.sq .coord{position:absolute; top:2px; left:3px; font-family:var(--font-u); font-size:.55rem; font-weight:700}
+.sq.l .coord{color:var(--wood-d)} .sq.d .coord{color:var(--wood-l)}
+.sq.hlG{box-shadow:inset 0 0 0 4px var(--gold)}
+.sq.hlR{box-shadow:inset 0 0 0 4px var(--bad)}
+.sq.tG::after,.sq.tS::after{content:""; position:absolute; inset:0; pointer-events:none}
+.sq.tG::after{background:rgba(217,164,65,.35)}
+.sq.tS::after{background:rgba(201,188,159,.28)}
+.legend{display:flex; gap:.6rem; flex-wrap:wrap; justify-content:center; margin-top:.8rem}
+.legend span{font-family:var(--font-u); font-size:.72rem; color:var(--ivory-dim); display:flex; align-items:center; gap:.35rem}
+.dot{width:12px; height:12px; border-radius:3px; display:inline-block}
+.dot.g{background:var(--gold)} .dot.r{background:var(--bad)} .dot.tg{background:rgba(217,164,65,.5)} .dot.ts{background:rgba(201,188,159,.45)}
+.boardCap{margin-top:.7rem; text-align:center; font-family:var(--font-u); font-size:.78rem; color:var(--ivory-mut)}
+
+/* ---------- MOLINO ---------- */
+.molWrap{max-width:430px; margin:0 auto}
+.molWrap svg{width:100%; height:auto; display:block; border:3px solid var(--gold-d); border-radius:8px; box-shadow:0 10px 26px rgba(0,0,0,.5)}
+.mSqL{fill:var(--wood-l)} .mSqD{fill:var(--wood-d)}
+.mW{fill:#fffaf0; stroke:#5c3f1e; stroke-width:2; font-size:78px; text-anchor:middle; dominant-baseline:central; font-family:var(--font-b)}
+.mB{fill:#221709; stroke:#e8d9b8; stroke-width:1.4; font-size:70px; text-anchor:middle; dominant-baseline:central; font-family:var(--font-b)}
+.mLbl{font-family:var(--font-u); font-size:14px; font-weight:700; fill:var(--gold-b)}
+.mScene{animation:mScene 12s linear infinite}
+@keyframes mScene{0%,93%{opacity:1}97%,100%{opacity:0}}
+.mRA{animation:mRA 12s linear infinite}
+@keyframes mRA{0%,8%{transform:translateX(-430px)}16%,44%{transform:translateX(0)}50%,100%{transform:translateX(120px)}}
+.mRB{animation:mRB 12s linear infinite}
+@keyframes mRB{0%,52%{transform:translateX(-560px)}60%,100%{transform:translateX(0)}}
+.mK{animation:mK 12s linear infinite}
+@keyframes mK{0%,20%{transform:translateX(0)}26%,44%{transform:translateX(120px)}50%,100%{transform:translateX(0)}}
+.mPG{animation:mPG 12s linear infinite}
+@keyframes mPG{0%,13%{opacity:1}16%,100%{opacity:0}}
+.mPH{animation:mPH 12s linear infinite}
+@keyframes mPH{0%,45%{opacity:1}49%,100%{opacity:0}}
+.mF1{animation:mF1 12s linear infinite; transform-origin:180px 180px}
+@keyframes mF1{0%,15%{opacity:0;transform:scale(.3)}18%{opacity:.95}26%,100%{opacity:0;transform:scale(2)}}
+.mF2{animation:mF2 12s linear infinite; transform-origin:300px 180px}
+@keyframes mF2{0%,47%{opacity:0;transform:scale(.3)}50%{opacity:.95}58%,100%{opacity:0;transform:scale(2)}}
+.mMate{animation:mMate 12s linear infinite; transform-origin:180px 180px}
+@keyframes mMate{0%,62%{opacity:0; transform:scale(0)}70%{opacity:1; transform:scale(1.15)}74%,90%{opacity:1; transform:scale(1)}96%,100%{opacity:0}}
+.mMate text{font-family:var(--font-d); font-weight:900; fill:var(--gold-b); font-size:34px; text-anchor:middle; paint-order:stroke; stroke:#241a08; stroke-width:6px}
+
+/* ---------- CONCLUSIONES / PILARES ---------- */
+.pilares{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:.9rem; margin-top:1rem}
+.pilar{background:#1a1209; border:1px solid var(--line); border-top:4px solid var(--gold); border-radius:12px; padding:1.1rem; transition:transform .2s, border-color .2s}
+.pilar:hover{transform:translateY(-4px); border-color:var(--gold-d)}
+.pilar .pn{font-family:var(--font-d); font-weight:900; font-size:2rem; color:var(--gold-d)}
+.pilar b{display:block; font-family:var(--font-d); color:var(--gold-b); margin:.3rem 0 .5rem; font-size:1.02rem}
+.pilar p{font-size:.9rem; color:var(--ivory-dim)}
+.consejo{
+  margin-top:1.2rem; padding:1.3rem 1.4rem; border-radius:14px; border:1px solid var(--gold-d);
+  background:linear-gradient(160deg,rgba(217,164,65,.14),rgba(217,164,65,.04)); position:relative;
+}
+.consejo::before{content:"♞"; position:absolute; right:14px; top:6px; font-size:3rem; opacity:.18}
+.victoria{margin-top:1.2rem; text-align:center; font-family:var(--font-d); font-weight:900; font-size:clamp(1.2rem,3.4vw,1.8rem); color:var(--gold-b); letter-spacing:.06em; text-shadow:0 0 24px rgba(217,164,65,.4)}
+
+/* ---------- QUIZ ---------- */
+.quizQ{border:1px solid var(--line); border-radius:12px; background:#1a1209; padding:1rem 1.1rem; margin-bottom:.9rem}
+.quizQ h4{font-family:var(--font-u); font-size:.95rem; color:var(--ivory); margin-bottom:.7rem; display:flex; gap:.6rem}
+.quizQ h4 .qn{color:var(--gold); font-weight:900}
+.qOpts{display:grid; gap:.45rem}
+.qOpt{
+  text-align:left; background:#241a0e; border:1px solid var(--line2); color:var(--ivory-dim); border-radius:10px;
+  padding:.6rem .8rem; font-size:.88rem; transition:border-color .2s, background .2s;
+}
+.qOpt:hover:not(:disabled){border-color:var(--gold)}
+.qOpt.sel{border-color:var(--gold-b); background:rgba(217,164,65,.12); color:var(--ivory)}
+.qOpt.ok{border-color:var(--ok); background:rgba(143,191,106,.15); color:#d6ecc4}
+.qOpt.ko{border-color:var(--bad); background:rgba(224,108,90,.13); color:#f3cdc5}
+.qOpt:disabled{cursor:default}
+.qWhy{display:none; margin-top:.6rem; font-size:.82rem; color:var(--ivory-mut); border-left:3px solid var(--gold-d); padding-left:.7rem}
+.qWhy.show{display:block}
+#quizScore{font-family:var(--font-d); font-size:1.2rem; color:var(--gold-b)}
+
+/* ---------- GLOSARIO ---------- */
+.gloGrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:.8rem; margin-top:1rem}
+.gloTerm{background:#1a1209; border:1px solid var(--line); border-radius:12px; padding:.9rem 1rem}
+.gloTerm b{font-family:var(--font-d); color:var(--gold-b); display:block; margin-bottom:.3rem}
+.gloTerm p{font-size:.87rem; color:var(--ivory-dim)}
+
+/* ---------- NAVEGACIÓN DE FASES / PIE ---------- */
+.phaseNav{display:flex; justify-content:space-between; gap:.8rem; margin-top:1.4rem; flex-wrap:wrap}
+footer{border-top:1px solid var(--line); padding:1.4rem clamp(1rem,4vw,2.5rem); display:flex; flex-wrap:wrap; gap:.6rem 2rem; justify-content:space-between; color:var(--ivory-mut); font-family:var(--font-u); font-size:.78rem; background:#120d06}
+footer b{color:var(--gold-b)}
+#toTop{
+  position:fixed; right:18px; bottom:18px; z-index:80; width:48px; height:48px; border-radius:50%;
+  border:1px solid var(--gold-d); background:linear-gradient(160deg,#3a2a14,#201607); color:var(--gold-b);
+  font-size:1.2rem; opacity:0; pointer-events:none; transition:opacity .3s, transform .2s; box-shadow:var(--shadow);
+}
+#toTop.show{opacity:1; pointer-events:auto}
+#toTop:hover{transform:translateY(-3px)}
+@media(max-width:640px){
+  .masthead{padding-top:.9rem}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .phaseHead{flex-direction:row}
+  .phaseNum{min-width:52px; height:52px; font-size:1.2rem}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important; transition:none !important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido principal</a>
+
+<header class="masthead">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">♞</span>
+    <div>
+      <p class="overline">Tutorial interactivo de ajedrez</p>
+      <h1>Anatomía de una Partida de Ajedrez <span>para Principiantes</span></h1>
+      <p class="autor">Basado en la obra de <strong>Rubén Sbarsky</strong></p>
+    </div>
+  </div>
+  <ul class="meta" role="list">
+    <li>📅 <strong>03/09/2026</strong></li>
+    <li>🕒 <strong>15:30:22</strong></li>
+    <li>🎓 Nivel: Principiantes</li>
+    <li>♟ 28 jugadas comentadas</li>
+  </ul>
+</header>
+
+<div class="progressWrap">
+  <div class="progressTrack" role="progressbar" aria-label="Progreso de lectura del tutorial" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressRole"><span id="progressBar"></span></div>
+  <span id="progressTxt">0 / 8 secciones visitadas</span>
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Secciones del tutorial">
+  <button role="tab" id="tab-inicio" data-tab="inicio" aria-selected="true" aria-controls="panel-inicio"><span class="tIco">🏝️</span>Inicio<span class="tChk" data-chk="inicio">✔</span></button>
+  <button role="tab" id="tab-apertura" data-tab="apertura" aria-selected="false" aria-controls="panel-apertura" tabindex="-1"><span class="tIco">️</span>Apertura<span class="tChk" data-chk="apertura">✔</span></button>
+  <button role="tab" id="tab-seguridad" data-tab="seguridad" aria-selected="false" aria-controls="panel-seguridad" tabindex="-1"><span class="tIco">🏰</span>Seguridad del Rey<span class="tChk" data-chk="seguridad">✔</span></button>
+  <button role="tab" id="tab-mediojuego" data-tab="mediojuego" aria-selected="false" aria-controls="panel-mediojuego" tabindex="-1"><span class="tIco">🗺️</span>Medio Juego<span class="tChk" data-chk="mediojuego">✔</span></button>
+  <button role="tab" id="tab-ataque" data-tab="ataque" aria-selected="false" aria-controls="panel-ataque" tabindex="-1"><span class="tIco">🔥</span>Ataque Decisivo<span class="tChk" data-chk="ataque">✔</span></button>
+  <button role="tab" id="tab-conclusiones" data-tab="conclusiones" aria-selected="false" aria-controls="panel-conclusiones" tabindex="-1"><span class="tIco">🏆</span>Conclusiones<span class="tChk" data-chk="conclusiones">✔</span></button>
+  <button role="tab" id="tab-ejercicios" data-tab="ejercicios" aria-selected="false" aria-controls="panel-ejercicios" tabindex="-1"><span class="tIco">📝</span>Ejercicios<span class="tChk" data-chk="ejercicios">✔</span></button>
+  <button role="tab" id="tab-glosario" data-tab="glosario" aria-selected="false" aria-controls="panel-glosario" tabindex="-1"><span class="tIco">📖</span>Glosario<span class="tChk" data-chk="glosario">✔</span></button>
+</nav>
+
+<main id="main">
+
+  <!-- ============ INICIO ============ -->
+  <section class="panel" id="panel-inicio" role="tabpanel" aria-labelledby="tab-inicio">
+    <figure class="hero">
+      <svg viewBox="0 0 960 540" role="img" aria-label="Animación: las piezas blancas y negras conquistan las casillas centrales del tablero, desarrollan caballos y alfiles y el rey blanco se enroca.">
+        <defs>
+          <radialGradient id="glowC" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#f5c96b" stop-opacity=".35"/>
+            <stop offset="100%" stop-color="#f5c96b" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <g id="heroSquares"></g>
+        <rect class="hFrame" x="58" y="68" width="420" height="420" rx="6"/>
+        <g>
+          <rect class="hPulse" x="216" y="278" width="52" height="52"/>
+          <rect class="hPulse" x="268" y="278" width="52" height="52"/>
+          <rect class="hPulse" x="216" y="226" width="52" height="52"/>
+          <rect class="hPulse" x="268" y="226" width="52" height="52"/>
+        </g>
+        <circle cx="268" cy="252" r="60" fill="url(#glowC)"/>
+        <g class="hScene">
+          <!-- piezas estáticas -->
+          <g>
+            <text class="hPieceW" x="86" y="460">♖</text><text class="hPieceW" x="138" y="460">♘</text>
+            <text class="hPieceW" x="190" y="460">♗</text><text class="hPieceW" x="242" y="460">♕</text>
+            <text class="hPieceW" x="86" y="408">♙</text><text class="hPieceW" x="138" y="408">♙</text>
+            <text class="hPieceW" x="190" y="408">♙</text><text class="hPieceW" x="242" y="408">♙</text>
+            <text class="hPieceW" x="346" y="408">♙</text><text class="hPieceW" x="398" y="408">♙</text>
+            <text class="hPieceW" x="450" y="408">♙</text>
+            <text class="hPieceB" x="86" y="96">♜</text><text class="hPieceB" x="190" y="96">♝</text>
+            <text class="hPieceB" x="242" y="96">♛</text><text class="hPieceB" x="294" y="96">♚</text>
+            <text class="hPieceB" x="346" y="96">♝</text><text class="hPieceB" x="398" y="96">♞</text>
+            <text class="hPieceB" x="450" y="96">♜</text>
+            <text class="hPieceB" x="86" y="148">♟</text><text class="hPieceB" x="138" y="148">♟</text>
+            <text class="hPieceB" x="190" y="148">♟</text><text class="hPieceB" x="242" y="148">♟</text>
+            <text class="hPieceB" x="346" y="148">♟</text><text class="hPieceB" x="398" y="148">♟</text>
+            <text class="hPieceB" x="450" y="148">♟</text>
+          </g>
+          <!-- piezas animadas -->
+          <g class="mv mvWP"><text class="hPieceW" x="294" y="408">♙</text></g>
+          <g class="mv mvBP"><text class="hPieceB" x="294" y="148">♟</text></g>
+          <g class="mv mvWN"><text class="hPieceW" x="398" y="460">♘</text></g>
+          <g class="mv mvBN"><text class="hPieceB" x="138" y="96">♞</text></g>
+          <g class="mv mvWB"><text class="hPieceW" x="346" y="460">♗</text></g>
+          <g class="mv mvWK"><text class="hPieceW" x="294" y="460">♔</text></g>
+          <g class="mv mvWR"><text class="hPieceW" x="450" y="460">♖</text></g>
+          <circle class="hRing hRingAnim" cx="268" cy="252" r="40"/>
+        </g>
+        <!-- zona derecha -->
+        <text class="hKnight" x="720" y="230">♞</text>
+        <text class="hTitle" x="720" y="392">EL TABLERO COMO UNA ISLA</text>
+        <text class="hSub" x="720" y="422">Conquistad la cima del centro</text>
+        <text class="hMove hM1" x="720" y="470" text-anchor="middle">1. e4 · e5</text>
+        <text class="hMove hM2" x="720" y="494" text-anchor="middle">2. Nf3 · Nc6</text>
+        <text class="hMove hM3" x="720" y="518" text-anchor="middle">3. Bc4</text>
+        <text class="hMove hM4" x="720" y="60" text-anchor="middle">4. 0-0 · ¡Rey a salvo!</text>
+      </svg>
+      <figcaption>🏝️ El tablero como una isla con una montaña en el centro: quien controla la cima (las casillas centrales) domina toda la geografía.</figcaption>
+    </figure>
+
+    <div class="grid2" style="margin-top:0">
+      <article class="card" id="sec-intro">
+        <h2>I. Introducción: El Tablero como una Isla</h2>
+        <p>Bienvenidos, queridos aprendices, a la comprensión del arte del tablero. Para dominar el ajedrez, no imaginen una cuadrícula abstracta, sino una <strong>isla con una imponente montaña en su centro</strong>. En cualquier contienda, el bando que controla la cima domina la geografía: desde el centro se tiene una visión total de la isla, las piezas se desplazan con mayor rapidez hacia cualquier flanco y es mucho más difícil ser asaltado.</p>
+        <p>Esta «cima» son las <strong>casillas centrales</strong>, y nuestra prioridad absoluta es conquistarlas. El dominio central no es un capricho técnico, es la ventaja estratégica que permite coordinar nuestras fuerzas antes de lanzarnos a la aventura. Coloquemos, pues, nuestros primeros peones en las faldas de esa montaña para iniciar el ascenso.</p>
+        <figure class="imgFig">
+          <img src="https://image.qwenlm.ai/public_source/d9eefb61-9983-4ecb-9990-cbe3e8927500/1ea4c05ed-cea5-42d9-a056-93243b2477b2.png" alt="Ilustración de un tablero de ajedrez convertido en isla con una montaña dorada en el centro, sobre las casillas centrales.">
+          <figcaption>La isla-tablero: la cima dorada se alza sobre las cuatro casillas centrales.</figcaption>
+        </figure>
+      </article>
+
+      <aside class="stack">
+        <div class="card">
+          <h2 style="font-size:1.1rem">📊 El tutorial en cifras</h2>
+          <div class="stats">
+            <div class="stat"><b>28</b><span>Jugadas comentadas</span></div>
+            <div class="stat"><b>6</b><span>Secciones maestras</span></div>
+            <div class="stat"><b>4</b><span>Fases de la partida</span></div>
+            <div class="stat"><b>3</b><span>Pilares del triunfo</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2 style="font-size:1.1rem">🔍 Buscador del tutorial</h2>
+          <p style="font-size:.85rem; color:var(--ivory-mut)">Busca jugadas, conceptos, fases o términos del glosario.</p>
+          <div class="searchRow">
+            <input type="search" id="q" placeholder="p. ej.: peón aislado, enroque, séptima fila…" aria-label="Buscar en el tutorial">
+            <button class="btn" id="qBtn" type="button">Buscar</button>
+          </div>
+          <div id="searchResults" aria-live="polite"></div>
+        </div>
+        <div class="card">
+          <h2 style="font-size:1.1rem">🧭 Ruta de aprendizaje</h2>
+          <p style="font-size:.85rem; color:var(--ivory-mut)">Avanza en orden, como en la partida: centro → seguridad → maniobras → invasión. Las casillas marcadas ✔ indican secciones ya visitadas.</p>
+        </div>
+      </aside>
+    </div>
+
+    <article class="card" id="indice" style="margin-top:1.1rem">
+      <h2>Índice de contenidos</h2>
+      <ol class="toc">
+        <li><button class="tocBtn" data-goto="apertura"><span class="n"></span><span><b>Fase de Apertura</b><small>La conquista del centro y el desarrollo temprano · Jugadas 1–5</small></span><span class="go">→</span></button></li>
+        <li><button class="tocBtn" data-goto="seguridad"><span class="n"></span><span><b>Seguridad del Rey</b><small>Enroque y coordinación de piezas pesadas · Jugadas 6–10</small></span><span class="go">→</span></button></li>
+        <li><button class="tocBtn" data-goto="mediojuego"><span class="n"></span><span><b>El Medio Juego</b><small>Maniobras, columnas y debilidades · Jugadas 11–20</small></span><span class="go">→</span></button></li>
+        <li><button class="tocBtn" data-goto="ataque"><span class="n"></span><span><b>El Ataque Decisivo</b><small>El poder de la séptima fila · Jugadas 21–28</small></span><span class="go">→</span></button></li>
+        <li><button class="tocBtn" data-goto="conclusiones"><span class="n"></span><span><b>Conclusiones y Lecciones Maestras</b><small>Los tres pilares del triunfo y el consejo final</small></span><span class="go">→</span></button></li>
+        <li><button class="tocBtn" data-goto="ejercicios"><span class="n"></span><span><b>Ejercicios de comprensión</b><small>8 preguntas con corrección inmediata</small></span><span class="go">→</span></button></li>
+      </ol>
+    </article>
+  </section>
+
+  <!-- ============ FASES (rellenadas por JS) ============ -->
+  <section class="panel" id="panel-apertura" role="tabpanel" aria-labelledby="tab-apertura" hidden></section>
+  <section class="panel" id="panel-seguridad" role="tabpanel" aria-labelledby="tab-seguridad" hidden></section>
+  <section class="panel" id="panel-mediojuego" role="tabpanel" aria-labelledby="tab-mediojuego" hidden></section>
+  <section class="panel" id="panel-ataque" role="tabpanel" aria-labelledby="tab-ataque" hidden></section>
+
+  <!-- ============ CONCLUSIONES ============ -->
+  <section class="panel" id="panel-conclusiones" role="tabpanel" aria-labelledby="tab-conclusiones" hidden>
+    <header class="phaseHead"><span class="phaseNum">VI</span>
+      <div><h2>Conclusiones y Lecciones Maestras</h2><p class="range">Los tres pilares del triunfo</p></div>
+    </header>
+    <article class="card" id="sec-conclusiones">
+      <p class="lead">Esta partida es una lección de <strong>lógica narrativa</strong>. Todo comenzó con la conquista de la montaña central, que nos otorgó el espacio necesario para maniobrar. En el medio juego, no atacamos a ciegas, sino que dañamos la estructura del rival creando una debilidad estratégica (el peón aislado en d5), obligando a sus piezas a la pasividad. Finalmente, la actividad de nuestras piezas en la séptima fila permitió el remate táctico.</p>
+      <p>Identificamos los <strong>tres pilares del triunfo</strong>:</p>
+      <div class="pilares">
+        <article class="pilar" id="pilar-1"><span class="pn">1</span><b>El Enroque Oportuno</b><p>Mientras el rival descuidaba a su monarca, nosotros comunicamos nuestras torres, el primer paso para la invasión.</p></article>
+        <article class="pilar" id="pilar-2"><span class="pn">2</span><b>La Creación de la Debilidad</b><p>Siguiendo el estilo de Kramnik, transformamos la igualdad en ventaja al crear un peón aislado que paralizó al oponente.</p></article>
+        <article class="pilar" id="pilar-3"><span class="pn">3</span><b>La Invasión de la Séptima Fila</b><p>El momento decisivo donde la presión se convirtió en un mate espectacular gracias a la coordinación de las torres.</p></article>
+      </div>
+      <aside class="consejo" id="consejo-final">
+        <span class="lbl" style="font-family:var(--font-u); font-size:.7rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:.4rem">♛ → ♞ Consejo final del maestro</span>
+        <p>Como consejo final, recordad: <strong>cuando veáis una jugada que parezca buena, deteneos y buscad una todavía mejor</strong>. Un ejemplo clásico es cuando podéis coronar una Dama para igualar la partida, pero descubrís que coronar un Caballo otorga el jaque mate inmediato. El ajedrez premia la profundidad, la paciencia y el respeto por la geografía del tablero.</p>
+      </aside>
+      <p class="victoria">¡A la victoria, aprendices! ♟</p>
+    </article>
+    <nav class="phaseNav" aria-label="Navegación entre secciones">
+      <button class="btn ghost" data-goto="ataque">← El Ataque Decisivo</button>
+      <button class="btn" data-goto="ejercicios">Ejercicios de comprensión →</button>
+    </nav>
+  </section>
+
+  <!-- ============ EJERCICIOS ============ -->
+  <section class="panel" id="panel-ejercicios" role="tabpanel" aria-labelledby="tab-ejercicios" hidden>
+    <header class="phaseHead"><span class="phaseNum">✎</span>
+      <div><h2>Ejercicios de comprensión</h2><p class="range">Pon a prueba lo aprendido · 8 preguntas</p></div>
+    </header>
+    <article class="card">
+      <p>Elige una respuesta en cada pregunta y pulsa <strong>«Comprobar respuestas»</strong>. Recibirás corrección inmediata con la justificación extraída del texto original.</p>
+      <div id="quizBox" style="margin-top:1rem"></div>
+      <div style="display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; margin-top:1rem">
+        <button class="btn" id="quizCheck" type="button">Comprobar respuestas</button>
+        <button class="btn ghost" id="quizReset" type="button">Reintentar</button>
+        <span id="quizScore" aria-live="polite"></span>
+      </div>
+    </article>
+    <nav class="phaseNav" aria-label="Navegación entre secciones">
+      <button class="btn ghost" data-goto="conclusiones">← Conclusiones</button>
+      <button class="btn" data-goto="glosario">Glosario →</button>
+    </nav>
+  </section>
+
+  <!-- ============ GLOSARIO ============ -->
+  <section class="panel" id="panel-glosario" role="tabpanel" aria-labelledby="tab-glosario" hidden>
+    <header class="phaseHead"><span class="phaseNum">📖</span>
+      <div><h2>Glosario del aprendiz</h2><p class="range">Términos clave del tutorial</p></div>
+    </header>
+    <article class="card">
+      <div class="searchRow" style="margin-top:0">
+        <input type="search" id="gFilter" placeholder="Filtrar términos… (p. ej.: torre, debilidad)" aria-label="Filtrar glosario">
+      </div>
+      <p id="gCount" style="font-size:.78rem; color:var(--ivory-mut); margin-top:.5rem" aria-live="polite"></p>
+      <div class="gloGrid" id="gloGrid"></div>
+    </article>
+    <nav class="phaseNav" aria-label="Navegación entre secciones">
+      <button class="btn ghost" data-goto="ejercicios">← Ejercicios</button>
+      <button class="btn" data-goto="inicio">Volver al Inicio →</button>
+    </nav>
+  </section>
+</main>
+
+<footer>
+  <span>Contenido original: <b>Rubén Sbarsky</b> · «Anatomía de una Partida de Ajedrez para Principiantes»</span>
+  <span>Tutorial generado el <b>03/09/2026</b> a las <b>15:30:22</b> · ♞ Hecho para aprendices</span>
+</footer>
+
+<button id="toTop" aria-label="Volver arriba">↑</button>
+
+<script>
+"use strict";
+/* ================= DATOS DEL CONTENIDO ================= */
+const GLYPH={w:{Peón:"♙",Caballo:"♘",Alfil:"♗",Torre:"♖",Dama:"♕",Rey:"♔",Enroque:"♔"},
+             b:{Peón:"♟",Caballo:"♞",Alfil:"♝",Torre:"♜",Dama:"♛",Rey:"♚",Enroque:"♚"}};
+const JUGADAS=[
+ {n:1,moves:[{s:"Blancas",p:"Peón",f:"e2",t:"e4",san:"e4",pur:"Ocupar el corazón del centro y abrir el paso al Alfil y la Dama."},
+             {s:"Negras",p:"Peón",f:"e7",t:"e5",san:"e5",pur:"Responder al control central y reclamar su propio espacio en la montaña."}]},
+ {n:2,moves:[{s:"Blancas",p:"Caballo",f:"g1",t:"f3",san:"Nf3",pur:"Desarrollar una pieza menor hacia el centro y atacar el peón enemigo."}]},
+ {n:3,moves:[{s:"Negras",p:"Caballo",f:"b8",t:"c6",san:"Nc6",pur:"Proteger el peón central y desarrollar una pieza hacia la acción."}]},
+ {n:4,moves:[{s:"Blancas",p:"Alfil",f:"f1",t:"c4",san:"Bc4",pur:"Situar el alfil en una diagonal activa que apunta al punto más vulnerable del rey rival, f7."}]},
+ {n:5,moves:[{s:"Negras",p:"Caballo",f:"g8",t:"f6",san:"Nf6",pur:"Continuar el desarrollo equilibrado y atacar el peón de e4."}]},
+ {n:6,moves:[{s:"Blancas",p:"Enroque",f:"e1",t:"g1",san:"0-0",pur:"Poner al monarca a salvo y activar la Torre hacia el centro (Rey de e1 a g1, Torre de h1 a f1)."}]},
+ {n:7,moves:[{s:"Negras",p:"Alfil",f:"f8",t:"e7",san:"Be7",pur:"Preparar el camino para el enroque negro y fortalecer la defensa."}]},
+ {n:8,moves:[{s:"Blancas",p:"Dama",f:"d1",t:"e2",san:"Qe2",pur:"Desarrollar la Dama con prudencia para permitir la conexión de ambas Torres en la primera fila."}]},
+ {n:9,moves:[{s:"Negras",p:"Enroque",f:"e8",t:"g8",san:"0-0",pur:"Asegurar la vida del líder negro (Rey de e8 a g8, Torre de h8 a f8)."}]},
+ {n:10,moves:[{s:"Blancas",p:"Torre",f:"a1",t:"d1",san:"Rad1",pur:"Traer una pieza pesada a una columna central para presionar la montaña."}]},
+ {n:11,moves:[{s:"Blancas",p:"Torre",f:"f1",t:"e1",san:"Re1",pur:"Dominar la columna central «e» y presionar la base enemiga."}]},
+ {n:12,moves:[{s:"Negras",p:"Peón",f:"b7",t:"b6",san:"b6",pur:"Preparar el desarrollo del alfil hacia la diagonal larga."}]},
+ {n:13,moves:[{s:"Blancas",p:"Alfil",f:"c1",t:"b2",san:"Bb2",pur:"Controlar la diagonal crítica de a1 a h8, apuntando al enroque rival."}]},
+ {n:14,moves:[{s:"Negras",p:"Alfil",f:"c8",t:"b7",san:"Bb7",pur:"Disputar la diagonal larga contraria, h1 a a8."}]},
+ {n:15,moves:[{s:"Blancas",p:"Peón",f:"d2",t:"d4",san:"d4",pur:"Golpear el centro ante el amago de ataque por el flanco del oponente."}]},
+ {n:16,moves:[{s:"Blancas",p:"Caballo",f:"f3",t:"d5",san:"Nxd5",pur:"Iniciar el intercambio estratégico estilo Kramnik para degradar la estructura rival."}]},
+ {n:17,moves:[{s:"Negras",p:"Peón",f:"e5",t:"d5",san:"exd5",pur:"Recapturar hacia el centro intentando mantener la presencia en la cima."}]},
+ {n:18,moves:[{s:"Blancas",p:"Peón",f:"c4",t:"d5",san:"cxd5",pur:"Continuar la simplificación para aislar los peones del enemigo."}]},
+ {n:19,moves:[{s:"Negras",p:"Alfil",f:"b7",t:"d5",san:"Bxd5",pur:"Recapturar la pieza, quedando ahora con un peón aislado en d5."}]},
+ {n:20,moves:[{s:"Blancas",p:"Caballo",f:"c3",t:"e4",san:"Ne4",pur:"Bloquear el peón pasado/aislado; el caballo es el mejor bloqueador porque mantiene su radio de ataque mientras frena el avance."}]},
+ {n:21,moves:[{s:"Blancas",p:"Torre",f:"d1",t:"d7",san:"Rd7",pur:"Invadir la séptima fila, la «costa» del oponente."}]},
+ {n:22,moves:[{s:"Blancas",p:"Torre",f:"e1",t:"d1",san:"Red1",pur:"Preparar el doblaje de torres para un control absoluto."}]},
+ {n:23,moves:[{s:"Negras",p:"Torre",f:"a8",t:"d8",san:"Rad8",pur:"Intentar disputar la columna abierta."}]},
+ {n:24,moves:[{s:"Blancas",p:"Torre",f:"d1",t:"d7",san:"R1d7",pur:"Doblar torres en la séptima fila, ejerciendo una presión insoportable."}]},
+ {n:25,moves:[{s:"Negras",p:"Alfil",f:"d5",t:"b7",san:"Bb7",pur:"Intentar defender la base de su posición ante el asedio."}]},
+ {n:26,moves:[{s:"Blancas",p:"Caballo",f:"e4",t:"h6",san:"Nh6+",pur:"Sacrificio táctico espectacular para destrozar la cobertura del Rey enemigo."}]},
+ {n:27,moves:[{s:"Negras",p:"Peón",f:"g7",t:"h6",san:"gxh6",pur:"Aceptar el sacrificio, dejando al Rey expuesto."}]},
+ {n:28,moves:[{s:"Blancas",p:"Torre",f:"d7",t:"g7",san:"Rxg7+",pur:"Iniciar la maniobra de «molino» o «sube y baja». Tras el jaque en g7, el rey huye a h8, la torre captura en h7 (Rxh7+), el rey vuelve a g8 y la otra torre remata con Rag7, dictando el jaque mate final (#)."}]}
+];
+const FASES=[
+ {id:"apertura",num:"II",icon:"⚔️",title:"Fase de Apertura: La Conquista del Centro y el Desarrollo Temprano",range:"Jugadas 1–5",
+  intro:[{t:"p",h:"La apertura es la movilización de vuestro ejército hacia las posiciones de combate. Muchos principiantes cometen el error de enviar a su Dama a luchar en solitario demasiado pronto; sin embargo, esto solo permite que el rival desarrolle sus piezas mientras la persigue, ganando valiosos «tiempos». Recordad siempre la filosofía de Paul Morphy:"},
+         {t:"q",h:"«Ayuda a tus piezas para que ellas puedan ayudarte a ti»",c:"Paul Morphy"},
+         {t:"p",h:"En lugar de mover la misma pieza repetidamente, activad a todos vuestros soldados. Cada movimiento debe acercar un nuevo combatiente a la lucha por el control de la «cima»."}],
+  soWhat:"Estas jugadas iniciales activan las piezas antes de intentar ataques directos. Al seguir este orden, logramos una coordinación que será el motor de nuestra futura ofensiva. Un ataque sin piezas desarrolladas es como intentar asaltar la cima de la montaña sin suministros. Ahora que el ejército está en marcha, debemos proteger a nuestro líder.",
+  board:{kind:"pos",key:"apertura",cap:"Posición tras las jugadas 1–5: ambos bandos luchan por la cima central."},jug:[1,2,3,4,5]},
+ {id:"seguridad",num:"III",icon:"🏰",title:"Seguridad del Rey y Coordinación de Piezas Pesadas",range:"Jugadas 6–10",
+  intro:[{t:"p",h:"Tras tomar posiciones en las laderas, el siguiente objetivo es la seguridad del Rey. El Enroque no es solo una maniobra defensiva; es el puente que permite a las Torres, que aguardan en las esquinas como centinelas olvidados, comunicarse entre sí y acudir al centro."},
+         {t:"p",h:"Un rey enrocado, incluso tras un muro de peones algo debilitado, es siempre preferible a un rey expuesto en el valle central, donde pronto estallará la tormenta."}],
+  soWhat:"Con el rey protegido, el ejército ya no es una suma de piezas aisladas, sino un bloque coordinado. Las torres están listas para ocupar las arterias principales de la isla, preparándose para buscar las grietas en el campo enemigo.",
+  board:{kind:"pos",key:"seguridad",cap:"Posición tras las jugadas 6–10: ambos reyes enrocados y torres conectadas."},jug:[6,7,8,9,10],
+  img:{src:"https://image.qwenlm.ai/public_source/d9eefb61-9983-4ecb-9990-cbe3e8927500/13e0e848d-404b-4d92-b780-5c6476fe2e70.png",alt:"El rey blanco a salvo tras un muro de peones y torres conectadas como un puente.",cap:"El enroque: muralla de peones y torres comunicadas."}},
+ {id:"mediojuego",num:"IV",icon:"🗺️",title:"El Medio Juego: Maniobras, Columnas y Debilidades",range:"Jugadas 11–20",
+  intro:[{t:"p",h:"En el medio juego, buscamos maximizar la fuerza de nuestras piezas: las torres anhelan columnas abiertas y los alfiles necesitan diagonales largas, como la gran diagonal de a1 a h8."},
+         {t:"p",h:"Un maestro no ataca ciegamente, sino que aplica la estrategia de la «segunda debilidad»: si el rival defiende bien un punto, creadle un segundo problema. Defender dos frentes a la vez es una tarea infinitamente más difícil."}],
+  soWhat:"Al crear un peón aislado en d5, hemos transformado a un orgulloso soldado en un guardia encadenado a un puesto fijo. El rival debe dedicar piezas a defenderlo, lo que las vuelve pasivas y nos permite preparar la invasión final de su «puerto costero»: la séptima fila.",
+  board:{kind:"esquema",cap:"Esquema posicional del medio juego: d5, peón aislado; e4, caballo bloqueador; y las grandes diagonales en disputa."},jug:[11,12,13,14,15,16,17,18,19,20]},
+ {id:"ataque",num:"V",icon:"🔥",title:"El Ataque Decisivo: El Poder de la Séptima Fila",range:"Jugadas 21–28",
+  intro:[{t:"p",h:"Entramos en la fase final de la conquista. Situar dos torres en la séptima fila tiene un efecto devastador; es como invadir el puerto principal del enemigo. Desde allí, las torres barren los peones base y asfixian al Rey."},
+         {t:"p",h:"Atacaremos la base de la cadena de peones para que toda su defensa se derrumbe."}],
+  soWhat:"Las torres dobladas en séptima fila actuaron como una fuerza superior a cualquier defensa. La victoria fue el resultado de restringir al rey enemigo hasta que no tuvo escapatoria, demostrando que la actividad de las piezas pesadas es la que decide las grandes batallas.",
+  board:{kind:"molino",cap:"La maniobra del «molino»: la torre cosecha en g7 y h7 hasta el jaque mate final."},jug:[21,22,23,24,25,26,27,28],
+  img:{src:"https://image.qwenlm.ai/public_source/d9eefb61-9983-4ecb-9990-cbe3e8927500/14faf5e47-fa3f-420d-b832-e44b365d2102.png",alt:"Dos torres invadiendo la séptima fila junto a un puerto costero en llamas.",cap:"La invasión del puerto enemigo: torres en la séptima fila."}}
+];
+const POS={
+ apertura:[["a1","w","Torre"],["b1","w","Caballo"],["c1","w","Alfil"],["d1","w","Dama"],["e1","w","Rey"],["h1","w","Torre"],
+  ["a2","w","Peón"],["b2","w","Peón"],["c2","w","Peón"],["d2","w","Peón"],["f2","w","Peón"],["g2","w","Peón"],["h2","w","Peón"],
+  ["e4","w","Peón"],["f3","w","Caballo"],["c4","w","Alfil"],
+  ["a8","b","Torre"],["c8","b","Alfil"],["d8","b","Dama"],["e8","b","Rey"],["f8","b","Alfil"],["h8","b","Torre"],
+  ["c6","b","Caballo"],["f6","b","Caballo"],["e5","b","Peón"],
+  ["a7","b","Peón"],["b7","b","Peón"],["c7","b","Peón"],["d7","b","Peón"],["f7","b","Peón"],["g7","b","Peón"],["h7","b","Peón"]],
+ seguridad:[["d1","w","Torre"],["f1","w","Torre"],["g1","w","Rey"],["e2","w","Dama"],["c1","w","Alfil"],["c4","w","Alfil"],
+  ["b1","w","Caballo"],["f3","w","Caballo"],
+  ["a2","w","Peón"],["b2","w","Peón"],["c2","w","Peón"],["d2","w","Peón"],["f2","w","Peón"],["g2","w","Peón"],["h2","w","Peón"],["e4","w","Peón"],
+  ["a8","b","Torre"],["c8","b","Alfil"],["d8","b","Dama"],["e7","b","Alfil"],["g8","b","Rey"],["f8","b","Torre"],
+  ["c6","b","Caballo"],["f6","b","Caballo"],["e5","b","Peón"],
+  ["a7","b","Peón"],["b7","b","Peón"],["c7","b","Peón"],["d7","b","Peón"],["f7","b","Peón"],["g7","b","Peón"],["h7","b","Peón"]],
+ medio:[["g1","w","Rey"],["e2","w","Dama"],["d1","w","Torre"],["e1","w","Torre"],["b2","w","Alfil"],["e4","w","Caballo"],
+  ["g8","b","Rey"],["d8","b","Dama"],["b7","b","Alfil"],["d5","b","Peón"]]
+};
+const DIAG_GOLD=["a1","b2","c3","d4","e5","f6","g7","h8"];
+const DIAG_SILVER=["h1","g2","f3","e4","d5","c6","b7","a8"];
+const GLOSARIO=[
+ ["La cima (el centro)","Las casillas centrales del tablero. Quien las controla tiene visión total de la «isla», desplaza sus piezas con rapidez hacia cualquier flanco y es mucho más difícil de asaltar. Conquistarlas es la prioridad absoluta."],
+ ["Tiempos","Turnos valiosos que gana el rival cuando desarrolla sus piezas mientras persigue a una Dama que lucha en solitario demasiado pronto."],
+ ["Desarrollo","Movilización del ejército hacia las posiciones de combate: activar a todos los soldados en lugar de mover la misma pieza repetidamente."],
+ ["Enroque","Maniobra que pone al Rey a salvo y actúa como puente que permite a las Torres comunicarse entre sí y acudir al centro. Un rey enrocado siempre es preferible a un rey expuesto en el valle central."],
+ ["Columna abierta","Arteria principal de la isla que las torres anhelan ocupar para presionar la posición enemiga y buscar grietas en su campo."],
+ ["Diagonal larga","Las grandes diagonales a1–h8 y h1–a8, donde los alfiles maximizan su fuerza durante el medio juego."],
+ ["Segunda debilidad","Estrategia del maestro: si el rival defiende bien un punto, se le crea un segundo problema. Defender dos frentes a la vez es infinitamente más difícil."],
+ ["Peón aislado","Peón sin apoyo que queda «encadenado a un puesto fijo»: el rival debe dedicar piezas pasivas a defenderlo. Se crea en d5 mediante el intercambio estilo Kramnik."],
+ ["Bloqueador","Pieza que frena el avance de un peón pasado o aislado. El caballo es el mejor bloqueador porque mantiene su radio de ataque mientras frena el avance."],
+ ["Séptima fila","La «costa» o puerto principal del enemigo. Invadirla con torres barre los peones base y asfixia al Rey con efecto devastador."],
+ ["Torres dobladas","Colocación de dos torres coordinadas para ejercer una presión insoportable, muy poderosa en la séptima fila."],
+ ["Molino (sube y baja)","Maniobra de la torre que da jaques sucesivos capturando piezas y peones base (Rxg7+, Rxh7+) hasta dictar el jaque mate final."],
+ ["Coronación","Transformación de un peón al llegar a la última fila. A veces coronar un Caballo otorga jaque mate inmediato, ¡mejor que coronar una Dama!"]
+];
+const QUIZ=[
+ {q:"Según la introducción, ¿qué representa la «cima» de la isla-tablero?",o:["Las casillas centrales","Las columnas a y h","La séptima fila","Las esquinas donde aguardan las torres"],a:0,w:"«Esta “cima” son las casillas centrales, y nuestra prioridad absoluta es conquistarlas» (Sección I)."},
+ {q:"¿Qué filosofía de Paul Morphy se recuerda en la apertura?",o:["«Ataca al rey antes de desarrollar»","«Ayuda a tus piezas para que ellas puedan ayudarte a ti»","«Mueve la misma pieza hasta dominar»","«Saca la Dama lo antes posible»"],a:1,w:"Cita literal de la Sección II: la filosofía de Paul Morphy."},
+ {q:"¿Qué error cometen muchos principiantes en la apertura?",o:["Enrocar demasiado pronto","Ocupar el centro con peones","Enviar a su Dama a luchar en solitario demasiado pronto","Desarrollar los caballos antes que los alfiles"],a:2,w:"Al perseguir la Dama, el rival desarrolla sus piezas y gana valiosos «tiempos» (Sección II)."},
+ {q:"Además de proteger al Rey, ¿qué permite el Enroque?",o:["Comunicar las Torres entre sí y acercarlas al centro","Ganar un peón de ventaja","Coronar un peón con rapidez","Capturar al rey rival"],a:0,w:"«Es el puente que permite a las Torres… comunicarse entre sí y acudir al centro» (Sección III)."},
+ {q:"¿En qué consiste la estrategia de la «segunda debilidad»?",o:["Atacar dos veces la misma casilla","Crear un segundo problema al rival que defiende bien un punto","Sacrificar dos piezas seguidas","Defender el propio rey dos veces"],a:1,w:"«Defender dos frentes a la vez es una tarea infinitamente más difícil» (Sección IV)."},
+ {q:"¿Cuál es el mejor bloqueador de un peón pasado o aislado, y por qué?",o:["La Dama, por su movilidad total","La Torre, por dominar columnas","El Alfil, por las diagonales largas","El Caballo, porque mantiene su radio de ataque mientras frena el avance"],a:3,w:"Explicado en la jugada 20 (Ne4)."},
+ {q:"¿Qué efecto produce situar dos torres en la séptima fila?",o:["Devastador: barren los peones base y asfixian al Rey","Ninguno: es una maniobra defensiva","Solo gana tiempos sin peligro","Debilita el propio enroque"],a:0,w:"«Es como invadir el puerto principal del enemigo» (Sección V)."},
+ {q:"¿Cuál es el consejo final del tutorial?",o:["Corona siempre una Dama lo antes posible","Cuando veas una jugada buena, detente y busca una todavía mejor","Ataca sin piezas desarrolladas si hueles mate","Repite la misma pieza para ganar tiempos"],a:1,w:"A veces coronar un Caballo da mate inmediato, mejor que coronar Dama (Sección VI)."}
+];
+const TAB_ORDER=["inicio","apertura","seguridad","mediojuego","ataque","conclusiones","ejercicios","glosario"];
+const TAB_NAME={inicio:"Inicio",apertura:"Apertura",seguridad:"Seguridad",mediojuego:"Medio juego",ataque:"Ataque",conclusiones:"Conclusiones",ejercicios:"Ejercicios",glosario:"Glosario"};
+
+/* ================= UTILIDADES ================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const FILES="abcdefgh";
+
+/* ================= TABLERO CUADRÍCULA ================= */
+function boardGrid(list,opts={}){
+  const pos={}; (list||[]).forEach(([sq,s,p])=>pos[sq]={s,p});
+  const hl=opts.hl||{}, tints=opts.tints||{};
+  let out='<div class="board" role="img" aria-label="'+(opts.aria||"Diagrama de posición de ajedrez")+'">';
+  for(let r=8;r>=1;r--){for(let f=0;f<8;f++){
+    const sq=FILES[f]+r, dark=(f+r)%2===1;
+    let cls="sq "+(dark?"d":"l");
+    if(tints[sq]==="g")cls+=" tG"; if(tints[sq]==="s")cls+=" tS";
+    if(hl[sq]==="g")cls+=" hlG"; if(hl[sq]==="r")cls+=" hlR";
+    const pc=pos[sq];
+    const coord=(f===0? '<span class="coord">'+r+'</span>':"")+(r===1?'<span class="coord" style="top:auto;bottom:2px;left:auto;right:3px">'+FILES[f]+'</span>':"");
+    out+='<div class="'+cls+'">'+coord+(pc?'<span class="'+(pc.s==="w"?"pw":"pb")+'">'+GLYPH[pc.s][pc.p]+"</span>":"")+"</div>";
+  }}
+  return out+"</div>";
+}
+
+/* ================= RENDER DE FASES ================= */
+function jugadaDetails(j){
+  return j.moves.map(m=>{
+    const side=m.s==="Blancas"?"w":"b";
+    return '<details class="jugada" id="jug-'+j.n+'-'+(side)+
+      '"><summary><span class="jNum">'+j.n+'</span><span class="jGlyph '+side+'">'+GLYPH[side][m.p]+
+      '</span><span class="'+(m.s==="Blancas"?"pillW":"pillB")+'">'+m.s+'</span><span class="jTitle">'+m.p+
+      ' <span class="mvTxt">'+m.f+' → '+m.t+'</span></span><span class="san">'+m.san+'</span><span class="caret">▾</span></summary>'+
+      '<div class="jBody"><p><strong>Propósito:</strong> '+m.pur+'</p><div class="jChips"><span>Jugada '+j.n+
+      '</span><span>'+m.p+'</span><span>'+m.f+' → '+m.t+'</span><span>Notación: '+m.san+"</span></div></div></details>";
+  }).join("");
+}
+function faseTable(f){
+  let rows="";
+  f.jug.forEach(n=>{const j=JUGADAS.find(x=>x.n===n);
+    j.moves.forEach(m=>{rows+="<tr><td><strong>"+j.n+'</strong></td><td><span class="'+(m.s==="Blancas"?"pillW":"pillB")+'">'+m.s+
+      "</span></td><td>"+m.p+"</td><td>"+m.f+" → "+m.t+'</td><td><span class="san">'+m.san+"</span></td></tr>";});
+  });
+  return '<div class="tableWrap"><table><caption class="sr" style="position:absolute;left:-9999px">Tabla de jugadas de la fase</caption><thead><tr><th>N.º</th><th>Bando</th><th>Pieza</th><th>Movimiento</th><th>Notación</th></tr></thead><tbody>'+rows+"</tbody></table></div>";
+}
+function molinoSVG(){
+  return '<div class="molWrap"><svg viewBox="0 0 360 360" role="img" aria-label="Animación del molino: la torre captura en g7 con jaque, el rey huye a h8, la torre captura en h7, el rey vuelve a g8 y la segunda torre remata en g7 con jaque mate.">'+
+  '<rect class="mSqD" x="0" y="0" width="120" height="120"/><rect class="mSqL" x="120" y="0" width="120" height="120"/><rect class="mSqD" x="240" y="0" width="120" height="120"/>'+
+  '<rect class="mSqL" x="0" y="120" width="120" height="120"/><rect class="mSqD" x="120" y="120" width="120" height="120"/><rect class="mSqL" x="240" y="120" width="120" height="120"/>'+
+  '<rect class="mSqD" x="0" y="240" width="120" height="120"/><rect class="mSqL" x="120" y="240" width="120" height="120"/><rect class="mSqD" x="240" y="240" width="120" height="120"/>'+
+  '<text class="mLbl" x="60" y="352" text-anchor="middle">f</text><text class="mLbl" x="180" y="352" text-anchor="middle">g</text><text class="mLbl" x="300" y="352" text-anchor="middle">h</text>'+
+  '<g class="mScene">'+
+  '<text class="mB" x="60" y="180">♟</text>'+
+  '<text class="mB mPG" x="180" y="180">♟</text>'+
+  '<text class="mB mPH" x="300" y="180">♟</text>'+
+  '<g class="mK"><text class="mB" x="180" y="60">♚</text></g>'+
+  '<g class="mRA"><text class="mW" x="180" y="180">♖</text></g>'+
+  '<g class="mRB"><text class="mW" x="180" y="180">♖</text></g>'+
+  '<circle class="mF1" cx="180" cy="180" r="46" fill="none" stroke="#f5c96b" stroke-width="5"/>'+
+  '<circle class="mF2" cx="300" cy="180" r="46" fill="none" stroke="#f5c96b" stroke-width="5"/>'+
+  '<g class="mMate"><text x="180" y="120">¡JAQUE</text><text x="180" y="160">MATE!</text></g>'+
+  '</g></svg></div>';
+}
+function renderFases(){
+  FASES.forEach((f,idx)=>{
+    const panel=$("#panel-"+f.id);
+    const prev=TAB_ORDER[TAB_ORDER.indexOf(f.id)-1], next=TAB_ORDER[TAB_ORDER.indexOf(f.id)+1];
+    let boardHTML="";
+    if(f.board.kind==="pos"){boardHTML=boardGrid(POS[f.board.key],{aria:"Diagrama de la fase "+f.title});}
+    else if(f.board.kind==="esquema"){
+      const tints={}; DIAG_GOLD.forEach(s=>tints[s]="g"); DIAG_SILVER.forEach(s=>tints[s]=tints[s]||"s");
+      boardHTML=boardGrid(POS.medio,{hl:{d5:"r",e4:"g"},tints:tints,aria:"Esquema posicional del medio juego"});
+      boardHTML+='<div class="legend"><span><i class="dot r"></i>Peón aislado (d5)</span><span><i class="dot g"></i>Caballo bloqueador (e4)</span><span><i class="dot tg"></i>Diagonal a1–h8</span><span><i class="dot ts"></i>Diagonal h1–a8</span></div>';
+    }
+    else if(f.board.kind==="molino"){boardHTML=molinoSVG();}
+    panel.innerHTML=
+      '<header class="phaseHead"><span class="phaseNum">'+f.num+'</span><div><h2>'+f.icon+" "+f.title+'</h2><p class="range">'+f.range+"</p></div></header>"+
+      '<div class="grid2"><article class="card" id="fase-'+f.id+'-intro">'+f.intro.map(b=> b.t==="q" ? "<blockquote>"+b.h+"<cite>"+b.c+"</cite></blockquote>" : "<p>"+b.h+"</p>").join("")+
+      (f.img?'<figure class="imgFig"><img src="'+f.img.src+'" alt="'+f.img.alt+'"><figcaption>'+f.img.cap+"</figcaption></figure>":"")+
+      "</article>"+
+      '<figure class="card boardCard">'+boardHTML+'<figcaption class="boardCap">'+f.board.cap+"</figcaption></figure></div>"+
+      '<article class="card" style="margin-top:1.1rem"><h3>📋 Vista rápida de jugadas</h3>'+faseTable(f)+
+      '<h3>♟ Jugada a jugada, con su propósito</h3><div class="accControls"><button class="btn small ghost" data-acc="open" data-fase="'+f.id+'">Expandir todo</button><button class="btn small ghost" data-acc="close" data-fase="'+f.id+'">Contraer todo</button></div>'+
+      '<div id="acc-'+f.id+'">'+f.jug.map(n=>jugadaDetails(JUGADAS.find(x=>x.n===n))).join("")+"</div>"+
+      '<aside class="soWhat" id="fase-'+f.id+'-sowhat"><span class="lbl">Análisis «So What?» · ¿Y entonces?</span><p>'+f.soWhat+"</p></aside></article>"+
+      '<nav class="phaseNav" aria-label="Navegación entre fases">'+
+      (prev?'<button class="btn ghost" data-goto="'+prev+'">← '+TAB_NAME[prev]+"</button>":"<span></span>")+
+      (next?'<button class="btn" data-goto="'+next+'">'+TAB_NAME[next]+" →</button>":"")+"</nav>";
+  });
+}
+
+/* ================= HÉROE: CASILLAS ================= */
+function buildHeroSquares(){
+  const g=$("#heroSquares"); let out="";
+  for(let r=8;r>=1;r--){for(let f=0;f<8;f++){
+    const dark=(f+r)%2===1;
+    out+='<rect class="'+(dark?"hSqD":"hSqL")+'" x="'+(60+f*52)+'" y="'+(70+(8-r)*52)+'" width="52" height="52"/>';
+  }}
+  g.innerHTML=out;
+}
+
+/* ================= PESTAÑAS ================= */
+let visited=new Set();
+try{const v=JSON.parse(localStorage.getItem("ajzVisited")||"[]"); visited=new Set(v);}catch(e){}
+function updateProgress(){
+  const pct=Math.round(visited.size/TAB_ORDER.length*100);
+  $("#progressBar").style.width=pct+"%";
+  $("#progressRole").setAttribute("aria-valuenow",pct);
+  $("#progressTxt").textContent=visited.size+" / "+TAB_ORDER.length+" secciones visitadas";
+  $$(".tChk").forEach(c=>c.classList.toggle("on",visited.has(c.dataset.chk)));
+}
+function activate(id,scroll=true){
+  if(!TAB_ORDER.includes(id))id="inicio";
+  $$('[role=tab]').forEach(t=>{const on=t.dataset.tab===id; t.setAttribute("aria-selected",on); t.tabIndex=on?0:-1;});
+  $$(".panel").forEach(p=>p.hidden=(p.id!=="panel-"+id));
+  visited.add(id); try{localStorage.setItem("ajzVisited",JSON.stringify([...visited]));}catch(e){}
+  updateProgress();
+  history.replaceState(null,"","#"+id);
+  if(scroll)window.scrollTo({top:0,behavior:"smooth"});
+}
+function initTabs(){
+  const tabs=$$('[role=tab]');
+  tabs.forEach(t=>t.addEventListener("click",()=>activate(t.dataset.tab)));
+  $(".tabs").addEventListener("keydown",e=>{
+    const i=tabs.findIndex(t=>t.getAttribute("aria-selected")==="true");
+    let j=null;
+    if(e.key==="ArrowRight")j=(i+1)%tabs.length;
+    if(e.key==="ArrowLeft")j=(i-1+tabs.length)%tabs.length;
+    if(e.key==="Home")j=0; if(e.key==="End")j=tabs.length-1;
+    if(j!==null){e.preventDefault(); tabs[j].focus(); activate(tabs[j].dataset.tab,false);}
+  });
+}
+
+/* ================= NAVEGACIÓN GLOBAL (data-goto) ================= */
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-goto]");
+  if(g){activate(g.dataset.goto); return;}
+  const acc=e.target.closest("[data-acc]");
+  if(acc){
+    const box=$("#acc-"+acc.dataset.fase);
+    box.querySelectorAll("details").forEach(d=>d.open=(acc.dataset.acc==="open"));
+  }
+});
+
+/* ================= BUSCADOR ================= */
+let INDEX=[];
+function buildIndex(){
+  INDEX=[{tab:"inicio",target:"sec-intro",title:"I. Introducción: El Tablero como una Isla",text:"La isla, la montaña, la cima: las casillas centrales y su prioridad absoluta."}];
+  FASES.forEach(f=>{
+    INDEX.push({tab:f.id,target:"fase-"+f.id+"-intro",title:f.num+". "+f.title,text:f.intro.map(b=>b.h).join(" ")});
+    INDEX.push({tab:f.id,target:"fase-"+f.id+"-sowhat",title:"Análisis «So What?» · "+f.title,text:f.soWhat});
+    f.jug.forEach(n=>{const j=JUGADAS.find(x=>x.n===n);
+      j.moves.forEach(m=>INDEX.push({tab:f.id,target:"jug-"+n+"-"+(m.s==="Blancas"?"w":"b"),title:"Jugada "+n+" · "+m.s+" · "+m.p+" "+m.f+"→"+m.t+" ("+m.san+")",text:m.pur}));
+    });
+  });
+  INDEX.push({tab:"conclusiones",target:"pilar-1",title:"Pilar 1 · El Enroque Oportuno",text:"Comunicar las torres, primer paso para la invasión."});
+  INDEX.push({tab:"conclusiones",target:"pilar-2",title:"Pilar 2 · La Creación de la Debilidad",text:"Peón aislado estilo Kramnik que paralizó al oponente."});
+  INDEX.push({tab:"conclusiones",target:"pilar-3",title:"Pilar 3 · La Invasión de la Séptima Fila",text:"Presión convertida en mate espectacular con torres coordinadas."});
+  INDEX.push({tab:"conclusiones",target:"consejo-final",title:"Consejo final del maestro",text:"Busca una jugada todavía mejor; coronar un Caballo puede dar mate inmediato."});
+  GLOSARIO.forEach((g,i)=>INDEX.push({tab:"glosario",target:"glo-"+i,title:"Glosario · "+g[0],text:g[1]}));
+}
+function doSearch(){
+  const q=norm($("#q").value.trim()); const box=$("#searchResults");
+  if(q.length<2){box.innerHTML='<p style="font-size:.8rem;color:var(--ivory-mut)">Escribe al menos dos caracteres…</p>';return;}
+  const res=INDEX.filter(e=>norm(e.title).includes(q)||norm(e.text).includes(q)).slice(0,12);
+  box.innerHTML=res.length? res.map((r,i)=>'<button class="sRes" data-i="'+INDEX.indexOf(r)+'"><span class="badge">'+TAB_NAME[r.tab]+"</span><b>"+r.title+"</b><small>"+r.text.slice(0,110)+"…</small></button>").join("")
+    :'<p style="font-size:.85rem;color:var(--ivory-mut)">Sin resultados para «'+$("#q").value+'». Prueba con «centro», «enroque», «torres»…</p>';
+  box.querySelectorAll(".sRes").forEach(b=>b.addEventListener("click",()=>{
+    const r=INDEX[+b.dataset.i]; goTo(r);
+  }));
+}
+function goTo(r){
+  activate(r.tab,false);
+  setTimeout(()=>{
+    const el=document.getElementById(r.target); if(!el)return;
+    if(el.tagName==="DETAILS")el.open=true;
+    el.scrollIntoView({behavior:"smooth",block:"center"});
+    el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+    setTimeout(()=>el.classList.remove("flash"),1700);
+  },80);
+}
+
+/* ================= QUIZ ================= */
+let answers={};
+function renderQuiz(){
+  $("#quizBox").innerHTML=QUIZ.map((q,qi)=>
+    '<div class="quizQ" id="quiz-q'+qi+'"><h4><span class="qn">'+(qi+1)+".</span>"+q.q+'</h4><div class="qOpts">'+
+    q.o.map((o,oi)=>'<button class="qOpt" data-q="'+qi+'" data-o="'+oi+'" type="button">'+String.fromCharCode(65+oi)+") "+o+"</button>").join("")+
+    '</div><p class="qWhy" id="why-'+qi+'">'+q.w+"</p></div>").join("");
+  $("#quizBox").addEventListener("click",e=>{
+    const b=e.target.closest(".qOpt"); if(!b||b.disabled)return;
+    const qi=+b.dataset.q;
+    b.parentElement.querySelectorAll(".qOpt").forEach(x=>x.classList.remove("sel"));
+    b.classList.add("sel"); answers[qi]=+b.dataset.o;
+  });
+}
+function checkQuiz(){
+  let score=0;
+  QUIZ.forEach((q,qi)=>{
+    const opts=$("#quiz-q"+qi).querySelectorAll(".qOpt");
+    opts.forEach(o=>{o.disabled=true; o.classList.remove("ok","ko");
+      const oi=+o.dataset.o;
+      if(oi===q.a)o.classList.add("ok");
+      else if(answers[qi]===oi)o.classList.add("ko");
+    });
+    if(answers[qi]===q.a)score++;
+    $("#why-"+qi).classList.add("show");
+  });
+  const msg=score===8?"¡Nivel Maestro! Dominas la geografía del tablero. ♛":score>=6?"¡Gran estratega! La cima es tuya.":score>=4?"Vas por buen camino: repasa las fases marcadas.":"Relee las fases con calma y vuelve a intentarlo, aprendiz.";
+  $("#quizScore").textContent="Puntuación: "+score+" / "+QUIZ.length+" · "+msg;
+}
+function resetQuiz(){
+  answers={};
+  $$(".qOpt").forEach(o=>{o.disabled=false;o.classList.remove("ok","ko","sel");});
+  $$(".qWhy").forEach(w=>w.classList.remove("show"));
+  $("#quizScore").textContent="";
+}
+
+/* ================= GLOSARIO ================= */
+function renderGlossary(){
+  $("#gloGrid").innerHTML=GLOSARIO.map((g,i)=>'<article class="gloTerm" id="glo-'+i+'"><b>♟ '+g[0]+"</b><p>"+g[1]+"</p></article>").join("");
+  const upd=()=>{
+    const q=norm($("#gFilter").value.trim()); let n=0;
+    $$(".gloTerm").forEach((el,i)=>{
+      const hit=!q||norm(GLOSARIO[i][0]).includes(q)||norm(GLOSARIO[i][1]).includes(q);
+      el.style.display=hit?"":"none"; if(hit)n++;
+    });
+    $("#gCount").textContent=n+" de "+GLOSARIO.length+" términos visibles.";
+  };
+  $("#gFilter").addEventListener("input",upd); upd();
+}
+
+/* ================= VARIOS ================= */
+function initMisc(){
+  $("#qBtn").addEventListener("click",doSearch);
+  $("#q").addEventListener("keydown",e=>{if(e.key==="Enter")doSearch();});
+  document.addEventListener("keydown",e=>{
+    if(e.key==="/"&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();activate("inicio",false);setTimeout(()=>$("#q").focus(),100);}
+  });
+  $("#quizCheck").addEventListener("click",checkQuiz);
+  $("#quizReset").addEventListener("click",resetQuiz);
+  const tt=$("#toTop");
+  window.addEventListener("scroll",()=>tt.classList.toggle("show",window.scrollY>600),{passive:true});
+  tt.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+}
+
+/* ================= ARRANQUE ================= */
+buildHeroSquares();
+renderFases();
+buildIndex();
+renderQuiz();
+renderGlossary();
+initTabs();
+initMisc();
+updateProgress();
+const initial=(location.hash||"#inicio").slice(1);
+activate(TAB_ORDER.includes(initial)?initial:"inicio",false);
+</script>
+</body>
+</html>
