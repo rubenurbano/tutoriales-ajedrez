@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Defensa India de Rey — Guía Táctica y Estratégica · Tutorial Interactivo</title>
+<style>
+/* ============ RESET & BASE ============ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:#0a0e1a;
+  color:#e2e8f0;
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  line-height:1.65;
+  padding-top:60px;
+  overflow-x:hidden;
+}
+::selection{background:rgba(0,212,255,.35)}
+
+/* ============ PROGRESS BAR ============ */
+#progress{
+  position:fixed;top:0;left:0;height:4px;width:0%;
+  background:linear-gradient(90deg,#00d4ff,#22c55e,#a855f7);
+  z-index:300;box-shadow:0 0 10px rgba(0,212,255,.8);
+  transition:width .1s linear;
+}
+
+/* ============ NAVBAR ============ */
+#topnav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:60px;display:flex;align-items:center;gap:12px;
+  padding:0 14px;
+  background:rgba(10,14,26,.94);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid #1e3a5f;
+}
+.nav-brand{
+  color:#00d4ff;font-weight:800;font-size:.95rem;letter-spacing:1px;
+  white-space:nowrap;display:flex;align-items:center;gap:6px;
+}
+.nav-brand span.glyph{font-size:1.2rem}
+.nav-scroll{
+  display:flex;gap:8px;overflow-x:auto;flex:1;
+  scrollbar-width:none;padding:4px 2px;
+  -webkit-overflow-scrolling:touch;
+}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-link{
+  flex:0 0 auto;background:transparent;border:1px solid transparent;
+  color:#94a3b8;padding:8px 14px;border-radius:999px;cursor:pointer;
+  font-size:.88rem;font-family:inherit;white-space:nowrap;
+  transition:all .2s ease;
+}
+.nav-link:hover{color:#e2e8f0;border-color:#1e3a5f;background:#0f172a}
+.nav-link.active{background:#00d4ff;color:#04121c;font-weight:800;border-color:#00d4ff}
+.nav-link.credits-link{border-color:#a855f7;color:#c084fc}
+.nav-link.credits-link:hover{background:rgba(168,85,247,.12)}
+.nav-link.credits-link.active{background:#a855f7;color:#fff;border-color:#a855f7}
+
+/* ============ LAYOUT / PAGES ============ */
+main{min-height:calc(100vh - 60px)}
+.page{display:none;max-width:1180px;margin:0 auto;padding:26px 18px 70px}
+.page.active{display:block;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ============ CARDS / COMPONENTS ============ */
+.card{
+  background:#0f172a;border:1px solid #1e3a5f;
+  border-radius:12px;padding:24px;margin-bottom:22px;
+}
+.card h3{color:#7dd3fc;font-size:1.15rem;margin-bottom:10px}
+.card p{color:#cbd5e1}
+.card p + p{margin-top:10px}
+.lead{font-size:1.06rem}
+.accent{color:#00d4ff;font-weight:700}
+.green{color:#22c55e;font-weight:700}
+.amber{color:#f59e0b;font-weight:700}
+.red{color:#ef4444;font-weight:700}
+.purple{color:#c084fc;font-weight:700}
+
+.sec-head{display:flex;align-items:center;gap:16px;margin:6px 0 24px}
+.sec-icon{
+  width:56px;height:56px;flex:0 0 56px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(0,212,255,.16),rgba(168,85,247,.16));
+  border:1px solid #1e3a5f;
+  display:flex;align-items:center;justify-content:center;font-size:1.7rem;
+}
+.sec-kicker{font-size:.72rem;letter-spacing:3px;color:#00d4ff;font-weight:800;text-transform:uppercase}
+.sec-head h2{font-size:clamp(1.35rem,3.4vw,2rem);color:#f8fafc;line-height:1.2}
+
+/* Callouts */
+.callout{
+  border-radius:10px;padding:16px 18px;margin:20px 0;
+  border:1px solid;border-left-width:5px;
+}
+.callout .co-tag{
+  display:inline-block;font-size:.72rem;font-weight:800;
+  letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;
+}
+.callout p{color:#cbd5e1}
+.callout p + p{margin-top:8px}
+.co-info{background:rgba(0,212,255,.06);border-color:#00d4ff}
+.co-info .co-tag{color:#00d4ff}
+.co-example{background:rgba(34,197,94,.06);border-color:#22c55e}
+.co-example .co-tag{color:#22c55e}
+.co-warn{background:rgba(245,158,11,.07);border-color:#f59e0b}
+.co-warn .co-tag{color:#f59e0b}
+.co-error{background:rgba(239,68,68,.07);border-color:#ef4444}
+.co-error .co-tag{color:#ef4444}
+
+/* Chips */
+.chip-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:999px;font-size:.85rem;font-weight:600;
+  border:1px solid #1e3a5f;background:#0b1222;color:#cbd5e1;
+}
+.chip.c-cyan{border-color:rgba(0,212,255,.5);color:#7dd3fc}
+.chip.c-green{border-color:rgba(34,197,94,.5);color:#4ade80}
+.chip.c-purple{border-color:rgba(168,85,247,.5);color:#c084fc}
+
+/* Metrics */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:6px}
+.metric{
+  background:#0b1222;border:1px solid #1e3a5f;border-radius:12px;
+  padding:18px 14px;text-align:center;transition:transform .2s,border-color .2s;
+}
+.metric:hover{transform:translateY(-3px);border-color:#00d4ff}
+.metric .m-num{font-size:1.9rem;font-weight:800;color:#00d4ff;display:block}
+.metric .m-txt{font-size:.82rem;color:#94a3b8;letter-spacing:.5px}
+
+/* Quote */
+.quote-card{
+  border-left:5px solid #00d4ff;background:linear-gradient(90deg,rgba(0,212,255,.08),rgba(168,85,247,.05));
+  border-radius:0 12px 12px 0;padding:22px 26px;margin:24px 0;
+}
+.quote-card blockquote{font-size:clamp(1.05rem,2.4vw,1.35rem);font-style:italic;color:#f1f5f9;font-weight:600}
+.quote-card cite{display:block;margin-top:10px;color:#7dd3fc;font-size:.85rem;font-style:normal;letter-spacing:1px}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:420px}
+th,td{border:1px solid #1e3a5f;padding:10px 12px;text-align:left}
+th{background:#0b1222;color:#7dd3fc;letter-spacing:.5px;font-size:.8rem;text-transform:uppercase}
+td{color:#cbd5e1}
+td .big-glyph{font-size:1.5rem}
+
+/* ============ HOME ============ */
+.cover-wrap{
+  margin:0 0 28px;border-radius:16px;overflow:hidden;
+  border:1px solid #1e3a5f;
+  box-shadow:0 0 70px rgba(0,212,255,.12),0 0 30px rgba(168,85,247,.08);
+  background:#0b1222;
+}
+svg.cover{display:block;width:100%;height:auto}
+.home-body{text-align:center;max-width:860px;margin:0 auto}
+.badge-top{
+  display:inline-block;padding:7px 18px;border-radius:999px;
+  border:1px solid rgba(0,212,255,.55);background:rgba(0,212,255,.08);
+  color:#00d4ff;font-size:.78rem;font-weight:800;letter-spacing:2.5px;
+  text-transform:uppercase;margin-bottom:18px;
+}
+h1.hero{
+  font-size:clamp(2rem,6vw,3.4rem);font-weight:900;line-height:1.12;
+  background:linear-gradient(90deg,#f8fafc 30%,#7dd3fc 70%,#c084fc);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#f8fafc;
+  margin-bottom:12px;
+}
+.hero-sub{color:#7dd3fc;font-size:clamp(1rem,2.4vw,1.25rem);font-weight:600;margin-bottom:20px}
+.home-desc{text-align:left}
+.idea-banner{
+  margin-top:16px;padding:16px 18px;border-radius:10px;
+  background:rgba(168,85,247,.08);border:1px dashed #a855f7;color:#e9d5ff;
+  font-weight:600;
+}
+
+/* ============ CHESS BOARD ============ */
+.board-wrap{display:grid;grid-template-columns:minmax(280px,460px) 1fr;gap:22px;align-items:start}
+@media(max-width:980px){.board-wrap{grid-template-columns:1fr}}
+.board-frame{
+  background:#0b1222;border:1px solid #1e3a5f;border-radius:14px;
+  padding:14px;max-width:470px;margin:0 auto;width:100%;
+}
+.board-area{display:grid;grid-template-columns:22px 1fr;grid-template-rows:auto 22px;gap:4px}
+.coords{color:#64748b;font-size:.78rem;font-weight:700}
+.ranks{display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+.files{grid-column:2;display:flex}
+.files span{flex:1;text-align:center}
+.board-grid{
+  grid-column:2;display:grid;grid-template-columns:repeat(8,1fr);
+  aspect-ratio:1/1;border:2px solid #1e3a5f;border-radius:8px;overflow:hidden;
+  background:#0d1526;
+}
+.sq{display:flex;align-items:center;justify-content:center;font-size:var(--pf,26px);line-height:1;position:relative;user-select:none}
+.sq.light{background:#22344f}
+.sq.dark{background:#0e1a30}
+.sq.pw{color:#f8fafc;text-shadow:0 2px 3px rgba(0,0,0,.75)}
+.sq.pb{color:#05070d;text-shadow:0 0 3px rgba(125,211,252,.75)}
+.sq.hl{
+  box-shadow:inset 0 0 0 3px #00d4ff,inset 0 0 20px rgba(0,212,255,.5);
+  background:rgba(0,212,255,.22);
+}
+.stepper{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.st-btns{display:flex;gap:8px;flex-wrap:wrap}
+.st-ind{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;font-size:.85rem;color:#94a3b8}
+.st-turn{color:#00d4ff;font-weight:700}
+input[type=range].st-slider{width:100%;accent-color:#00d4ff;cursor:pointer;height:22px}
+
+.btn{
+  background:#111c33;border:1px solid #1e3a5f;color:#e2e8f0;
+  padding:10px 16px;border-radius:9px;cursor:pointer;
+  font-family:inherit;font-size:.9rem;font-weight:600;transition:all .2s;
+}
+.btn:hover:not(:disabled){border-color:#00d4ff;color:#00d4ff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-primary{background:#00d4ff;border-color:#00d4ff;color:#04121c;font-weight:800}
+.btn-primary:hover:not(:disabled){background:#66e4ff;color:#04121c}
+
+/* Move panel */
+.move-panel{
+  background:#0b1222;border:1px solid #1e3a5f;border-radius:12px;
+  padding:20px;min-height:280px;
+}
+.mp-badge{display:inline-block;padding:6px 13px;border-radius:8px;font-size:.78rem;font-weight:800;letter-spacing:1.2px;border:1px solid}
+.mp-white{background:rgba(0,212,255,.12);color:#00d4ff;border-color:rgba(0,212,255,.55)}
+.mp-black{background:rgba(168,85,247,.16);color:#c084fc;border-color:rgba(168,85,247,.6)}
+.mp-init{background:rgba(34,197,94,.12);color:#22c55e;border-color:rgba(34,197,94,.55)}
+.mp-piece{font-size:clamp(1.1rem,2.6vw,1.35rem);font-weight:800;margin:14px 0 10px;color:#f8fafc}
+.mp-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.mp-chip{font-size:.75rem;font-weight:700;padding:4px 11px;border-radius:999px;border:1px solid}
+.chip-nota{color:#7dd3fc;border-color:#1e3a5f;background:#0f172a}
+.chip-cap{color:#f59e0b;border-color:#f59e0b;background:rgba(245,158,11,.1)}
+.chip-chk{color:#ef4444;border-color:#ef4444;background:rgba(239,68,68,.12)}
+.mp-block{margin-top:12px;padding:13px 15px;border-radius:10px;background:#0f172a;border:1px solid #16294a}
+.mp-block .lbl{display:block;font-size:.7rem;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:5px;font-weight:800}
+.lbl-q{color:#00d4ff}.lbl-w{color:#22c55e}
+.mp-block p{color:#cbd5e1;font-size:.95rem}
+.seq-step{border-left:3px solid #a855f7;padding-left:14px;margin:16px 0}
+.seq-step h4{color:#c084fc;font-size:1rem;margin-bottom:4px}
+.seq-step .mv-line{font-weight:800;color:#f8fafc;font-size:1.02rem;margin-bottom:6px}
+
+/* ============ CHECKLIST ============ */
+.check-grid{display:grid;gap:12px;margin-top:16px}
+.check-item{
+  display:flex;gap:14px;align-items:flex-start;padding:16px;
+  border:1px solid #1e3a5f;border-radius:10px;background:#0b1222;
+  cursor:pointer;transition:all .2s;
+}
+.check-item:hover{border-color:#00d4ff}
+.check-item.done{border-color:#22c55e;background:rgba(34,197,94,.08)}
+.check-item input{width:22px;height:22px;margin-top:2px;accent-color:#22c55e;flex:0 0 22px;cursor:pointer}
+.check-item b{color:#f8fafc;display:block;margin-bottom:3px}
+.check-item span.d{color:#94a3b8;font-size:.9rem}
+#checkStatus{margin-top:16px;font-weight:700;color:#7dd3fc}
+.check-ok{
+  display:none;margin-top:14px;padding:16px;border-radius:10px;
+  background:rgba(34,197,94,.1);border:1px solid #22c55e;color:#4ade80;font-weight:700;
+}
+.check-ok.visible{display:block;animation:fadeIn .4s ease}
+
+/* ============ FOOTER / TOTOP ============ */
+footer{
+  border-top:1px solid #1e3a5f;background:#0b1222;
+  text-align:center;padding:30px 16px;color:#94a3b8;font-size:.9rem;
+}
+footer .f-line{margin:4px 0}
+footer .f-motto{color:#c084fc;font-style:italic;margin-top:12px;font-size:1rem}
+#toTop{
+  position:fixed;right:18px;bottom:18px;z-index:250;
+  width:50px;height:50px;border-radius:50%;border:1px solid #00d4ff;
+  background:rgba(15,23,42,.95);color:#00d4ff;font-size:1.3rem;cursor:pointer;
+  opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 0 18px rgba(0,212,255,.35);
+}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{background:#00d4ff;color:#04121c}
+
+/* Credits */
+.credit-card{text-align:center}
+.credit-name{font-size:clamp(1.6rem,4.5vw,2.4rem);font-weight:900;color:#00d4ff;margin:8px 0}
+.credit-motto{font-size:1.3rem;font-style:italic;color:#c084fc;margin-top:18px;letter-spacing:1px}
+.credit-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:18px}
+
+@media(max-width:600px){
+  .page{padding:18px 12px 60px}
+  .card{padding:18px}
+  .st-btns .btn{flex:1;padding:11px 8px;font-size:.85rem}
+  .sec-head{gap:12px}
+  .sec-icon{width:46px;height:46px;flex-basis:46px;font-size:1.4rem}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<div id="progress" role="progressbar" aria-label="Progreso de lectura"></div>
+
+<nav id="topnav" aria-label="Navegación principal">
+  <div class="nav-brand"><span class="glyph">♟</span> INDIA DE REY</div>
+  <div class="nav-scroll" id="navScroll">
+    <button class="nav-link active" data-target="home">🏠 Inicio</button>
+    <button class="nav-link" data-target="esquema">🧱 Esquema Universal</button>
+    <button class="nav-link" data-target="castigo-ad3">🎯 Castigo al Ad3</button>
+    <button class="nav-link" data-target="sacrificio-e5">💥 Sacrificio en e5</button>
+    <button class="nav-link" data-target="maniobras-be2">♞ Maniobras ante Ae2</button>
+    <button class="nav-link" data-target="saemisch">⚔️ Sämisch y 4 Peones</button>
+    <button class="nav-link" data-target="checklist">✅ Checklist</button>
+    <button class="nav-link credits-link" data-target="creditos">★ Créditos</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ==================== HOME ==================== -->
+<section class="page active" id="home">
+  <div class="cover-wrap" data-cover aria-label="Portada animada del tutorial"></div>
+  <div class="home-body">
+    <span class="badge-top">♟ Tutorial interactivo · Ajedrez · Guía maestra</span>
+    <h1 class="hero">Defensa India de Rey</h1>
+    <p class="hero-sub">Guía Táctica y Estratégica · Tutorial paso a paso para principiantes</p>
+
+    <div class="card home-desc">
+      <p class="lead">Mi misión es que dejes de memorizar jugadas sin sentido y comiences a comprender la <span class="accent">arquitectura profunda del ajedrez</span>. La Defensa India de Rey no es simplemente una respuesta al Peón de Dama: es un <span class="green">sistema universal y elástico</span> diseñado para absorber la presión enemiga y lanzarla de vuelta en un <span class="purple">contraataque táctico fulminante</span>.</p>
+      <div class="idea-banner">♟ Idea central: ceder el centro inicialmente es una decisión deliberada — estamos invitando al blanco a sobreextenderse para luego demoler su estructura desde los flancos.</div>
+    </div>
+
+    <div class="quote-card">
+      <blockquote>“Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.”</blockquote>
+      <cite>— Albert Einstein</cite>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><span class="m-num">6</span><span class="m-txt">Capítulos guiados</span></div>
+      <div class="metric"><span class="m-num">6</span><span class="m-txt">Tableros interactivos</span></div>
+      <div class="metric"><span class="m-num">77</span><span class="m-txt">Movimientos comentados</span></div>
+      <div class="metric"><span class="m-num">4</span><span class="m-txt">Pilares del checklist</span></div>
+    </div>
+
+    <div class="chip-row" style="justify-content:center">
+      <span class="chip c-cyan">📅 Fecha: 02/09/2026</span>
+      <span class="chip c-purple">🕐 Hora: 18:25:56</span>
+      <span class="chip c-green">👨‍💻 Autor: Rubén Sbarsky</span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECCIÓN 1 · ESQUEMA UNIVERSAL ==================== -->
+<section class="page" id="esquema">
+  <div class="sec-head">
+    <div class="sec-icon">🧱</div>
+    <div><div class="sec-kicker">Capítulo 1</div><h2>Introducción y la Arquitectura del Esquema Universal</h2></div>
+  </div>
+
+  <div class="card">
+    <p class="lead">La construcción de lo que yo llamo el <span class="accent">“muro con pinchos”</span> sigue una secuencia lógica de desarrollo que busca la máxima coordinación entre piezas menores y peones. Esta es la formación base que debes dominar.</p>
+    <p>Reproduce la secuencia en el tablero interactivo, <b>movimiento a movimiento</b>: avanza, retrocede, usa el deslizador y lee la explicación de cada paso.</p>
+    <div id="board1"></div>
+  </div>
+
+  <div class="callout co-info">
+    <span class="co-tag">ℹ️ Análisis del “So What?” · El papel del ancla en d6</span>
+    <p>El movimiento del <b>Peón Negro en la casilla d6</b> es el <span class="accent">ancla crítica de nuestra posición</span>. Su valor pedagógico es inmenso: actúa como un <b>freno preventivo</b> que impide el avance del peón blanco a e5.</p>
+    <p>Sin esta base, las blancas podrían expulsar a nuestro caballo de f6, desestabilizando toda nuestra estructura defensiva. Al fijar d6, <b>garantizamos la estabilidad de nuestro flanco de rey</b> y preparamos el terreno para las rupturas centrales.</p>
+  </div>
+
+  <div class="callout co-example">
+    <span class="co-tag">📖 Cómo leer este tutorial · Movimiento ≠ Jugada</span>
+    <p><b>Movimiento:</b> acción realizada por un único bando. Cada paso del tablero es un movimiento individual, e indica siempre quién mueve (<span class="accent">BLANCAS</span> o <span class="purple">NEGRAS</span>), la pieza, la casilla de origen y la de destino.</p>
+    <p><b>Jugada completa:</b> movimiento de BLANCAS + movimiento de NEGRAS. Por ejemplo, el Movimiento 1 (BLANCAS: peón d2 → d4) y el Movimiento 2 (NEGRAS: caballo g8 → f6) forman la <b>jugada completa 1</b>.</p>
+  </div>
+
+  <div class="card">
+    <h3>♟ Referencia rápida de piezas</h3>
+    <p>En este tutorial usamos siempre el <b>nombre completo de la pieza</b> (Rey, Dama, Torre, Alfil, Caballo, Peón) junto a su color. La notación algebraica (Cf6, Ag7…) aparece solo como información secundaria.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Pieza</th><th>Blancas</th><th>Negras</th><th>Notación</th></tr></thead>
+        <tbody>
+          <tr><td><b>Rey</b></td><td class="big-glyph">♔</td><td class="big-glyph">♚</td><td>R / r — pieza suprema: si cae, termina la partida</td></tr>
+          <tr><td><b>Dama</b></td><td class="big-glyph">♕</td><td class="big-glyph">♛</td><td>D / q — la pieza más poderosa</td></tr>
+          <tr><td><b>Torre</b></td><td class="big-glyph">♖</td><td class="big-glyph">♜</td><td>T / r — columnas y filas</td></tr>
+          <tr><td><b>Alfil</b></td><td class="big-glyph">♗</td><td class="big-glyph">♝</td><td>A / b — diagonales (el de g7 es nuestra estrella)</td></tr>
+          <tr><td><b>Caballo</b></td><td class="big-glyph">♘</td><td class="big-glyph">♞</td><td>C / n — saltos en “L”</td></tr>
+          <tr><td><b>Peón</b></td><td class="big-glyph">♙</td><td class="big-glyph">♟</td><td>solo la casilla (d4, d6, g6…)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECCIÓN 2 · CASTIGO AL Ad3 ==================== -->
+<section class="page" id="castigo-ad3">
+  <div class="sec-head">
+    <div class="sec-icon">🎯</div>
+    <div><div class="sec-kicker">Capítulo 2</div><h2>Variante de la Imprecisión: El Castigo al Alfil en d3</h2></div>
+  </div>
+
+  <div class="card">
+    <p class="lead">Una vez establecida la base, el principiante debe aprender a <span class="red">castigar con severidad</span> cualquier desviación del blanco respecto a la teoría principal.</p>
+    <p>Es frecuente encontrar rivales que, por falta de rigor teórico, colocan su <b>Alfil Blanco en la casilla d3</b>. Desde el punto de vista estratégico, esto es un <span class="red">error conceptual grave</span>: el alfil obstruye la visión de la Dama Blanca, desconectándola de la defensa natural del peón en d4.</p>
+    <div class="callout co-warn">
+      <span class="co-tag">⚠️ Reconstrucción de la secuencia de castigo</span>
+      <p>Observa cómo la clavada <b>6... Ag4</b> inmoviliza al caballo de f3: el propósito es <b>clavar al caballo para inmovilizar al único defensor efectivo de d4</b>. Avanza paso a paso en el tablero:</p>
+    </div>
+    <div id="board2"></div>
+  </div>
+
+  <div class="callout co-info">
+    <span class="co-tag">ℹ️ Análisis del “So What?” · El colapso central</span>
+    <p>La eliminación del defensor en f3 y la presión inmediata del caballo en c6 provocan una <b>crisis de coordinación total</b>. El peón de d4 se vuelve <span class="accent">indefenso</span>.</p>
+    <p>Esta secuencia transforma una apertura sólida en un <b>desastre estructural para el blanco</b>, quien se ve forzado a entregar el centro o entrar en una posición pasiva y perdedora.</p>
+  </div>
+</section>
+
+<!-- ==================== SECCIÓN 3 · SACRIFICIO EN e5 ==================== -->
+<section class="page" id="sacrificio-e5">
+  <div class="sec-head">
+    <div class="sec-icon">💥</div>
+    <div><div class="sec-kicker">Capítulo 3</div><h2>El Sacrificio Táctico en la Casilla e5</h2></div>
+  </div>
+
+  <div class="card">
+    <p class="lead">Si el blanco defiende con mayor solidez, el negro debe recurrir a sacrificios posicionales más profundos para mantener la iniciativa. En la India de Rey, <span class="accent">el material es secundario frente a la actividad</span>.</p>
+    <p>El sacrificio de material es una <b>herramienta de desequilibrio</b> que transforma una posición cerrada en un ataque directo sobre las piezas pesadas del rival.</p>
+    <div class="callout co-example">
+      <span class="co-tag">📖 Ejecución del sacrificio</span>
+      <p>El tablero te lleva hasta el momento exacto en que <b>ofrecemos la pieza para generar un ataque doble inmediato</b> (el caballo salta a e5). Avanza movimiento a movimiento:</p>
+    </div>
+    <div id="board3"></div>
+  </div>
+
+  <div class="card">
+    <h3>🔥 Resolución del sacrificio (tal como la describe la guía)</h3>
+    <p>Una vez ofrecido el caballo en e5, la guía continúa así:</p>
+    <div class="seq-step">
+      <h4>MOVIMIENTO SIGUIENTE — BLANCAS</h4>
+      <div class="mv-line">Caballo blanco captura Caballo negro en e5</div>
+      <p><b>¿Qué ocurre?</b> Las blancas aceptan el sacrificio y capturan el caballo ofrecido.</p>
+      <p><b>¿Por qué es importante?</b> Al aceptar, las blancas abren la posición sin advertir el ataque doble que se prepara.</p>
+    </div>
+    <div class="seq-step">
+      <h4>MOVIMIENTO SIGUIENTE — NEGRAS</h4>
+      <div class="mv-line">Peón negro: d6 → e5 (captura)</div>
+      <p><b>¿Qué ocurre?</b> El peón de d6 recaptura en e5.</p>
+      <p><b>¿Por qué es importante?</b> Al recapturar con el peón, generamos un <span class="red">ataque doble sobre la dama y el alfil de e3</span>.</p>
+    </div>
+  </div>
+
+  <div class="callout co-error">
+    <span class="co-tag">🚨 Análisis del “So What?” · El ataque doble decisivo</span>
+    <p>Al recapturar con el peón, generamos un <b>ataque doble sobre la dama y el alfil de e3</b>. Si la dama se retira, <b>capturamos el alfil con jaque</b>, obligando al Rey Blanco a moverse y perder definitivamente el derecho al enroque.</p>
+    <p>Esta secuencia no es solo una “molestia”: es un <b>colapso táctico</b> que suele terminar la partida rápidamente debido a la exposición del monarca y la pérdida de material neto.</p>
+  </div>
+</section>
+
+<!-- ==================== SECCIÓN 4 · MANIOBRAS ANTE Ae2 ==================== -->
+<section class="page" id="maniobras-be2">
+  <div class="sec-head">
+    <div class="sec-icon">♞</div>
+    <div><div class="sec-kicker">Capítulo 4</div><h2>Maniobras de Reubicación ante la Variante Principal (Ae2)</h2></div>
+  </div>
+
+  <div class="card">
+    <p class="lead">Contra variantes más precavidas, como el Alfil en e2, el negro debe emplear maniobras de reubicación de alta precisión. Cuando el blanco juega de forma conservadora con el <b>Alfil en la casilla e2</b>, el negro debe ser <span class="accent">flexible</span>.</p>
+    <p>Es vital <b>“dar aire” al Alfil de g7</b>, nuestra pieza más poderosa, mediante una maniobra de reubicación estratégica.</p>
+    <div class="callout co-example">
+      <span class="co-tag">📖 Secuencia de reubicación</span>
+      <p>El caballo de f6 se aparta a d7 con un doble propósito: <b>liberar la diagonal larga y preparar el golpe central e5</b>. Reprodúcela en el tablero:</p>
+    </div>
+    <div id="board4"></div>
+  </div>
+
+  <div class="callout co-warn">
+    <span class="co-tag">⚠️ El “Sacrificio Mágico” · sacrificio de despeje</span>
+    <p>Tras el avance blanco del peón a d5, la guía describe el golpe que viene: <b>el peón negro se entrega en d3</b>.</p>
+    <div class="seq-step">
+      <h4>NEGRAS — Peón a d3 (sacrificio de despeje)</h4>
+      <div class="mv-line">Peón negro entregado en d3</div>
+      <p><b>¿Qué ocurre?</b> El avance del Peón en d3 es un <b>sacrificio de despeje magistral</b>. Al regalar este peón, abrimos la diagonal del Alfil de g7 para atacar la Torre de b2.</p>
+      <p><b>¿Por qué es importante?</b> El secreto pedagógico es el siguiente: si el blanco captura en d3, el negro lanza un <b>salto de caballo a b4 o d4</b>, creando un <span class="red">ataque doble sobre la dama y la torre</span>.</p>
+    </div>
+  </div>
+
+  <div class="callout co-info">
+    <span class="co-tag">ℹ️ Análisis del “So What?” · El sacrificio de despeje</span>
+    <p>Esta maniobra <b>desarticula completamente el flanco de dama blanco</b> y otorga una <span class="accent">ventaja decisiva</span>.</p>
+    <p>No obstante, la lucha no siempre es central; el blanco puede intentar asfixiarnos mediante la expansión masiva de peones. Eso se analiza en el próximo capítulo.</p>
+  </div>
+</section>
+
+<!-- ==================== SECCIÓN 5 · SAEMISCH Y CUATRO PEONES ==================== -->
+<section class="page" id="saemisch">
+  <div class="sec-head">
+    <div class="sec-icon">⚔️</div>
+    <div><div class="sec-kicker">Capítulo 5</div><h2>Desmantelando la Variante Sämisch y el Ataque de los Cuatro Peones</h2></div>
+  </div>
+
+  <div class="card">
+    <p class="lead">La <span class="amber">sobreextensión</span> es la debilidad intrínseca de las variantes agresivas como la Sämisch o los Cuatro Peones. El blanco sacrifica desarrollo por espacio, dejando huecos que nuestras piezas ligeras deben explotar.</p>
+  </div>
+
+  <div class="card">
+    <h3>🛡️ Táctica en la Variante Sämisch (f3)</h3>
+    <p>El blanco refuerza e4 con f3 y sueña con una expansión masiva. Nuestra respuesta combina espacio en el flanco de dama y desarrollo periférico:</p>
+    <div id="board5"></div>
+    <div class="callout co-error">
+      <span class="co-tag">🚨 El Golpe Maestro (si el blanco se descuida)</span>
+      <div class="seq-step">
+        <h4>NEGRAS — Sacrificio</h4>
+        <div class="mv-line">Caballo negro: f6 → e4 (captura el peón blanco)</div>
+        <p><b>¿Qué ocurre?</b> Ejecutamos el sacrificio: el caballo captura el peón central de e4.</p>
+        <p><b>¿Por qué es importante?</b> Destruimos el centro y abrimos la diagonal h4–e1 contra el rey blanco, que aún no ha enrocado.</p>
+      </div>
+      <div class="seq-step">
+        <h4>BLANCAS — Recaptura</h4>
+        <div class="mv-line">Peón blanco: f3 → e4 (captura el caballo)</div>
+        <p><b>¿Qué ocurre?</b> Tras la recaptura, la columna y las diagonales frente al rey blanco quedan abiertas.</p>
+        <p><b>¿Por qué es importante?</b> El peón de f3, que sostenía el centro, desaparece de su misión defensiva.</p>
+      </div>
+      <div class="seq-step">
+        <h4>NEGRAS — Jaque decisivo</h4>
+        <div class="mv-line">Dama negra: d8 → h4 — ¡JAQUE!</div>
+        <p><b>¿Qué ocurre?</b> La Dama Negra entra en h4 con jaque.</p>
+        <p><b>¿Por qué es importante?</b> Recuperamos la pieza y dejamos el enroque blanco en ruinas.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🌊 Táctica en el Ataque de los Cuatro Peones</h3>
+    <p>El blanco levanta una muralla con peones en <b>c4, d4, e4 y f4</b>. Frente a la avalancha, el negro no retrocede:</p>
+    <div id="board6"></div>
+    <div class="callout co-example">
+      <span class="co-tag">📖 La Secuencia Crítica (tras la ruptura en e5)</span>
+      <p><b>1.</b> Utilizamos el salto del <b>Caballo a la casilla b4</b>.</p>
+      <p><b>2.</b> Desarrollamos el <b>Alfil Negro a f5</b> para clavar la posición blanca.</p>
+      <p><b>3.</b> La presión se completa con el avance del peón a <b>f5</b> y <b>e4</b>, destruyendo el centro blanco mediante <b>ataques descubiertos</b>.</p>
+    </div>
+    <div class="callout co-info">
+      <span class="co-tag">ℹ️ Análisis del “So What?” · La ruina de la sobreextensión</span>
+      <p>Frente a la avalancha, el negro no retrocede; utiliza <b>clavadas</b> y la actividad de sus caballos (especialmente en <span class="accent">b4</span> y <span class="accent">c5</span>) para que el centro blanco colapse.</p>
+      <p>Lo que parecía una fortaleza de peones se convierte en un <b>laberinto de debilidades</b> que nuestras piezas coordinadas dominan con facilidad.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECCIÓN 6 · CHECKLIST ==================== -->
+<section class="page" id="checklist">
+  <div class="sec-head">
+    <div class="sec-icon">✅</div>
+    <div><div class="sec-kicker">Capítulo 6</div><h2>Conclusión y Checklist Estratégico</h2></div>
+  </div>
+
+  <div class="card">
+    <p class="lead">La Defensa India de Rey no es una lista de jugadas, sino una <span class="accent">filosofía de contraofensiva dinámica</span>. Su éxito depende de tu capacidad para transformar el espacio del oponente en una debilidad explotable.</p>
+  </div>
+
+  <div class="card">
+    <h3>🧭 Checklist Estratégico para el Estudiante</h3>
+    <p>Antes de transitar al medio juego, <b>valida tu posición</b>. Marca cada pilar cuando lo hayas comprobado:</p>
+    <div class="check-grid" id="checkGrid">
+      <label class="check-item">
+        <input type="checkbox">
+        <span><b>⚓ Anclaje Central</b><span class="d">¿Está el peón en d6 frenando el avance e5 del blanco?</span></span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox">
+        <span><b>🔭 Poder del Fianchetto</b><span class="d">¿Está el Alfil de g7 protegido y con diagonales abiertas para impactar en b2 o d4?</span></span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox">
+        <span><b>🐴 Desarrollo Periférico</b><span class="d">¿He utilizado el Caballo en a6 para presionar c5 o saltar a b4 según la variante?</span></span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox">
+        <span><b>💥 Coordinación de Ruptura</b><span class="d">¿Están mis piezas listas para la ruptura en e5 que dejará el centro blanco en ruinas?</span></span>
+      </label>
+    </div>
+    <div id="checkStatus">Pendientes de validar: 4 de 4 pilares</div>
+    <div class="check-ok" id="checkOk">✅ ¡Posición validada! Todos los pilares de la India de Rey están en su sitio. ¡A la carga!</div>
+  </div>
+
+  <div class="quote-card">
+    <blockquote>“El espacio sin coordinación es solo un espejismo de ventaja. Domina estos conceptos y verás cómo el dominio aparente de tu rival se desvanece ante la potencia de la India de Rey. ¡A la carga!”</blockquote>
+    <cite>— Cierre de la Guía Maestra</cite>
+  </div>
+</section>
+
+<!-- ==================== CRÉDITOS ==================== -->
+<section class="page" id="creditos">
+  <div class="cover-wrap" data-cover aria-label="Portada animada del tutorial"></div>
+  <div class="card credit-card">
+    <div class="sec-kicker">Créditos</div>
+    <h2 style="margin-top:8px">Guía Maestra de la Defensa India de Rey</h2>
+    <p style="color:#7dd3fc;font-weight:600">Guía Táctica y Estratégica · Tutorial Paso a Paso para Principiantes</p>
+    <div class="credit-name">👨‍💻 Rubén Sbarsky</div>
+    <div class="credit-row">
+      <span class="chip c-cyan">📅 Fecha: 02/09/2026</span>
+      <span class="chip c-purple">🕐 Hora: 18:25:56</span>
+      <span class="chip c-green">📚 Material basado en 5 fuentes pedagógicas y tácticas</span>
+    </div>
+    <p style="margin-top:20px;color:#94a3b8">Serie de guías pedagógicas y tácticas diseñadas para enseñar la Defensa India de Rey a jugadores de ajedrez principiantes y ambiciosos: esquema universal, castigo a las imprecisiones, sacrificios posicionales, maniobras de reubicación y desmantelamiento de las variantes Sämisch y de los Cuatro Peones.</p>
+    <p class="credit-motto">Fiat iustitia, ruat caelum.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="f-line">📚 Tutorial solo con fines Educativos y Divulgación</div>
+  <div class="f-line">👨‍💻 Créditos: Rubén Sbarsky</div>
+  <div class="f-line">📅 FECHA: 02/09/2026</div>
+  <div class="f-line">Hora: 18:25:56</div>
+  <div class="f-line f-motto">Fiat iustitia, ruat caelum.</div>
+</footer>
+
+<button id="toTop" aria-label="Volver arriba" title="Volver arriba">↑</button>
+
+<!-- ============ SVG DE PORTADA: UN ÚNICO SÍMBOLO REUTILIZADO EN HOME Y CRÉDITOS ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<symbol id="coverSymbol" viewBox="0 0 1600 900">
+  <defs>
+    <radialGradient id="cbg" cx="30%" cy="18%" r="95%">
+      <stop offset="0" stop-color="#13223f"/>
+      <stop offset="55%" stop-color="#0b1428"/>
+      <stop offset="100%" stop-color="#070b14"/>
+    </radialGradient>
+    <linearGradient id="cbeam" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#00d4ff" stop-opacity="0.1"/>
+      <stop offset="45%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="ctitle" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#7dd3fc"/>
+    </linearGradient>
+    <filter id="cglow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="cgridp" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M60 0H0V60" fill="none" stroke="#1e3a5f" stroke-width="1" opacity="0.22"/>
+    </pattern>
+    <pattern id="cchk" x="950" y="180" width="124" height="124" patternUnits="userSpaceOnUse">
+      <rect width="124" height="124" fill="#0d1830"/>
+      <rect width="62" height="62" fill="#1c2c4d"/>
+      <rect x="62" y="62" width="62" height="62" fill="#1c2c4d"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#cbg)"/>
+  <rect width="1600" height="900" fill="url(#cgridp)"/>
+
+  <!-- anillos giratorios alrededor del tablero -->
+  <g opacity="0.35">
+    <circle cx="1198" cy="428" r="296" fill="none" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="4 16">
+      <animateTransform attributeName="transform" type="rotate" from="0 1198 428" to="360 1198 428" dur="48s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1198" cy="428" r="322" fill="none" stroke="#a855f7" stroke-width="1" stroke-dasharray="2 20" opacity="0.6">
+      <animateTransform attributeName="transform" type="rotate" from="360 1198 428" to="0 1198 428" dur="60s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Título -->
+  <g font-family="'Segoe UI',system-ui,sans-serif">
+    <rect x="66" y="40" width="340" height="36" rx="18" fill="rgba(0,212,255,0.08)" stroke="#00d4ff" stroke-width="1"/>
+    <text x="236" y="64" text-anchor="middle" font-size="16" fill="#00d4ff" letter-spacing="3" font-weight="700">♟ TUTORIAL INTERACTIVO</text>
+    <text x="66" y="130" font-size="56" font-weight="800" fill="url(#ctitle)" letter-spacing="1">DEFENSA INDIA DE REY</text>
+    <text x="66" y="167" font-size="21" fill="#7dd3fc" letter-spacing="2" font-weight="600">GUÍA TÁCTICA Y ESTRATÉGICA · EL MURO CON PINCHOS</text>
+    <rect x="66" y="182" width="240" height="4" rx="2" fill="#00d4ff">
+      <animate attributeName="width" values="120;430;120" dur="6s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- Tarjeta FASE 1 -->
+  <g font-family="'Segoe UI',system-ui,sans-serif" opacity="0">
+    <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.03;0.28;0.34;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="66" y="224" width="560" height="116" rx="14" fill="#0f172a" stroke="#1e3a5f"/>
+    <rect x="66" y="224" width="7" height="116" rx="3" fill="#f59e0b"/>
+    <circle cx="126" cy="282" r="30" fill="rgba(245,158,11,0.12)" stroke="#f59e0b"/>
+    <text x="126" y="292" text-anchor="middle" font-size="30" fill="#f59e0b">♙</text>
+    <text x="172" y="270" font-size="22" fill="#f8fafc" font-weight="800">FASE 1 · CEDER EL CENTRO</text>
+    <text x="172" y="300" font-size="16" fill="#94a3b8">Las blancas ocupan c4 · d4 · e4: la invitación</text>
+    <text x="172" y="322" font-size="16" fill="#94a3b8">deliberada a la sobreextensión.</text>
+  </g>
+
+  <!-- Tarjeta FASE 2 -->
+  <g font-family="'Segoe UI',system-ui,sans-serif" opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.26;0.32;0.58;0.64;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="66" y="362" width="560" height="116" rx="14" fill="#0f172a" stroke="#1e3a5f"/>
+    <rect x="66" y="362" width="7" height="116" rx="3" fill="#00d4ff"/>
+    <circle cx="126" cy="420" r="30" fill="rgba(0,212,255,0.12)" stroke="#00d4ff"/>
+    <text x="126" y="430" text-anchor="middle" font-size="30" fill="#00d4ff">♝</text>
+    <text x="172" y="408" font-size="22" fill="#f8fafc" font-weight="800">FASE 2 · EL MURO CON PINCHOS</text>
+    <text x="172" y="438" font-size="16" fill="#94a3b8">Cf6 · g6 · Ag7 · d6: el ancla sostiene la</text>
+    <text x="172" y="460" font-size="16" fill="#94a3b8">estructura y el alfil apunta a la gran diagonal.</text>
+  </g>
+
+  <!-- Tarjeta FASE 3 -->
+  <g font-family="'Segoe UI',system-ui,sans-serif" opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.58;0.64;0.97;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="66" y="500" width="560" height="116" rx="14" fill="#0f172a" stroke="#a855f7"/>
+    <rect x="66" y="500" width="7" height="116" rx="3" fill="#a855f7"/>
+    <circle cx="126" cy="558" r="30" fill="rgba(168,85,247,0.14)" stroke="#a855f7"/>
+    <text x="126" y="568" text-anchor="middle" font-size="30" fill="#c084fc">♞</text>
+    <text x="172" y="546" font-size="22" fill="#f8fafc" font-weight="800">FASE 3 · CONTRAGOLPE: RUPTURA e5</text>
+    <text x="172" y="576" font-size="16" fill="#94a3b8">El caballo salta, el alfil dispara y el centro</text>
+    <text x="172" y="598" font-size="16" fill="#94a3b8">blanco colapsa bajo el ataque doble.</text>
+  </g>
+
+  <!-- Medidor espacio / contraataque -->
+  <g font-family="'Segoe UI',system-ui,sans-serif">
+    <text x="66" y="744" font-size="14" fill="#94a3b8" letter-spacing="2" font-weight="700">ESPACIO BLANCO (SOBREEXTENSIÓN)</text>
+    <rect x="66" y="756" width="460" height="14" rx="7" fill="#16233c"/>
+    <rect x="66" y="756" width="460" height="14" rx="7" fill="#ef4444" opacity="0.85">
+      <animate attributeName="width" values="460;460;460;170;170" keyTimes="0;0.5;0.62;0.8;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+    <text x="66" y="806" font-size="14" fill="#94a3b8" letter-spacing="2" font-weight="700">CONTRAGOLPE NEGRO</text>
+    <rect x="66" y="818" width="460" height="14" rx="7" fill="#16233c"/>
+    <rect x="66" y="818" width="60" height="14" rx="7" fill="#00d4ff">
+      <animate attributeName="width" values="60;60;60;430;430" keyTimes="0;0.5;0.62;0.8;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+    <text x="66" y="866" font-size="15" fill="#64748b" letter-spacing="3">CEDER → ABSORBER → CONTRAATACAR</text>
+  </g>
+
+  <!-- Tablero -->
+  <g>
+    <rect x="946" y="176" width="504" height="504" rx="14" fill="#0b1222" stroke="#1e3a5f" stroke-width="2"/>
+    <rect x="950" y="180" width="496" height="496" rx="10" fill="url(#cchk)"/>
+    <ellipse cx="1198" cy="428" rx="160" ry="160" fill="#00d4ff" opacity="0.05"/>
+    <g font-family="'Segoe UI',system-ui,sans-serif" font-size="14" fill="#64748b" text-anchor="middle" font-weight="700">
+      <text x="934" y="216">8</text><text x="934" y="278">7</text><text x="934" y="340">6</text><text x="934" y="402">5</text>
+      <text x="934" y="464">4</text><text x="934" y="526">3</text><text x="934" y="588">2</text><text x="934" y="650">1</text>
+      <text x="981" y="698">a</text><text x="1043" y="698">b</text><text x="1105" y="698">c</text><text x="1167" y="698">d</text>
+      <text x="1229" y="698">e</text><text x="1291" y="698">f</text><text x="1353" y="698">g</text><text x="1415" y="698">h</text>
+    </g>
+    <!-- casillas centrales resaltadas durante la fase 1 -->
+    <rect x="1074" y="428" width="62" height="62" fill="#f59e0b" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.25;0.25;0;0" keyTimes="0;0.22;0.28;0.6;0.72;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="1136" y="428" width="62" height="62" fill="#f59e0b" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.25;0.25;0;0" keyTimes="0;0.22;0.28;0.6;0.72;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="1198" y="428" width="62" height="62" fill="#f59e0b" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.25;0.25;0;0" keyTimes="0;0.22;0.28;0.6;0.72;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- Peones blancos avanzando al centro (fase 1) -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 -124;0 -124" keyTimes="0;0.05;0.2;1" dur="12s" repeatCount="indefinite"/>
+    <text x="1105" y="583" font-size="46" text-anchor="middle" fill="#f1f5f9">♙</text>
+  </g>
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 -124;0 -124" keyTimes="0;0.05;0.2;1" dur="12s" repeatCount="indefinite"/>
+    <text x="1167" y="583" font-size="46" text-anchor="middle" fill="#f1f5f9">♙
+      <animate attributeName="opacity" values="1;1;1;1;0.12;0.12" keyTimes="0;0.55;0.62;0.7;0.78;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+  </g>
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 -124;0 -124" keyTimes="0;0.05;0.2;1" dur="12s" repeatCount="indefinite"/>
+    <text x="1229" y="583" font-size="46" text-anchor="middle" fill="#f1f5f9">♙
+      <animate attributeName="opacity" values="1;1;1;1;0.12;0.12" keyTimes="0;0.55;0.62;0.7;0.78;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+  </g>
+
+  <!-- Muro negro: peones g6 y d6 (fase 2) -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.26;0.36;1" dur="12s" repeatCount="indefinite"/>
+    <text x="1353" y="335" font-size="42" text-anchor="middle" fill="#67e8f9">♟</text>
+    <text x="1167" y="335" font-size="42" text-anchor="middle" fill="#67e8f9">♟</text>
+  </g>
+
+  <!-- Alfil g7 con halo pulsante (fase 2) -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.3;0.4;1" dur="12s" repeatCount="indefinite"/>
+    <circle cx="1353" cy="273" r="34" fill="none" stroke="#00d4ff" stroke-width="2">
+      <animate attributeName="r" values="30;44;30" dur="2.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0.15;0.7" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+    <text x="1353" y="273" font-size="44" text-anchor="middle" fill="#a5f3fc">♝</text>
+  </g>
+
+  <!-- Rayo de la gran diagonal g7→a1 (fase 3) -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.54;0.6;1" dur="12s" repeatCount="indefinite"/>
+    <line x1="1353" y1="273" x2="981" y2="645" stroke="url(#cbeam)" stroke-width="12" stroke-linecap="round" stroke-dasharray="527" stroke-dashoffset="527" filter="url(#cglow)">
+      <animate attributeName="stroke-dashoffset" values="527;527;0;0" keyTimes="0;0.58;0.7;1" dur="12s" repeatCount="indefinite"/>
+    </line>
+  </g>
+
+  <!-- Retícula sobre d4 (fase 3) -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.56;0.62;0.78;0.85;1" dur="12s" repeatCount="indefinite"/>
+    <circle cx="1167" cy="459" r="40" fill="none" stroke="#00d4ff" stroke-width="2" stroke-dasharray="6 8">
+      <animateTransform attributeName="transform" type="rotate" from="0 1167 459" to="360 1167 459" dur="6s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Caballo negro f6 → e5 (fase 3) -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.3;0.38;1" dur="12s" repeatCount="indefinite"/>
+    <g>
+      <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6;0.68;1" path="M0,0 Q-14,-90 -62,62"/>
+      <text x="1291" y="335" font-size="46" text-anchor="middle" fill="#67e8f9">♞</text>
+    </g>
+  </g>
+
+  <!-- Ondas expansivas: colapso del centro -->
+  <circle cx="1167" cy="459" r="0" fill="none" stroke="#00d4ff" stroke-width="4" opacity="0">
+    <animate attributeName="r" values="0;0;8;78" keyTimes="0;0.69;0.7;0.8" dur="12s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.9;0" keyTimes="0;0.69;0.7;0.8" dur="12s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="1229" cy="397" r="0" fill="none" stroke="#a855f7" stroke-width="4" opacity="0">
+    <animate attributeName="r" values="0;0;8;70" keyTimes="0;0.71;0.72;0.82" dur="12s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.9;0" keyTimes="0;0.71;0.72;0.82" dur="12s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Flechas de contraataque desde los flancos -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;0;0.85;0.85" keyTimes="0;0.5;0.6;0.68;1" dur="12s" repeatCount="indefinite"/>
+    <path d="M680,780 C 830,700 950,640 1062,556" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="10 12">
+      <animate attributeName="stroke-dashoffset" values="0;-220" dur="2.4s" repeatCount="indefinite"/>
+    </path>
+    <polygon points="1062,556 1038,564 1052,578" fill="#f59e0b"/>
+    <path d="M640,238 C 820,300 1000,362 1148,424" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="10 12">
+      <animate attributeName="stroke-dashoffset" values="0;-220" dur="2.4s" repeatCount="indefinite"/>
+    </path>
+    <polygon points="1148,424 1124,414 1128,434" fill="#22c55e"/>
+  </g>
+
+  <!-- Leyenda de movimientos bajo el tablero -->
+  <g opacity="0" font-family="'Segoe UI',system-ui,sans-serif">
+    <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.4;0.48;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="946" y="712" width="504" height="46" rx="12" fill="#0f172a" stroke="#1e3a5f"/>
+    <text x="1198" y="741" text-anchor="middle" font-size="19" fill="#7dd3fc" letter-spacing="1" font-weight="700">1. d4 Cf6 · 2. c4 g6 · 3. Cc3 Ag7 · 4. e4 d6</text>
+    <text x="1198" y="790" text-anchor="middle" font-size="15" fill="#94a3b8" letter-spacing="3">EL CENTRO ES UNA INVITACIÓN · LA RUPTURA ES LA RESPUESTA</text>
+  </g>
+
+  <!-- partículas flotantes -->
+  <g fill="#00d4ff">
+    <circle cx="700" cy="560" r="3" opacity="0.4">
+      <animateTransform attributeName="transform" type="translate" values="0 0;0 -46;0 0" dur="7s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="790" cy="680" r="2" opacity="0.35">
+      <animateTransform attributeName="transform" type="translate" values="0 0;0 -60;0 0" dur="9s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="660" cy="330" r="2.5" opacity="0.3">
+      <animateTransform attributeName="transform" type="translate" values="0 0;0 -38;0 0" dur="8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</symbol>
+</svg>
+
+<script>
+"use strict";
+
+/* =========================================================
+   1. PORTADA SVG: mismo símbolo <use> en HOME y CRÉDITOS
+========================================================= */
+document.querySelectorAll('[data-cover]').forEach(function(host){
+  var NS='http://www.w3.org/2000/svg', XL='http://www.w3.org/1999/xlink';
+  var svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('class','cover');
+  svg.setAttribute('viewBox','0 0 1600 900');
+  svg.setAttribute('role','img');
+  svg.setAttribute('aria-label','Portada animada: Defensa India de Rey — ceder el centro, construir el muro y contraatacar');
+  var use=document.createElementNS(NS,'use');
+  use.setAttribute('href','#coverSymbol');
+  use.setAttributeNS(XL,'xlink:href','#coverSymbol');
+  use.setAttribute('data-cover-use','1');
+  svg.appendChild(use);
+  host.appendChild(svg);
+});
+function restartCover(){
+  document.querySelectorAll('use[data-cover-use]').forEach(function(u){
+    var h=u.getAttribute('href');
+    u.removeAttribute('href');
+    setTimeout(function(){ u.setAttribute('href',h); },60);
+  });
+}
+
+/* =========================================================
+   2. MOTOR DE TABLEROS (HTML + CSS + JS vanilla)
+========================================================= */
+var FILE_L=['a','b','c','d','e','f','g','h'];
+var GLYPH={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+
+function initialPosition(){
+  var pos={},back=['r','n','b','q','k','b','n','r'],i;
+  for(i=0;i<8;i++){
+    pos[FILE_L[i]+'8']=back[i];
+    pos[FILE_L[i]+'7']='p';
+    pos[FILE_L[i]+'2']='P';
+    pos[FILE_L[i]+'1']=back[i].toUpperCase();
+  }
+  return pos;
+}
+function applyMove(pos,mv){
+  var nx={},k; for(k in pos){ nx[k]=pos[k]; }
+  if(mv.castle){
+    if(mv.castle==='w'){ delete nx.e1; delete nx.h1; nx.g1='K'; nx.f1='R'; }
+    else{ delete nx.e8; delete nx.h8; nx.g8='k'; nx.f8='r'; }
+    return nx;
+  }
+  var pc=nx[mv.from];
+  delete nx[mv.from];
+  nx[mv.to]=pc;
+  return nx;
+}
+function applySteps(initial,steps){
+  var arr=[initial],cur=initial;
+  steps.forEach(function(s){ cur=applyMove(cur,s); arr.push(cur); });
+  return arr;
+}
+function buildGrid(gridEl){
+  var rk,fi,d,sq;
+  for(rk=8;rk>=1;rk--){
+    for(fi=0;fi<8;fi++){
+      sq=FILE_L[fi]+rk;
+      d=document.createElement('div');
+      d.className='sq '+(((fi+rk)%2===0)?'light':'dark');
+      d.setAttribute('data-sq',sq);
+      gridEl.appendChild(d);
+    }
+  }
+}
+function renderBoard(gridEl,pos,hl){
+  var cells=gridEl.children,i,cell,sq,p;
+  for(i=0;i<cells.length;i++){
+    cell=cells[i]; sq=cell.getAttribute('data-sq'); p=pos[sq];
+    cell.classList.remove('hl','pw','pb');
+    if(p){
+      cell.textContent=GLYPH[p];
+      cell.classList.add(p===p.toUpperCase()?'pw':'pb');
+    }else{ cell.textContent=''; }
+    if(hl && hl.indexOf(sq)>-1){ cell.classList.add('hl'); }
+  }
+}
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function panelHTML(i,steps){
+  if(i===0){
+    return '<span class="mp-badge mp-init">POSICIÓN INICIAL</span>'+
+      '<div class="mp-piece">Todas las piezas en su casilla de origen</div>'+
+      '<div class="mp-block"><span class="lbl lbl-q">¿Qué ocurre?</span><p>El tablero muestra la posición inicial estándar del ajedrez. Las BLANCAS moverán primero.</p></div>'+
+      '<div class="mp-block"><span class="lbl lbl-w">¿Por qué es importante?</span><p>Todas las secuencias de este tutorial parten de aquí. Avanza un único movimiento cada vez, observa la nueva posición, identifica pieza, color, origen y destino, y lee la explicación antes de continuar.</p></div>';
+  }
+  var s=steps[i-1];
+  var white=(i%2===1);
+  var num=Math.ceil(i/2);
+  var badge= white? ('<span class="mp-badge mp-white">MOVIMIENTO '+i+' — BLANCAS</span>')
+                  : ('<span class="mp-badge mp-black">MOVIMIENTO '+i+' — NEGRAS</span>');
+  var pieceLine;
+  if(s.castle){
+    pieceLine = s.castle==='w'
+      ? 'Enroque corto BLANCO: Rey e1 → g1 · Torre h1 → f1'
+      : 'Enroque corto NEGRO: Rey e8 → g8 · Torre h8 → f8';
+  }else{
+    pieceLine = esc(s.piece)+': '+s.from+' → '+s.to;
+  }
+  var chips='<div class="mp-chips"><span class="mp-chip chip-nota">Notación: '+esc(s.n)+'</span>';
+  if(s.cap){ chips+='<span class="mp-chip chip-cap">⚔ Captura: '+esc(s.cap)+'</span>'; }
+  if(s.chk){ chips+='<span class="mp-chip chip-chk">☠ ¡JAQUE!</span>'; }
+  chips+='</div>';
+  return badge+'<div class="mp-piece">'+pieceLine+'</div>'+chips+
+    '<div class="mp-block"><span class="lbl lbl-q">¿Qué ocurre?</span><p>'+esc(s.que)+'</p></div>'+
+    '<div class="mp-block"><span class="lbl lbl-w">¿Por qué es importante?</span><p>'+esc(s.por)+'</p></div>';
+}
+
+function createStepper(cfg){
+  var mount=document.getElementById(cfg.mount);
+  var steps=cfg.steps;
+  var positions=applySteps(initialPosition(),steps);
+  mount.innerHTML=
+    '<div class="board-wrap">'+
+      '<div class="board-col"><div class="board-frame">'+
+        '<div class="board-area">'+
+          '<div class="coords ranks"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>'+
+          '<div class="board-grid"></div>'+
+          '<div class="coords files"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>'+
+        '</div>'+
+        '<div class="stepper">'+
+          '<div class="st-btns">'+
+            '<button type="button" class="btn st-reset">⟲ Inicio</button>'+
+            '<button type="button" class="btn st-prev">◀ Anterior</button>'+
+            '<button type="button" class="btn btn-primary st-next">Siguiente ▶</button>'+
+          '</div>'+
+          '<input type="range" class="st-slider" min="0" max="'+steps.length+'" step="1" value="0" aria-label="Desplazarse por los movimientos de la secuencia">'+
+          '<div class="st-ind"><span class="st-count"></span><span class="st-turn"></span></div>'+
+        '</div>'+
+      '</div></div>'+
+      '<div class="panel-col"><div class="move-panel"></div></div>'+
+    '</div>';
+
+  var grid=mount.querySelector('.board-grid');
+  buildGrid(grid);
+  var slider=mount.querySelector('.st-slider');
+  var bPrev=mount.querySelector('.st-prev');
+  var bNext=mount.querySelector('.st-next');
+  var bReset=mount.querySelector('.st-reset');
+  var elCount=mount.querySelector('.st-count');
+  var elTurn=mount.querySelector('.st-turn');
+  var panel=mount.querySelector('.move-panel');
+  var idx=0;
+
+  function update(){
+    var pos=positions[idx];
+    var hl=[];
+    if(idx>0){
+      var st=steps[idx-1];
+      if(st.from){ hl.push(st.from); hl.push(st.to); }
+    }
+    renderBoard(grid,pos,hl);
+    slider.value=idx;
+    bPrev.disabled=(idx===0);
+    bNext.disabled=(idx===steps.length);
+    if(idx===0){
+      elCount.textContent='Posición inicial';
+      elTurn.textContent='Las BLANCAS moverán primero';
+    }else{
+      var white=(idx%2===1);
+      var num=Math.ceil(idx/2);
+      elCount.textContent='Movimiento '+idx+' de '+steps.length;
+      elTurn.textContent= white? ('Jugada '+num+' · BLANCAS') : ('Jugada '+num+' · NEGRAS');
+    }
+    panel.innerHTML=panelHTML(idx,steps);
+  }
+  bNext.addEventListener('click',function(){ if(idx<steps.length){ idx++; update(); } });
+  bPrev.addEventListener('click',function(){ if(idx>0){ idx--; update(); } });
+  bReset.addEventListener('click',function(){ idx=0; update(); });
+  slider.addEventListener('input',function(){ idx=parseInt(slider.value,10)||0; update(); });
+  update();
+  sizeBoards();
+}
+
+/* =========================================================
+   3. DATOS DE LAS SECUENCIAS (movimiento por movimiento)
+========================================================= */
+var BASE=[
+ {from:'d2',to:'d4',piece:'Peón blanco',n:'1. d4',que:'El peón blanco avanza dos casillas y ocupa d4.',por:'Las blancas reclaman el centro desde el primer movimiento: es el Peón de Dama al que las negras responderán con el esquema de la India de Rey.'},
+ {from:'g8',to:'f6',piece:'Caballo negro',n:'1... Cf6',que:'El caballo negro de rey se desarrolla a f6.',por:'Primer movimiento del esquema universal: las negras desarrollan una pieza menor, presionan el centro y conservan la flexibilidad del sistema.'},
+ {from:'c2',to:'c4',piece:'Peón blanco',n:'2. c4',que:'El peón blanco avanza hasta c4.',por:'Las blancas amplían su masa central y ganan espacio: exactamente lo que el esquema negro las invita a hacer.'},
+ {from:'g7',to:'g6',piece:'Peón negro',n:'2... g6',que:'El peón negro avanza un paso hasta g6.',por:'Prepara el fianchetto del alfil de casillas oscuras: comienza a levantarse el «muro con pinchos».'},
+ {from:'b1',to:'c3',piece:'Caballo blanco',n:'3. Cc3',que:'El caballo blanco de dama se desarrolla a c3.',por:'Defiende d4 y prepara el avance e4: las blancas completan su despliegue central.'},
+ {from:'f8',to:'g7',piece:'Alfil negro',n:'3... Ag7',que:'El alfil negro se fianchetta en g7.',por:'La pieza más poderosa del esquema: presiona la gran diagonal hacia d4 y b2, lista para el contraataque.'},
+ {from:'e2',to:'e4',piece:'Peón blanco',n:'4. e4',que:'El peón blanco avanza hasta e4.',por:'Las blancas completan su gran centro de peones (c4–d4–e4): máxima expansión… y futura debilidad.'},
+ {from:'d7',to:'d6',piece:'Peón negro',n:'4... d6',que:'El peón negro se fija en d6.',por:'El ancla crítica de la posición: frena preventivamente el avance blanco e5, estabiliza el flanco de rey y prepara el terreno para las rupturas centrales.'}
+];
+
+createStepper({mount:'board1',steps:BASE});
+
+createStepper({mount:'board2',steps:BASE.concat([
+ {from:'g1',to:'f3',piece:'Caballo blanco',n:'5. Cf3',que:'El caballo blanco de rey se desarrolla a f3.',por:'Desarrollo natural que defiende d4… pero este caballo se convertirá en el objetivo del castigo negro.'},
+ {castle:'b',piece:'Enroque negro',n:'5... 0-0',que:'Las NEGRAS realizan el enroque corto: el rey viaja de e8 a g8 y la torre de h8 a f8.',por:'El rey negro queda seguro antes de abrir el juego: primero seguridad, después contraataque.'},
+ {from:'f1',to:'d3',piece:'Alfil blanco',n:'6. Ad3',que:'El alfil blanco ocupa la casilla d3.',por:'La imprecisión: desde d3 el alfil obstruye la visión de la Dama blanca y la desconecta de la defensa natural del peón de d4.'},
+ {from:'c8',to:'g4',piece:'Alfil negro',n:'6... Ag4',que:'El alfil negro sale a g4 y clava el caballo de f3 contra la dama blanca.',por:'Clavamos al caballo para inmovilizar al único defensor efectivo de d4.'},
+ {from:'h2',to:'h3',piece:'Peón blanco',n:'7. h3',que:'El peón blanco ataca al alfil con h3.',por:'Las blancas intentan romper la clavada, pero la respuesta negra ya está preparada.'},
+ {from:'g4',to:'f3',piece:'Alfil negro',n:'7... Axf3',cap:'Caballo blanco en f3',que:'El alfil de g4 captura el caballo de f3.',por:'Se elimina el defensor de d4: la clavada se transforma en un daño estructural real.'},
+ {from:'d1',to:'f3',piece:'Dama blanca',n:'8. Dxf3',cap:'Alfil negro en f3',que:'La Dama blanca recaptura el alfil en f3.',por:'Las blancas recuperan la pieza, pero la Dama ya no defiende d4 desde d1: el centro queda huérfano.'},
+ {from:'b8',to:'c6',piece:'Caballo negro',n:'8... Cc6',que:'El caballo negro de dama salta a c6.',por:'Presión inmediata sobre d4: el peón se vuelve indefenso y la apertura sólida blanca se transforma en un desastre estructural, forzada a entregar el centro o a caer en una posición pasiva y perdedora.'}
+])});
+
+createStepper({mount:'board3',steps:BASE.concat([
+ {from:'c1',to:'e3',piece:'Alfil blanco',n:'5. Ae3',que:'El alfil blanco se desarrolla a e3.',por:'Refuerza d4 y conecta piezas; sin embargo, desde e3 el alfil quedará expuesto al golpe táctico.'},
+ {from:'b8',to:'c6',piece:'Caballo negro',n:'5... Cc6',que:'El caballo negro de dama sale a c6.',por:'Presiona el centro y se prepara para el salto que ofrecerá la pieza.'},
+ {from:'g1',to:'e2',piece:'Caballo blanco',n:'6. Ce2',que:'El caballo blanco de rey se desarrolla a e2.',por:'Las blancas se desarrollan de forma sólida, pero dejan el escenario listo para el sacrificio.'},
+ {from:'c6',to:'e5',piece:'Caballo negro',n:'6... Ce5',que:'El caballo negro de c6 salta a e5 ofreciéndose a la captura.',por:'Ofrecemos la pieza para generar un ataque doble inmediato: en la India de Rey el material es secundario frente a la actividad.'}
+])});
+
+createStepper({mount:'board4',steps:BASE.concat([
+ {from:'f1',to:'e2',piece:'Alfil blanco',n:'5. Ae2',que:'El alfil blanco se desarrolla con prudencia a e2.',por:'La variante principal y conservadora: las blancas no ofrecen objetivos tácticos inmediatos y obligan al negro a ser flexible.'},
+ {from:'f6',to:'d7',piece:'Caballo negro',n:'5... Cfd7',que:'El caballo negro de f6 se reubica en d7.',por:'Maniobra clave: libera la diagonal larga para «dar aire» al Alfil de g7 y prepara el golpe central e5.'},
+ {castle:'w',piece:'Enroque blanco',n:'6. 0-0',que:'Las BLANCAS realizan el enroque corto: el rey viaja de e1 a g1 y la torre de h1 a f1.',por:'Las blancas aseguran su rey antes de que estalle la tensión central.'},
+ {from:'b8',to:'c6',piece:'Caballo negro',n:'6... Cc6',que:'El caballo negro de dama sale a c6.',por:'Presión sobre d4 y apoyo directo a la ruptura que se prepara.'},
+ {from:'c1',to:'e3',piece:'Alfil blanco',n:'7. Ae3',que:'El alfil blanco se coloca en e3.',por:'Las blancas refuerzan su centro y preparan el avance del peón de dama.'},
+ {from:'e7',to:'e5',piece:'Peón negro',n:'7... e5',que:'El peón negro rompe en e5.',por:'El golpe central preparado por la maniobra de reubicación: se disputa el gran centro blanco.'},
+ {from:'d4',to:'d5',piece:'Peón blanco',n:'8. d5',que:'El peón blanco avanza de d4 a d5.',por:'Las blancas ganan espacio y parecen asfixiar la posición negra… pero la sobreextensión esconde el sacrificio mágico que explica la guía.'}
+])});
+
+createStepper({mount:'board5',steps:BASE.concat([
+ {from:'f2',to:'f3',piece:'Peón blanco',n:'5. f3',que:'El peón blanco avanza a f3: Variante Sämisch.',por:'Refuerza e4 y prepara la expansión masiva, pero cuesta un tiempo de desarrollo: la sobreextensión empieza aquí.'},
+ {from:'a7',to:'a5',piece:'Peón negro',n:'5... a5',que:'El peón negro avanza hasta a5.',por:'Gana espacio en el flanco de dama y frena la expansión blanca en ese sector.'},
+ {from:'d1',to:'d2',piece:'Dama blanca',n:'6. Dd2',que:'La Dama blanca se coloca en d2.',por:'Prepara el enroque largo y el avance de los peones centrales: plan agresivo pero lento.'},
+ {from:'b8',to:'a6',piece:'Caballo negro',n:'6... Ca6',que:'El caballo negro de dama sale por a6.',por:'Desarrollo periférico típico de la India: el caballo presiona c5 y puede saltar a b4 en el momento justo. Si el blanco se descuida, llega el Golpe Maestro.'}
+])});
+
+createStepper({mount:'board6',steps:BASE.concat([
+ {from:'f2',to:'f4',piece:'Peón blanco',n:'5. f4',que:'El peón blanco avanza a f4: Ataque de los Cuatro Peones (c4, d4, e4 y f4).',por:'Expansión máxima: las blancas apuestan todo al espacio y sacrifican desarrollo. La sobreextensión es su debilidad intrínseca.'},
+ {castle:'b',piece:'Enroque negro',n:'5... 0-0',que:'Las NEGRAS realizan el enroque corto.',por:'Ante la avalancha, primero la seguridad: el rey queda a cubierto mientras el centro blanco se convierte en objetivo.'},
+ {from:'g1',to:'f3',piece:'Caballo blanco',n:'6. Cf3',que:'El caballo blanco de rey se desarrolla a f3.',por:'Las blancas por fin desarrollan piezas mientras sostienen su gran centro de peones.'},
+ {from:'b8',to:'a6',piece:'Caballo negro',n:'6... Ca6',que:'El caballo negro de dama sale por a6.',por:'Desde a6 el caballo presiona c5 y prepara el salto a b4 contra el centro extendido.'},
+ {from:'f1',to:'e2',piece:'Alfil blanco',n:'7. Ae2',que:'El alfil blanco se desarrolla a e2.',por:'Las blancas intentan consolidar su estructura antes de enrocar.'},
+ {from:'e7',to:'e5',piece:'Peón negro',n:'7... e5',que:'El peón negro rompe en e5.',por:'La ruptura esperada: el gran centro blanco empieza a ser demolido desde dentro. Ahora vendrán el salto Cb4, el alfil a f5 y los avances f5 y e4.'}
+])});
+
+/* Dimensionado responsivo de los tableros (funciona incluso sin aspect-ratio) */
+function sizeBoards(){
+  document.querySelectorAll('.page.active .board-grid').forEach(function(g){
+    var w=g.clientWidth;
+    if(w>0){
+      g.style.height=w+'px';
+      g.style.setProperty('--pf',(w/8*0.62)+'px');
+    }
+  });
+}
+window.addEventListener('resize',sizeBoards);
+
+/* =========================================================
+   4. SPA · NAVBAR · PROGRESO · VOLVER ARRIBA
+========================================================= */
+var pages=Array.prototype.slice.call(document.querySelectorAll('.page'));
+var navLinks=Array.prototype.slice.call(document.querySelectorAll('.nav-link'));
+var navScroll=document.getElementById('navScroll');
+var progressBar=document.getElementById('progress');
+var toTop=document.getElementById('toTop');
+
+function updateProgress(){
+  var h=document.documentElement;
+  var max=h.scrollHeight-window.innerHeight;
+  var pct=max>0?(window.scrollY/max)*100:0;
+  progressBar.style.width=Math.min(100,Math.max(0,pct))+'%';
+}
+function show(id){
+  pages.forEach(function(p){ p.classList.toggle('active',p.id===id); });
+  navLinks.forEach(function(l){
+    var on=l.getAttribute('data-target')===id;
+    l.classList.toggle('active',on);
+    if(on){
+      navScroll.scrollTo({left:l.offsetLeft-navScroll.clientWidth/2+l.clientWidth/2,behavior:'smooth'});
+    }
+  });
+  window.scrollTo(0,0);
+  requestAnimationFrame(function(){ sizeBoards(); updateProgress(); });
+  if(id==='creditos'){ restartCover(); }
+}
+navLinks.forEach(function(l){
+  l.addEventListener('click',function(){ show(l.getAttribute('data-target')); });
+});
+window.addEventListener('scroll',function(){
+  updateProgress();
+  toTop.classList.toggle('show',window.scrollY>400);
+},{passive:true});
+toTop.addEventListener('click',function(){ window.scrollTo({top:0,behavior:'smooth'}); });
+
+/* =========================================================
+   5. CHECKLIST ESTRATÉGICO INTERACTIVO
+========================================================= */
+var checkInputs=Array.prototype.slice.call(document.querySelectorAll('#checkGrid input'));
+var checkStatus=document.getElementById('checkStatus');
+var checkOk=document.getElementById('checkOk');
+function updateCheck(){
+  var done=0;
+  checkInputs.forEach(function(c){
+    var item=c.closest('.check-item');
+    if(c.checked){ done++; item.classList.add('done'); }
+    else{ item.classList.remove('done'); }
+  });
+  checkStatus.textContent='Pendientes de validar: '+(4-done)+' de 4 pilares';
+  checkOk.classList.toggle('visible',done===4);
+}
+checkInputs.forEach(function(c){ c.addEventListener('change',updateCheck); });
+
+/* =========================================================
+   6. ACCESIBILIDAD: prefers-reduced-motion
+========================================================= */
+if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.querySelectorAll('svg').forEach(function(s){
+    if(typeof s.pauseAnimations==='function'){ s.pauseAnimations(); }
+  });
+}
+
+/* Inicialización final */
+sizeBoards();
+updateProgress();
+</script>
+</body>
+</html>
