@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Fórmula Matemática de Mijail Tal · Riga 1961 · Tutorial Interactivo</title>
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f;
+  --acc:#00d4ff; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --vio:#a855f7;
+  --txt:#e2e8f0; --dim:#8ea3bf; --dim2:#5c7395;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.65;overflow-x:hidden}
+::selection{background:rgba(0,212,255,.3)}
+h1,h2,h3,h4{line-height:1.25}
+
+/* ---------- barra de progreso ---------- */
+#progressBar{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--acc),var(--vio));z-index:1000;box-shadow:0 0 10px rgba(0,212,255,.7)}
+
+/* ---------- navbar ---------- */
+#topbar{position:fixed;top:4px;left:0;right:0;z-index:990;background:rgba(10,14,26,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 12px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--acc);font-size:.95rem;letter-spacing:1px;padding:10px 8px 10px 2px;white-space:nowrap}
+.brand .glyph{font-size:1.4rem}
+nav#nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;padding:8px 4px}
+nav#nav::-webkit-scrollbar{display:none}
+.navBtn{background:transparent;border:1px solid transparent;color:var(--dim);font-size:.82rem;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;font-family:inherit;transition:.2s}
+.navBtn:hover{color:var(--txt);background:rgba(0,212,255,.08)}
+.navBtn.active{color:#06121f;background:var(--acc);border-color:var(--acc);box-shadow:0 0 14px rgba(0,212,255,.45)}
+.navBtn.credit{color:#06121f;background:var(--vio);border-color:var(--vio)}
+.navBtn.credit.active{background:var(--vio);box-shadow:0 0 14px rgba(168,85,247,.5)}
+
+/* ---------- layout ---------- */
+main{max-width:1120px;margin:0 auto;padding:96px 18px 40px}
+.view{display:none;animation:fadeIn .45s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px}
+.secHead{display:flex;gap:14px;align-items:flex-start;margin:6px 0 18px}
+.secIcon{flex:0 0 auto;width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:rgba(0,212,255,.1);border:1px solid var(--border)}
+.secHead h2{font-size:1.5rem;color:#fff}
+.secHead .sub{color:var(--dim);font-size:.92rem}
+.lead{color:var(--dim);font-size:1rem;margin-bottom:14px}
+p.body{color:var(--txt);margin-bottom:12px}
+strong{color:#fff}
+.acc{color:var(--acc)} .okc{color:var(--ok)} .warnc{color:var(--warn)} .badc{color:var(--bad)} .vioc{color:var(--vio)}
+
+/* ---------- chips / badges ---------- */
+.badge{display:inline-block;padding:5px 14px;border-radius:999px;font-size:.75rem;font-weight:700;letter-spacing:2px;border:1px solid var(--border);color:var(--acc);background:rgba(0,212,255,.08);text-transform:uppercase}
+.tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:700;border:1px solid var(--border);color:var(--dim);background:#0b1220;margin:2px 3px 2px 0}
+.tag.w{color:var(--acc)} .tag.b{color:#cbd5e1} .tag.j{color:var(--bad);border-color:#7f1d1d}
+.tag.g{color:var(--ok)} .tag.a{color:var(--warn)} .tag.v{color:var(--vio)}
+
+/* ---------- HOME ---------- */
+.coverWrap{margin:-14px 0 22px;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 10px 50px rgba(0,0,0,.55),0 0 40px rgba(0,212,255,.08)}
+svg.cover{display:block;width:100%;height:auto;background:#0a0e1a}
+.heroTitle{font-size:clamp(1.7rem,4.6vw,2.9rem);font-weight:900;margin:14px 0 6px;background:linear-gradient(90deg,#fff,var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+.heroSub{color:var(--acc);font-weight:700;font-size:clamp(.95rem,2.4vw,1.15rem);letter-spacing:.5px}
+.quote{border-left:4px solid var(--acc);background:rgba(0,212,255,.06);padding:16px 18px;border-radius:0 10px 10px 0;font-style:italic;color:#cfe9f5;margin:16px 0}
+.quote.tal{border-color:var(--warn);background:rgba(245,158,11,.07)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.metric{background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;transition:.25s}
+.metric:hover{border-color:var(--acc);transform:translateY(-3px)}
+.metric .v{font-size:1.6rem;font-weight:900;color:var(--acc)}
+.metric .k{font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.dateTime{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.dt{background:#0b1220;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:.9rem;color:var(--txt)}
+.dt b{color:var(--acc)}
+
+/* ---------- callouts ---------- */
+.co{border-radius:10px;padding:14px 16px;margin:14px 0;border:1px solid;font-size:.94rem}
+.co .t{font-weight:800;letter-spacing:1px;font-size:.78rem;text-transform:uppercase;display:block;margin-bottom:5px}
+.co.info{border-color:#1d4ed8;background:rgba(59,130,246,.09)}.co.info .t{color:#60a5fa}
+.co.ok{border-color:#15803d;background:rgba(34,197,94,.08)}.co.ok .t{color:#4ade80}
+.co.warn{border-color:#b45309;background:rgba(245,158,11,.08)}.co.warn .t{color:#fbbf24}
+.co.bad{border-color:#b91c1c;background:rgba(239,68,68,.08)}.co.bad .t{color:#f87171}
+
+/* ---------- grids varios ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.mini h3{color:var(--acc);font-size:1.02rem;margin-bottom:8px}
+.mini p{color:var(--dim);font-size:.92rem}
+
+/* ---------- acordeón ---------- */
+.acc-item{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;background:#0b1220}
+.acc-btn{width:100%;text-align:left;background:transparent;border:none;color:var(--txt);font-family:inherit;font-size:.95rem;font-weight:700;padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.acc-btn:hover{color:var(--acc)}
+.acc-btn .car{color:var(--acc);transition:.3s;font-size:1.1rem}
+.acc-item.open .car{transform:rotate(90deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 16px;color:var(--dim);font-size:.93rem}
+.acc-item.open .acc-body{max-height:600px;padding-bottom:14px}
+
+/* ---------- chips de jugadas ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.chip{font-family:inherit;background:#0b1220;border:1px solid var(--border);color:var(--txt);border-radius:8px;padding:6px 10px;font-size:.8rem;cursor:pointer;transition:.2s;font-weight:600}
+.chip:hover{border-color:var(--acc);box-shadow:0 0 10px rgba(0,212,255,.3)}
+.chip.cw{border-left:3px solid var(--acc)}
+.chip.cb{border-left:3px solid #94a3b8}
+.chip.phase{background:rgba(0,212,255,.08);color:var(--acc);border-color:#155e75}
+.bigBtn{display:inline-block;margin:8px 8px 0 0;background:linear-gradient(90deg,var(--acc),#0891b2);color:#04121e;border:none;border-radius:10px;font-family:inherit;font-weight:800;font-size:.9rem;padding:12px 20px;cursor:pointer;transition:.2s}
+.bigBtn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,212,255,.35)}
+.bigBtn.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc)}
+
+/* ---------- TABLERO ---------- */
+.board-wrap{display:grid;grid-template-columns:minmax(280px,470px) 1fr;gap:22px;align-items:start}
+@media(max-width:920px){.board-wrap{grid-template-columns:1fr}}
+.board-frame{background:#0b1220;border:1px solid var(--border);border-radius:12px;padding:16px}
+.board-title{text-align:center;color:var(--acc);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.board-area{display:grid;grid-template-columns:auto 1fr;gap:6px}
+.coord-col{display:grid;grid-template-rows:repeat(8,1fr);justify-items:center;align-items:center;color:var(--dim2);font-size:.72rem;font-weight:700;min-width:16px}
+.board-grid{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;border:2px solid var(--border);border-radius:6px;overflow:hidden;max-width:470px;width:100%}
+.coord-row{display:grid;grid-template-columns:repeat(8,1fr);color:var(--dim2);font-size:.72rem;font-weight:700;text-align:center;margin:5px 0 0 22px}
+.sq{display:flex;align-items:center;justify-content:center;font-family:'Segoe UI Symbol','Segoe UI',system-ui,sans-serif;font-size:clamp(17px,4.6vw,38px);line-height:1;user-select:none;position:relative;transition:background .15s}
+.sq.dk{background:#132238}.sq.lt{background:#2a4a77}
+.sq .wp{color:#f8fafc;text-shadow:0 1px 2px #000,0 0 3px rgba(0,0,0,.6)}
+.sq .bp{color:#050a14;text-shadow:0 0 3px rgba(125,211,252,.55)}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--acc),inset 0 0 16px rgba(0,212,255,.55)}
+.sq.ck{box-shadow:inset 0 0 0 3px var(--bad),inset 0 0 18px rgba(239,68,68,.7);animation:pulseCk 1s infinite}
+@keyframes pulseCk{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5)}}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.ctrlBtn{flex:1 1 auto;font-family:inherit;background:#0f172a;border:1px solid var(--border);color:var(--txt);font-weight:700;font-size:.85rem;border-radius:9px;padding:10px 12px;cursor:pointer;transition:.2s;min-width:86px}
+.ctrlBtn:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}
+.ctrlBtn:disabled{opacity:.35;cursor:not-allowed}
+.ctrlBtn.reset{color:var(--warn)}
+.sliderBox{width:100%;margin-top:10px}
+input[type=range]{width:100%;accent-color:var(--acc);cursor:pointer;height:26px}
+.indic{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:.82rem;color:var(--dim)}
+.indic b{color:var(--acc)}
+.panel{background:#0b1220;border:1px solid var(--border);border-radius:12px;padding:18px}
+.panel .mov{color:var(--warn);font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+.panel .mvBig{font-size:1.15rem;font-weight:800;color:#fff;margin:6px 0 2px}
+.panel .san{color:var(--dim2);font-size:.82rem;font-family:Consolas,'Courier New',monospace}
+.panel .q,.panel .w{margin-top:12px}
+.panel .q .lab,.panel .w .lab{font-size:.72rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:3px}
+.panel .q .lab{color:var(--acc)} .panel .w .lab{color:var(--ok)}
+.panel .q p,.panel .w p{font-size:.93rem;color:var(--txt)}
+.panel .full{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);color:var(--dim);font-size:.82rem}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.8rem;color:var(--dim);margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* ---------- tablas ---------- */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.86rem;min-width:560px}
+th{background:#0b1220;color:var(--acc);text-transform:uppercase;font-size:.72rem;letter-spacing:1px;padding:10px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:9px 10px;border-bottom:1px solid #152238;vertical-align:top;color:var(--txt)}
+tr:last-child td{border-bottom:none}
+td.num{color:var(--warn);font-weight:800;width:44px}
+tr:hover td{background:rgba(0,212,255,.04)}
+.san{color:var(--dim2);font-family:Consolas,monospace;font-size:.78rem}
+.dimTxt{color:var(--dim2);font-style:italic}
+
+/* ---------- créditos ---------- */
+.creditCard{text-align:center;border:1px solid var(--border);background:linear-gradient(180deg,#0f172a,#0b1220)}
+.creditCard h2{color:var(--acc);font-size:1.6rem;margin:16px 0 4px}
+.creditName{font-size:1.9rem;font-weight:900;color:#fff;margin:10px 0}
+.fiat{font-style:italic;color:var(--vio);font-size:1.05rem;margin-top:14px;letter-spacing:1px}
+.cRow{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+
+/* ---------- footer / toTop ---------- */
+footer{border-top:1px solid var(--border);margin-top:30px;padding:26px 18px;text-align:center;color:var(--dim);font-size:.88rem;background:#0b1220}
+footer .fx{margin:4px 0}
+footer .fiat{color:var(--vio);font-style:italic;margin-top:8px}
+#toTop{position:fixed;right:18px;bottom:18px;width:48px;height:48px;border-radius:12px;background:var(--acc);color:#04121e;border:none;font-size:1.3rem;font-weight:900;cursor:pointer;opacity:0;pointer-events:none;transition:.3s;z-index:950;box-shadow:0 6px 22px rgba(0,212,255,.4)}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{transform:translateY(-3px)}
+
+@media(max-width:600px){
+  main{padding:88px 12px 30px}
+  .card{padding:16px}
+  .secHead h2{font-size:1.2rem}
+  .brand span{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div id="progressBar"></div>
+
+<header id="topbar">
+  <div class="brand"><span class="glyph">♞</span><span>FÓRMULA TAL · RIGA 1961</span></div>
+  <nav id="nav">
+    <button class="navBtn active" data-sec="inicio">Inicio</button>
+    <button class="navBtn" data-sec="bosque">El Bosque Oscuro</button>
+    <button class="navBtn" data-sec="apertura">Fase 1 · Apertura</button>
+    <button class="navBtn" data-sec="dama">Fase 2 · Sacrificio de Dama</button>
+    <button class="navBtn" data-sec="colapso">Fase 3 · Colapso</button>
+    <button class="navBtn" data-sec="error">Fase 4 · Error Decisivo</button>
+    <button class="navBtn" data-sec="damas">Fase 5 · Tres Damas</button>
+    <button class="navBtn" data-sec="tablero">♟ Tablero Interactivo</button>
+    <button class="navBtn" data-sec="transcripcion">Transcripción</button>
+    <button class="navBtn" data-sec="legado">Legado</button>
+    <button class="navBtn credit" data-sec="creditos">Créditos</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============================ HOME ============================ -->
+<section id="inicio" class="view active">
+  <div class="coverWrap">
+    <svg class="cover" viewBox="0 0 1600 900" role="img" aria-label="Portada animada: el sacrificio de dama de Tal, el bosque oscuro y las tres damas secuenciales">
+      <use href="#coverArt" xlink:href="#coverArt" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900"></use>
+    </svg>
+  </div>
+
+  <div class="card" style="text-align:center;border:none;background:transparent;padding:0">
+    <span class="badge">♞ Tutorial Interactivo · Ajedrez · Análisis Magistral</span>
+    <h1 class="heroTitle">La Fórmula Matemática de Mijail Tal</h1>
+    <div class="heroSub">Riga, 1961 · El «Mago de Riga» contra su mentor Alexander Koblents · Defensa Siciliana, Variante Najdorf</div>
+    <p style="max-width:760px;margin:14px auto;color:var(--dim)">
+      Una guía paso a paso por la partida en la que Tal llevó a su rival a un «bosque profundo y oscuro donde 2 + 2 sean 5»:
+      sacrificio de dama, sacrificio de caballo, sacrificio de calidad y <strong class="acc">tres damas secuenciales</strong>
+      hasta la rendición de Koblents. Cada movimiento puede reproducirse uno por uno en el tablero interactivo.
+    </p>
+    <div class="quote">«Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.»</div>
+    <div class="metrics">
+      <div class="metric"><div class="v">1961</div><div class="k">Riga · Duelo maestro–alumno</div></div>
+      <div class="metric"><div class="v">32</div><div class="k">Movimientos de Tal</div></div>
+      <div class="metric"><div class="v">3</div><div class="k">Damas secuenciales</div></div>
+      <div class="metric"><div class="v">1</div><div class="k">Dama sacrificada (jugada 13)</div></div>
+      <div class="metric"><div class="v">63</div><div class="k">Movimientos individuales</div></div>
+      <div class="metric"><div class="v">1–0</div><div class="k">Rinden las negras</div></div>
+    </div>
+    <div class="dateTime" style="justify-content:center">
+      <div class="dt">📅 Fecha: <b>04/09/2026</b></div>
+      <div class="dt">🕗 Hora: <b>08:12:22</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ BOSQUE ============================ -->
+<section id="bosque" class="view">
+  <div class="secHead"><div class="secIcon">🌲</div><div>
+    <h2>1 · Introducción y Filosofía del «Bosque Oscuro»</h2>
+    <div class="sub">Riga, 1961: el duelo que redefinió los límites del cálculo humano</div>
+  </div></div>
+
+  <div class="card">
+    <p class="body">En 1961, el aire de Riga no solo soplaba con el frío báltico, sino con la electricidad de un duelo que redefiniría los límites del cálculo humano. <strong>Mijail Tal, el «Mago de Riga»</strong>, se enfrentaba a su propio mentor, <strong>Alexander Koblents</strong>.</p>
+    <p class="body">Para Tal, el tablero <strong>no era una superficie geométrica de valores estáticos, sino un ecosistema caótico</strong>. Su premisa era clara:</p>
+    <div class="quote tal">«Debes llevar a tu rival a un bosque profundo y oscuro donde 2 + 2 sean 5 y donde el camino de salida solo tenga espacio para uno».</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card mini">
+      <h3>⚔️ Mentalidad disruptiva</h3>
+      <p>Esta mentalidad es profundamente disruptiva frente al ajedrez técnico y profiláctico. Mientras la <strong class="acc">escuela soviética tradicional buscaba la verdad objetiva</strong>, Tal buscaba la <strong class="warnc">irracionalidad</strong>.</p>
+    </div>
+    <div class="card mini">
+      <h3>🌀 El colapso psicológico</h3>
+      <p>Al forzar posiciones donde la evaluación de las máquinas (si hubieran existido) <strong>oscilaría violentamente</strong>, Tal colapsaba la psique de sus oponentes. El rival, abrumado por la complejidad, <strong>dejaba de calcular jugadas para empezar a calcular riesgos</strong>, perdiéndose en un laberinto donde solo el autor del caos conocía la salida.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--acc);margin-bottom:10px">🧠 La fórmula en cuatro ideas</h3>
+    <div class="acc-item"><button class="acc-btn">1 · El tablero como ecosistema caótico <span class="car">▶</span></button>
+      <div class="acc-body"><p>No hay valores estáticos: el valor de las piezas es fluido y depende de la iniciativa. El caos no es un accidente, es el terreno de juego elegido por Tal.</p></div></div>
+    <div class="acc-item"><button class="acc-btn">2 · Llevar al rival al bosque oscuro <span class="car">▶</span></button>
+      <div class="acc-body"><p>La posición debe volverse tan compleja que «2 + 2 sean 5»: las reglas habituales de evaluación dejan de funcionar para quien no creó el caos.</p></div></div>
+    <div class="acc-item"><button class="acc-btn">3 · El camino de salida solo tiene espacio para uno <span class="car">▶</span></button>
+      <div class="acc-body"><p>Solo el autor del caos conoce la salida. El rival se pierde calculando riesgos en lugar de calcular jugadas.</p></div></div>
+    <div class="acc-item"><button class="acc-btn">4 · La siembra meticulosa de la agresión <span class="car">▶</span></button>
+      <div class="acc-body"><p>Para comprender cómo se llega a esta distorsión matemática, debemos analizar la meticulosa siembra de agresión en la apertura: eso se estudia en la Fase 1.</p></div></div>
+  </div>
+
+  <div class="co info"><span class="t">Info</span>En las siguientes secciones se recorre la partida por fases, tal como la presenta el documento. Cada movimiento puede reproducirse en el <strong>Tablero Interactivo</strong>, paso a paso, con explicación de color, pieza, origen y destino.</div>
+  <button class="bigBtn" data-jump="0">♟ Ir al tablero desde la posición inicial</button>
+</section>
+
+<!-- ============================ FASE 1 ============================ -->
+<section id="apertura" class="view">
+  <div class="secHead"><div class="secIcon">🔥</div><div>
+    <h2>2 · Fase de Apertura: la agresiva Variante Najdorf</h2>
+    <div class="sub">Movimientos 1 a 11 · Una carrera armamentística, no un despliegue</div>
+  </div></div>
+
+  <div class="card">
+    <p class="body">La elección de la <strong>Defensa Siciliana</strong> por parte de Koblents invita al conflicto inmediato. La <strong class="acc">variante Najdorf</strong> es el campo de batalla ideal para la filosofía de Tal debido a su <strong>inherente asimetría</strong>: un solo error de concepto, una sola imprecisión en el tiempo de ataque, y la posición colapsa.</p>
+    <p class="body"><strong class="warnc">No es un despliegue de piezas, es una carrera armamentística</strong> por el control central y la iniciativa en los flancos.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--acc);margin-bottom:6px">♟ Desarrollo movimiento a movimiento</h3>
+    <p style="color:var(--dim);font-size:.86rem;margin-bottom:8px">Pulsa cualquier movimiento para verlo en el tablero interactivo (se abrirá la sección Tablero).</p>
+    <div class="chips" data-s="1" data-e="22"></div>
+    <button class="bigBtn ghost" data-jump="0">▶ Reproducir esta fase en el tablero</button>
+  </div>
+
+  <div class="grid2">
+    <div class="card mini"><h3>🏰 Hitos blancos</h3><p><strong>9. O-O-O</strong> — el enroque largo esconde al rey en c1 y activa la torre en d1: comienza la carrera de ataques en flancos opuestos. <strong>8. Df3</strong> coloca la dama en la diagonal del futuro sacrificio; <strong>6. Ag5</strong> y <strong>7. f4</strong> buscan la máxima tensión.</p></div>
+    <div class="card mini"><h3>🛡️ Hitos negros</h3><p><strong>5... a6</strong> es la entrada oficial en la Najdorf; <strong>7... Ae7</strong> desclava el caballo; <strong>8... Dc7</strong> y <strong>9... Cbd7</strong> completan un esquema flexible que prepara el contraataque.</p></div>
+  </div>
+
+  <div class="co warn"><span class="t">Advertencia · El momento crítico</span>Con el avance negro a <strong>b5</strong>, Koblents busca contrajuego, pero bajo la mirada de un pedagogo táctico vemos que ha dejado una <strong>vulnerabilidad crítica: la diagonal larga</strong>. Tal detecta que <strong>la armonía negra es frágil</strong> y prepara la detonación.</div>
+</section>
+
+<!-- ============================ FASE 2 ============================ -->
+<section id="dama" class="view">
+  <div class="secHead"><div class="secIcon">♕</div><div>
+    <h2>3 · El Primer Sacrificio: la entrega de la Dama</h2>
+    <div class="sub">Movimientos 12 a 14 · La partida abandona la teoría y entra en la leyenda</div>
+  </div></div>
+
+  <div class="card">
+    <p class="body">Aquí la partida abandona la teoría para entrar en la leyenda. Tal utiliza la visión de <strong class="acc">«Rayos X» sobre la torre de a8</strong>, entendiendo que <strong>el valor absoluto de la Dama es irrelevante si la iniciativa dicta la sentencia</strong>.</p>
+    <p class="body">Transforma una apertura equilibrada en una <strong>espiral de violencia táctica donde el material es el combustible de la posición</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--acc);margin-bottom:6px">♟ Movimientos de la entrega</h3>
+    <p style="color:var(--dim);font-size:.86rem;margin-bottom:8px">Pulsa cualquier movimiento para reproducirlo en el tablero.</p>
+    <div class="chips" data-s="23" data-e="28"></div>
+    <button class="bigBtn ghost" data-jump="22">▶ Reproducir esta fase en el tablero</button>
+  </div>
+
+  <div class="grid3">
+    <div class="card mini"><h3>12. e5</h3><p>Ataque doble al caballo y presión de rayos X hacia la torre de a8.</p></div>
+    <div class="card mini"><h3>12... Ab7</h3><p>Jugada intermedia obligatoria, atacando a la dama blanca.</p></div>
+    <div class="card mini"><h3>13. exf6 !!</h3><p><strong class="badc">EL SACRIFICIO</strong>: Tal entrega su dama para desgarrar el enroque y ganar tiempos de ataque vitales.</p></div>
+    <div class="card mini"><h3>13... Axf3</h3><p>Koblents acepta: captura la dama blanca en f3.</p></div>
+    <div class="card mini"><h3>14. Axf3</h3><p>El alfil blanco captura en f3 y amenaza directamente la torre de a8.</p></div>
+    <div class="card mini"><h3>14... d5</h3><p>Defensa que abre paso a la dama negra para contraatacar en f4.</p></div>
+  </div>
+
+  <div class="co bad"><span class="t">Consecuencia</span>Tal ha entregado la dama, pero <strong>ha sembrado el pánico</strong>. El bosque empieza a oscurecerse para Koblents, quien ahora debe defender una posición estructuralmente herida.</div>
+</section>
+
+<!-- ============================ FASE 3 ============================ -->
+<section id="colapso" class="view">
+  <div class="secHead"><div class="secIcon">🌩️</div><div>
+    <h2>4 · El Colapso de la Resistencia: el sacrificio de Caballo</h2>
+    <div class="sub">Movimientos 15 a 19 · Un martillazo a la estructura defensiva</div>
+  </div></div>
+
+  <div class="card">
+    <p class="body">Como pedagogo del ataque, Tal enseña que <strong class="acc">un sacrificio debe ir seguido de una brecha</strong>. Para exponer al rey, es necesario eliminar los peones que actúan como su última muralla.</p>
+    <p class="body">El sacrificio del caballo en e6 <strong>no es un error de cálculo, sino un martillazo a la estructura defensiva</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--acc);margin-bottom:6px">♟ Movimientos del colapso</h3>
+    <p style="color:var(--dim);font-size:.86rem;margin-bottom:8px">Pulsa cualquier movimiento para reproducirlo en el tablero.</p>
+    <div class="chips" data-s="29" data-e="38"></div>
+    <button class="bigBtn ghost" data-jump="28">▶ Reproducir esta fase en el tablero</button>
+  </div>
+
+  <div class="grid2">
+    <div class="card mini"><h3>15. Cxe6 !! — Segundo sacrificio</h3><p>El caballo blanco captura el peón de e6. Tras <strong>15... fxe6</strong>, el rey negro queda sin muralla.</p></div>
+    <div class="card mini"><h3>16. Ah5+ · 17. Axg6+ · 18. fxe7+</h3><p>Tres jaques consecutivos: <strong>16... g6</strong> es «el bloqueo que parece salvar, pero que crea nuevas debilidades»; el rey viaja <strong>17... Rf8</strong> y <strong>18... Rg7</strong> mientras un peón blanco se clava en e7.</p></div>
+  </div>
+
+  <div class="co ok"><span class="t">Nota pedagógica · El alfil «intocable»</span>Tras <strong>19. Ag3</strong>, esta retirada es una <strong>trampa magistral</strong>: si las negras capturaran este alfil en g3, las blancas jugarían <strong>f5+</strong>, un <strong>jaque descubierto que ganaría la dama negra</strong> de inmediato. Por ello, el alfil es «intocable».</div>
+
+  <div class="co info"><span class="t">La parálisis del análisis</span>A pesar de la ventaja material negra (tras <strong>19... Cf6</strong>, refuerzo defensivo necesario), el módulo de análisis marca <strong>0.0</strong>. Es la parálisis del análisis: hay tanto material extra que las negras <strong>no saben cómo usarlo mientras luchan por sobrevivir</strong>.</div>
+</section>
+
+<!-- ============================ FASE 4 ============================ -->
+<section id="error" class="view">
+  <div class="secHead"><div class="secIcon">🕸️</div><div>
+    <h2>5 · El Error Decisivo y la Presión Final</h2>
+    <div class="sub">Movimientos 20 a 25 · De la táctica pura a la estrategia de estrangulamiento</div>
+  </div></div>
+
+  <div class="card">
+    <p class="body">La presión de jugar contra Tal induce al error humano. Bajo el estrés, Koblents <strong>ignora el peón de e7</strong>, el cual actúa como <strong class="badc">una estaca en el corazón de su posición</strong>. Aquí vemos la transición de la táctica pura a la estrategia de estrangulamiento.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--acc);margin-bottom:6px">♟ Movimientos del estrangulamiento</h3>
+    <p style="color:var(--dim);font-size:.86rem;margin-bottom:8px">Pulsa cualquier movimiento para reproducirlo en el tablero.</p>
+    <div class="chips" data-s="39" data-e="50"></div>
+    <button class="bigBtn ghost" data-jump="38">▶ Reproducir esta fase en el tablero</button>
+  </div>
+
+  <div class="grid3">
+    <div class="card mini"><h3>20... b4?</h3><p>Ataca el caballo, pero ignora la cuña blanca en el centro.</p></div>
+    <div class="card mini"><h3>21. Txe6</h3><p>Sacrificio de Calidad (Torre por Peón) esencial para mantener la oscuridad del bosque y la presión sobre el monarca.</p></div>
+    <div class="card mini"><h3>22. f5</h3><p>Ataque descubierto del alfil de g3 sobre la dama negra.</p></div>
+    <div class="card mini"><h3>22... Db7? — Error fatal</h3><p>Busca un <strong>mate inexistente en b2</strong>.</p></div>
+    <div class="card mini"><h3>23. b3 !! — La lógica del «Escudo»</h3><p>Movimiento brillante: Tal usa el peón negro de c3 como «escudo» para su propio rey; el monarca blanco se esconde detrás de la pieza enemiga, anulando todo contraataque.</p></div>
+    <div class="card mini"><h3>24. Ae5 · 25. fxe6</h3><p>Clavada decisiva sobre el caballo de f6; cuando la dama captura en e6, el peón blanco la elimina: la negra queda estratégicamente colapsada.</p></div>
+  </div>
+
+  <div class="co warn"><span class="t">Balance de la fase</span>Con <strong>25... Rxg6</strong>, Koblents finalmente elimina el alfil blanco, pero ya es tarde: el ataque blanco continúa con peones, y el material de ventaja negra carece de utilidad.</div>
+</section>
+
+<!-- ============================ FASE 5 ============================ -->
+<section id="damas" class="view">
+  <div class="secHead"><div class="secIcon">👑</div><div>
+    <h2>6 · Simplificación, Triple Dama y Rendición</h2>
+    <div class="sub">Movimientos 26 a 32 · La fórmula matemática final</div>
+  </div></div>
+
+  <div class="card">
+    <p class="body">Llegamos a la fase de «limpieza». Tal aplica su <strong class="acc">fórmula matemática final: el intercambio de material por tiempo de promoción</strong>.</p>
+    <p class="body">Es el fenómeno de las <strong class="vioc">Tres Damas Secuenciales</strong>: Tal sacrificó la primera para crear caos, y ahora utiliza la amenaza de crear dos más para forzar a Koblents a devolver todo el material, simplificando hacia un <strong>final de peones técnicamente ganado</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--acc);margin-bottom:6px">♟ Movimientos de la limpieza</h3>
+    <p style="color:var(--dim);font-size:.86rem;margin-bottom:8px">Pulsa cualquier movimiento para reproducirlo en el tablero.</p>
+    <div class="chips" data-s="51" data-e="63"></div>
+    <button class="bigBtn ghost" data-jump="50">▶ Reproducir esta fase en el tablero</button>
+  </div>
+
+  <div class="grid3">
+    <div class="card mini"><h3>27. Axh8 / 28. Tf8</h3><p>Tal cambia alfil por torre y clava en la octava fila: cada captura acerca la coronación.</p></div>
+    <div class="card mini"><h3>29. exf8=D — Segunda dama</h3><p>El peón de e7 captura en f8 y corona la <strong>segunda dama de Tal</strong>.</p></div>
+    <div class="card mini"><h3>31. exf8=D+ — Tercera dama</h3><p>El peón de e7 vuelve a coronar, ahora con <strong>jaque</strong>: <strong class="vioc">tercera dama</strong> en la misma casilla.</p></div>
+    <div class="card mini"><h3>30. e7 · Amenaza perpetua</h3><p>Amenaza de una nueva coronación: Koblents se ve forzado a devolver todo el material.</p></div>
+    <div class="card mini"><h3>32. Rd1</h3><p>Centralización profiláctica del rey blanco.</p></div>
+    <div class="card mini"><h3>0–1 · Rendición</h3><p><strong>Alexander Koblents se rinde</strong> ante el final de peones sin esperanza.</p></div>
+  </div>
+
+  <div class="co ok"><span class="t">Resultado</span>Tres damas distintas aparecieron en el tablero de forma secuencial; cada una fue sacrificada o intercambiada para desgastar la resistencia de Koblents hasta dejarlo en un final de peones técnicamente ganado.</div>
+</section>
+
+<!-- ============================ TABLERO ============================ -->
+<section id="tablero" class="view">
+  <div class="secHead"><div class="secIcon">♟️</div><div>
+    <h2>Tablero Interactivo · Tal — Koblents, Riga 1961</h2>
+    <div class="sub">63 movimientos individuales · avanza, retrocede, salta de fase y lee la explicación de cada movimiento</div>
+  </div></div>
+
+  <div class="co info"><span class="t">Cómo usar el tablero</span>
+    <strong>Siguiente / Anterior</strong> avanzan de un bando cada vez (un paso = un movimiento de un solo color). El <strong>deslizador</strong> salta a cualquier posición; <strong>Reset</strong> vuelve a la posición inicial. Las casillas del último movimiento se resaltan en cian y el rey en jaque parpadea en rojo.
+  </div>
+
+  <div class="board-frame">
+    <div class="board-title">M. Tal — A. Koblents · Riga 1961 · Siciliana Najdorf</div>
+
+    <div class="controls" style="margin-top:0">
+      <button class="chip phase" data-jump="0">Posición inicial</button>
+      <button class="chip phase" data-jump="22">Fase 2 · Dama</button>
+      <button class="chip phase" data-jump="28">Fase 3 · Colapso</button>
+      <button class="chip phase" data-jump="38">Fase 4 · Estrangulamiento</button>
+      <button class="chip phase" data-jump="50">Fase 5 · Tres Damas</button>
+      <button class="chip phase" data-jump="63">Final</button>
+    </div>
+
+    <div class="board-wrap" style="margin-top:16px">
+      <div>
+        <div class="board-area">
+          <div class="coord-col" id="coordCol"></div>
+          <div class="board-grid" id="boardGrid"></div>
+        </div>
+        <div class="coord-row" id="coordRow"></div>
+
+        <div class="controls">
+          <button class="ctrlBtn" id="btnPrev">◀ Anterior</button>
+          <button class="ctrlBtn" id="btnNext">Siguiente ▶</button>
+          <button class="ctrlBtn reset" id="btnReset">⟲ Reset</button>
+          <div class="sliderBox"><input type="range" id="moveSlider" min="0" max="63" value="0" aria-label="Deslizador de movimientos"></div>
+          <div class="indic"><span id="indStep">Posición inicial</span><span>·</span><span id="indTurn">—</span><span>·</span><b id="indSan"></b></div>
+        </div>
+      </div>
+
+      <div class="panel" id="movePanel" aria-live="polite"></div>
+    </div>
+
+    <div class="legend">
+      <span><span class="dot" style="background:var(--acc)"></span> Último movimiento (origen y destino)</span>
+      <span><span class="dot" style="background:var(--bad)"></span> Rey en jaque</span>
+      <span><span class="dot" style="background:#2a4a77"></span><span class="dot" style="background:#132238"></span> Casillas claras / oscuras</span>
+    </div>
+  </div>
+
+  <div class="co warn"><span class="t">Nota sobre la fuente · Diferencias entre los dos formatos del documento</span>
+    El documento original presenta la partida en <strong>dos formatos</strong>: unos capítulos narrativos con numeración propia y una «transcripción completa». El tablero sigue la <strong>transcripción completa</strong>, con estas aclaraciones:
+    <ul style="margin:8px 0 0 18px;color:var(--dim)">
+      <li>Jugada 21: la transcripción dice «torre de d1 a e6», pero el capítulo narrativo indica «torre de e1 a e6» (la única legal); el tablero usa <strong>e1→e6</strong>.</li>
+      <li>Jugada 26: la transcripción dice «torre de e1 a f1», pero el capítulo narrativo indica «torre de d1 a f1» (la única coherente); el tablero usa <strong>d1→f1</strong>.</li>
+      <li>Jugada 29: la transcripción anota «exf8=Q dando jaque»; con el rey negro en g6 la dama de f8 no lo ataca directamente. El jaque verificado aparece en la jugada 31 (exf8=Q+, con el rey en f7).</li>
+      <li>El documento incluye además una primera transcripción incompleta (cortada en la jugada 30); se utiliza la versión completa.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================ TRANSCRIPCIÓN ============================ -->
+<section id="transcripcion" class="view">
+  <div class="secHead"><div class="secIcon">📜</div><div>
+    <h2>Transcripción completa de la partida</h2>
+    <div class="sub">Las 32 jugadas con el detalle de cada movimiento individual</div>
+  </div></div>
+
+  <div class="co info"><span class="t">Convención de la tabla</span>Cada fila es una <strong>jugada completa</strong> (movimiento de BLANCAS + movimiento de NEGRAS). Cada movimiento individual puede reproducirse en el <strong>Tablero Interactivo</strong>. Tras <strong>32. Rd1</strong>, las negras (Alexander Koblents) deciden abandonar la partida ante el inevitable final adverso.</div>
+
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>♔ Blancas (Mijail Tal)</th><th>♚ Negras (Alexander Koblents)</th></tr></thead>
+        <tbody id="trBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ LEGADO ============================ -->
+<section id="legado" class="view">
+  <div class="secHead"><div class="secIcon">🏆</div><div>
+    <h2>7 · Conclusión: el legado del Mago de Riga</h2>
+    <div class="sub">El valor de las piezas es fluido</div>
+  </div></div>
+
+  <div class="card">
+    <p class="body">Esta partida es la <strong>prueba irrefutable</strong> de que, en manos de un genio, <strong class="acc">el valor de las piezas es fluido</strong>. Tal no ganó acumulando madera, sino <strong>administrando el caos</strong>.</p>
+    <p class="body">Su «fórmula matemática» permitió que <strong class="vioc">tres damas distintas aparecieran en el tablero de forma secuencial</strong>; cada una fue sacrificada o intercambiada para desgastar la resistencia de Koblents hasta dejarlo en un final de peones sin esperanza.</p>
+  </div>
+
+  <div class="grid3">
+    <div class="card mini"><h3>♕ La dama entregada</h3><p>El sacrificio de dama en la jugada 13 es una lección magistral de pedagogía táctica: el material es el combustible de la posición.</p></div>
+    <div class="card mini"><h3>🛡️ El peón-escudo</h3><p>El uso del peón enemigo como «escudo» (23. b3) demuestra que hasta las piezas del rival pueden trabajar para ti.</p></div>
+    <div class="card mini"><h3>🧮 2 + 2 = 5</h3><p>Tal demostró que, al romper la lógica convencional de que 2+2 debe ser 4, se abre un mundo de posibilidades donde <strong>la iniciativa es la única ley universal</strong>.</p></div>
+  </div>
+
+  <div class="quote tal">Riga 1961 permanece como el recordatorio eterno de que, en el ajedrez, <strong>el que controla el bosque oscuro siempre sale victorioso</strong>.</div>
+
+  <button class="bigBtn" data-jump="0">♟ Volver a recorrer la partida desde el inicio</button>
+</section>
+
+<!-- ============================ CRÉDITOS ============================ -->
+<section id="creditos" class="view">
+  <div class="secHead"><div class="secIcon">✨</div><div>
+    <h2>Créditos</h2>
+    <div class="sub">Autoría, fecha y propósito de este tutorial</div>
+  </div></div>
+
+  <div class="card creditCard">
+    <div class="coverWrap" style="margin:0 0 8px">
+      <svg class="cover" viewBox="0 0 1600 900" role="img" aria-label="Portada animada: el sacrificio de dama de Tal y las tres damas secuenciales">
+        <use href="#coverArt" xlink:href="#coverArt" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900"></use>
+      </svg>
+    </div>
+    <h2>La Fórmula Matemática de Mijail Tal</h2>
+    <div class="heroSub" style="color:var(--dim)">Riga, 1961 · Siciliana Najdorf · Tutorial interactivo paso a paso</div>
+    <div class="creditName">👨‍💻 Rubén Sbarsky</div>
+    <div class="cRow">
+      <div class="dt">📅 Fecha: <b>04/09/2026</b></div>
+      <div class="dt">🕗 Hora: <b>08:12:22</b></div>
+    </div>
+    <p style="max-width:640px;margin:16px auto 0;color:var(--dim);font-size:.92rem">
+      Material elaborado exclusivamente con fines educativos y de divulgación del ajedrez.
+      El contenido proviene íntegramente del documento fuente «Guía Paso a Paso: La Fórmula Matemática de Mijail Tal (Riga, 1961)».
+    </p>
+    <div class="fiat">Fiat iustitia, ruat caelum.</div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="fx">📚 Tutorial solo con fines Educativos y Divulgación</div>
+  <div class="fx">👨‍💻 Créditos: Rubén Sbarsky</div>
+  <div class="fx">📅 FECHA: 04/09/2026 · Hora: 08:12:22</div>
+  <div class="fiat">Fiat iustitia, ruat caelum.</div>
+</footer>
+
+<button id="toTop" title="Volver arriba" aria-label="Volver arriba">↑</button>
+
+<!-- ===================== SVG PORTADA (symbol compartido HOME / CRÉDITOS) ===================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="bgSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a0e1a"/><stop offset=".5" stop-color="#0e1a33"/><stop offset="1" stop-color="#0a0e1a"/>
+    </linearGradient>
+    <radialGradient id="glowC" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#00d4ff" stop-opacity=".2"/><stop offset=".6" stop-color="#00d4ff" stop-opacity=".05"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rgRed" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#ef4444" stop-opacity=".55"/><stop offset="1" stop-color="#ef4444" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <pattern id="boardP" width="140" height="140" patternUnits="userSpaceOnUse" x="520" y="240">
+      <rect x="0" y="0" width="70" height="70" fill="#1c3252"/><rect x="70" y="0" width="70" height="70" fill="#0e1a2e"/>
+      <rect x="0" y="70" width="70" height="70" fill="#0e1a2e"/><rect x="70" y="70" width="70" height="70" fill="#1c3252"/>
+    </pattern>
+    <pattern id="gridP" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M80 0H0V80" fill="none" stroke="#1e3a5f" stroke-width="1"/>
+    </pattern>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <symbol id="coverArt" viewBox="0 0 1600 900">
+    <!-- fondo -->
+    <rect width="1600" height="900" fill="url(#bgSky)"/>
+    <rect width="1600" height="900" fill="url(#gridP)" opacity=".16"/>
+    <ellipse cx="800" cy="520" rx="560" ry="360" fill="url(#glowC)">
+      <animate attributeName="opacity" values=".4;.75;.4" dur="6s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <!-- bosque oscuro -->
+    <g>
+      <path fill="#0b1322" d="M0 262 L40 200 L75 240 L110 178 L150 236 L185 196 L225 250 L260 188 L300 244 L340 205 L380 252 L420 182 L460 238 L505 200 L540 250 L575 186 L615 242 L650 206 L690 254 L730 190 L770 246 L810 202 L850 256 L885 186 L925 240 L965 198 L1005 252 L1040 184 L1080 238 L1120 204 L1160 254 L1195 188 L1235 242 L1275 200 L1315 250 L1355 184 L1395 238 L1435 202 L1475 252 L1515 190 L1555 240 L1600 210 L1600 340 L0 340 Z">
+        <animateTransform attributeName="transform" type="translate" values="0 0;-26 0;0 0" dur="46s" repeatCount="indefinite"/>
+      </path>
+      <path fill="#070d18" d="M0 300 L55 236 L100 288 L150 226 L205 292 L250 244 L305 298 L360 230 L415 290 L470 250 L525 302 L580 234 L635 292 L690 246 L745 300 L800 238 L855 294 L910 248 L965 302 L1020 236 L1075 290 L1130 252 L1185 304 L1240 238 L1295 292 L1350 250 L1405 300 L1460 234 L1515 290 L1570 252 L1600 280 L1600 380 L0 380 Z"/>
+    </g>
+
+    <!-- cielo matemático -->
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;1;0;0" keyTimes="0;0.14;0.17;0.5;0.9;0.95;1" dur="14s" repeatCount="indefinite"/>
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0 0;-8 0;6 0;0 0;-5 0;4 0;0 0" dur="0.9s" repeatCount="indefinite"/>
+        <text x="800" y="150" text-anchor="middle" font-size="86" font-weight="900" fill="#00d4ff" filter="url(#glow)" font-family="'Segoe UI',system-ui,sans-serif">2 + 2 = 5
+          <animate attributeName="fill" values="#00d4ff;#f59e0b;#a855f7;#00d4ff" dur="4s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      <text x="800" y="196" text-anchor="middle" font-size="22" letter-spacing="6" fill="#8ea3bf" font-family="'Segoe UI',system-ui,sans-serif">EL BOSQUE OSCURO DE MIJAIL TAL</text>
+    </g>
+    <text x="300" y="120" text-anchor="middle" font-size="20" letter-spacing="2" fill="#f59e0b" opacity="0" font-family="'Segoe UI',system-ui,sans-serif">VALOR ABSOLUTO: IRRELEVANTE
+      <animate attributeName="opacity" values="0;0;.9;.9;0;0" keyTimes="0;0.24;0.27;0.5;0.54;1" dur="14s" repeatCount="indefinite"/>
+    </text>
+    <text x="300" y="196" text-anchor="middle" font-size="20" letter-spacing="2" fill="#22c55e" opacity="0" font-family="'Segoe UI',system-ui,sans-serif">LA INICIATIVA ES LA ÚNICA LEY
+      <animate attributeName="opacity" values="0;0;.9;.9;0;0" keyTimes="0;0.42;0.45;0.62;0.66;1" dur="14s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- tablero -->
+    <g>
+      <rect x="520" y="240" width="560" height="560" fill="url(#boardP)" stroke="#1e3a5f" stroke-width="3"/>
+      <rect x="520" y="240" width="560" height="560" fill="none" stroke="#00d4ff" stroke-width="2" rx="6" opacity=".35">
+        <animate attributeName="opacity" values=".2;.55;.2" dur="5s" repeatCount="indefinite"/>
+      </rect>
+      <!-- casillas clave -->
+      <rect x="870" y="590" width="70" height="70" fill="#f59e0b" opacity="0">
+        <animate attributeName="opacity" values=".05;.28;.05" dur="3.2s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="800" y="380" width="70" height="70" fill="#ef4444" opacity="0">
+        <animate attributeName="opacity" values=".05;.26;.05" dur="3.2s" begin="1.1s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="870" y="240" width="70" height="70" fill="#00d4ff" opacity="0">
+        <animate attributeName="opacity" values=".06;.3;.06" dur="3.2s" begin="2.2s" repeatCount="indefinite"/>
+      </rect>
+      <!-- coordenadas -->
+      <g font-size="19" fill="#4b6f8f" font-family="'Segoe UI',system-ui,sans-serif" text-anchor="middle">
+        <text x="555" y="828">a</text><text x="625" y="828">b</text><text x="695" y="828">c</text><text x="765" y="828">d</text>
+        <text x="835" y="828">e</text><text x="905" y="828">f</text><text x="975" y="828">g</text><text x="1045" y="828">h</text>
+      </g>
+      <g font-size="19" fill="#4b6f8f" font-family="'Segoe UI',system-ui,sans-serif" text-anchor="end">
+        <text x="508" y="282">8</text><text x="508" y="352">7</text><text x="508" y="422">6</text><text x="508" y="492">5</text>
+        <text x="508" y="562">4</text><text x="508" y="632">3</text><text x="508" y="702">2</text><text x="508" y="772">1</text>
+      </g>
+      <!-- línea de escaneo -->
+      <rect x="522" width="556" height="3" fill="#00d4ff" opacity=".18">
+        <animate attributeName="y" values="242;796;242" dur="7s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+
+    <!-- flechas de iniciativa -->
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;0;.9;.9;0;0" keyTimes="0;0.16;0.2;0.55;0.6;1" dur="14s" repeatCount="indefinite"/>
+      <path d="M430 700 C 560 640 630 560 700 500" fill="none" stroke="#00d4ff" stroke-width="4" stroke-dasharray="12 10">
+        <animate attributeName="stroke-dashoffset" values="0;-176" dur="1.1s" repeatCount="indefinite"/>
+      </path>
+      <path d="M1140 720 C 1050 640 980 560 905 470" fill="none" stroke="#f59e0b" stroke-width="4" stroke-dasharray="12 10">
+        <animate attributeName="stroke-dashoffset" values="0;-176" dur="1.1s" repeatCount="indefinite"/>
+      </path>
+      <polygon points="700,500 686,512 680,494" fill="#00d4ff"/>
+      <polygon points="905,470 922,478 912,460" fill="#f59e0b"/>
+    </g>
+
+    <!-- reina blanca: vuelo y sacrificio -->
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.03;0.143;0.17;1" dur="14s" repeatCount="indefinite"/>
+      <animateMotion dur="14s" repeatCount="indefinite" rotate="0" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.021;0.143;1" path="M765 765 C 700 640 770 545 835 485"/>
+      <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="72" fill="#f8fafc" filter="url(#glow)" font-family="'Segoe UI Symbol','Segoe UI',sans-serif">♕</text>
+    </g>
+
+    <!-- explosión del sacrificio -->
+    <circle cx="835" cy="485" r="0" fill="none" stroke="#f59e0b" stroke-width="5" opacity="0">
+      <animate attributeName="r" values="0;0;8;120;120" keyTimes="0;0.143;0.15;0.21;1" dur="14s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;.95;0;0" keyTimes="0;0.143;0.155;0.21;1" dur="14s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="835" cy="485" r="0" fill="none" stroke="#ef4444" stroke-width="3" opacity="0">
+      <animate attributeName="r" values="0;0;6;88;88" keyTimes="0;0.15;0.157;0.225;1" dur="14s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;.85;0;0" keyTimes="0;0.15;0.162;0.225;1" dur="14s" repeatCount="indefinite"/>
+    </circle>
+    <rect x="520" y="240" width="560" height="560" fill="#f59e0b" opacity="0">
+      <animate attributeName="opacity" values="0;0;.4;0;0" keyTimes="0;0.143;0.155;0.2;1" dur="14s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- peón que corona (1ª dama) -->
+    <g transform="translate(905,275)" opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.36;0.37;0.393;0.398;1" dur="14s" repeatCount="indefinite"/>
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="-70 70;-70 70;0 0;0 0" keyTimes="0;0.36;0.395;1" dur="14s" repeatCount="indefinite"/>
+        <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="44" fill="#f8fafc" font-family="'Segoe UI Symbol','Segoe UI',sans-serif">♙</text>
+      </g>
+    </g>
+
+    <!-- tres damas secuenciales -->
+    <g transform="translate(905,275)" opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.39;0.405;0.515;0.535;1" dur="14s" repeatCount="indefinite"/>
+      <g>
+        <animateTransform attributeName="transform" type="scale" values="0;0;1.35;1;1;0" keyTimes="0;0.39;0.41;0.43;0.515;1" dur="14s" repeatCount="indefinite"/>
+        <circle r="52" fill="none" stroke="#f59e0b" stroke-width="2" opacity=".7"/>
+        <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="76" fill="url(#goldGrad)" filter="url(#glow)" font-family="'Segoe UI Symbol','Segoe UI',sans-serif">♕</text>
+      </g>
+      <text y="62" text-anchor="middle" font-size="19" letter-spacing="2" fill="#f59e0b" font-family="'Segoe UI',system-ui,sans-serif">1ª DAMA · f8</text>
+    </g>
+    <g transform="translate(835,275)" opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.535;0.55;0.66;0.68;1" dur="14s" repeatCount="indefinite"/>
+      <g>
+        <animateTransform attributeName="transform" type="scale" values="0;0;1.35;1;1;0" keyTimes="0;0.535;0.555;0.575;0.66;1" dur="14s" repeatCount="indefinite"/>
+        <circle r="52" fill="none" stroke="#f59e0b" stroke-width="2" opacity=".7"/>
+        <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="76" fill="url(#goldGrad)" filter="url(#glow)" font-family="'Segoe UI Symbol','Segoe UI',sans-serif">♕</text>
+      </g>
+      <text y="62" text-anchor="middle" font-size="19" letter-spacing="2" fill="#f59e0b" font-family="'Segoe UI',system-ui,sans-serif">2ª DAMA · f8</text>
+    </g>
+    <g transform="translate(765,275)" opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.68;0.695;0.9;0.93;1" dur="14s" repeatCount="indefinite"/>
+      <g>
+        <animateTransform attributeName="transform" type="scale" values="0;0;1.35;1;1;0" keyTimes="0;0.68;0.7;0.72;0.9;1" dur="14s" repeatCount="indefinite"/>
+        <circle r="52" fill="none" stroke="#a855f7" stroke-width="2" opacity=".8"/>
+        <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="76" fill="url(#goldGrad)" filter="url(#glow)" font-family="'Segoe UI Symbol','Segoe UI',sans-serif">♕</text>
+      </g>
+      <text y="62" text-anchor="middle" font-size="19" letter-spacing="2" fill="#a855f7" font-family="'Segoe UI',system-ui,sans-serif">3ª DAMA · f8</text>
+    </g>
+
+    <!-- rey negro en peligro -->
+    <g transform="translate(905,345)">
+      <circle r="44" fill="url(#rgRed)" opacity="0">
+        <animate attributeName="opacity" values="0;0;.8;.3;.8;.3;0" keyTimes="0;0.6;0.64;0.72;0.8;0.9;0.95" dur="14s" repeatCount="indefinite"/>
+      </circle>
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0 0;0 0;-3 2;3 -2;-2 1;0 0;0 0" keyTimes="0;0.6;0.65;0.7;0.76;0.82;1" dur="14s" repeatCount="indefinite"/>
+        <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="60" fill="#dbe3ee" font-family="'Segoe UI Symbol','Segoe UI',sans-serif">♚</text>
+      </g>
+    </g>
+
+    <!-- barra de evaluación -->
+    <g>
+      <rect x="1160" y="240" width="30" height="560" rx="6" fill="#0f172a" stroke="#1e3a5f"/>
+      <rect x="1164" width="22" rx="3" fill="#e2e8f0">
+        <animate attributeName="height" values="280;280;60;500;120;460;80;520;300;280" keyTimes="0;0.14;0.2;0.3;0.4;0.5;0.62;0.75;0.9;1" dur="14s" repeatCount="indefinite"/>
+        <animate attributeName="y" values="516;516;736;296;676;336;716;276;496;516" keyTimes="0;0.14;0.2;0.3;0.4;0.5;0.62;0.75;0.9;1" dur="14s" repeatCount="indefinite"/>
+      </rect>
+      <text x="1175" y="230" text-anchor="middle" font-size="16" fill="#8ea3bf" font-family="'Segoe UI',system-ui,sans-serif">EVAL</text>
+      <text x="1175" y="830" text-anchor="middle" font-size="20" fill="#22c55e" font-family="'Segoe UI',system-ui,sans-serif">0.0
+        <animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.14;0.16;0.88;1" dur="14s" repeatCount="indefinite"/>
+      </text>
+      <text x="1175" y="830" text-anchor="middle" font-size="20" fill="#ef4444" opacity="0" font-family="'Segoe UI',system-ui,sans-serif">∞ caos
+        <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.15;0.17;0.87;1" dur="14s" repeatCount="indefinite"/>
+      </text>
+    </g>
+
+    <!-- insignia final -->
+    <g transform="translate(1290,150)" opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.9;0.925;0.985;1" dur="14s" repeatCount="indefinite"/>
+      <text text-anchor="middle" font-size="66" font-weight="900" fill="#00d4ff" filter="url(#glow)" font-family="'Segoe UI',system-ui,sans-serif">1 – 0</text>
+      <text y="36" text-anchor="middle" font-size="19" letter-spacing="3" fill="#f59e0b" font-family="'Segoe UI',system-ui,sans-serif">KOBLENTS SE RINDE</text>
+    </g>
+
+    <!-- HUD -->
+    <g stroke="#00d4ff" stroke-width="3" fill="none" opacity=".75" stroke-dasharray="150" stroke-dashoffset="150">
+      <animate attributeName="stroke-dashoffset" values="150;0" dur="1.6s" fill="freeze"/>
+      <path d="M38 92 V40 H92"/><path d="M1508 40 H1562 V92"/><path d="M1562 808 V862 H1508"/><path d="M92 862 H38 V808"/>
+    </g>
+    <g font-family="'Segoe UI',system-ui,sans-serif" fill="#7dd3fc" opacity=".9">
+      <text x="56" y="66" font-size="22" letter-spacing="3" font-weight="700">RIGA · 1961</text>
+      <text x="1544" y="66" font-size="20" letter-spacing="2" text-anchor="end">DEFENSA SICILIANA · VARIANTE NAJDORF</text>
+      <text x="56" y="846" font-size="20" letter-spacing="2">TAL — KOBLENTS · EL MAGO DE RIGA</text>
+      <text x="1544" y="846" font-size="20" letter-spacing="2" text-anchor="end">FÓRMULA: CAOS → INICIATIVA → 1–0</text>
+    </g>
+    <text x="800" y="884" text-anchor="middle" font-size="24" letter-spacing="5" fill="#4b6f8f" font-family="'Segoe UI',system-ui,sans-serif">LA FÓRMULA MATEMÁTICA DE MIJAIL TAL</text>
+  </symbol>
+</svg>
+
+<script>
+"use strict";
+/* ============================ DATOS DE LA PARTIDA ============================ */
+var GLYPH={K:"♔",Q:"♕",R:"♖",B:"♗",N:"♘",P:"♙",k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟"};
+var PNAME={K:"Rey",Q:"Dama",R:"Torre",B:"Alfil",N:"Caballo",P:"Peón"};
+var FILES=["a","b","c","d","e","f","g","h"];
+
+function S(from,to,c,p,o){var d={from:from,to:to,c:c,p:p,san:o.san||"",cap:!!o.cap,castle:o.castle||null,promo:o.promo||null,chk:!!o.chk,what:o.q||"",why:o.w||""};return d;}
+
+var STEPS=[
+S("e2","e4","w","P",{san:"e4",q:"El peón blanco avanza dos casillas, de e2 a e4.",w:"Ocupa el centro y abre líneas para la dama y el alfil: declaración de intenciones agresivas desde el primer movimiento."}),
+S("c7","c5","b","p",{san:"c5",q:"Las negras responden con el peón de c7 a c5.",w:"Defensa Siciliana: contraataque asimétrico inmediato. Koblents acepta el conflicto que Tal propone."}),
+S("g1","f3","w","N",{san:"Cf3",q:"El caballo blanco de g1 se desarrolla a f3.",w:"Prepara la apertura del centro con d4 y presiona la casilla d4."}),
+S("d7","d6","b","p",{san:"d6",q:"Las negras juegan el peón de d7 a d6.",w:"Apoya el centro y forma parte del esquema Najdorf que está por llegar."}),
+S("d2","d4","w","P",{san:"d4",q:"El peón blanco avanza de d2 a d4.",w:"Apertura del centro: la partida entra en la carrera por la iniciativa."}),
+S("c5","d4","b","p",{san:"cxd4",cap:1,q:"El peón negro de c5 captura el peón blanco en d4.",w:"Intercambio: las negras eliminan el peón central y obligan a la recaptura."}),
+S("f3","d4","w","N",{san:"Cxd4",cap:1,q:"El caballo de f3 recaptura en d4.",w:"Las blancas sitúan un caballo centralizado y conservan ventaja de desarrollo."}),
+S("g8","f6","b","n",{san:"Cf6",q:"El caballo negro de g8 salta a f6.",w:"Desarrollo que presiona e4: pieza fundamental del dispositivo Najdorf."}),
+S("b1","c3","w","N",{san:"Cc3",q:"El caballo blanco de b1 va a c3.",w:"Defiende e4 y completa el desarrollo rápido del flanco de dama."}),
+S("a7","a6","b","p",{san:"a6",q:"Las negras juegan el peón de a7 a a6.",w:"Entrada oficial en la Variante Najdorf: evita el salto Cb5 y prepara la expansión del flanco de dama."}),
+S("c1","g5","w","B",{san:"Ag5",q:"El alfil blanco de c1 sale a g5.",w:"Máxima tensión: amenaza con doblar los peones negros clavando el caballo de f6."}),
+S("e7","e6","b","p",{san:"e6",q:"Las negras juegan el peón de e7 a e6.",w:"Consolida el centro y prepara la ruptura de la clavada."}),
+S("f2","f4","w","P",{san:"f4",q:"El peón blanco avanza de f2 a f4.",w:"Presión central inmediata: esquema agresivo característico contra la Najdorf."}),
+S("f8","e7","b","b",{san:"Ae7",q:"El alfil negro de f8 se desarrolla a e7.",w:"Desclava el caballo de f6 y prepara el enroque corto."}),
+S("d1","f3","w","Q",{san:"Df3",q:"La dama blanca se coloca de d1 a f3.",w:"La dama se suma al ataque apuntando al flanco de rey. Será precisamente la pieza sacrificada."}),
+S("d8","c7","b","q",{san:"Dc7",q:"La dama negra se mueve de d8 a c7.",w:"Casilla típica de la Siciliana: apoya la expansión y se aparta de la columna d."}),
+S("e1","c1","w","K",{san:"O-O-O",castle:{kFrom:"e1",kTo:"c1",rFrom:"a1",rTo:"d1"},q:"Enroque largo: el rey blanco viaja de e1 a c1 y la torre de a1 a d1.",w:"El rey se esconde en el flanco opuesto al ataque previsto: carrera de ataques en ambos flancos."}),
+S("b8","d7","b","n",{san:"Cbd7",q:"El caballo negro de b8 se desarrolla a d7.",w:"Desarrollo flexible: apoya el caballo de f6 y prepara el contrajuego."}),
+S("f1","e2","w","B",{san:"Ae2",q:"El alfil blanco de f1 va a e2.",w:"Completa el desarrollo blanco y despeja la primera fila para las torres."}),
+S("h7","h6","b","p",{san:"h6",q:"Las negras juegan el peón de h7 a h6.",w:"Pregunta al alfil de g5 sus intenciones; pequeña concesión de tiempo en el flanco de rey."}),
+S("g5","h4","w","B",{san:"Ah4",q:"El alfil blanco se retira de g5 a h4.",w:"Mantiene viva la tensión sobre el caballo de f6 y conserva la presión."}),
+S("b7","b5","b","p",{san:"b5",q:"Las negras avanzan el peón de b7 a b5.",w:"Inician la expansión en el flanco de dama buscando contrajuego, pero dejan una vulnerabilidad crítica: la diagonal larga."}),
+S("e4","e5","w","P",{san:"e5",q:"El peón blanco avanza de e4 a e5.",w:"Ataque doble al caballo y presión de rayos X hacia la torre de a8: la posición empieza a resquebrajarse."}),
+S("c8","b7","b","b",{san:"Ab7",q:"El alfil negro de c8 se desarrolla a b7.",w:"Jugada intermedia obligatoria: ataca a la dama blanca antes de resolver la tensión."}),
+S("e5","f6","w","P",{san:"exf6",cap:1,q:"EL SACRIFICIO: el peón de e5 captura el caballo en f6, dejando la dama blanca indefensa en f3.",w:"Tal entrega la dama para desgarrar el enroque y ganar tiempos de ataque vitales: el material es el combustible de la posición."}),
+S("b7","f3","b","b",{san:"Axf3",cap:1,q:"El alfil de b7 captura la dama blanca en f3.",w:"Koblents acepta el sacrificio: gana la dama, pero la iniciativa pertenece ya a Tal."}),
+S("e2","f3","w","B",{san:"Axf3",cap:1,q:"El alfil de e2 captura el alfil negro en f3.",w:"Las blancas recuperan la pieza y amenazan directamente la torre de a8 por la gran diagonal."}),
+S("d6","d5","b","p",{san:"d5",q:"El peón negro avanza de d6 a d5.",w:"Defensa que abre paso a la dama negra para contraatacar en f4."}),
+S("d4","e6","w","N",{san:"Cxe6",cap:1,q:"SEGUNDO SACRIFICIO: el caballo de d4 captura el peón de e6.",w:"Un martillazo a la estructura defensiva: para exponer al rey hay que eliminar los peones que son su última muralla."}),
+S("f7","e6","b","p",{san:"fxe6",cap:1,q:"El peón de f7 captura el caballo blanco en e6.",w:"Las negras ganan material, pero su rey pierde toda la cobertura."}),
+S("f3","h5","w","B",{san:"Ah5+",chk:1,q:"El alfil de f3 se desplaza a h5 dando JAQUE.",w:"Ataque directo al rey expuesto: las negras no tienen un solo respiro."}),
+S("g7","g6","b","p",{san:"g6",q:"Las negras juegan el peón de g7 a g6.",w:"El bloqueo que parece salvar, pero que crea nuevas debilidades."}),
+S("h5","g6","w","B",{san:"Axg6+",cap:1,chk:1,q:"El alfil captura el peón de g6 dando JAQUE.",w:"Cae otro peón del escudo: el bosque se cierra sobre Koblents."}),
+S("e8","f8","b","k",{san:"Rf8",q:"El rey negro se mueve de e8 a f8.",w:"Única casilla viable: el rey emprende un paseo peligroso."}),
+S("f6","e7","w","P",{san:"fxe7+",cap:1,chk:1,q:"El peón de f6 captura el alfil de e7 dando JAQUE.",w:"El peón blanco se instala en e7 como una estaca en el corazón de la posición negra."}),
+S("f8","g7","b","k",{san:"Rg7",q:"El rey negro se mueve de f8 a g7.",w:"La huida continúa: todas las respuestas negras están forzadas."}),
+S("h4","g3","w","B",{san:"Ag3",q:"El alfil de h4 se retira a g3.",w:"Trampa magistral: si fuera capturado, seguiría f5+ con jaque descubierto ganando la dama negra. El alfil es «intocable»."}),
+S("d7","f6","b","n",{san:"Cf6",q:"El caballo de d7 salta a f6.",w:"Refuerzo defensivo necesario para cubrir al rey."}),
+S("h1","e1","w","R",{san:"The1",q:"La torre de h1 se mueve a e1.",w:"La última pieza blanca entra en juego: presión total sobre la columna e."}),
+S("b5","b4","b","p",{san:"b4",q:"Las negras avanzan el peón de b5 a b4.",w:"Atacan el caballo, pero ignoran la cuña blanca en el centro: bajo el estrés, Koblents mira hacia el lugar equivocado."}),
+S("e1","e6","w","R",{san:"Txe6",cap:1,q:"La torre de e1 captura el peón de e6.",w:"Sacrificio de Calidad (torre por peón) esencial para mantener la oscuridad del bosque y la presión sobre el monarca."}),
+S("b4","c3","b","p",{san:"bxc3",cap:1,q:"El peón de b4 captura el caballo blanco en c3.",w:"Las negras siguen ganando material… pero el material ya no importa."}),
+S("f4","f5","w","P",{san:"f5",q:"El peón blanco avanza de f4 a f5.",w:"Ataque descubierto del alfil de g3 sobre la dama negra."}),
+S("c7","b7","b","q",{san:"Db7",q:"La dama negra se mueve de c7 a b7.",w:"Error fatal: busca un mate inexistente en b2. La presión de jugar contra Tal induce al error humano."}),
+S("b2","b3","w","P",{san:"b3",q:"Las blancas juegan el peón de b2 a b3.",w:"La lógica del «escudo»: Tal usa el peón negro de c3 como escudo para su propio rey, anulando todo contraataque."}),
+S("b7","d7","b","q",{san:"Dd7",q:"La dama negra se retira de b7 a d7.",w:"La dama negra deambula sin encontrar un papel útil en la defensa."}),
+S("g3","e5","w","B",{san:"Ae5",q:"El alfil de g3 se sitúa en e5.",w:"Clavada decisiva sobre el caballo de f6: el nudo defensivo empieza a deshacerse."}),
+S("d7","e6","b","q",{san:"Dxe6",cap:1,q:"La dama negra captura la torre blanca en e6.",w:"Koblents elimina la pieza más molesta, pero cada captura acerca a Tal a su plan final."}),
+S("f5","e6","w","P",{san:"fxe6",cap:1,q:"El peón de f5 captura la dama negra en e6.",w:"Las blancas recuperan la dama: el balance material del sacrificio empieza a saldarse."}),
+S("g7","g6","b","k",{san:"Rxg6",cap:1,q:"El rey negro captura el alfil blanco en g6.",w:"Koblents elimina por fin la pieza, pero ya es tarde: el ataque blanco continúa con peones."}),
+S("d1","f1","w","R",{san:"Tf1",q:"La torre de d1 se desplaza a f1.",w:"Activa la última pieza blanca y prepara la operación sobre la columna f."}),
+S("f6","h7","b","n",{san:"Ch7",q:"El caballo negro retrocede de f6 a h7.",w:"Única forma de conservar la pieza: la posición negra se encoge."}),
+S("e5","h8","w","B",{san:"Axh8",cap:1,q:"El alfil de e5 captura la torre negra en h8.",w:"Comienza la limpieza: Tal cambia material por tiempo de promoción."}),
+S("a8","h8","b","r",{san:"Txh8",cap:1,q:"La torre de a8 recaptura el alfil en h8.",w:"Las negras recuperan la pieza, pero el peón de e7 está a punto de decidir."}),
+S("f1","f8","w","R",{san:"Tf8",q:"La torre blanca se mueve de f1 a f8.",w:"Clava en la octava fila y fuerza la captura que preparará la coronación."}),
+S("h8","f8","b","r",{san:"Txf8",cap:1,q:"La torre negra captura la torre blanca en f8.",w:"Respuesta forzada: ahora el peón de e7 podrá coronar capturando."}),
+S("e7","f8","w","P",{san:"exf8=D",cap:1,promo:"Q",q:"El peón de e7 captura en f8 y se CONVIERTE EN DAMA.",w:"Segunda dama de Tal: la primera fue sacrificada para crear caos; esta fuerza la simplificación decisiva."}),
+S("h7","f8","b","n",{san:"Cxf8",cap:1,q:"El caballo de h7 captura la dama recién coronada en f8.",w:"Koblents elimina a la intrusa, pero el peón de e6 ya es imparable."}),
+S("e6","e7","w","P",{san:"e7",q:"El peón de e6 avanza a e7.",w:"Amenaza una nueva coronación: la fórmula consiste en intercambiar material por tiempo de promoción."}),
+S("g6","f7","b","k",{san:"Rf7",q:"El rey negro se acerca de g6 a f7.",w:"Intenta frenar al peón pasado con el rey."}),
+S("e7","f8","w","P",{san:"exf8=D+",cap:1,promo:"Q",chk:1,q:"El peón de e7 captura el caballo en f8 y se CONVIERTE EN DAMA dando JAQUE.",w:"Tercera dama de Tal: tres damas secuenciales en una misma partida, un fenómeno único."}),
+S("f7","f8","b","k",{san:"Rxf8",cap:1,q:"El rey negro captura la dama en f8.",w:"Las negras devuelven todo el material para sobrevivir: se llega a un final de peones técnicamente ganado por las blancas."}),
+S("c1","d1","w","K",{san:"Rd1",q:"El rey blanco se mueve de c1 a d1. Alexander Koblents abandona.",w:"Centralización profiláctica: con el final de peones ganado, las negras se rinden. 1–0."})
+];
+
+function startPos(){return{
+ a8:"r",b8:"n",c8:"b",d8:"q",e8:"k",f8:"b",g8:"n",h8:"r",
+ a7:"p",b7:"p",c7:"p",d7:"p",e7:"p",f7:"p",g7:"p",h7:"p",
+ a2:"P",b2:"P",c2:"P",d2:"P",e2:"P",f2:"P",g2:"P",h2:"P",
+ a1:"R",b1:"N",c1:"B",d1:"Q",e1:"K",f1:"B",g1:"N",h1:"R"};}
+function applyStep(p,st){
+ var n={};for(var k in p)n[k]=p[k];
+ if(st.castle){n[st.castle.kTo]=n[st.castle.kFrom];delete n[st.castle.kFrom];n[st.castle.rTo]=n[st.castle.rFrom];delete n[st.castle.rFrom];return n;}
+ var pc=n[st.from];delete n[st.from];
+ if(st.promo)pc=st.promo;
+ n[st.to]=pc;return n;
+}
+var POS=[startPos()];
+for(var i=0;i<STEPS.length;i++){POS.push(applyStep(POS[POS.length-1],STEPS[i]));}
+
+/* ============================ TABLERO INTERACTIVO ============================ */
+var idx=0;
+function buildGrid(){
+ var g=document.getElementById("boardGrid"),h="";
+ for(var r=8;r>=1;r--){for(var f=0;f<8;f++){var sq=FILES[f]+r;h+='<div class="sq" data-sq="'+sq+'"></div>';}}
+ g.innerHTML=h;
+ var cc=document.getElementById("coordCol");cc.innerHTML="";
+ for(var rk=8;rk>=1;rk--){var d=document.createElement("div");d.textContent=rk;cc.appendChild(d);}
+ var cr=document.getElementById("coordRow");cr.innerHTML="";
+ FILES.forEach(function(fl){var d=document.createElement("div");d.textContent=fl;cr.appendChild(d);});
+}
+function renderBoard(){
+ var pos=POS[idx];
+ var cur=idx>0?STEPS[idx-1]:null;
+ var ckSq=null;
+ if(cur&&cur.chk){var target=cur.c==="w"?"k":"K";for(var k in pos){if(pos[k]===target){ckSq=k;break;}}}
+ document.querySelectorAll("#boardGrid .sq").forEach(function(sq){
+  var key=sq.dataset.sq,pc=pos[key]||"";
+  sq.innerHTML=pc?'<span class="'+(pc===pc.toUpperCase()?"wp":"bp")+'">'+GLYPH[pc]+"</span>":"";
+  var fi=FILES.indexOf(key[0]),ri=parseInt(key[1],10)-1;
+  sq.classList.toggle("dk",(fi+ri)%2===0);sq.classList.toggle("lt",(fi+ri)%2===1);
+  sq.classList.toggle("hl",!!cur&&(key===cur.from||key===cur.to));
+  sq.classList.toggle("ck",key===ckSq);
+ });
+}
+function updatePanel(){
+ var p=document.getElementById("movePanel");
+ if(idx===0){
+  p.innerHTML='<span class="mov">Posición inicial</span>'+
+  '<div class="mvBig">Ambos ejércitos, listos para el combate</div>'+
+  '<div class="san">Tal (blancas) — Koblents (negras) · Riga, 1961</div>'+
+  '<div class="q"><span class="lab">¿Qué ocurre?</span><p>Posición inicial estándar del ajedrez. Todas las piezas ocupan sus casillas de origen.</p></div>'+
+  '<div class="w"><span class="lab">¿Por qué es importante?</span><p>Desde aquí Tal iniciará la «meticulosa siembra de agresión» que llevará a Koblents al bosque oscuro.</p></div>'+
+  '<div class="full">Usa «Siguiente» para reproducir cada movimiento individual.</div>';
+  return;
+ }
+ var st=STEPS[idx-1];
+ var mvNo=Math.ceil(idx/2);
+ var color=st.c==="w"?"BLANCAS":"NEGRAS";
+ var piece=PNAME[st.p]+" "+(st.c==="w"?"blanco":"negro");
+ var badges="";
+ if(st.castle)badges+='<span class="tag a">ENROQUE</span>';
+ if(st.cap)badges+='<span class="tag j">CAPTURA</span>';
+ if(st.promo)badges+='<span class="tag v">PROMOCIÓN · DAMA</span>';
+ if(st.chk)badges+='<span class="tag j">¡JAQUE!</span>';
+ var full="";
+ if(st.c==="w"){var b=STEPS[idx]||null;full="Jugada completa: "+mvNo+". "+st.san+(b?" "+b.san:" …");}
+ else{full="Jugada completa: "+mvNo+". "+STEPS[idx-2].san+" "+st.san;}
+ p.innerHTML='<span class="mov">Movimiento '+idx+' — '+color+'</span>'+
+ '<div class="mvBig">'+piece+': '+st.from+' → '+st.to+'</div>'+
+ '<div class="san">Notación: '+st.san+' &nbsp;'+badges+'</div>'+
+ '<div class="q"><span class="lab">¿Qué ocurre?</span><p>'+st.what+'</p></div>'+
+ '<div class="w"><span class="lab">¿Por qué es importante?</span><p>'+st.why+'</p></div>'+
+ '<div class="full">'+full+'</div>';
+}
+function updateControls(){
+ document.getElementById("btnPrev").disabled=idx===0;
+ document.getElementById("btnNext").disabled=idx===STEPS.length;
+ document.getElementById("moveSlider").value=idx;
+ var st=idx>0?STEPS[idx-1]:null;
+ document.getElementById("indStep").textContent=idx===0?"Posición inicial":"Movimiento "+idx+" de "+STEPS.length;
+ document.getElementById("indTurn").textContent=st?(st.c==="w"?"Mueven BLANCAS · "+Math.ceil(idx/2)+".":"Mueven NEGRAS · "+Math.ceil(idx/2)+"..."):"—";
+ document.getElementById("indSan").textContent=st?st.san:"";
+}
+function gotoMove(i){
+ idx=Math.max(0,Math.min(STEPS.length,i));
+ renderBoard();updatePanel();updateControls();
+}
+document.getElementById("btnNext").addEventListener("click",function(){gotoMove(idx+1);});
+document.getElementById("btnPrev").addEventListener("click",function(){gotoMove(idx-1);});
+document.getElementById("btnReset").addEventListener("click",function(){gotoMove(0);});
+document.getElementById("moveSlider").addEventListener("input",function(e){gotoMove(parseInt(e.target.value,10));});
+document.addEventListener("keydown",function(e){
+ if(!document.getElementById("tablero").classList.contains("active"))return;
+ if(e.key==="ArrowRight"){gotoMove(idx+1);e.preventDefault();}
+ if(e.key==="ArrowLeft"){gotoMove(idx-1);e.preventDefault();}
+});
+
+/* ============================ CHIPS Y TABLA ============================ */
+function buildChips(){
+ document.querySelectorAll(".chips[data-s]").forEach(function(box){
+  var s=parseInt(box.dataset.s,10),e=parseInt(box.dataset.e,10),h="";
+  for(var i=s;i<=e;i++){var st=STEPS[i-1];
+   h+='<button class="chip '+(st.c==="w"?"cw":"cb")+'" data-go="'+i+'">'+Math.ceil(i/2)+(st.c==="w"?".":"…")+" "+st.san+"</button>";}
+  box.innerHTML=h;
+ });
+}
+function humTxt(st){
+ if(st.castle)return 'Enroque largo: rey de e1 a c1 y torre de a1 a d1 <span class="san">(O-O-O)</span>';
+ var t=PNAME[st.p]+" "+(st.c==="w"?"blanco":"negro")+": de "+st.from+" a "+st.to;
+ if(st.cap)t+=" (captura)";
+ if(st.promo)t+=" — ¡se convierte en DAMA!";
+ if(st.chk)t+=" — JAQUE";
+ return t+' <span class="san">('+st.san+")</span>";
+}
+function buildTable(){
+ var tb=document.getElementById("trBody"),h="";
+ for(var m=1;m<=32;m++){
+  var w=STEPS[(m-1)*2],b=STEPS[(m-1)*2+1]||null;
+  h+="<tr><td class='num'>"+m+"</td><td>"+humTxt(w)+"</td><td>"+(b?humTxt(b):'<span class="dimTxt">— Las negras abandonan (1–0)</span>')+"</td></tr>";
+ }
+ tb.innerHTML=h;
+}
+document.addEventListener("click",function(e){
+ var go=e.target.closest("[data-go]");
+ if(go){goToMove(parseInt(go.dataset.go,10));return;}
+ var jm=e.target.closest("[data-jump]");
+ if(jm){goToMove(parseInt(jm.dataset.jump,10));return;}
+ var ab=e.target.closest(".acc-btn");
+ if(ab){ab.parentElement.classList.toggle("open");}
+});
+
+/* ============================ SPA ============================ */
+var activeSec="inicio";
+function showSection(id){
+ document.querySelectorAll(".view").forEach(function(v){v.classList.toggle("active",v.id===id);});
+ document.querySelectorAll(".navBtn").forEach(function(b){b.classList.toggle("active",b.dataset.sec===id);});
+ activeSec=id;
+ window.scrollTo({top:0,behavior:"smooth"});
+ var nav=document.getElementById("nav");
+ var btn=document.querySelector('.navBtn[data-sec="'+id+'"]');
+ if(btn){nav.scrollTo({left:btn.offsetLeft-nav.clientWidth/2+btn.clientWidth/2,behavior:"smooth"});}
+}
+function goToMove(i){showSection("tablero");gotoMove(i);}
+document.querySelectorAll(".navBtn").forEach(function(b){
+ b.addEventListener("click",function(){showSection(b.dataset.sec);});
+});
+
+/* ============================ PROGRESO / TOTOP ============================ */
+function updProgress(){
+ var h=document.documentElement;
+ var max=h.scrollHeight-window.innerHeight;
+ document.getElementById("progressBar").style.width=(max>0?(window.scrollY/max)*100:0)+"%";
+ document.getElementById("toTop").classList.toggle("show",window.scrollY>400);
+}
+window.addEventListener("scroll",updProgress);
+document.getElementById("toTop").addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+
+/* ============================ ACCESIBILIDAD: MOVIMIENTO REDUCIDO ============================ */
+if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+ document.querySelectorAll("svg.cover").forEach(function(s){if(s.pauseAnimations)s.pauseAnimations();});
+}
+
+/* ============================ INIT ============================ */
+buildGrid();buildChips();buildTable();gotoMove(0);updProgress();
+</script>
+</body>
+</html>
