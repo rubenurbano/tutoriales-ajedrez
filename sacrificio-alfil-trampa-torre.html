@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Lazo del Alfil y la Torre · Tutorial Interactivo de Ajedrez</title>
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f;
+  --acc:#00d4ff; --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+  --txt:#dbe7f5; --mut:#8ba3bf;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;overflow-x:hidden}
+/* ---------- BARRA DE PROGRESO ---------- */
+#pbar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--acc),var(--purple));z-index:300;box-shadow:0 0 8px var(--acc)}
+/* ---------- NAVBAR ---------- */
+#nav{position:fixed;top:3px;left:0;right:0;z-index:200;background:rgba(10,14,26,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:0 12px;height:56px}
+.brand{font-weight:800;font-size:.95rem;color:#fff;white-space:nowrap;display:flex;align-items:center;gap:8px;padding-right:10px;border-right:1px solid var(--border)}
+.brand .kn{color:var(--acc);font-size:1.3rem}
+.nav-scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;padding:6px 2px}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-btn{flex:0 0 auto;background:transparent;border:1px solid transparent;color:var(--mut);font-size:.82rem;font-weight:600;letter-spacing:.6px;padding:8px 14px;border-radius:8px;cursor:pointer;transition:.25s;text-transform:uppercase;font-family:inherit}
+.nav-btn:hover{color:var(--acc);border-color:var(--border)}
+.nav-btn.active{background:rgba(0,212,255,.12);border-color:var(--acc);color:var(--acc);box-shadow:0 0 12px rgba(0,212,255,.25)}
+.nav-btn.cred{border-color:var(--purple);color:#d8b4fe}
+.nav-btn.cred.active{background:rgba(168,85,247,.15);box-shadow:0 0 12px rgba(168,85,247,.3)}
+/* ---------- SECCIONES SPA ---------- */
+main{max-width:1100px;margin:0 auto;padding:84px 18px 90px}
+.sec{display:none}
+.sec.active{display:block;animation:fadeIn .45s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* ---------- COMPONENTES ---------- */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:18px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+h1{font-size:clamp(1.7rem,4.6vw,3rem);line-height:1.15;color:#fff;letter-spacing:.5px}
+h2{font-size:clamp(1.35rem,3.4vw,2rem);color:#fff;display:flex;align-items:center;gap:12px;margin-bottom:6px}
+h2 .ico{width:44px;height:44px;flex:0 0 44px;border-radius:10px;background:rgba(0,212,255,.12);border:1px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+h3{color:var(--acc);font-size:1.08rem;margin:16px 0 8px}
+.sec-head{margin-bottom:22px;border-bottom:1px solid var(--border);padding-bottom:14px}
+.sec-head p{color:var(--mut);max-width:820px}
+p{margin-bottom:12px}
+.badge{display:inline-block;background:rgba(0,212,255,.12);border:1px solid var(--acc);color:var(--acc);font-size:.72rem;font-weight:700;letter-spacing:2px;padding:6px 16px;border-radius:999px;text-transform:uppercase;margin-bottom:16px}
+.badge.pur{background:rgba(168,85,247,.12);border-color:var(--purple);color:#d8b4fe}
+.badge.grn{background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)}
+.chip{display:inline-block;background:#0c1526;border:1px solid var(--border);border-radius:999px;padding:5px 13px;font-size:.78rem;color:var(--mut);margin:3px}
+.chip b{color:var(--acc)}
+.sub{color:var(--mut);font-size:1.05rem;max-width:820px}
+.quote{border-left:4px solid var(--acc);background:rgba(0,212,255,.06);padding:16px 20px;border-radius:0 10px 10px 0;font-style:italic;color:#c9e8f7;margin:22px 0;font-size:1.02rem}
+.quote small{display:block;margin-top:8px;color:var(--mut);font-style:normal}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:.25s}
+.metric:hover{border-color:var(--acc);transform:translateY(-3px)}
+.metric .num{font-size:1.7rem;font-weight:800;color:var(--acc)}
+.metric .lbl{font-size:.72rem;letter-spacing:1.2px;color:var(--mut);text-transform:uppercase;margin-top:4px}
+.dtchip{display:inline-flex;align-items:center;gap:8px;background:#0c1526;border:1px solid var(--border);border-radius:10px;padding:9px 16px;margin:5px 6px 0 0;font-size:.88rem}
+.dtchip b{color:var(--amber)}
+/* ---------- CALLOUTS ---------- */
+.co{border-radius:10px;padding:15px 18px;margin:16px 0;border:1px solid;border-left-width:5px;font-size:.95rem}
+.co .t{font-weight:800;font-size:.74rem;letter-spacing:1.6px;text-transform:uppercase;display:block;margin-bottom:6px}
+.co.info{background:rgba(0,212,255,.07);border-color:#155e75;border-left-color:var(--acc)}
+.co.info .t{color:var(--acc)}
+.co.ex{background:rgba(34,197,94,.07);border-color:#14532d;border-left-color:var(--green)}
+.co.ex .t{color:var(--green)}
+.co.warn{background:rgba(245,158,11,.07);border-color:#78350f;border-left-color:var(--amber)}
+.co.warn .t{color:var(--amber)}
+.co.err{background:rgba(239,68,68,.07);border-color:#7f1d1d;border-left-color:var(--red)}
+.co.err .t{color:var(--red)}
+/* ---------- SVG PORTADA ---------- */
+.cover-wrap{margin-bottom:26px}
+svg.cover{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--border);box-shadow:0 8px 40px rgba(0,212,255,.12)}
+/* ---------- TABLERO ---------- */
+.board-layout{display:grid;grid-template-columns:minmax(280px,520px) 1fr;gap:24px;align-items:start}
+@media(max-width:900px){.board-layout{grid-template-columns:1fr}}
+.board-frame{display:grid;grid-template-columns:auto 1fr;grid-template-rows:1fr auto;gap:6px;background:#0c1526;border:1px solid var(--border);border-radius:12px;padding:14px;max-width:520px;margin:0 auto;width:100%}
+.rank-coords{display:flex;flex-direction:column;justify-content:space-around;padding:0 4px;font-size:.7rem;color:var(--mut);font-weight:700}
+.file-coords{grid-column:2;display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-size:.7rem;color:var(--mut);font-weight:700}
+.board-grid{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;border:2px solid var(--border);border-radius:6px;overflow:hidden}
+.sq{display:flex;align-items:center;justify-content:center;line-height:1;user-select:none;transition:box-shadow .2s}
+.sq.light{background:#27476b}
+.sq.dark{background:#152841}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--acc),inset 0 0 16px rgba(0,212,255,.65)}
+.sq .wp{color:#f4faff;text-shadow:0 2px 4px rgba(0,0,0,.8)}
+.sq .bp{color:#9fb4cc;text-shadow:0 2px 5px rgba(0,0,0,.95)}
+/* Controles */
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btn{background:#122036;border:1px solid var(--border);color:var(--txt);padding:10px 16px;border-radius:9px;cursor:pointer;font-family:inherit;font-size:.88rem;font-weight:600;transition:.2s;min-height:44px}
+.btn:hover:not(:disabled){border-color:var(--acc);color:var(--acc);box-shadow:0 0 10px rgba(0,212,255,.25)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.acc{background:rgba(0,212,255,.14);border-color:var(--acc);color:var(--acc)}
+.btn.warnb{border-color:var(--amber);color:var(--amber)}
+input[type=range]{width:100%;margin:14px 0 4px;accent-color:var(--acc);height:6px;cursor:pointer}
+.step-ind{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.85rem;color:var(--mut);margin-top:4px}
+.step-ind .pill{background:#122036;border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-weight:700;color:#fff}
+.step-ind .pill.w{border-color:var(--acc);color:var(--acc)}
+.step-ind .pill.b{border-color:#64748b;color:#cbd5e1}
+/* Panel de desarrollo */
+.move-panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;min-height:340px}
+.mp-tag{font-size:.72rem;font-weight:800;letter-spacing:2px;color:var(--amber);text-transform:uppercase}
+.mp-move{font-size:1.12rem;font-weight:800;color:#fff;margin:8px 0 10px;line-height:1.4}
+.mp-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.mp-badge{font-size:.68rem;font-weight:800;letter-spacing:1px;padding:4px 10px;border-radius:999px;text-transform:uppercase}
+.mb-cap{background:rgba(239,68,68,.15);color:var(--red);border:1px solid var(--red)}
+.mb-chk{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid var(--amber)}
+.mb-fin{background:rgba(168,85,247,.18);color:#d8b4fe;border:1px solid var(--purple)}
+.mb-nota{background:rgba(0,212,255,.1);color:var(--acc);border:1px solid var(--acc);font-family:Consolas,monospace;text-transform:none}
+.mp-block{border-top:1px dashed var(--border);padding:10px 0 4px;margin-top:8px}
+.mp-block .q{font-size:.74rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc);margin-bottom:4px}
+.mp-block.why .q{color:var(--green)}
+.mp-block p{font-size:.93rem;color:var(--txt);margin:0}
+/* Jugadas (details) */
+details.jug{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+details.jug summary{cursor:pointer;padding:14px 18px;font-weight:700;font-size:.95rem;list-style:none;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+details.jug summary::-webkit-details-marker{display:none}
+details.jug summary .jn{background:rgba(0,212,255,.14);border:1px solid var(--acc);color:var(--acc);border-radius:8px;padding:2px 10px;font-size:.78rem;flex:0 0 auto}
+details.jug summary::after{content:"▾";margin-left:auto;color:var(--acc);transition:.25s}
+details.jug[open] summary::after{transform:rotate(180deg)}
+details.jug[open]{border-color:var(--acc)}
+.jug-body{padding:0 18px 16px;display:grid;gap:10px}
+.jug-side{background:#0c1526;border:1px solid var(--border);border-radius:9px;padding:12px 14px;font-size:.9rem}
+.jug-side .who{font-size:.7rem;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;display:block;margin-bottom:4px}
+.jug-side.wh .who{color:var(--acc)}
+.jug-side.bl .who{color:#cbd5e1}
+/* Tablas */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.88rem;min-width:560px}
+th{background:#122036;color:var(--acc);text-align:left;padding:11px 14px;font-size:.74rem;letter-spacing:1.4px;text-transform:uppercase;border-bottom:2px solid var(--acc)}
+td{padding:11px 14px;border-bottom:1px solid #16233b;vertical-align:top;color:var(--txt)}
+tr:last-child td{border-bottom:none}
+td .nt{color:var(--acc);font-family:Consolas,monospace;font-size:.82rem;white-space:nowrap}
+/* Botón subir */
+#toTop{position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:rgba(0,212,255,.15);border:1px solid var(--acc);color:var(--acc);font-size:1.3rem;cursor:pointer;z-index:150;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(6px)}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{background:var(--acc);color:#04121a}
+/* Footer */
+footer{border-top:1px solid var(--border);background:#080c16;padding:28px 18px;text-align:center;color:var(--mut);font-size:.88rem}
+footer .ln{margin:4px 0}
+footer .motto{color:var(--amber);font-style:italic;margin-top:12px;letter-spacing:1px}
+/* Créditos */
+.credit-hero{text-align:center}
+.credit-name{font-size:clamp(1.4rem,4vw,2.2rem);font-weight:800;color:#fff;margin:8px 0}
+.credit-name span{color:var(--acc)}
+@media(max-width:600px){
+  main{padding:78px 12px 80px}
+  .card{padding:16px}
+  .brand{font-size:.8rem}
+  .controls .btn{flex:1 1 40%;padding:10px 8px;font-size:.8rem}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SVG PORTADA (SYMBOL COMPARTIDO HOME / CRÉDITOS) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="coverArt" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bgG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d1530"/><stop offset=".55" stop-color="#0a0e1a"/><stop offset="1" stop-color="#05080f"/>
+    </linearGradient>
+    <radialGradient id="glowB" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#00d4ff" stop-opacity=".30"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowR" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#ef4444" stop-opacity=".22"/><stop offset="1" stop-color="#ef4444" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="checker" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="50" height="50" fill="#1e3a5f" opacity=".20"/>
+      <rect x="50" y="50" width="50" height="50" fill="#1e3a5f" opacity=".20"/>
+    </pattern>
+    <filter id="glo" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bgG)"/>
+  <rect width="1600" height="900" fill="url(#checker)" opacity=".55"/>
+  <rect x="14" y="14" width="1572" height="872" rx="26" fill="none" stroke="#1e3a5f" stroke-width="2"/>
+
+  <!-- Textos de portada -->
+  <g>
+    <rect x="58" y="52" width="430" height="44" rx="22" fill="rgba(0,212,255,.08)" stroke="#00d4ff" stroke-width="1.5"/>
+    <text x="273" y="81" text-anchor="middle" fill="#00d4ff" font-size="21" font-weight="700" letter-spacing="3" font-family="'Segoe UI',sans-serif">TRAMPA DE APERTURA · 9 JUGADAS</text>
+    <rect x="1150" y="52" width="392" height="44" rx="22" fill="rgba(34,197,94,.08)" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="1346" y="81" text-anchor="middle" fill="#22c55e" font-size="21" font-weight="700" letter-spacing="3" font-family="'Segoe UI',sans-serif">BLANCAS SENTENCIAN ✦</text>
+  </g>
+  <text x="800" y="165" text-anchor="middle" fill="#eaf6ff" font-size="62" font-weight="800" letter-spacing="4" font-family="'Segoe UI',sans-serif">EL LAZO DEL ALFIL Y LA TORRE</text>
+  <text x="800" y="215" text-anchor="middle" fill="#7dd3fc" font-size="29" letter-spacing="2" font-family="'Segoe UI',sans-serif">El castigo a la codicia: desarrollo, centro y clavada</text>
+  <line x1="540" y1="245" x2="1060" y2="245" stroke="#00d4ff" stroke-width="2" opacity=".6">
+    <animate attributeName="x1" values="540;500;540" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="x2" values="1060;1100;1060" dur="4s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- Resplandores -->
+  <circle cx="330" cy="560" r="270" fill="url(#glowB)"/>
+  <circle cx="1285" cy="530" r="260" fill="url(#glowR)"/>
+
+  <!-- Caballo congestionado (tema: punto de congestión Cd6) -->
+  <g opacity=".85">
+    <animateTransform attributeName="transform" type="translate" values="0 0; 0 -16; 0 0" dur="4.5s" repeatCount="indefinite"/>
+    <text x="800" y="470" text-anchor="middle" font-size="150" fill="#3b5d8f" font-family="'Segoe UI Symbol','DejaVu Sans',sans-serif">♞</text>
+    <text x="800" y="520" text-anchor="middle" font-size="25" fill="#f59e0b" letter-spacing="2" font-family="'Segoe UI',sans-serif">Cd6 · PUNTO DE CONGESTIÓN</text>
+  </g>
+
+  <!-- Haz de la clavada: Alfil → Torre -->
+  <line x1="420" y1="565" x2="1180" y2="535" stroke="#00d4ff" stroke-width="4" stroke-dasharray="26 16" opacity=".85" filter="url(#glo)">
+    <animate attributeName="stroke-dashoffset" from="84" to="0" dur="1.1s" repeatCount="indefinite"/>
+  </line>
+  <line x1="420" y1="565" x2="1180" y2="535" stroke="#a855f7" stroke-width="1.5" opacity=".5"/>
+  <circle r="9" fill="#00d4ff" filter="url(#glo)">
+    <animateMotion path="M420,565 L1180,535" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#a855f7" filter="url(#glo)">
+    <animateMotion path="M420,565 L1180,535" dur="2s" begin="1s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Alfil blanco (♗) -->
+  <g filter="url(#glo)">
+    <text x="320" y="690" text-anchor="middle" font-size="330" fill="#f2faff" stroke="#00d4ff" stroke-width="3" font-family="'Segoe UI Symbol','DejaVu Sans',sans-serif">♗</text>
+    <animate attributeName="opacity" values="1;.82;1" dur="3s" repeatCount="indefinite"/>
+  </g>
+  <text x="320" y="760" text-anchor="middle" font-size="28" fill="#00d4ff" font-weight="700" letter-spacing="2" font-family="'Segoe UI',sans-serif">♗ Ah6 — GOLPE DE GRACIA</text>
+
+  <!-- Torre negra (♜) atrapada -->
+  <g filter="url(#glo)">
+    <text x="1285" y="655" text-anchor="middle" font-size="330" fill="#33415c" stroke="#94a3b8" stroke-width="3" font-family="'Segoe UI Symbol','DejaVu Sans',sans-serif">♜</text>
+  </g>
+  <text x="1285" y="745" text-anchor="middle" font-size="28" fill="#ef4444" font-weight="700" letter-spacing="2" font-family="'Segoe UI',sans-serif">♜ Tf8 — TORRE ATRAPADA</text>
+
+  <!-- Anillo de jaque sobre la torre -->
+  <circle cx="1285" cy="535" fill="none" stroke="#ef4444" stroke-width="3">
+    <animate attributeName="r" values="70;185" dur="2.4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values=".85;0" dur="2.4s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- LAZO giratorio alrededor de la torre -->
+  <g transform="translate(1285,535)">
+    <ellipse rx="185" ry="95" fill="none" stroke="#f59e0b" stroke-width="5" stroke-dasharray="42 24" opacity=".95" filter="url(#glo)">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="7s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse rx="138" ry="66" fill="none" stroke="#00d4ff" stroke-width="2.5" stroke-dasharray="12 18" opacity=".7">
+      <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="5s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+
+  <!-- Línea de tiempo: 9 jugadas -->
+  <line x1="300" y1="815" x2="1300" y2="815" stroke="#1e3a5f" stroke-width="3"/>
+  <g font-family="'Segoe UI',sans-serif">
+    <!-- nodo i -->
+    <g transform="translate(300,815)">
+      <circle r="15" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle r="15" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.02;.08;.34;.44" dur="9s" begin="0s" repeatCount="indefinite"/></circle>
+      <text y="48" text-anchor="middle" fill="#8ba3bf" font-size="24" font-weight="700">e4</text>
+    </g>
+    <g transform="translate(425,815)">
+      <circle r="15" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle r="15" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.02;.08;.34;.44" dur="9s" begin="1s" repeatCount="indefinite"/></circle>
+      <text y="48" text-anchor="middle" fill="#8ba3bf" font-size="24" font-weight="700">Ac4</text>
+    </g>
+    <g transform="translate(550,815)">
+      <circle r="15" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle r="15" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.02;.08;.34;.44" dur="9s" begin="2s" repeatCount="indefinite"/></circle>
+      <text y="48" text-anchor="middle" fill="#8ba3bf" font-size="24" font-weight="700">d4</text>
+    </g>
+    <g transform="translate(675,815)">
+      <circle r="15" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle r="15" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.02;.08;.34;.44" dur="9s" begin="3s" repeatCount="indefinite"/></circle>
+      <text y="48" text-anchor="middle" fill="#8ba3bf" font-size="24" font-weight="700">Cf3</text>
+    </g>
+    <g transform="translate(800,815)">
+      <circle r="15" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle r="15" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.02;.08;.34;.44" dur="9s" begin="4s" repeatCount="indefinite"/></circle>
+      <text y="48" text-anchor="middle" fill="#8ba3bf" font-size="24" font-weight="700">Dxd4</text>
+    </g>
+    <g transform="translate(925,815)">
+      <circle r="15" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle r="15" fill="#22c55e" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.02;.08;.34;.44" dur="9s" begin="5s" repeatCount="indefinite"/></circle>
+      <text y="48" text-anchor="middle" fill="#8ba3bf" font-size="24" font-weight="700">O-O</text>
+    </g>
+    <g transform="translate(1050,815)">
+      <circle r="15" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle r="15" fill="#f59e0b" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.02;.08;.34;.44" dur="9s" begin="6s" repeatCount="indefinite"/></circle>
+      <text y="48" text-anchor="middle" fill="#8ba3bf" font-size="24" font-weight="700">Te1+</text>
+    </g>
+    <g transform="translate(1175,815)">
+      <circle r="15" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle r="15" fill="#ef4444" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.02;.08;.34;.44" dur="9s" begin="7s" repeatCount="indefinite"/></circle>
+      <text y="48" text-anchor="middle" fill="#8ba3bf" font-size="24" font-weight="700">Dxg7</text>
+    </g>
+    <g transform="translate(1300,815)">
+      <circle r="15" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <circle r="15" fill="#a855f7" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.02;.08;.34;.44" dur="9s" begin="8s" repeatCount="indefinite"/></circle>
+      <text y="48" text-anchor="middle" fill="#8ba3bf" font-size="24" font-weight="700">Ah6</text>
+    </g>
+  </g>
+</symbol>
+</svg>
+
+<div id="pbar"></div>
+
+<!-- ============ NAVBAR ============ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="brand"><span class="kn">♞</span> LAZO ♗+♜</div>
+    <div class="nav-scroll" id="navScroll">
+      <button class="nav-btn active" data-sec="home">Inicio</button>
+      <button class="nav-btn" data-sec="contexto">Contexto</button>
+      <button class="nav-btn" data-sec="partida">Partida</button>
+      <button class="nav-btn" data-sec="registro">Registro</button>
+      <button class="nav-btn" data-sec="conclusiones">Conclusiones</button>
+      <button class="nav-btn cred" data-sec="creditos">★ Créditos</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section id="home" class="sec active">
+  <!-- SVG animado bien arriba, visible al abrir -->
+  <div class="cover-wrap">
+    <svg class="cover" viewBox="0 0 1600 900" role="img" aria-label="Portada animada: el alfil blanco laza a la torre negra"><use href="#coverArt"></use></svg>
+  </div>
+
+  <div style="text-align:center">
+    <span class="badge">♟ Tutorial interactivo de ajedrez · Guía paso a paso</span>
+    <h1>El Sacrificio del Alfil y la Trampa de la Torre</h1>
+    <p class="sub" style="margin:14px auto 0">Guía Paso a Paso: La Trampa del <b style="color:var(--acc)">“Lazo del Alfil y la Torre”</b> (<i>Bishop’s Rook Lasso</i>) — una lección magistral sobre cómo castigar la falta de desarrollo y la codicia material en la apertura.</p>
+
+    <div class="quote">“Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.”<small>— Cita destacada del tutorial</small></div>
+
+    <div class="grid g4" style="margin-top:18px">
+      <div class="metric"><div class="num">9</div><div class="lbl">Jugadas</div></div>
+      <div class="metric"><div class="num">17</div><div class="lbl">Movimientos</div></div>
+      <div class="metric"><div class="num" style="color:var(--amber)">5…♞d6</div><div class="lbl">Punto de inflexión</div></div>
+      <div class="metric"><div class="num" style="color:var(--purple)">3</div><div class="lbl">Pilares tácticos</div></div>
+    </div>
+
+    <div style="margin-top:16px">
+      <span class="chip">🎯 <b>Tema:</b> trampa de apertura</span>
+      <span class="chip">⚔️ <b>Conceptos:</b> clavada · columnas abiertas · desarrollo</span>
+      <span class="chip">♔ <b>Bando ganador:</b> BLANCAS</span>
+    </div>
+
+    <div style="margin-top:16px">
+      <span class="dtchip">📅 Fecha: <b>04/09/2026</b></span>
+      <span class="dtchip">🕚 Hora: <b>11:12:22</b></span>
+    </div>
+
+    <p style="margin-top:22px;color:var(--mut);font-size:.9rem">Explora las pestañas superiores: <b style="color:var(--acc)">PARTIDA</b> contiene el tablero interactivo movimiento a movimiento. 👉</p>
+  </div>
+</section>
+
+<!-- ================= CONTEXTO ================= -->
+<section id="contexto" class="sec">
+  <div class="sec-head">
+    <h2><span class="ico">📖</span> 1 · Introducción y Contexto Estratégico</h2>
+    <p>El ajedrez agresivo no se trata de simples trucos: es comprensión profunda de las debilidades del oponente.</p>
+  </div>
+
+  <div class="card">
+    <p>Bienvenidos, estimados entusiastas del tablero. En esta lección, exploraremos cómo el ajedrez agresivo no se trata de simples trucos para ganar rápido, sino de una <b style="color:var(--acc)">comprensión profunda de las debilidades del oponente</b>. Las “trampas” en la apertura son, en realidad, <b>lecciones magistrales sobre cómo castigar la falta de desarrollo</b>.</p>
+    <p>El <b style="color:var(--acc)">“Lazo del Alfil y la Torre”</b> (conocido como <i>Bishop’s Rook Lasso</i>) ilustra perfectamente este concepto: nos muestra que el <b>control del centro</b> y la <b>actividad de las piezas</b> son mucho más valiosos que la captura indiscriminada de peones.</p>
+    <p>Esta secuencia demuestra cómo la <b style="color:var(--amber)">“codicia” temprana de las negras</b>, al enfocarse en ganar material en lugar de asegurar a su rey, permite a las blancas tejer una red táctica de la que no hay escapatoria. Prepare su tablero, observe con atención y prepárese para realizar su primer movimiento en esta fascinante batalla de tiempos y posiciones.</p>
+  </div>
+
+  <h3>Ideas fuerza que recorrerán toda la lección</h3>
+  <div class="grid g3">
+    <div class="metric"><div class="num">🎯</div><div class="lbl">Castigar la falta de desarrollo</div></div>
+    <div class="metric"><div class="num" style="font-size:1.3rem">⚖️</div><div class="lbl">Centro y actividad &gt; material</div></div>
+    <div class="metric"><div class="num" style="font-size:1.3rem">🕸️</div><div class="lbl">Red táctica sin escapatoria</div></div>
+  </div>
+
+  <div class="co info"><span class="t">ℹ️ Info · ¿Qué es una “trampa” de apertura?</span>
+  Según esta guía, las trampas no son trucos para ganar rápido: son <b>lecciones magistrales</b> que muestran cómo castigar la falta de desarrollo del rival. El Lazo del Alfil y la Torre es el ejemplo perfecto.</div>
+
+  <div class="co warn"><span class="t">⚠️ Advertencia · La codicia material</span>
+  Enfocarse en ganar peones en lugar de asegurar al rey es el hilo conductor del desastre negro. Durante la partida, observe cómo cada captura “gratuita” acerca a las negras a la red táctica blanca.</div>
+</section>
+
+<!-- ================= PARTIDA ================= -->
+<section id="partida" class="sec">
+  <div class="sec-head">
+    <h2><span class="ico">♟</span> 2 · Desarrollo de la Partida: Análisis Movimiento a Movimiento</h2>
+    <p>En el ajedrez, los primeros movimientos son los cimientos de nuestra fortaleza. Cada decisión de las blancas no busca solo defender, sino preparar un ataque coordinado que aproveche la falta de armonía en las piezas negras.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">🎛 Tablero interactivo · paso a paso</h3>
+    <p class="sub" style="font-size:.9rem">Un paso del stepper = <b>un movimiento de un solo bando</b>. Avanza movimiento a movimiento (BLANCAS y NEGRAS por separado), usa el deslizador para saltar a cualquier posición y lee el panel de desarrollo para comprender cada paso.</p>
+
+    <div class="board-layout" style="margin-top:14px">
+      <div>
+        <div class="board-frame">
+          <div class="rank-coords"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+          <div class="board-grid" id="grid"></div>
+          <div></div>
+          <div class="file-coords"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+        </div>
+        <div class="controls">
+          <button class="btn" id="btnReset">⟲ Reset</button>
+          <button class="btn" id="btnPrev">◀ Anterior</button>
+          <button class="btn acc" id="btnNext">Siguiente ▶</button>
+          <button class="btn warnb" id="btnPlay">▶ Auto</button>
+        </div>
+        <input type="range" id="slider" min="0" max="17" value="0" step="1" aria-label="Deslizador de movimientos">
+        <div class="step-ind">
+          <span class="pill" id="indStep">Posición inicial</span>
+          <span class="pill w" id="indJugada" style="display:none"></span>
+        </div>
+      </div>
+
+      <div class="move-panel" id="panel" aria-live="polite"><!-- JS --></div>
+    </div>
+  </div>
+
+  <h3>Análisis jugada a jugada (movimiento de BLANCAS + movimiento de NEGRAS)</h3>
+
+  <details class="jug">
+    <summary><span class="jn">JUGADA 1</span> ♙ e2 → e4 &nbsp;·&nbsp; ♟ e7 → e5</summary>
+    <div class="jug-body">
+      <div class="jug-side wh"><span class="who">1. BLANCAS · Peón</span> Peón blanco de <b>e2 → e4</b>.</div>
+      <div class="jug-side bl"><span class="who">1… NEGRAS · Peón</span> Peón negro de <b>e7 → e5</b>.</div>
+      <div class="co ex" style="margin:0"><span class="t">✅ Propósito</span> Ocupación del centro y apertura de diagonales para la Reina y el Alfil de casillas blancas. Es la lucha por el espacio vital.</div>
+    </div>
+  </details>
+
+  <details class="jug">
+    <summary><span class="jn">JUGADA 2</span> ♗ f1 → c4 &nbsp;·&nbsp; ♞ g8 → f6</summary>
+    <div class="jug-body">
+      <div class="jug-side wh"><span class="who">2. BLANCAS · Alfil</span> Alfil blanco de <b>f1 → c4</b>.</div>
+      <div class="jug-side bl"><span class="who">2… NEGRAS · Caballo</span> Caballo negro de <b>g8 → f6</b>.</div>
+      <div class="co ex" style="margin:0"><span class="t">✅ Propósito</span> Las blancas posicionan su alfil en una diagonal muy agresiva desde el inicio. Las negras responden atacando el peón de e4, planteando una pregunta inmediata a la defensa blanca.</div>
+    </div>
+  </details>
+
+  <details class="jug">
+    <summary><span class="jn">JUGADA 3</span> ♙ d2 → d4 &nbsp;·&nbsp; ♟ e5 × d4 (captura)</summary>
+    <div class="jug-body">
+      <div class="jug-side wh"><span class="who">3. BLANCAS · Peón</span> Peón blanco de <b>d2 → d4</b>: el “golpe en d4”.</div>
+      <div class="jug-side bl"><span class="who">3… NEGRAS · Peón</span> Peón negro de <b>e5 captura en d4</b>.</div>
+      <div class="co ex" style="margin:0"><span class="t">✅ Propósito</span> En lugar de una defensa pasiva, las blancas lanzan un “golpe en d4”. Es una invitación a abrir el centro de inmediato para que nuestras piezas ganen libertad.</div>
+    </div>
+  </details>
+
+  <details class="jug">
+    <summary><span class="jn">JUGADA 4</span> ♘ g1 → f3 &nbsp;·&nbsp; ♞ f6 × e4 (captura)</summary>
+    <div class="jug-body">
+      <div class="jug-side wh"><span class="who">4. BLANCAS · Caballo</span> Caballo blanco de <b>g1 → f3</b>.</div>
+      <div class="jug-side bl"><span class="who">4… NEGRAS · Caballo</span> Caballo negro de <b>f6 captura en e4</b> (segundo peón).</div>
+      <div class="co ex" style="margin:0"><span class="t">✅ Propósito</span> Las blancas priorizan el desarrollo. Las negras se vuelven “codiciosas” y capturan un segundo peón, descuidando su seguridad a cambio de una ventaja material ilusoria.</div>
+    </div>
+  </details>
+
+  <details class="jug">
+    <summary><span class="jn">JUGADA 5</span> ♕ d1 × d4 &nbsp;·&nbsp; ♞ e4 → d6 ⚠️</summary>
+    <div class="jug-body">
+      <div class="jug-side wh"><span class="who">5. BLANCAS · Dama</span> Reina blanca de <b>d1 captura en d4</b>.</div>
+      <div class="jug-side bl"><span class="who">5… NEGRAS · Caballo</span> Caballo negro de <b>e4 → d6</b> — el error fatal.</div>
+      <div class="co warn" style="margin:0"><span class="t">⚠️ Propósito y punto de inflexión</span> La Reina recupera un peón, centraliza su poder y ataca al caballo suelto. El retroceso del caballo negro a d6 es el <b>error fatal</b>; lo llamamos un <b>“punto de congestión”</b>, ya que bloquea su propio peón “d” y a su alfil de casillas blancas, dejando a su rey atrapado.</div>
+    </div>
+  </details>
+
+  <details class="jug">
+    <summary><span class="jn">JUGADA 6</span> ♔ O-O (e1→g1, h1→f1) &nbsp;·&nbsp; ♞ d6 × c4</summary>
+    <div class="jug-body">
+      <div class="jug-side wh"><span class="who">6. BLANCAS · Enroque corto</span> Rey de <b>e1 → g1</b> y Torre de <b>h1 → f1</b>.</div>
+      <div class="jug-side bl"><span class="who">6… NEGRAS · Caballo</span> Caballo negro de <b>d6 captura en c4</b> (captura el alfil).</div>
+      <div class="co ex" style="margin:0"><span class="t">✅ Propósito</span> El Enroque es un movimiento especial donde el Rey busca refugio y la Torre entra en juego. Las blancas mantienen la calma mientras las negras, insistiendo en su codicia, capturan nuestro alfil creyéndose a salvo.</div>
+    </div>
+  </details>
+
+  <details class="jug">
+    <summary><span class="jn">JUGADA 7</span> ♖ f1 → e1 ¡JAQUE! &nbsp;·&nbsp; ♝ f8 → e7</summary>
+    <div class="jug-body">
+      <div class="jug-side wh"><span class="who">7. BLANCAS · Torre</span> Torre blanca de <b>f1 → e1</b> dando <b style="color:var(--amber)">JAQUE</b>.</div>
+      <div class="jug-side bl"><span class="who">7… NEGRAS · Alfil</span> Alfil negro de <b>f8 → e7</b>, única cobertura posible.</div>
+      <div class="co ex" style="margin:0"><span class="t">✅ Propósito</span> La torre se centraliza en la columna “e” (lo que algunos llaman un <b>“ascensor”</b> por su rápida entrada en acción) para dar un jaque directo. Las negras solo tienen una forma de cubrirse: interponiendo su alfil.</div>
+    </div>
+  </details>
+
+  <details class="jug">
+    <summary><span class="jn">JUGADA 8</span> ♕ d4 × g7 &nbsp;·&nbsp; ♜ h8 → f8</summary>
+    <div class="jug-body">
+      <div class="jug-side wh"><span class="who">8. BLANCAS · Dama</span> Reina blanca de <b>d4 captura en g7</b>.</div>
+      <div class="jug-side bl"><span class="who">8… NEGRAS · Torre</span> Torre negra de <b>h8 → f8</b>: el “falso escape”.</div>
+      <div class="co warn" style="margin:0"><span class="t">⚠️ Propósito</span> La Reina blanca destroza el flanco de rey negro. La torre negra intenta un <b>“falso escape”</b> hacia f8, pero ya es demasiado tarde para huir del desastre.</div>
+    </div>
+  </details>
+
+  <details class="jug">
+    <summary><span class="jn">JUGADA 9</span> ♗ c1 → h6 · GOLPE DE GRACIA ♛</summary>
+    <div class="jug-body">
+      <div class="jug-side wh"><span class="who">9. BLANCAS · Alfil</span> Alfil blanco de <b>c1 → h6</b>. Las negras no responden: la posición está sentenciada.</div>
+      <div class="co err" style="margin:0"><span class="t">🏁 Propósito · sentencia</span> El golpe de gracia. La torre negra en f8 queda <b>atrapada y sin defensores</b>. El juego termina porque el alfil negro en e7 está bajo una <b>Clavada</b> (una pieza que no puede moverse porque expondría al rey), dejando al bando negro totalmente paralizado ante el mate inminente.</div>
+    </div>
+  </details>
+
+  <div class="co info"><span class="t">🔍 Evaluación del punto de inflexión</span>
+  Fíjense bien: la <b>jugada 5 (Caballo a d6)</b> es el momento donde la falta de coordinación negra colapsa la posición. Finalmente, la <b>jugada 9 (Alfil a h6)</b> es la sentencia: la ventaja posicional se transforma en una victoria material y táctica absoluta.</div>
+</section>
+
+<!-- ================= REGISTRO ================= -->
+<section id="registro" class="sec">
+  <div class="sec-head">
+    <h2><span class="ico">📜</span> 3 · Registro Completo de la Partida (Secuencia Continua)</h2>
+    <p>La secuencia fluida completa, para repasar el ritmo del ataque y la armonía de las piezas blancas.</p>
+  </div>
+
+  <div class="co info"><span class="t">🎓 Recomendación del pedagogo</span>
+  Les recomiendo repasar esta secuencia fluida varias veces para <b>memorizar el ritmo del ataque</b> y cómo las piezas blancas trabajan en armonía.</div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Registro jugada a jugada</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Jugada</th><th style="color:#fff">♔ BLANCAS</th><th style="color:#fff">♚ NEGRAS</th></tr></thead>
+        <tbody>
+          <tr><td><b>1</b></td><td>Peón blanco: de e2 a e4 <span class="nt">(e4)</span></td><td>Peón negro: de e7 a e5 <span class="nt">(e5)</span></td></tr>
+          <tr><td><b>2</b></td><td>Alfil blanco: de f1 a c4 <span class="nt">(Bc4 / Ac4)</span></td><td>Caballo negro: de g8 a f6 <span class="nt">(Nf6 / Cf6)</span></td></tr>
+          <tr><td><b>3</b></td><td>Peón blanco: de d2 a d4 <span class="nt">(d4)</span></td><td>Peón negro: de e5 a d4 — captura <span class="nt">(exd4)</span></td></tr>
+          <tr><td><b>4</b></td><td>Caballo blanco: de g1 a f3 <span class="nt">(Nf3 / Cf3)</span></td><td>Caballo negro: de f6 a e4 — captura <span class="nt">(Nxe4 / Cxe4)</span></td></tr>
+          <tr><td><b>5</b></td><td>Reina blanca: de d1 a d4 — captura <span class="nt">(Qxd4 / Dxd4)</span></td><td>Caballo negro: de e4 a d6 <span class="nt">(Nd6 / Cd6)</span></td></tr>
+          <tr><td><b>6</b></td><td>Enroque corto blanco: Rey de e1 a g1 y Torre de h1 a f1 <span class="nt">(O-O)</span></td><td>Caballo negro: de d6 a c4 — captura <span class="nt">(Nxc4 / Cxc4)</span></td></tr>
+          <tr><td><b>7</b></td><td>Torre blanca: de f1 a e1 — JAQUE <span class="nt">(Re1+ / Te1+)</span></td><td>Alfil negro: de f8 a e7 <span class="nt">(Be7 / Ae7)</span></td></tr>
+          <tr><td><b>8</b></td><td>Reina blanca: de d4 a g7 — captura <span class="nt">(Qxg7 / Dxg7)</span></td><td>Torre negra: de h8 a f8 <span class="nt">(Rf8 / Tf8)</span></td></tr>
+          <tr><td><b>9</b></td><td>Alfil blanco: de c1 a h6 — golpe de gracia <span class="nt">(Bh6 / Ah6)</span></td><td><i style="color:var(--mut)">— (posición negra paralizada)</i></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Secuencia compacta para repasar</h3>
+    <p><span class="chip"><b>1.</b> e4 e5</span><span class="chip"><b>2.</b> Ac4 Cf6</span><span class="chip"><b>3.</b> d4 exd4</span><span class="chip"><b>4.</b> Cf3 Cxe4</span><span class="chip"><b>5.</b> Dxd4 Cd6</span><span class="chip"><b>6.</b> O-O Cxc4</span><span class="chip"><b>7.</b> Te1+ Ae7</span><span class="chip"><b>8.</b> Dxg7 Tf8</span><span class="chip"><b>9.</b> Ah6</span></p>
+    <div class="co warn" style="margin-bottom:0"><span class="t">⚠️ Recordatorio de términos</span>
+    <b>Movimiento:</b> acción realizada por un único bando (esta partida tiene <b>17 movimientos individuales</b>). <b>Jugada completa:</b> movimiento de BLANCAS + movimiento de NEGRAS (esta partida tiene <b>9 jugadas</b>). La secuencia se sentencia en la <b>jugada 9</b>, tras el movimiento de las BLANCAS <b>9. Ah6</b>.</div>
+  </div>
+</section>
+
+<!-- ================= CONCLUSIONES ================= -->
+<section id="conclusiones" class="sec">
+  <div class="sec-head">
+    <h2><span class="ico">🧠</span> 4 · Análisis Post-Partida y Conclusiones Tácticas</h2>
+    <p>La seguridad del Rey y el desarrollo fluido son más valiosos que cualquier peón extra.</p>
+  </div>
+
+  <div class="card">
+    <p>Esta lección nos deja una enseñanza vital: en el ajedrez de alto nivel, la <b style="color:var(--acc)">seguridad del Rey</b> y el <b style="color:var(--acc)">desarrollo fluido</b> son más valiosos que cualquier peón extra. La <b style="color:var(--amber)">“codicia” de las negras</b> fue su propia perdición, permitiendo que las blancas dictaran el ritmo del juego <b>desde el tercer movimiento</b>.</p>
+    <p>Podemos sintetizar la victoria en estos <b>tres pilares tácticos</b>:</p>
+  </div>
+
+  <h3>Los tres pilares tácticos de la victoria</h3>
+  <div class="grid g3">
+    <div class="card" style="margin:0;border-top:3px solid var(--acc)">
+      <div class="mp-tag" style="color:var(--acc)">Pilar 1</div>
+      <h3 style="margin-top:6px">⚡ La iniciativa central</h3>
+      <p style="font-size:.92rem;margin:0">Al no defender el peón de d4, las blancas ganaron <b>“tempos”</b> (tiempos de juego) cruciales para activar su Reina y Caballos mientras el rival perdía tiempo moviendo la misma pieza varias veces.</p>
+    </div>
+    <div class="card" style="margin:0;border-top:3px solid var(--amber)">
+      <div class="mp-tag">Pilar 2</div>
+      <h3 style="margin-top:6px">🔒 El bloqueo de piezas propias</h3>
+      <p style="font-size:.92rem;margin:0">El error de situar el caballo en <b>d6</b> asfixió la posición negra. Un maestro siempre busca que sus piezas <b>“respiren”</b>; las negras, en cambio, se encerraron a sí mismas.</p>
+    </div>
+    <div class="card" style="margin:0;border-top:3px solid var(--green)">
+      <div class="mp-tag" style="color:var(--green)">Pilar 3</div>
+      <h3 style="margin-top:6px">🏛 Dominio de la columna abierta</h3>
+      <p style="font-size:.92rem;margin:0">La centralización de la torre en <b>e1</b> aprovechó que el centro estaba despejado para inmovilizar al oponente y sentenciar la partida.</p>
+    </div>
+  </div>
+
+  <h3>Conceptos clave aprendidos</h3>
+  <div class="grid g3">
+    <div class="card" style="margin:0">
+      <div class="mp-tag" style="color:var(--purple)">Concepto</div>
+      <h3 style="margin-top:6px">📌 Clavada</h3>
+      <p style="font-size:.92rem;margin:0">El alfil negro en <b>e7</b> está “clavado” contra su rey; <b>no puede moverse</b>, lo que permite al alfil blanco en h6 atacar la torre de f8 sin que nadie pueda defenderla o rescatarla.</p>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="mp-tag" style="color:var(--purple)">Concepto</div>
+      <h3 style="margin-top:6px">🛤 Aprovechamiento de columnas abiertas</h3>
+      <p style="font-size:.92rem;margin:0">La torre en <b>e1</b> demuestra cómo una pieza de largo alcance puede dominar todo el tablero si el centro no tiene peones que la estorben.</p>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="mp-tag" style="color:var(--purple)">Concepto</div>
+      <h3 style="margin-top:6px">🚀 Desarrollo superior</h3>
+      <p style="font-size:.92rem;margin:0">Mientras las piezas blancas están coordinadas y el rey protegido mediante el enroque, las piezas negras se estorban entre sí, demostrando que <b>la cantidad de material no sirve de nada sin organización</b>.</p>
+    </div>
+  </div>
+
+  <div class="quote">“La codicia de las negras fue su propia perdición: las blancas dictaron el ritmo del juego desde el tercer movimiento.”<small>— Síntesis de la lección</small></div>
+</section>
+
+<!-- ================= CRÉDITOS ================= -->
+<section id="creditos" class="sec credit-hero">
+  <div class="cover-wrap">
+    <svg class="cover" viewBox="0 0 1600 900" role="img" aria-label="Portada animada: el alfil blanco laza a la torre negra"><use href="#coverArt"></use></svg>
+  </div>
+  <span class="badge pur">★ Créditos del tutorial</span>
+  <h1 style="font-size:clamp(1.4rem,3.6vw,2.2rem)">El Sacrificio del Alfil y la Trampa de la Torre</h1>
+  <p class="sub" style="margin:10px auto">Guía Paso a Paso: La Trampa del “Lazo del Alfil y la Torre” (<i>Bishop’s Rook Lasso</i>)</p>
+  <div class="card" style="max-width:560px;margin:22px auto;text-align:center">
+    <p style="font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-bottom:4px">Autor del tutorial</p>
+    <div class="credit-name">♞ Rubén <span>Sbarsky</span></div>
+    <div style="margin-top:10px">
+      <span class="dtchip">📅 Fecha: <b>04/09/2026</b></span>
+      <span class="dtchip">🕚 Hora: <b>11:12:22</b></span>
+    </div>
+    <p style="margin-top:16px;font-size:.9rem;color:var(--mut)">Material elaborado con fines exclusivamente <b style="color:var(--green)">educativos y de divulgación</b> del ajedrez.</p>
+    <p style="margin:14px 0 0;color:var(--amber);font-style:italic;letter-spacing:1px">Fiat iustitia, ruat caelum.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="ln">📚 Tutorial solo con fines Educativos y Divulgación</div>
+  <div class="ln">👨‍💻 Créditos: Rubén Sbarsky</div>
+  <div class="ln">📅 FECHA: 04/09/2026</div>
+  <div class="ln">Hora: 11:12:22</div>
+  <div class="ln motto">Fiat iustitia, ruat caelum.</div>
+</footer>
+
+<button id="toTop" title="Volver arriba" aria-label="Volver arriba">↑</button>
+
+<script>
+/* ================= SPA ================= */
+const secs=[...document.querySelectorAll('.sec')];
+const navBtns=[...document.querySelectorAll('.nav-btn')];
+function show(id){
+  secs.forEach(s=>s.classList.toggle('active',s.id===id));
+  navBtns.forEach(b=>b.classList.toggle('active',b.dataset.sec===id));
+  const btn=navBtns.find(b=>b.dataset.sec===id);
+  if(btn) btn.scrollIntoView({inline:'center',block:'nearest'});
+  window.scrollTo({top:0,behavior:'smooth'});
+  try{document.querySelectorAll('svg.cover').forEach(s=>s.unpauseAnimations());}catch(e){}
+}
+navBtns.forEach(b=>b.addEventListener('click',()=>show(b.dataset.sec)));
+
+/* Barra de progreso + botón subir */
+const pbar=document.getElementById('pbar'),toTop=document.getElementById('toTop');
+function onScroll(){
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  pbar.style.width=(h>0?(window.scrollY/h)*100:0)+'%';
+  toTop.classList.toggle('show',window.scrollY>320);
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+toTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+onScroll();
+
+/* prefers-reduced-motion: pausar animaciones SMIL */
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  window.addEventListener('load',()=>{
+    document.querySelectorAll('svg.cover').forEach(s=>{try{s.pauseAnimations();}catch(e){}});
+  });
+}
+
+/* ================= TABLERO DE AJEDREZ ================= */
+const START={
+  a8:'r',b8:'n',c8:'b',d8:'q',e8:'k',f8:'b',g8:'n',h8:'r',
+  a7:'p',b7:'p',c7:'p',d7:'p',e7:'p',f7:'p',g7:'p',h7:'p',
+  a2:'P',b2:'P',c2:'P',d2:'P',e2:'P',f2:'P',g2:'P',h2:'P',
+  a1:'R',b1:'N',c1:'B',d1:'Q',e1:'K',f1:'B',g1:'N',h1:'R'
+};
+const GLYPH={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+const PIEZA={K:'Rey',Q:'Dama',R:'Torre',B:'Alfil',N:'Caballo',P:'Peón'};
+
+const STEPS=[
+ {from:'e2',to:'e4',nota:'e4',que:'El peón blanco avanza dos casillas y ocupa e4.',porque:'Ocupación del centro y apertura de diagonales para la Reina y el Alfil de casillas blancas: comienza la lucha por el espacio vital.'},
+ {from:'e7',to:'e5',nota:'e5',que:'El peón negro avanza dos casillas y ocupa e5.',porque:'Las negras disputan el centro y abren diagonales para sus piezas: la lucha por el espacio vital se plantea de inmediato.'},
+ {from:'f1',to:'c4',nota:'Ac4 · Bc4',que:'El alfil blanco se desarrolla desde f1 hasta c4.',porque:'Las blancas posicionan su alfil en una diagonal muy agresiva desde el inicio del juego.'},
+ {from:'g8',to:'f6',nota:'Cf6 · Nf6',que:'El caballo negro sale de g8 a f6.',porque:'Las negras responden atacando el peón blanco de e4, planteando una pregunta inmediata a la defensa blanca.'},
+ {from:'d2',to:'d4',nota:'d4',que:'El peón blanco de d2 avanza dos casillas: el «golpe en d4».',porque:'En lugar de una defensa pasiva, las blancas lanzan un «golpe en d4»: una invitación a abrir el centro de inmediato para que sus piezas ganen libertad.'},
+ {from:'e5',to:'d4',cap:true,nota:'exd4',que:'El peón negro de e5 captura el peón blanco de d4.',porque:'Las negras aceptan la invitación y abren el centro: la posición se afila y cada tiempo de desarrollo pasa a valer oro.'},
+ {from:'g1',to:'f3',nota:'Cf3 · Nf3',que:'El caballo blanco se desarrolla de g1 a f3.',porque:'Las blancas priorizan el desarrollo de piezas antes que recuperar material: la actividad vale más que la captura indiscriminada de peones.'},
+ {from:'f6',to:'e4',cap:true,nota:'Cxe4 · Nxe4',que:'El caballo negro de f6 captura el peón blanco de e4.',porque:'Las negras se vuelven «codiciosas» y capturan un segundo peón, descuidando la seguridad de su rey a cambio de una ventaja material ilusoria.'},
+ {from:'d1',to:'d4',cap:true,nota:'Dxd4 · Qxd4',que:'La Reina blanca captura en d4 y recupera el peón.',porque:'La Reina recupera un peón, centraliza su poder y además ataca al caballo negro suelto de e4.'},
+ {from:'e4',to:'d6',nota:'Cd6 · Nd6',que:'El caballo negro retrocede de e4 a d6.',porque:'Este retroceso es el ERROR FATAL: d6 es un «punto de congestión» que bloquea el propio peón «d» y el alfil de casillas blancas, dejando al rey negro atrapado.'},
+ {castle:'w',nota:'O-O',que:'Enroque corto blanco: el Rey viaja de e1 a g1 y la Torre de h1 a f1.',porque:'El Enroque es un movimiento especial donde el Rey busca refugio y la Torre entra en juego. Las blancas mantienen la calma mientras las negras siguen capturando.'},
+ {from:'d6',to:'c4',cap:true,nota:'Cxc4 · Nxc4',que:'El caballo negro captura el alfil blanco de c4.',porque:'Las negras insisten en su codicia y capturan nuestro alfil creyéndose a salvo: no han visto la red táctica que se está cerrando.'},
+ {from:'f1',to:'e1',jaque:true,nota:'Te1+ · Re1+',que:'La torre blanca se desplaza de f1 a e1 y da JAQUE al rey negro.',porque:'La torre se centraliza en la columna «e» —lo que algunos llaman un «ascensor» por su rápida entrada en acción— para dar un jaque directo.'},
+ {from:'f8',to:'e7',nota:'Ae7 · Be7',que:'El alfil negro se interpone de f8 a e7 para cubrir el jaque.',porque:'Las negras solo tienen una forma de cubrirse: interponiendo su alfil. Esa pieza quedará clavada más adelante.'},
+ {from:'d4',to:'g7',cap:true,nota:'Dxg7 · Qxg7',que:'La Reina blanca captura el peón de g7.',porque:'La Reina blanca destroza el flanco de rey negro: la posición negra empieza a derrumbarse.'},
+ {from:'h8',to:'f8',nota:'Tf8 · Rf8',que:'La torre negra se mueve de h8 a f8.',porque:'La torre intenta un «falso escape» hacia f8, pero ya es demasiado tarde para huir del desastre.'},
+ {from:'c1',to:'h6',final:true,nota:'Ah6 · Bh6',que:'El alfil blanco se desplaza de c1 a h6: el golpe de gracia.',porque:'La torre negra en f8 queda atrapada y sin defensores. El alfil negro en e7 está CLAVADO —no puede moverse porque expondría al rey—, dejando al bando negro totalmente paralizado ante el mate inminente.'}
+];
+
+/* Generación de posiciones */
+function clonePos(p){return Object.assign({},p);}
+function applyStep(pos,st){
+  const p=clonePos(pos);
+  if(st.castle==='w'){p.g1=p.e1;delete p.e1;p.f1=p.h1;delete p.h1;}
+  else if(st.castle==='b'){p.g8=p.e8;delete p.e8;p.f8=p.h8;delete p.h8;}
+  else{p[st.to]=p[st.from];delete p[st.from];}
+  return p;
+}
+const POS=[clonePos(START)];
+STEPS.forEach(s=>POS.push(applyStep(POS[POS.length-1],s)));
+
+/* Construcción del tablero */
+const grid=document.getElementById('grid');
+const FILES=['a','b','c','d','e','f','g','h'];
+const squares={};
+(function buildGrid(){
+  for(let rank=8;rank>=1;rank--){
+    FILES.forEach((f,fi)=>{
+      const d=document.createElement('div');
+      d.className='sq '+(((rank+fi)%2===1)?'dark':'light');
+      d.dataset.sq=f+rank;
+      squares[f+rank]=d;
+      grid.appendChild(d);
+    });
+  }
+})();
+function sizePieces(){
+  const px=Math.floor(grid.clientWidth/8*0.72);
+  grid.style.fontSize=Math.max(16,px)+'px';
+}
+window.addEventListener('resize',sizePieces);
+
+function renderBoard(idx){
+  const p=POS[idx];
+  for(const k in squares){
+    const el=squares[k];
+    el.innerHTML='';
+    el.classList.remove('hl');
+    if(p[k]){
+      const span=document.createElement('span');
+      span.className=(p[k]===p[k].toUpperCase())?'wp':'bp';
+      span.textContent=GLYPH[p[k]];
+      el.appendChild(span);
+    }
+  }
+  if(idx>0){
+    const st=STEPS[idx-1];
+    if(st.castle==='w'){
+      ['e1','g1','h1','f1'].forEach(sq=>squares[sq].classList.add('hl'));
+    }else{
+      squares[st.from].classList.add('hl');
+      squares[st.to].classList.add('hl');
+    }
+  }
+}
+
+/* Panel de desarrollo */
+const panel=document.getElementById('panel');
+function pieceLine(st,isWhite){
+  const col=isWhite?'BLANCAS':'NEGRAS';
+  if(st.castle)return`Enroque corto · ${col}: Rey e1 → g1 · Torre h1 → f1`;
+  const letter=st.from? null:null;
+  const code=POS[STEPS.indexOf(st)]&&null;
+  const pieceCode=(()=>{ // pieza que se mueve (del paso anterior)
+    const i=STEPS.indexOf(st);
+    return POS[i][st.from];
+  })();
+  const name=PIEZA[pieceCode.toUpperCase()];
+  const adj=isWhite?'blanco':'negro';
+  return`${name} ${adj}: <span style="color:var(--acc)">${st.from} → ${st.to}</span>`;
+}
+function renderPanel(idx){
+  if(idx===0){
+    panel.innerHTML=`
+      <div class="mp-tag">Posición inicial</div>
+      <div class="mp-move">♔ ♕ ♖ ♗ ♘ ♙ &nbsp;frente a&nbsp; ♚ ♛ ♜ ♝ ♞ ♟</div>
+      <div class="mp-block"><div class="q">¿Qué tenemos?</div>
+      <p>Todas las piezas en su casilla de origen. Las BLANCAS ejecutarán el primer movimiento: peón de e2 → e4. Prepare su tablero y siga la batalla de tiempos y posiciones.</p></div>
+      <div class="mp-block why"><div class="q">¿Por qué importa?</div>
+      <p>Cada decisión de las blancas no buscará solo defender, sino preparar un ataque coordinado que aproveche la falta de armonía en las piezas negras. Pulsa <b>Siguiente ▶</b> para comenzar.</p></div>`;
+    return;
+  }
+  const st=STEPS[idx-1];
+  const isWhite=idx%2===1;
+  const num=Math.ceil(idx/2);
+  const colTxt=isWhite?'BLANCAS':'NEGRAS';
+  const nota=isWhite?`${num}. ${st.nota}`:`${num}… ${st.nota}`;
+  let badges=`<span class="mp-badge mb-nota">Notación: ${nota}</span>`;
+  if(st.cap)badges+=`<span class="mp-badge mb-cap">✖ Captura</span>`;
+  if(st.jaque)badges+=`<span class="mp-badge mb-chk">⚡ Jaque</span>`;
+  if(st.final)badges+=`<span class="mp-badge mb-fin">🏁 Golpe de gracia</span>`;
+  if(st.castle)badges+=`<span class="mp-badge mb-nota" style="border-color:var(--green);color:var(--green)">♔ Rey a salvo</span>`;
+  panel.innerHTML=`
+    <div class="mp-tag">Movimiento ${idx} — ${colTxt}</div>
+    <div class="mp-move">${pieceLine(st,isWhite)}</div>
+    <div class="mp-badges">${badges}</div>
+    <div class="mp-block"><div class="q">¿Qué ocurre?</div><p>${st.que}</p></div>
+    <div class="mp-block why"><div class="q">¿Por qué es importante?</div><p>${st.porque}</p></div>`;
+}
+
+/* Controles */
+const slider=document.getElementById('slider');
+const btnPrev=document.getElementById('btnPrev'),btnNext=document.getElementById('btnNext'),
+      btnReset=document.getElementById('btnReset'),btnPlay=document.getElementById('btnPlay');
+const indStep=document.getElementById('indStep'),indJugada=document.getElementById('indJugada');
+let idx=0,autoTimer=null;
+
+function update(){
+  renderBoard(idx);
+  renderPanel(idx);
+  slider.value=idx;
+  btnPrev.disabled=idx===0;
+  btnNext.disabled=idx===STEPS.length;
+  if(idx===0){
+    indStep.textContent='Posición inicial';
+    indJugada.style.display='none';
+  }else{
+    const isWhite=idx%2===1,num=Math.ceil(idx/2);
+    indStep.textContent=`Movimiento ${idx} de ${STEPS.length}`;
+    indJugada.style.display='inline-block';
+    indJugada.className='pill '+(isWhite?'w':'b');
+    indJugada.textContent=`Jugada ${num} · ${isWhite?'BLANCAS':'NEGRAS'}`;
+  }
+}
+btnNext.addEventListener('click',()=>{if(idx<STEPS.length){idx++;update();}});
+btnPrev.addEventListener('click',()=>{if(idx>0){idx--;update();}});
+btnReset.addEventListener('click',()=>{stopAuto();idx=0;update();});
+slider.addEventListener('input',()=>{stopAuto();idx=parseInt(slider.value,10);update();});
+function stopAuto(){if(autoTimer){clearInterval(autoTimer);autoTimer=null;btnPlay.textContent='▶ Auto';}}
+btnPlay.addEventListener('click',()=>{
+  if(autoTimer){stopAuto();return;}
+  if(idx>=STEPS.length)idx=0;
+  btnPlay.textContent='⏸ Pausa';
+  autoTimer=setInterval(()=>{
+    if(idx>=STEPS.length){stopAuto();update();return;}
+    idx++;update();
+  },1600);
+  update();
+});
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('partida').classList.contains('active'))return;
+  if(e.key==='ArrowRight'&&idx<STEPS.length){idx++;update();}
+  if(e.key==='ArrowLeft'&&idx>0){idx--;update();}
+});
+sizePieces();
+update();
+</script>
+</body>
+</html>
