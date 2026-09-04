@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Trampa de la Apertura Ponziani · Tutorial Interactivo</title>
+<meta name="description" content="Guía paso a paso: La Trampa de la Apertura Ponziani para principiantes. Tutorial HTML interactivo y autónomo.">
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f; --acc:#00d4ff;
+  --grn:#22c55e; --amb:#f59e0b; --red:#ef4444; --pur:#a855f7;
+  --txt:#e2e8f0; --mut:#94a3b8; --dark2:#122036;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--txt);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  line-height:1.65;padding-top:66px;min-height:100vh;
+}
+/* ---------- barra de progreso ---------- */
+#pbar{position:fixed;top:0;left:0;height:3px;width:0%;z-index:80;
+  background:linear-gradient(90deg,var(--acc),var(--pur));
+  box-shadow:0 0 10px rgba(0,212,255,.8);transition:width .08s linear;}
+/* ---------- topbar / nav ---------- */
+#topbar{position:fixed;top:3px;left:0;right:0;z-index:70;display:flex;align-items:center;gap:12px;
+  padding:9px 14px;background:rgba(10,14,26,.93);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);}
+.brand{display:flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap;
+  font-weight:800;font-size:14px;color:var(--txt);letter-spacing:.5px;}
+.brand .kn{font-size:22px;color:var(--acc);filter:drop-shadow(0 0 6px rgba(0,212,255,.7));}
+.brand b{color:var(--acc);}
+#nav{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;padding:2px;}
+#nav::-webkit-scrollbar{display:none}
+.navbtn{flex:0 0 auto;background:transparent;border:1px solid transparent;color:var(--mut);
+  padding:7px 13px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all .2s;white-space:nowrap;}
+.navbtn:hover{color:var(--txt);border-color:var(--border);}
+.navbtn.active{color:var(--acc);border-color:rgba(0,212,255,.55);background:rgba(0,212,255,.09);
+  box-shadow:0 0 14px rgba(0,212,255,.18);}
+/* ---------- páginas SPA ---------- */
+.page{display:none;max-width:1120px;margin:0 auto;padding:26px 16px 80px;}
+.page.active{display:block;animation:pageIn .4s ease;}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+/* ---------- componentes ---------- */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.grid2{display:grid;grid-template-columns:1fr;gap:16px;}
+.grid3{display:grid;grid-template-columns:1fr;gap:16px;}
+@media(min-width:760px){.grid2{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:repeat(3,1fr)}}
+.sec-head{display:flex;gap:16px;align-items:flex-start;margin:8px 0 22px;}
+.sec-ico{width:54px;height:54px;flex:0 0 54px;display:flex;align-items:center;justify-content:center;
+  font-size:26px;background:linear-gradient(135deg,rgba(0,212,255,.14),rgba(168,85,247,.14));
+  border:1px solid var(--border);border-radius:12px;box-shadow:0 0 18px rgba(0,212,255,.12);}
+.sec-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:2.5px;color:var(--acc);
+  text-transform:uppercase;margin-bottom:2px;}
+.sec-head h2{font-size:clamp(22px,4vw,32px);font-weight:800;line-height:1.2;}
+.sec-sub{color:var(--mut);font-size:14px;margin-top:4px;}
+.chip{display:inline-block;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:700;
+  border:1px solid var(--border);color:var(--mut);background:rgba(30,58,95,.25);}
+.chip.acc{color:var(--acc);border-color:rgba(0,212,255,.5);background:rgba(0,212,255,.08);}
+.chip.grn{color:var(--grn);border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.08);}
+.chip.amb{color:var(--amb);border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.08);}
+.chip.red{color:var(--red);border-color:rgba(239,68,68,.55);background:rgba(239,68,68,.1);}
+.chip.pur{color:var(--pur);border-color:rgba(168,85,247,.5);background:rgba(168,85,247,.1);}
+.chip.wt{color:#0a0e1a;background:#e2e8f0;border-color:#e2e8f0;}
+.chip.bk{color:#e2e8f0;background:#1c2536;border-color:#475569;}
+/* callouts */
+.callout{display:flex;gap:12px;border-radius:10px;padding:15px 17px;border:1px solid;margin:16px 0;align-items:flex-start;}
+.callout .ic{font-size:20px;line-height:1.3;flex:0 0 auto;}
+.callout h4{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.callout p{font-size:14.5px;color:#cbd5e1;}
+.c-info{border-color:rgba(0,212,255,.45);background:rgba(0,212,255,.06);}
+.c-info h4{color:var(--acc)}
+.c-ok{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.06);}
+.c-ok h4{color:var(--grn)}
+.c-warn{border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.06);}
+.c-warn h4{color:var(--amb)}
+.c-err{border-color:rgba(239,68,68,.55);background:rgba(239,68,68,.07);}
+.c-err h4{color:var(--red)}
+/* botones */
+.btn{background:var(--dark2);border:1px solid var(--border);color:var(--txt);padding:10px 16px;
+  border-radius:9px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;transition:all .2s;}
+.btn:hover{border-color:var(--acc);color:var(--acc);box-shadow:0 0 12px rgba(0,212,255,.2);}
+.btn.primary{background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(168,85,247,.2));
+  border-color:var(--acc);color:var(--acc);}
+.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;}
+.btn.sm{padding:7px 12px;font-size:12.5px;}
+/* ---------- HOME ---------- */
+.cover{border-radius:14px;overflow:hidden;border:1px solid var(--border);
+  box-shadow:0 0 45px rgba(0,212,255,.09),0 10px 40px rgba(0,0,0,.5);margin-bottom:30px;background:#0a0e1a;}
+.cover svg{display:block;width:100%;height:auto;}
+.hero-center{text-align:center;max-width:860px;margin:0 auto;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(0,212,255,.5);
+  background:rgba(0,212,255,.08);color:var(--acc);padding:6px 16px;border-radius:999px;
+  font-size:12.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;}
+.h-title{font-size:clamp(30px,5.6vw,54px);font-weight:900;line-height:1.12;
+  background:linear-gradient(90deg,var(--acc),var(--pur));
+  -webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:14px;}
+.h-sub{font-size:clamp(15px,2.3vw,19px);color:#a5b4cf;font-weight:600;margin-bottom:20px;}
+.h-desc{text-align:left;font-size:15.5px;color:#cbd5e1;}
+.quote{border-left:4px solid var(--acc);background:rgba(0,212,255,.06);padding:20px 22px;
+  border-radius:0 12px 12px 0;font-style:italic;font-size:clamp(16px,2.4vw,20px);
+  color:#dbeafe;margin:26px 0;text-align:left;}
+.quote .qt{color:var(--acc);font-style:normal;font-weight:800;}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:22px 0;}
+@media(min-width:820px){.metrics{grid-template-columns:repeat(4,1fr)}}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 10px;text-align:center;}
+.metric b{display:block;font-size:28px;color:var(--acc);text-shadow:0 0 14px rgba(0,212,255,.5);}
+.metric span{font-size:12px;color:var(--mut);font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+.dt-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:18px 0 22px;}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+/* ---------- jugadas ---------- */
+.jcard{margin-bottom:16px;}
+.jcard .jhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.jcard .jnum{font-size:12px;font-weight:800;letter-spacing:2px;color:var(--acc);}
+.jcard .jtitle{font-weight:800;font-size:16px;}
+.side{display:flex;gap:12px;padding:12px;border-radius:10px;margin-top:10px;border:1px solid var(--border);}
+.side.w{background:rgba(226,232,240,.05);}
+.side.b{background:rgba(8,12,22,.55);}
+.side .sdot{flex:0 0 auto;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:20px;border:1px solid var(--border);}
+.side.w .sdot{background:#e2e8f0;color:#0a0e1a;}
+.side.b .sdot{background:#141c2c;color:#e2e8f0;}
+.side h5{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;}
+.side.w h5{color:#f1f5f9}.side.b h5{color:var(--acc)}
+.side .route{font-weight:800;font-size:15px;color:var(--txt);}
+.side .route code{color:var(--amb);font-weight:700;font-size:13px;}
+.side p{font-size:13.5px;color:var(--mut);margin-top:3px;}
+/* ---------- tablero ---------- */
+.board-layout{display:grid;grid-template-columns:1fr;gap:22px;align-items:start;}
+@media(min-width:980px){.board-layout{grid-template-columns:minmax(320px,480px) 1fr;}}
+.board-frame{display:flex;gap:6px;max-width:520px;margin:0 auto;width:100%;}
+.rank-col{display:grid;grid-template-rows:repeat(8,1fr);width:20px;flex:0 0 20px;}
+.rank-col span{display:flex;align-items:center;justify-content:center;font-size:12px;color:#64748b;font-weight:700;}
+.board-area{flex:1;min-width:0;}
+.board-grid{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;
+  border:2px solid var(--border);border-radius:8px;overflow:hidden;background:#1b2740;
+  box-shadow:0 8px 30px rgba(0,0,0,.45);}
+.sq{position:relative;display:flex;align-items:center;justify-content:center;user-select:none;}
+.sq.light{background:#2e405e}
+.sq.dark{background:#1b2740}
+.sq .pc{font-family:'Segoe UI Symbol','Segoe UI',system-ui,sans-serif;line-height:1;
+  font-size:clamp(20px,9vw,40px);pointer-events:none;}
+.pc.pw{color:#f8fafc;text-shadow:0 2px 3px rgba(0,0,0,.75);}
+.pc.pb{color:#0b1220;text-shadow:0 0 2px rgba(203,213,225,.6),0 2px 3px rgba(0,0,0,.65);}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--acc),inset 0 0 16px rgba(0,212,255,.6);z-index:2;}
+.sq.hl-from{box-shadow:inset 0 0 0 3px rgba(0,212,255,.5),inset 0 0 9px rgba(0,212,255,.35);z-index:2;}
+.file-row{display:grid;grid-template-columns:repeat(8,1fr);margin-top:4px;}
+.file-row span{text-align:center;font-size:12px;color:#64748b;font-weight:700;}
+/* stepper */
+.stepper{margin-top:16px;}
+.st-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:8px;border-radius:4px;
+  background:linear-gradient(90deg,var(--acc) var(--p,0%),#1e3a5f var(--p,0%));outline:none;cursor:pointer;margin:6px 0 12px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--acc);border:3px solid #0a0e1a;box-shadow:0 0 12px rgba(0,212,255,.9);cursor:pointer;}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--acc);
+  border:3px solid #0a0e1a;box-shadow:0 0 12px rgba(0,212,255,.9);cursor:pointer;}
+.st-info{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:13.5px;font-weight:700;}
+.st-info #turnLabel{color:var(--acc);}
+.st-full{margin-top:6px;font-size:12.5px;color:var(--mut);}
+.st-full code{color:#7dd3fc;}
+/* panel del movimiento */
+.mp-head{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+#mpPiece{font-size:20px;font-weight:800;margin:4px 0 2px;}
+.mp-route{font-size:clamp(24px,4vw,32px);font-weight:900;color:var(--acc);
+  text-shadow:0 0 18px rgba(0,212,255,.4);letter-spacing:1px;margin-bottom:10px;font-family:Consolas,'Segoe UI',monospace;}
+.mp-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.mp-block{border-left:3px solid var(--border);padding:6px 0 6px 14px;margin:12px 0;}
+.mp-block h4{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--acc);margin-bottom:4px;}
+.mp-block.imp h4{color:var(--amb);}
+.mp-block p{font-size:14.5px;color:#cbd5e1;}
+.mp-not{margin-top:12px;font-size:13px;color:var(--mut);}
+.mp-not code{background:var(--dark2);border:1px solid var(--border);border-radius:6px;
+  padding:3px 9px;color:#7dd3fc;font-weight:700;}
+/* chips de fase */
+.phase-chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 20px;}
+.pchip{background:var(--dark2);border:1px solid var(--border);color:#a5b4cf;border-radius:999px;
+  padding:7px 13px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.pchip:hover,.pchip.on{border-color:var(--acc);color:var(--acc);box-shadow:0 0 10px rgba(0,212,255,.25);}
+/* tabla */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin-top:10px;}
+table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px;}
+.tbl th{background:var(--dark2);color:var(--acc);text-align:left;padding:11px 12px;
+  border-bottom:2px solid var(--border);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;}
+.tbl td{padding:10px 12px;border-bottom:1px solid #16283f;color:#cbd5e1;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl td.click{cursor:pointer;}
+.tbl td.click:hover{background:rgba(0,212,255,.06);}
+.tbl td.on{background:rgba(0,212,255,.13);box-shadow:inset 3px 0 0 var(--acc);color:#fff;}
+.tbl td.jn{font-weight:800;color:var(--mut);white-space:nowrap;}
+/* lecciones / quiz */
+.lesson b.t{display:block;font-size:17px;color:var(--acc);margin-bottom:6px;}
+.big-quote{border:1px solid rgba(168,85,247,.45);background:linear-gradient(135deg,rgba(168,85,247,.09),rgba(0,212,255,.06));
+  border-radius:14px;padding:26px;font-size:clamp(17px,2.6vw,22px);font-style:italic;text-align:center;color:#e9d5ff;}
+.qa{margin-bottom:12px;}
+.qa .q{font-weight:700;font-size:15px;margin-bottom:8px;color:#dbeafe;}
+.qa .a{display:none;border-left:3px solid var(--grn);padding:10px 14px;margin-top:10px;
+  background:rgba(34,197,94,.06);border-radius:0 8px 8px 0;font-size:14px;color:#cbd5e1;}
+.qa.open .a{display:block;animation:pageIn .3s ease;}
+/* créditos */
+.cred-card{text-align:center;}
+.cred-name{font-size:clamp(24px,4.4vw,36px);font-weight:900;
+  background:linear-gradient(90deg,var(--acc),var(--pur));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.cred-grid{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:18px 0;}
+.cred-item{background:var(--dark2);border:1px solid var(--border);border-radius:10px;padding:12px 20px;min-width:150px;}
+.cred-item b{display:block;color:var(--acc);font-size:16px;}
+.cred-item span{font-size:11.5px;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;}
+.fiat{font-style:italic;font-size:19px;color:#c4b5fd;margin-top:16px;letter-spacing:.5px;}
+/* footer / toTop */
+footer{border-top:1px solid var(--border);background:#0b1120;padding:28px 16px;text-align:center;
+  color:var(--mut);font-size:13.5px;}
+footer .fl{margin:4px 0;}
+footer .fiat{font-size:14px;color:#c4b5fd;}
+#toTop{position:fixed;right:18px;bottom:18px;z-index:75;width:48px;height:48px;border-radius:50%;
+  background:var(--dark2);border:1px solid var(--acc);color:var(--acc);font-size:20px;cursor:pointer;
+  display:none;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(0,212,255,.35);transition:all .25s;}
+#toTop:hover{background:rgba(0,212,255,.15);}
+#toTop.show{display:flex;}
+#boardZone{scroll-margin-top:80px;}
+code{font-family:Consolas,'Courier New',monospace;}
+/* accesibilidad: reducir movimiento */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .page.active{animation:none}
+  *{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
+@media(max-width:520px){
+  .sec-head{gap:12px}
+  .sec-ico{width:44px;height:44px;flex-basis:44px;font-size:21px;}
+  .brand span.bt{display:none}
+}
+</style>
+</head>
+<body>
+<div id="pbar"></div>
+
+<header id="topbar">
+  <div class="brand" id="brandBtn" title="Ir al inicio">
+    <span class="kn">♞</span><span class="bt">TRAMPA <b>PONZIANI</b></span>
+  </div>
+  <nav id="nav" aria-label="Navegación principal">
+    <button class="navbtn active" data-sec="home">Inicio</button>
+    <button class="navbtn" data-sec="intro">Introducción</button>
+    <button class="navbtn" data-sec="centro">El Centro</button>
+    <button class="navbtn" data-sec="cebo">El Cebo</button>
+    <button class="navbtn" data-sec="trampa">La Trampa</button>
+    <button class="navbtn" data-sec="culminacion">Culminación</button>
+    <button class="navbtn" data-sec="partida">Partida Interactiva</button>
+    <button class="navbtn" data-sec="lecciones">Lecciones</button>
+    <button class="navbtn" data-sec="creditos">Créditos</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============ HOME ============ -->
+<section id="home" class="page active">
+  <div class="cover" id="homeCover" aria-label="Portada animada de la trampa Ponziani"></div>
+
+  <div class="hero-center">
+    <div class="hero-badge">♟ Guía paso a paso · Nivel principiante</div>
+    <h1 class="h-title">La Trampa de la Apertura Ponziani</h1>
+    <p class="h-sub">Una emboscada psicológica para castigar la codicia del rival — explicada solo con coordenadas y descripciones sencillas.</p>
+  </div>
+
+  <div class="card h-desc">
+    <p>En el noble arte del ajedrez, las aperturas no son simplemente una fase de despliegue, sino el cimiento sobre el cual se construye la victoria. Como Gran Maestro, siempre enseño que una apertura bien ejecutada puede dictar el ritmo del juego, mientras que una mal entendida invita al desastre. La Apertura Ponziani es una herramienta táctica excepcional, diseñada específicamente para castigar la ambición excesiva y la codicia de aquellos oponentes que buscan ganancias materiales rápidas sin considerar la seguridad de su posición.</p>
+  </div>
+
+  <blockquote class="quote">
+    <span class="qt">“</span>Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.<span class="qt">”</span>
+  </blockquote>
+
+  <div class="metrics">
+    <div class="metric"><b>11</b><span>Jugadas completas</span></div>
+    <div class="metric"><b>21</b><span>Movimientos individuales</span></div>
+    <div class="metric"><b>3</b><span>Lecciones fundamentales</span></div>
+    <div class="metric"><b>1</b><span>Jaque mate final</span></div>
+  </div>
+
+  <div class="dt-row">
+    <span class="chip acc">📅 Fecha: 04/09/2026</span>
+    <span class="chip acc">🕐 Hora: 01:53:22</span>
+    <span class="chip grn">🎯 Dirigido a principiantes absolutos</span>
+  </div>
+
+  <div class="cta-row">
+    <button class="btn primary" data-sec="intro">Comenzar el tutorial →</button>
+    <button class="btn" data-sec="partida">♜ Ver la partida interactiva</button>
+  </div>
+</section>
+
+<!-- ============ INTRODUCCIÓN ============ -->
+<section id="intro" class="page">
+  <div class="sec-head">
+    <div class="sec-ico">🎯</div>
+    <div>
+      <span class="sec-tag">Capítulo 1</span>
+      <h2>Introducción Estratégica y Contexto</h2>
+      <p class="sec-sub">Por qué la Ponziani es un arma perfecta contra el rival codicioso.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <p style="font-size:15.5px;color:#cbd5e1;">En el noble arte del ajedrez, las aperturas no son simplemente una fase de despliegue, sino el <strong style="color:var(--acc)">cimiento sobre el cual se construye la victoria</strong>. Como Gran Maestro, siempre enseño que una apertura bien ejecutada puede dictar el ritmo del juego, mientras que una mal entendida invita al desastre.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <p style="font-size:15.5px;color:#cbd5e1;">La <strong style="color:var(--acc)">Apertura Ponziani</strong> es una herramienta táctica excepcional, diseñada específicamente para castigar la ambición excesiva y la codicia de aquellos oponentes que buscan ganancias materiales rápidas sin considerar la seguridad de su posición.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <p style="font-size:15.5px;color:#cbd5e1;">El objetivo de esta guía es permitir que un <strong style="color:var(--grn)">principiante absoluto</strong> reproduzca una partida magistral basándose exclusivamente en <strong>coordenadas y descripciones sencillas</strong>, eliminando la barrera de la notación algebraica compleja. Con un enfoque metódico y alentador, aprenderás a tender una <strong style="color:var(--amb)">emboscada psicológica</strong> que dejará a tu rival sin respuesta.</p>
+  </div>
+
+  <h3 style="margin:22px 0 12px;font-size:17px;">♟ ¿Qué aprenderás en esta guía?</h3>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;">
+    <span class="chip acc">Control del centro</span>
+    <span class="chip acc">La sutileza 3. c3</span>
+    <span class="chip amb">La psicología del cebo</span>
+    <span class="chip amb">El regalo envenenado</span>
+    <span class="chip pur">El ataque a la descubierta</span>
+    <span class="chip pur">La promoción del peón</span>
+    <span class="chip red">El jaque mate final</span>
+  </div>
+
+  <div class="callout c-info">
+    <div class="ic">🚀</div>
+    <div>
+      <h4>Manos a la obra</h4>
+      <p>Comencemos este viaje tomando el control del territorio mediante el avance de nuestros peones centrales.</p>
+    </div>
+  </div>
+
+  <div style="text-align:right;margin-top:18px;">
+    <button class="btn primary" data-sec="centro">Siguiente: la disputa por el centro →</button>
+  </div>
+</section>
+
+<!-- ============ EL CENTRO ============ -->
+<section id="centro" class="page">
+  <div class="sec-head">
+    <div class="sec-ico">♟</div>
+    <div>
+      <span class="sec-tag">Capítulo 2 · Fase de apertura</span>
+      <h2>Disputa por el Centro del Tablero</h2>
+      <p class="sec-sub">Jugadas 1 a 3: establecer una presencia sólida para preparar la emboscada.</p>
+    </div>
+  </div>
+
+  <div class="callout c-info">
+    <div class="ic">⭐</div>
+    <div>
+      <h4>La regla de oro</h4>
+      <p>Controlar el centro es la regla de oro. Al ocupar las casillas centrales, tus piezas ganan <strong>“aire” y movilidad</strong>, mientras limitan las opciones del adversario. En estos primeros pasos estableceremos una presencia sólida para preparar una emboscada astuta.</p>
+    </div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 1</span><span class="jtitle">El corazón del tablero</span></div>
+    <div class="side w">
+      <div class="sdot">♙</div>
+      <div>
+        <h5>Blancas</h5>
+        <div class="route">Peón blanco: e2 → e4 <code>(e4)</code></div>
+        <p>Iniciamos moviendo el peón blanco de e2 a e4, reclamando el corazón del tablero.</p>
+      </div>
+    </div>
+    <div class="side b">
+      <div class="sdot">♟</div>
+      <div>
+        <h5>Negras</h5>
+        <div class="route">Peón negro: e7 → e5 <code>(e5)</code></div>
+        <p>El negro responde simétricamente. Ambos bandos luchan por el espacio.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="2">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 2</span><span class="jtitle">Reto y desafío aceptado</span></div>
+    <div class="side w">
+      <div class="sdot">♘</div>
+      <div>
+        <h5>Blancas</h5>
+        <div class="route">Caballo blanco: g1 → f3 <code>(Cf3)</code></div>
+        <p>Desarrollamos el caballo atacando directamente al peón negro en e5.</p>
+      </div>
+    </div>
+    <div class="side b">
+      <div class="sdot">♞</div>
+      <div>
+        <h5>Negras</h5>
+        <div class="route">Caballo negro: b8 → c6 <code>(Cc6)</code></div>
+        <p>El negro defiende su peón. Es el inicio clásico: el blanco propone un reto y el negro acepta el desafío.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="4">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 3</span><span class="jtitle">La sutileza de la Ponziani</span></div>
+    <div class="side w">
+      <div class="sdot">♙</div>
+      <div>
+        <h5>Blancas</h5>
+        <div class="route">Peón blanco: c2 → c3 <code>(c3)</code></div>
+        <p>Aquí introducimos la sutileza de la Ponziani. Esta jugada parece lenta porque no desarrolla una pieza, pero es una preparación <strong>“astuta”</strong> para una explosión central masiva, apoyando un futuro avance en la casilla d4.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="5">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="callout c-ok">
+    <div class="ic">✅</div>
+    <div>
+      <h4>Verificación de posición</h4>
+      <p>Antes de avanzar, observa tu tablero. Debes ver un <strong>“triángulo” de peones blancos en c3 y e4</strong>, con tu caballo blanco situado en <strong>f3</strong> listo para la acción. Si esta es tu posición, el escenario está listo.</p>
+    </div>
+  </div>
+
+  <div class="callout c-warn">
+    <div class="ic">👀</div>
+    <div>
+      <h4>Lo que viene</h4>
+      <p>El negro, notando que hemos “perdido” un tiempo moviendo un peón lateral, intentará contraatacar de inmediato.</p>
+    </div>
+  </div>
+
+  <div style="text-align:right;margin-top:18px;">
+    <button class="btn primary" data-sec="cebo">Siguiente: el cebo y el error →</button>
+  </div>
+</section>
+
+<!-- ============ EL CEBO ============ -->
+<section id="cebo" class="page">
+  <div class="sec-head">
+    <div class="sec-ico">🎣</div>
+    <div>
+      <span class="sec-tag">Capítulo 3</span>
+      <h2>El Cebo: el Desafío Central y el Error del Negro</h2>
+      <p class="sec-sub">Jugadas 4 a 6: la falsa sensación de seguridad abre la puerta de la trampa.</p>
+    </div>
+  </div>
+
+  <div class="callout c-info">
+    <div class="ic">🧠</div>
+    <div>
+      <h4>Psicología del ajedrez</h4>
+      <p>Como pedagogo, siempre advierto: el ajedrez es tanto <strong>psicología como técnica</strong>. Un error de cálculo del oponente, motivado por la falsa sensación de seguridad, abrirá la puerta a nuestra trampa.</p>
+    </div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 4</span><span class="jtitle">La amenaza y el conflicto forzado</span></div>
+    <div class="side b">
+      <div class="sdot">♞</div>
+      <div>
+        <h5>Negras</h5>
+        <div class="route">Caballo negro: g8 → f6 <code>(Cf6)</code></div>
+        <p>El negro desarrolla su caballo amenazando nuestro peón de e4.</p>
+      </div>
+    </div>
+    <div class="side w">
+      <div class="sdot">♙</div>
+      <div>
+        <h5>Blancas</h5>
+        <div class="route">Peón blanco: d2 → d4 <code>(d4)</code></div>
+        <p>En lugar de defenderlo pasivamente, ignoramos la amenaza y <strong>forzamos el conflicto</strong> avanzando el peón a d4.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="7">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 5</span><span class="jtitle">El negro muerde el anzuelo</span></div>
+    <div class="side b">
+      <div class="sdot">♞</div>
+      <div>
+        <h5>Negras — captura</h5>
+        <div class="route">Caballo negro: f6 → e4 <code>(Cxe4)</code></div>
+        <p>Creyendo que ha ganado material gratuito, el negro captura nuestro peón de e4. En este momento, <strong style="color:var(--red)">el negro camina con los ojos vendados hacia el abismo</strong>.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="8">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 6</span><span class="jtitle">La expulsión y la retirada</span></div>
+    <div class="side w">
+      <div class="sdot">♙</div>
+      <div>
+        <h5>Blancas</h5>
+        <div class="route">Peón blanco: d4 → d5 <code>(d5)</code></div>
+        <p>Expulsamos a la pieza intrusa: el caballo negro de c6 debe huir.</p>
+      </div>
+    </div>
+    <div class="side b">
+      <div class="sdot">♞</div>
+      <div>
+        <h5>Negras</h5>
+        <div class="route">Caballo negro: c6 → e7 <code>(Ce7)</code></div>
+        <p>El caballo se retira a la casilla e7, y con ello comienza el hacinamiento negro.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="10">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="callout c-err">
+    <div class="ic">🔬</div>
+    <div>
+      <h4>Análisis del Gran Maestro</h4>
+      <p>Observa la posición del negro. Al retroceder a e7, sus piezas quedan <strong>amontonadas en su propia fila de origen</strong>. Este “hacinamiento” es una <strong>sentencia de muerte</strong>, pues el caballo en e7 bloquea la salida de su propia Reina y sus Alfiles, <strong>asfixiando su coordinación</strong>.</p>
+    </div>
+  </div>
+
+  <p style="color:var(--mut);font-style:italic;margin:14px 2px;">Con el rival desorganizado, es momento de recuperar material y posicionar una pieza dominante.</p>
+
+  <div style="text-align:right;margin-top:18px;">
+    <button class="btn primary" data-sec="trampa">Siguiente: la trampa se cierra →</button>
+  </div>
+</section>
+
+<!-- ============ LA TRAMPA ============ -->
+<section id="trampa" class="page">
+  <div class="sec-head">
+    <div class="sec-ico">🕸️</div>
+    <div>
+      <span class="sec-tag">Capítulo 4</span>
+      <h2>La Trampa se Cierra: Sacrificio y Ataque al Rey</h2>
+      <p class="sec-sub">Jugadas 7 a 10: la iniciativa y los jaques constantes dictan el destino del rey.</p>
+    </div>
+  </div>
+
+  <div class="callout c-info">
+    <div class="ic">⚡</div>
+    <div>
+      <h4>La iniciativa</h4>
+      <p>La iniciativa es el motor que impulsa el ataque. Usaremos <strong>jaques constantes</strong> para dictar el destino del Rey enemigo.</p>
+    </div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 7</span><span class="jtitle">La pieza “monstruo”</span></div>
+    <div class="side w">
+      <div class="sdot">♘</div>
+      <div>
+        <h5>Blancas — captura</h5>
+        <div class="route">Caballo blanco: f3 → e5 <code>(Cxe5)</code></div>
+        <p>Recuperamos nuestro peón. Ahora tenemos una pieza <strong>“monstruo”</strong> en el centro que el negro no puede ignorar.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="11">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 8</span><span class="jtitle">El jaque con autoridad</span></div>
+    <div class="side b">
+      <div class="sdot">♟</div>
+      <div>
+        <h5>Negras</h5>
+        <div class="route">Peón negro: d7 → d6 <code>(d6)</code></div>
+        <p>El negro intenta expulsar a nuestro caballo central.</p>
+      </div>
+    </div>
+    <div class="side w">
+      <div class="sdot">♗</div>
+      <div>
+        <h5>Blancas — ¡jaque!</h5>
+        <div class="route">Alfil blanco: f1 → b5 <code>(Ab5+)</code></div>
+        <p>Respondemos con autoridad: el alfil se desplaza diagonalmente y declara <strong style="color:var(--amb)">jaque al rey</strong>.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="13">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 9</span><span class="jtitle">El regalo envenenado</span></div>
+    <div class="side b">
+      <div class="sdot">♟</div>
+      <div>
+        <h5>Negras</h5>
+        <div class="route">Peón negro: c7 → c6 <code>(c6)</code></div>
+        <p>Para cubrir el jaque, el negro bloquea con su peón.</p>
+      </div>
+    </div>
+    <div class="side w">
+      <div class="sdot">♙</div>
+      <div>
+        <h5>Blancas — captura</h5>
+        <div class="route">Peón blanco: d5 → c6 <code>(dxc6)</code></div>
+        <p>Aquí ejecutamos el <strong>engaño final</strong>: dejamos nuestro alfil en b5 totalmente desprotegido, como un <strong style="color:var(--amb)">regalo envenenado</strong>.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="15">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 10</span><span class="jtitle">La codicia ciega al negro</span></div>
+    <div class="side b">
+      <div class="sdot">♟</div>
+      <div>
+        <h5>Negras — captura</h5>
+        <div class="route">Peón negro: d6 → e5 <code>(dxe5)</code></div>
+        <p>La codicia ciega al negro. Creyendo que hemos cometido un error de principiante al regalar una pieza, captura nuestro caballo.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="16">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="callout c-warn">
+    <div class="ic">⚠️</div>
+    <div>
+      <h4>Momento crítico</h4>
+      <p>El rival celebra su ventaja material, sin sospechar que acaba de activar el mecanismo de una <strong>“picadura brutal”</strong>.</p>
+    </div>
+  </div>
+
+  <div style="text-align:right;margin-top:18px;">
+    <button class="btn primary" data-sec="culminacion">Siguiente: la culminación →</button>
+  </div>
+</section>
+
+<!-- ============ CULMINACIÓN ============ -->
+<section id="culminacion" class="page">
+  <div class="sec-head">
+    <div class="sec-ico">👑</div>
+    <div>
+      <span class="sec-tag">Capítulo 5</span>
+      <h2>La Culminación: Ataque Descubierto, Promoción y Mate</h2>
+      <p class="sec-sub">Jugadas 11 a 15: el mecanismo de la trampa se activa por completo.</p>
+    </div>
+  </div>
+
+  <div class="callout c-info">
+    <div class="ic">💡</div>
+    <div>
+      <h4>Concepto clave: el ataque descubierto</h4>
+      <p>Entramos en la fase final utilizando el <strong>ataque descubierto</strong>. Esto ocurre cuando mueves una pieza y, al hacerlo, <strong>abres una línea de fuego para otra pieza</strong> que estaba escondida detrás.</p>
+    </div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 11</span><span class="jtitle">La jugada demoledora</span></div>
+    <div class="side w">
+      <div class="sdot">♙</div>
+      <div>
+        <h5>Blancas — captura y jaque a la descubierta</h5>
+        <div class="route">Peón blanco: c6 → b7 <code>(cxb7+)</code></div>
+        <p>Nuestro peón captura diagonalmente al peón en b7. Esta jugada es demoledora por dos razones:</p>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px;">
+      <div class="card" style="padding:14px;border-color:rgba(245,158,11,.45);">
+        <span class="chip amb">Razón 1 · La descubierta</span>
+        <p style="font-size:13.5px;color:#cbd5e1;margin-top:8px;">Al quitarse el peón de en medio, el Alfil que estaba en b5 ahora tiene vía libre para <strong>dar jaque al rey</strong> (ataque descubierto).</p>
+      </div>
+      <div class="card" style="padding:14px;border-color:rgba(239,68,68,.45);">
+        <span class="chip red">Razón 2 · La doble amenaza</span>
+        <p style="font-size:13.5px;color:#cbd5e1;margin-top:8px;">El peón en b7 ahora amenaza directamente a la <strong>torre negra en a8</strong>.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="17">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 12</span><span class="jtitle">El bloqueo desesperado</span></div>
+    <div class="side b">
+      <div class="sdot">♝</div>
+      <div>
+        <h5>Negras</h5>
+        <div class="route">Alfil negro: c8 → d7 <code>(Ad7)</code></div>
+        <p>El negro, desesperado, intenta cubrir el jaque moviendo su alfil.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="18">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 13</span><span class="jtitle">La promoción: ventaja abrumadora</span></div>
+    <div class="side w">
+      <div class="sdot">♕</div>
+      <div>
+        <h5>Blancas — captura y promoción</h5>
+        <div class="route">Peón blanco: b7 → a8 = Dama <code>(bxa8=D)</code></div>
+        <p>Ignoramos el bloqueo y realizamos la captura final de material: el peón captura a la torre en a8 y, al llegar a la última fila, se <strong style="color:var(--pur)">promociona a Reina</strong>.</p>
+      </div>
+    </div>
+    <div class="callout c-info" style="margin:12px 0 0;">
+      <div class="ic">📖</div>
+      <div>
+        <h4>¿Qué es la promoción?</h4>
+        <p>En el ajedrez, alcanzar la fila final te permite cambiar un peón por la pieza más poderosa del juego, lo que nos da una ventaja abrumadora.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="19">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard">
+    <div class="jhead"><span class="jnum">JUGADA 14</span><span class="jtitle">Mitigar el desastre</span></div>
+    <div class="side b">
+      <div class="sdot">♛</div>
+      <div>
+        <h5>Negras — captura</h5>
+        <div class="route">Dama negra: d8 → a8 <code>(Dxa8)</code></div>
+        <p>La Reina negra captura a nuestra nueva dama, tratando de mitigar el desastre… pero abandona la defensa de su propio campo.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="20">Ver en el tablero →</button></div>
+  </div>
+
+  <div class="card jcard" style="border-color:rgba(239,68,68,.55);box-shadow:0 0 22px rgba(239,68,68,.12);">
+    <div class="jhead"><span class="jnum" style="color:var(--red)">JUGADA 15 · FINAL</span><span class="jtitle">♚ ¡JAQUE MATE!</span></div>
+    <div class="side w">
+      <div class="sdot">♕</div>
+      <div>
+        <h5>Blancas — captura y jaque mate</h5>
+        <div class="route">Dama blanca: d1 → d7 <code>(Dxd7#)</code></div>
+        <p>Al capturar en a8, la Reina negra ha tenido que abandonar la defensa de su propio campo. El alfil negro en d7 ha quedado <strong>totalmente abandonado</strong>. Nuestra Reina original captura al alfil en d7, sentenciando la partida con un <strong style="color:var(--red)">Jaque Mate</strong>.</p>
+      </div>
+    </div>
+    <div class="callout c-err" style="margin:12px 0 0;">
+      <div class="ic">🏁</div>
+      <div>
+        <h4>¿Por qué es jaque mate?</h4>
+        <p><strong>El rey negro está en jaque</strong> por la dama blanca de d7. <strong>No puede escapar</strong>: sus casillas de huida están cubiertas por la propia dama. <strong>No puede capturar</strong> a la atacante, porque el alfil blanco de b5 la defiende. Y <strong>no puede bloquear</strong> un jaque a tan corta distancia. El rey negro no tiene escapatoria. <strong>La victoria es total.</strong></p>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><button class="btn sm go-board" data-step="21">Ver el mate en el tablero →</button></div>
+  </div>
+
+  <div style="text-align:right;margin-top:18px;">
+    <button class="btn primary" data-sec="partida">Reproducir la partida completa →</button>
+  </div>
+</section>
+
+<!-- ============ PARTIDA INTERACTIVA ============ -->
+<section id="partida" class="page">
+  <div class="sec-head">
+    <div class="sec-ico">♜</div>
+    <div>
+      <span class="sec-tag">Capítulo 6 · Herramienta didáctica</span>
+      <h2>La Partida Completa, Paso a Paso</h2>
+      <p class="sec-sub">Avanza movimiento por movimiento y comprende cada pieza, cada color y cada casilla.</p>
+    </div>
+  </div>
+
+  <div class="callout c-info">
+    <div class="ic">ℹ️</div>
+    <div>
+      <h4>Movimiento ≠ Jugada</h4>
+      <p><strong>Movimiento:</strong> acción realizada por un único bando. <strong>Jugada completa:</strong> movimiento de BLANCAS + movimiento de NEGRAS. Ejemplo: el Movimiento 1 es BLANCAS e2 → e4; el Movimiento 2 es NEGRAS e7 → e5; ambos forman la <strong>jugada completa 1</strong> (<code>1. e4 e5</code>). El mate llega en la jugada 11, es decir, en el <strong>movimiento individual 21</strong>.</p>
+    </div>
+  </div>
+
+  <h3 style="margin:18px 0 6px;font-size:16px;">⚡ Saltos rápidos a los momentos clave</h3>
+  <div class="phase-chips" id="phaseChips">
+    <button class="pchip" data-step="0">⭰ Posición inicial</button>
+    <button class="pchip" data-step="6">♟ Fin de la apertura (3…Cf6)</button>
+    <button class="pchip" data-step="8">🎣 El error: 4…Cxe4</button>
+    <button class="pchip" data-step="10">📦 Hacinamiento: 5…Ce7</button>
+    <button class="pchip" data-step="13">⚡ Jaque: 7.Ab5+</button>
+    <button class="pchip" data-step="16">🎁 Regalo aceptado: 8…dxe5</button>
+    <button class="pchip" data-step="17">💥 Descubierta: 9.cxb7+</button>
+    <button class="pchip" data-step="19">👑 Promoción: 10.bxa8=D</button>
+    <button class="pchip" data-step="21">🏁 Mate: 11.Dxd7#</button>
+  </div>
+
+  <div id="boardZone" class="board-layout">
+    <div>
+      <div class="board-frame">
+        <div class="rank-col" id="rankCol"></div>
+        <div class="board-area">
+          <div class="board-grid" id="boardGrid"></div>
+          <div class="file-row" id="fileRow"></div>
+        </div>
+      </div>
+
+      <div class="stepper card">
+        <div class="st-row">
+          <button class="btn" id="btnReset" title="Volver a la posición inicial">⟲ Reiniciar</button>
+          <button class="btn" id="btnPrev">◀ Anterior</button>
+          <button class="btn primary" id="btnNext">Siguiente ▶</button>
+          <button class="btn" id="btnPlay">▶ Reproducir</button>
+        </div>
+        <input type="range" id="slider" min="0" max="21" value="0" step="1" aria-label="Deslizar entre movimientos">
+        <div class="st-info">
+          <span id="stepLabel">Posición inicial</span>
+          <span id="turnLabel"></span>
+        </div>
+        <div class="st-full" id="fullMoveLabel"></div>
+      </div>
+    </div>
+
+    <div class="panel card" id="movePanel">
+      <div class="mp-head">
+        <span class="chip acc" id="mpNum">POSICIÓN INICIAL</span>
+        <span class="chip" id="mpColor" style="display:none;"></span>
+      </div>
+      <h3 id="mpPiece">Todas las piezas en su lugar</h3>
+      <div class="mp-route" id="mpRoute">—</div>
+      <div class="mp-badges" id="mpBadges"></div>
+      <div class="mp-block">
+        <h4>¿Qué ocurre?</h4>
+        <p id="mpWhat">El tablero muestra la posición inicial estándar del ajedrez. Las blancas ocupan las filas 1 y 2; las negras, las filas 7 y 8.</p>
+      </div>
+      <div class="mp-block imp">
+        <h4>¿Por qué es importante?</h4>
+        <p id="mpWhy">Pulsa «Siguiente» (o «Reproducir») para ver cómo las blancas tienden la trampa Ponziani movimiento a movimiento.</p>
+      </div>
+      <div class="mp-not">Notación algebraica: <code id="mpNot">—</code></div>
+    </div>
+  </div>
+
+  <h3 style="margin:34px 0 4px;font-size:18px;">📋 Partida completa — registro de jugadas</h3>
+  <p style="color:var(--mut);font-size:13.5px;margin-bottom:6px;">Haz clic en cualquier movimiento para verlo en el tablero. La notación entre paréntesis es complementaria: la explicación completa aparece en el panel.</p>
+  <div class="tbl-wrap">
+    <table class="tbl" id="movesTable">
+      <thead>
+        <tr><th>Jugada</th><th>♔ Blancas</th><th>♚ Negras</th></tr>
+      </thead>
+      <tbody id="movesBody"></tbody>
+    </table>
+  </div>
+
+  <div style="text-align:right;margin-top:22px;">
+    <button class="btn primary" data-sec="lecciones">Siguiente: lecciones aprendidas →</button>
+  </div>
+</section>
+
+<!-- ============ LECCIONES ============ -->
+<section id="lecciones" class="page">
+  <div class="sec-head">
+    <div class="sec-ico">🏆</div>
+    <div>
+      <span class="sec-tag">Capítulo 7 · Análisis post-partida</span>
+      <h2>Lecciones Aprendidas</h2>
+      <p class="sec-sub">Como mentor, quiero que te lleves estas tres lecciones fundamentales de esta lección.</p>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card lesson">
+      <span class="chip red">Lección 1</span>
+      <b class="t" style="margin-top:10px;">La codicia tiene un precio</b>
+      <p style="font-size:14px;color:#cbd5e1;">Capturar piezas que parecen “gratis” sin entender la posición es el camino más rápido a la derrota. El negro se distrajo con el Alfil y el Caballo mientras su Rey quedaba expuesto.</p>
+    </div>
+    <div class="card lesson">
+      <span class="chip amb">Lección 2</span>
+      <b class="t" style="margin-top:10px;">La importancia de la coordinación</b>
+      <p style="font-size:14px;color:#cbd5e1;">El negro perdió porque sus piezas quedaron “apretadas” en la última fila. Una pieza que no puede moverse es una pieza que no existe.</p>
+    </div>
+    <div class="card lesson">
+      <span class="chip pur">Lección 3</span>
+      <b class="t" style="margin-top:10px;">El poder del ataque descubierto</b>
+      <p style="font-size:14px;color:#cbd5e1;">Aprendiste cómo un simple movimiento de peón puede liberar una fuerza devastadora escondida detrás.</p>
+    </div>
+  </div>
+
+  <div class="big-quote" style="margin:24px 0;">
+    “El tablero es una conversación; las negras dejaron de escuchar y solo miraron los premios.”
+  </div>
+
+  <div class="card" style="margin-bottom:26px;">
+    <p style="font-size:15.5px;color:#cbd5e1;">Recuerda siempre esta máxima. En tus próximas partidas, mantente alerta: <strong style="color:var(--amb)">si un regalo parece demasiado bueno para ser verdad, probablemente sea una trampa</strong>. ¡Sigue practicando y domina el tablero!</p>
+  </div>
+
+  <h3 style="margin:8px 0 12px;font-size:18px;">🧪 Autoevaluación rápida</h3>
+
+  <div class="card qa" style="margin-bottom:12px;">
+    <div class="q">1 · ¿Por qué fue tan malo que el caballo negro retrocediera a e7?</div>
+    <button class="btn sm qa-btn">Ver respuesta</button>
+    <div class="a">Porque las piezas negras quedaron amontonadas en su propia fila de origen: el caballo en e7 bloquea la salida de su propia Reina y sus Alfiles, asfixiando su coordinación. El “hacinamiento” fue una sentencia de muerte.</div>
+  </div>
+  <div class="card qa" style="margin-bottom:12px;">
+    <div class="q">2 · ¿Qué es un ataque a la descubierta?</div>
+    <button class="btn sm qa-btn">Ver respuesta</button>
+    <div class="a">Ocurre cuando mueves una pieza y, al hacerlo, abres una línea de fuego para otra pieza que estaba escondida detrás. En esta partida, el peón de c6 capturó en b7 y dejó vía libre al alfil de b5 para dar jaque al rey.</div>
+  </div>
+  <div class="card qa" style="margin-bottom:12px;">
+    <div class="q">3 · ¿Por qué el negro capturó el caballo de e5 si era peligroso?</div>
+    <button class="btn sm qa-btn">Ver respuesta</button>
+    <div class="a">Porque la codicia lo cegó: creyó que el blanco había cometido un error de principiante al regalar una pieza. En realidad, estaba activando el mecanismo de la trampa.</div>
+  </div>
+
+  <div style="text-align:right;margin-top:20px;">
+    <button class="btn primary" data-sec="creditos">Créditos →</button>
+  </div>
+</section>
+
+<!-- ============ CRÉDITOS ============ -->
+<section id="creditos" class="page">
+  <div class="cover" id="creditsCover" aria-label="Portada animada (créditos)"></div>
+
+  <div class="card cred-card">
+    <span class="chip acc">Tutorial interactivo de ajedrez</span>
+    <h2 style="font-size:clamp(22px,4vw,30px);margin:14px 0 4px;">La Trampa de la Apertura Ponziani</h2>
+    <p style="color:var(--mut);font-size:14px;margin-bottom:14px;">Guía paso a paso para principiantes</p>
+
+    <div style="margin:10px 0 6px;color:var(--mut);font-size:13px;letter-spacing:2px;text-transform:uppercase;">Autor</div>
+    <div class="cred-name">Rubén Sbarsky</div>
+
+    <div class="cred-grid">
+      <div class="cred-item"><b>04/09/2026</b><span>Fecha</span></div>
+      <div class="cred-item"><b>01:53:22</b><span>Hora</span></div>
+      <div class="cred-item"><b>Educativo</b><span>Uso divulgativo</span></div>
+    </div>
+
+    <p style="color:#cbd5e1;font-size:14.5px;max-width:640px;margin:0 auto;">Este tutorial tiene fines exclusivamente <strong>educativos y de divulgación</strong> del ajedrez. Reproduce la partida, estudia cada movimiento y comparte el conocimiento.</p>
+
+    <div class="fiat">Fiat iustitia, ruat caelum.</div>
+  </div>
+
+  <div style="text-align:center;margin-top:22px;">
+    <button class="btn" data-sec="home">← Volver al inicio</button>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p class="fl">📚 Tutorial solo con fines Educativos y Divulgación</p>
+  <p class="fl">👨‍💻 Créditos: Rubén Sbarsky</p>
+  <p class="fl">📅 FECHA: 04/09/2026 · Hora: 01:53:22</p>
+  <p class="fl fiat">Fiat iustitia, ruat caelum.</p>
+</footer>
+
+<button id="toTop" title="Volver arriba" aria-label="Volver arriba">↑</button>
+
+<script>
+(function(){
+"use strict";
+var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var DUR = '20s';
+
+/* ============================================================
+   SVG DE PORTADA — animación temática: la trampa Ponziani
+   (misma portada en HOME y CRÉDITOS)
+============================================================ */
+function AT(vals,kts){return '<animateTransform attributeName="transform" type="translate" values="'+vals+'" keyTimes="'+kts+'" dur="'+DUR+'" repeatCount="indefinite"/>';}
+function AO(vals,kts){return '<animate attributeName="opacity" values="'+vals+'" keyTimes="'+kts+'" dur="'+DUR+'" repeatCount="indefinite"/>';}
+function AP(g,cls,vals,kts,ov,ok){
+  var st = cls==='w' ? 'fill="#f8fafc" stroke="#3b4a63" stroke-width="1"' : 'fill="#0d1524" stroke="#94a8c6" stroke-width="1.1"';
+  var first = vals.split(';')[0];
+  var opAttr = ov ? ' opacity="'+ov.split(';')[0]+'"' : '';
+  var anim = AT(vals,kts) + (ov ? AO(ov,ok) : '');
+  return '<text transform="translate('+first+')" font-size="46" text-anchor="middle" dy="0.35em" '+st+opAttr+'>'+g+anim+'</text>';
+}
+function SP(g,x,y,cls,extra,opAttr){
+  var st = cls==='w' ? 'fill="#f8fafc" stroke="#3b4a63" stroke-width="1"' : 'fill="#0d1524" stroke="#94a8c6" stroke-width="1.1"';
+  return '<text x="'+x+'" y="'+y+'" font-size="46" text-anchor="middle" dy="0.35em" '+st+(opAttr||'')+'>'+g+(extra||'')+'</text>';
+}
+function buildCover(u){
+  var squares='',f,i;
+  for(var r=0;r<8;r++)for(f=0;f<8;f++){
+    squares+='<rect x="'+(90+f*60)+'" y="'+(120+r*60)+'" width="60" height="60" fill="'+(((r+f)%2===0)?'#2e405e':'#1b2740')+'" stroke="#0a0e1a" stroke-width="1"/>';
+  }
+  var files=''; 'abcdefgh'.split('').forEach(function(ch,idx){
+    files+='<text x="'+(120+idx*60)+'" y="628" text-anchor="middle" font-size="15" fill="#64748b" font-weight="700">'+ch+'</text>';
+  });
+  var ranks='';
+  for(i=0;i<8;i++){ranks+='<text x="78" y="'+(155+i*60)+'" text-anchor="end" font-size="15" fill="#64748b" font-weight="700">'+(8-i)+'</text>';}
+
+  /* resaltados de casillas */
+  var HL =
+    '<rect x="330" y="360" width="60" height="60" fill="#ef4444" opacity="0"><animate attributeName="opacity" values="0;0;0.5;0;0" keyTimes="0;0.41;0.435;0.52;1" dur="'+DUR+'" repeatCount="indefinite"/></rect>'+
+    '<rect x="330" y="300" width="60" height="60" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;0.45;0;0" keyTimes="0;0.55;0.575;0.64;1" dur="'+DUR+'" repeatCount="indefinite"/></rect>'+
+    '<rect x="150" y="300" width="60" height="60" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;0.4;0.4;0;0" keyTimes="0;0.62;0.635;0.665;0.68;1" dur="'+DUR+'" repeatCount="indefinite"/></rect>'+
+    '<rect x="90" y="120" width="60" height="60" fill="#a855f7" opacity="0"><animate attributeName="opacity" values="0;0;0.55;0.25" keyTimes="0;0.885;0.905;1" dur="'+DUR+'" repeatCount="indefinite"/></rect>'+
+    '<rect x="270" y="180" width="60" height="60" fill="#ef4444" opacity="0"><animate attributeName="opacity" values="0;0;0.6;0.6" keyTimes="0;0.965;0.98;1" dur="'+DUR+'" repeatCount="indefinite"/></rect>';
+
+  /* haces de jaque */
+  var BEAM1 =
+    '<line x1="192" y1="318" x2="348" y2="162" stroke="#00d4ff" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 12" opacity="0">'+
+    '<animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.62;0.635;0.665;0.68;1" dur="'+DUR+'" repeatCount="indefinite"/>'+
+    '<animate attributeName="stroke-dashoffset" values="0;-88" dur="2s" repeatCount="indefinite"/></line>'+
+    '<text x="425" y="112" text-anchor="middle" font-size="26" font-weight="800" fill="#00d4ff" opacity="0">¡JAQUE!'+AO('0;0;1;1;0;0','0;0.625;0.64;0.665;0.685;1')+'</text>';
+  var BEAM2 =
+    '<line x1="192" y1="318" x2="348" y2="162" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 12" opacity="0">'+
+    '<animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.765;0.78;0.83;0.845;1" dur="'+DUR+'" repeatCount="indefinite"/>'+
+    '<animate attributeName="stroke-dashoffset" values="0;-88" dur="1.4s" repeatCount="indefinite"/></line>'+
+    '<text x="330" y="98" text-anchor="middle" font-size="21" font-weight="800" fill="#f59e0b" opacity="0">¡JAQUE A LA DESCUBIERTA!'+AO('0;0;1;1;0;0','0;0.77;0.785;0.83;0.85;1')+'</text>';
+
+  /* piezas estáticas */
+  var stat =
+    SP('♖',120,570,'w')+SP('♘',180,570,'w')+SP('♗',240,570,'w')+SP('♔',360,570,'w')+SP('♖',540,570,'w')+
+    SP('♙',120,510,'w')+SP('♙',180,510,'w')+SP('♙',420,510,'w')+SP('♙',480,510,'w')+SP('♙',540,510,'w')+
+    SP('♜',540,150,'b')+SP('♝',420,150,'b')+SP('♚',360,150,'b')+
+    SP('♟',120,210,'b')+SP('♟',420,210,'b')+SP('♟',480,210,'b')+SP('♟',540,210,'b')+
+    SP('♟',180,210,'b','',AO('1;1;0;0','0;0.78;0.80;1'))+
+    SP('♜',120,150,'b','',AO('1;1;0;0','0;0.885;0.905;1'));
+
+  /* piezas animadas */
+  var anim =
+    AP('♙','w','360,510;360,510;360,390;360,390','0;0.01;0.075;1','1;1;0;0','0;0.41;0.435;1')+
+    AP('♟','b','360,210;360,210;360,330;360,330','0;0.015;0.075;1','1;1;0;0','0;0.55;0.575;1')+
+    AP('♘','w','480,570;480,570;420,450;420,450;360,330;360,330','0;0.08;0.155;0.495;0.56;1','1;1;0;0','0;0.75;0.78;1')+
+    AP('♞','b','180,150;180,150;240,270;240,270;360,210;360,210','0;0.09;0.155;0.425;0.49;1')+
+    AP('♙','w','240,510;240,510;240,450;240,450','0;0.16;0.22;1')+
+    AP('♞','b','480,150;480,150;420,270;420,270;360,390;360,390','0;0.225;0.285;0.355;0.42;1')+
+    AP('♟','b','300,210;300,210;300,270;300,270;360,330;360,330','0;0.53;0.56;0.715;0.755;1')+
+    AP('♗','w','420,570;420,570;180,330;180,330','0;0.565;0.62;1')+
+    AP('♟','b','240,210;240,210;240,270;240,270','0;0.625;0.665;1','1;1;0;0','0;0.695;0.72;1')+
+    AP('♙','w','300,510;300,510;300,390;300,390;300,330;300,330;240,270;240,270;180,210;180,210;120,150;120,150','0;0.29;0.35;0.425;0.49;0.67;0.71;0.76;0.80;0.84;0.89;1','1;1;0;0','0;0.885;0.905;1')+
+    AP('♝','b','240,150;240,150;300,210;300,210','0;0.805;0.835;1','1;1;0;0','0;0.96;0.975;1')+
+    AP('♕','w','120,150;120,150;120,150;120,150','0;0.5;0.8;1','0;0;1;1;0;0','0;0.885;0.90;0.935;1')+
+    AP('♛','b','300,150;300,150;120,150;120,150','0;0.895;0.925;1')+
+    AP('♕','w','300,570;300,570;300,210;300,210','0;0.93;0.97;1');
+
+  /* efectos finales */
+  var FX =
+    '<circle cx="120" cy="150" r="0" fill="none" stroke="#a855f7" stroke-width="4" opacity="0">'+
+    '<animate attributeName="r" values="0;0;42;14" keyTimes="0;0.885;0.91;1" dur="'+DUR+'" repeatCount="indefinite"/>'+
+    '<animate attributeName="opacity" values="0;0;0.9;0" keyTimes="0;0.885;0.905;1" dur="'+DUR+'" repeatCount="indefinite"/></circle>'+
+    '<circle cx="360" cy="150" r="36" fill="none" stroke="#ef4444" stroke-width="3" opacity="0">'+
+    '<animate attributeName="opacity" values="0;0;0.9;0.4;0.9" keyTimes="0;0.965;0.975;0.985;1" dur="'+DUR+'" repeatCount="indefinite"/></circle>'+
+    '<rect x="84" y="114" width="492" height="492" rx="8" fill="#ef4444" opacity="0">'+AO('0;0;0.12;0.12','0;0.965;0.98;1')+'</rect>'+
+    '<text x="330" y="372" text-anchor="middle" font-size="48" font-weight="900" fill="#ef4444" opacity="0" filter="url(#gl'+u+')">¡JAQUE MATE!'+AO('0;0;1;1','0;0.965;0.98;1')+'</text>'+
+    '<text x="330" y="404" text-anchor="middle" font-size="18" fill="#fca5a5" opacity="0">11. Dxd7# · Las blancas ganan'+AO('0;0;1;1','0;0.965;0.985;1')+'</text>';
+
+  /* panel derecho: pipeline de la trampa */
+  var nodes=[
+    {t:'EL CEBO · DESPLIEGUE ASTUTO', tag:'1.e4 e5 · 2.Cf3 Cc6 · 3.c3', s:0.02},
+    {t:'EL NEGRO MORDISCA EL ANZUELO', tag:'4…Cxe4 · 5…Ce7', s:0.355},
+    {t:'JAQUES Y REGALO ENVENENADO', tag:'7.Ab5+ · 8.dxc6', s:0.565},
+    {t:'ATAQUE A LA DESCUBIERTA', tag:'9.cxb7+', s:0.765},
+    {t:'PROMOCIÓN Y JAQUE MATE', tag:'10.bxa8=D · 11.Dxd7#', s:0.84}
+  ];
+  var pipe='', yy=384, gap=52, k;
+  for(k=0;k<nodes.length;k++){
+    var y=yy+k*gap, n=nodes[k];
+    if(k>0){
+      var pY=yy+(k-1)*gap, ti=n.s;
+      pipe+='<line x1="676" y1="'+(pY+12)+'" x2="676" y2="'+(y-12)+'" stroke="#1e3a5f" stroke-width="2"/>'+
+            '<line x1="676" y1="'+(pY+12)+'" x2="676" y2="'+(y-12)+'" stroke="#00d4ff" stroke-width="2" opacity="0">'+
+            '<animate attributeName="opacity" values="0;0;0.7;0.7" keyTimes="0;'+ti.toFixed(3)+';'+(ti+0.03).toFixed(3)+';1" dur="'+DUR+'" repeatCount="indefinite"/></line>';
+    }
+    pipe+='<circle cx="676" cy="'+y+'" r="7" fill="#16233c" stroke="#33465f" stroke-width="2"/>'+
+      '<text x="700" y="'+(y+6)+'" font-size="17" font-weight="600" fill="#5b6b82">'+n.t+'</text>'+
+      '<text x="1244" y="'+(y+5)+'" font-size="13" fill="#44546b" text-anchor="end">'+n.tag+'</text>'+
+      '<g opacity="0"><circle cx="676" cy="'+y+'" r="11" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.55"/>'+
+      '<circle cx="676" cy="'+y+'" r="7" fill="#00d4ff"/>'+
+      '<text x="700" y="'+(y+6)+'" font-size="17" font-weight="700" fill="#e2e8f0">'+n.t+'</text>'+
+      '<text x="1244" y="'+(y+5)+'" font-size="13" fill="#7dd3fc" text-anchor="end">'+n.tag+'</text>'+
+      '<animate attributeName="opacity" values="0;0;1;1" keyTimes="0;'+n.s.toFixed(3)+';'+(n.s+0.02).toFixed(3)+';1" dur="'+DUR+'" repeatCount="indefinite"/></g>';
+  }
+
+  var right =
+    '<text x="1160" y="640" font-size="270" text-anchor="middle" fill="#0e1a30" opacity="0.8">♞</text>'+
+    '<rect x="716" y="92" width="448" height="38" rx="19" fill="rgba(0,212,255,0.06)" stroke="#00d4ff" stroke-opacity="0.55"/>'+
+    '<text x="940" y="117" text-anchor="middle" font-size="16" font-weight="700" fill="#00d4ff" letter-spacing="3">♟ GUÍA INTERACTIVA · NIVEL PRINCIPIANTE</text>'+
+    '<g filter="url(#gl'+u+')" opacity="0.5"><text x="940" y="205" text-anchor="middle" font-size="66" font-weight="900" fill="url(#grad'+u+')" letter-spacing="2">LA TRAMPA</text>'+
+    '<text x="940" y="272" text-anchor="middle" font-size="66" font-weight="900" fill="url(#grad'+u+')" letter-spacing="6">PONZIANI</text>'+
+    '<animate attributeName="opacity" values="0.35;0.85;0.35" dur="3s" repeatCount="indefinite"/></g>'+
+    '<text x="940" y="205" text-anchor="middle" font-size="66" font-weight="900" fill="url(#grad'+u+')" letter-spacing="2">LA TRAMPA</text>'+
+    '<text x="940" y="272" text-anchor="middle" font-size="66" font-weight="900" fill="url(#grad'+u+')" letter-spacing="6">PONZIANI</text>'+
+    '<text x="940" y="304" text-anchor="middle" font-size="20" fill="#7dd3fc" font-weight="600">Apertura Ponziani · 1.e4 e5 · 2.Cf3 Cc6 · 3.c3</text>'+
+    '<text x="940" y="332" text-anchor="middle" font-size="15" fill="#94a3b8">Cebo → Regalo envenenado → Descubierta → Promoción → Mate</text>'+
+    '<line x1="660" y1="352" x2="1244" y2="352" stroke="#1e3a5f" stroke-width="1.5"/>'+
+    pipe+
+    '<text x="660" y="660" font-size="13" fill="#475569" letter-spacing="1.5">APERTURA PONZIANI · SISTEMA DE EMBOSCADA CON 3.c3</text>'+
+    '<text x="1244" y="660" font-size="13" fill="#475569" text-anchor="end" letter-spacing="1.5">11 JUGADAS · 21 MOVIMIENTOS · VICTORIA TOTAL</text>';
+
+  return '<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animación de la trampa Ponziani" font-family="Segoe UI, system-ui, sans-serif">'+
+  '<defs>'+
+    '<radialGradient id="bg'+u+'" cx="30%" cy="25%" r="90%"><stop offset="0%" stop-color="#13203e"/><stop offset="100%" stop-color="#0a0e1a"/></radialGradient>'+
+    '<linearGradient id="grad'+u+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#a855f7"/></linearGradient>'+
+    '<pattern id="gp'+u+'" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#1e3a5f" stroke-opacity="0.22"/></pattern>'+
+    '<filter id="gl'+u+'" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'+
+  '</defs>'+
+  '<rect width="1280" height="720" fill="url(#bg'+u+')"/>'+
+  '<rect width="1280" height="720" fill="url(#gp'+u+')"/>'+
+  '<circle cx="1230" cy="60" r="150" fill="none" stroke="url(#grad'+u+')" stroke-opacity="0.14" stroke-width="2"/>'+
+  '<circle cx="620" cy="720" r="130" fill="none" stroke="url(#grad'+u+')" stroke-opacity="0.1" stroke-width="2"/>'+
+  '<rect x="82" y="112" width="496" height="496" rx="14" fill="none" stroke="url(#grad'+u+')" stroke-width="2" opacity="0.5"/>'+
+  '<rect x="84" y="114" width="492" height="492" rx="12" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>'+
+  '<g clip-path="none">'+squares+'</g>'+
+  HL+BEAM1+BEAM2+ranks+files+stat+anim+FX+right+
+  '<rect width="1280" height="720" fill="#0a0e1a" opacity="0"><animate attributeName="opacity" values="0;0;1" keyTimes="0;0.985;1" dur="'+DUR+'" repeatCount="indefinite"/></rect>'+
+  '</svg>';
+}
+document.getElementById('homeCover').innerHTML = buildCover('h');
+document.getElementById('creditsCover').innerHTML = buildCover('c');
+
+/* ============================================================
+   MOTOR DE AJEDREZ — tablero interactivo
+============================================================ */
+var GLYPH={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+
+function startPosition(){
+  return {
+    a8:'r',b8:'n',c8:'b',d8:'q',e8:'k',f8:'b',g8:'n',h8:'r',
+    a7:'p',b7:'p',c7:'p',d7:'p',e7:'p',f7:'p',g7:'p',h7:'p',
+    a2:'P',b2:'P',c2:'P',d2:'P',e2:'P',f2:'P',g2:'P',h2:'P',
+    a1:'R',b1:'N',c1:'B',d1:'Q',e1:'K',f1:'B',g1:'N',h1:'R'
+  };
+}
+function applyStep(pos,step){
+  var p={}; for(var k in pos){p[k]=pos[k];}
+  if(step.castle){
+    if(step.castle==='w'){p.g1=p.h1;delete p.h1;p.f1=p.e1;delete p.e1;}
+    else{p.g8=p.h8;delete p.h8;p.f8=p.e8;delete p.e8;}
+    return p;
+  }
+  var pc=p[step.from];
+  p[step.to]= step.promo ? step.promo : pc;
+  delete p[step.from];
+  return p;
+}
+function applySteps(initial,steps){
+  var arr=[initial],cur=initial;
+  steps.forEach(function(s){cur=applyStep(cur,s);arr.push(cur);});
+  return arr;
+}
+
+/* Los 21 movimientos individuales de la partida (cada paso = un solo bando) */
+var MAIN_STEPS=[
+{from:'e2',to:'e4',side:'w',piece:'Peón',color:'blanco',notation:'e4',
+ what:'El peón blanco avanza dos casillas y ocupa e4.',
+ why:'Reclama el corazón del tablero: controlar el centro es la regla de oro de la apertura.'},
+{from:'e7',to:'e5',side:'b',piece:'Peón',color:'negro',notation:'e5',
+ what:'El peón negro avanza dos casillas y responde simétricamente en e5.',
+ why:'Ambos bandos luchan por el espacio central desde el primer momento.'},
+{from:'g1',to:'f3',side:'w',piece:'Caballo',color:'blanco',notation:'Cf3',
+ what:'El caballo blanco sale de g1 y se desarrolla a f3.',
+ why:'Ataca directamente al peón negro de e5: el blanco propone un reto.'},
+{from:'b8',to:'c6',side:'b',piece:'Caballo',color:'negro',notation:'Cc6',
+ what:'El caballo negro sale de b8 y se desarrolla a c6.',
+ why:'Defiende el peón de e5: el negro acepta el desafío.'},
+{from:'c2',to:'c3',side:'w',piece:'Peón',color:'blanco',notation:'c3',
+ what:'El peón blanco avanza de c2 a c3.',
+ why:'La sutileza de la Ponziani: parece lenta porque no desarrolla una pieza, pero es una preparación “astuta” para una explosión central masiva, apoyando el futuro avance a d4.'},
+{from:'g8',to:'f6',side:'b',piece:'Caballo',color:'negro',notation:'Cf6',
+ what:'El caballo negro sale de g8 y se desarrolla a f6.',
+ why:'Amenaza el peón blanco de e4. El negro, creyendo que el blanco “perdió” un tiempo con c3, intenta contraatacar de inmediato.'},
+{from:'d2',to:'d4',side:'w',piece:'Peón',color:'blanco',notation:'d4',
+ what:'El peón blanco avanza de d2 a d4.',
+ why:'En lugar de defender e4 pasivamente, el blanco ignora la amenaza y fuerza el conflicto central preparado por c3.'},
+{from:'f6',to:'e4',side:'b',piece:'Caballo',color:'negro',notation:'Cxe4',cap:true,
+ what:'El caballo negro captura el peón blanco de e4.',
+ why:'El negro muerde el anzuelo: cree ganar material gratuito, pero camina con los ojos vendados hacia el abismo.'},
+{from:'d4',to:'d5',side:'w',piece:'Peón',color:'blanco',notation:'d5',
+ what:'El peón blanco avanza de d4 a d5.',
+ why:'Expulsa al caballo negro de c6, que ya no tiene casillas cómodas y debe huir.'},
+{from:'c6',to:'e7',side:'b',piece:'Caballo',color:'negro',notation:'Ce7',
+ what:'El caballo negro retrocede de c6 a e7.',
+ why:'Al retroceder a e7, las piezas negras quedan amontonadas en su propia fila de origen: el caballo bloquea la salida de su dama y sus alfiles, asfixiando su coordinación. Este “hacinamiento” es una sentencia de muerte.'},
+{from:'f3',to:'e5',side:'w',piece:'Caballo',color:'blanco',notation:'Cxe5',cap:true,
+ what:'El caballo blanco captura el peón negro de e5.',
+ why:'Recupera el peón y coloca una pieza “monstruo” en el centro que el negro no puede ignorar.'},
+{from:'d7',to:'d6',side:'b',piece:'Peón',color:'negro',notation:'d6',
+ what:'El peón negro avanza de d7 a d6.',
+ why:'El negro intenta expulsar al poderoso caballo central blanco.'},
+{from:'f1',to:'b5',side:'w',piece:'Alfil',color:'blanco',notation:'Ab5+',check:true,
+ what:'El alfil blanco se desplaza por la diagonal de f1 a b5 y declara jaque al rey negro.',
+ why:'Respuesta con autoridad: el jaque obliga al negro a reaccionar y mantiene la iniciativa en manos del blanco.'},
+{from:'c7',to:'c6',side:'b',piece:'Peón',color:'negro',notation:'c6',
+ what:'El peón negro avanza de c7 a c6 para cubrir el jaque.',
+ why:'Bloqueo forzado: el negro gasta un tiempo defendiéndose mientras el blanco prepara el engaño final.'},
+{from:'d5',to:'c6',side:'w',piece:'Peón',color:'blanco',notation:'dxc6',cap:true,
+ what:'El peón blanco de d5 captura al peón negro en c6.',
+ why:'Aquí se ejecuta el engaño final: el blanco deja su alfil de b5 totalmente desprotegido, como un regalo envenenado.'},
+{from:'d6',to:'e5',side:'b',piece:'Peón',color:'negro',notation:'dxe5',cap:true,
+ what:'El peón negro de d6 captura al caballo blanco en e5.',
+ why:'La codicia ciega al negro: cree que el blanco cometió un error de principiante al regalar una pieza tras otra.'},
+{from:'c6',to:'b7',side:'w',piece:'Peón',color:'blanco',notation:'cxb7+',cap:true,check:true,disco:true,
+ what:'El peón blanco de c6 captura diagonalmente al peón negro en b7.',
+ why:'Jugada demoledora por dos razones: al quitarse el peón de en medio, el alfil de b5 queda con vía libre para dar jaque al rey (ataque descubierto); además, el peón de b7 amenaza directamente a la torre negra de a8.'},
+{from:'c8',to:'d7',side:'b',piece:'Alfil',color:'negro',notation:'Ad7',
+ what:'El alfil negro sale de c8 a d7.',
+ why:'Intento desesperado de cubrir el jaque mediante un bloqueo.'},
+{from:'b7',to:'a8',side:'w',piece:'Peón',color:'blanco',notation:'bxa8=D',cap:true,promo:'Q',promoFlag:true,
+ what:'El peón blanco captura la torre negra en a8 y, al llegar a la última fila, se promociona a dama.',
+ why:'Alcanzar la fila final permite cambiar un peón por la pieza más poderosa del juego: ventaja abrumadora.'},
+{from:'d8',to:'a8',side:'b',piece:'Dama',color:'negra',notation:'Dxa8',cap:true,
+ what:'La dama negra se desplaza de d8 a a8 y captura a la dama recién coronada.',
+ why:'El negro trata de mitigar el desastre, pero al hacerlo su dama abandona la defensa de su propio campo.'},
+{from:'d1',to:'d7',side:'w',piece:'Dama',color:'blanca',notation:'Dxd7#',cap:true,check:true,mate:true,
+ what:'La dama blanca original captura al alfil negro en d7 y declara jaque mate.',
+ why:'El alfil de d7 había quedado totalmente abandonado cuando la dama negra fue a a8. El rey negro no tiene escapatoria: no puede huir, no puede capturar a la dama (defendida por el alfil de b5) y no puede bloquear el jaque. La victoria es total.'}
+];
+
+var POSITIONS = applySteps(startPosition(), MAIN_STEPS);
+var TOTAL = MAIN_STEPS.length;
+
+/* tabla de la partida completa (fuente original) */
+var TABLE_ROWS=[
+ ['Peón de e2 a e4 (e4)','Peón de e7 a e5 (e5)'],
+ ['Caballo de g1 a f3 (Nf3)','Caballo de b8 a c6 (Nc6)'],
+ ['Peón de c2 a c3 (c3)','Caballo de g8 a f6 (Nf6)'],
+ ['Peón de d2 a d4 (d4)','Caballo de f6 toma el peón de e4 (Nxe4)'],
+ ['Peón de d4 a d5 (d5)','Caballo de c6 a e7 (Ne7)'],
+ ['Caballo de f3 toma el peón de e5 (Nxe5)','Peón de d7 a d6 (d6)'],
+ ['Alfil de f1 a b5, dando jaque (Bb5+)','Peón de c7 a c6, bloqueando el jaque (c6)'],
+ ['Peón de d5 toma el peón de c6 (dxc6)','Peón de d6 toma el caballo de e5 (dxe5)'],
+ ['Peón de c6 toma el peón de b7, dando jaque a la descubierta (cxb7+)','Alfil de c8 a d7, bloqueando el jaque (Bd7)'],
+ ['Peón de b7 toma la torre de a8, promocionando a Dama (bxa8=Q)','Dama de d8 toma la dama de a8 (Qxa8)'],
+ ['Dama de d1 toma el alfil de d7, dando jaque mate (Qxd7#)','']
+];
+
+/* ---------- construcción del tablero ---------- */
+var boardGrid=document.getElementById('boardGrid');
+var cells={};
+function buildGrid(el){
+  el.innerHTML='';
+  var FILES='abcdefgh';
+  for(var r=8;r>=1;r--){
+    for(var f=0;f<8;f++){
+      var sqName=FILES[f]+r;
+      var d=document.createElement('div');
+      d.className='sq '+((((8-r)+f)%2===0)?'light':'dark');
+      d.setAttribute('data-sq',sqName);
+      el.appendChild(d);
+      cells[sqName]=d;
+    }
+  }
+}
+function fillCoords(){
+  var rc=document.getElementById('rankCol'),fr=document.getElementById('fileRow');
+  for(var r=8;r>=1;r--){var s=document.createElement('span');s.textContent=r;rc.appendChild(s);}
+  'abcdefgh'.split('').forEach(function(c){var s=document.createElement('span');s.textContent=c;fr.appendChild(s);});
+}
+function renderBoard(pos,idx){
+  var last = idx>0 ? MAIN_STEPS[idx-1] : null;
+  for(var sqName in cells){
+    var el=cells[sqName];
+    el.classList.remove('hl','hl-from');
+    el.innerHTML='';
+    var p=pos[sqName];
+    if(p){
+      var sp=document.createElement('span');
+      sp.className='pc '+(p===p.toUpperCase()?'pw':'pb');
+      sp.textContent=GLYPH[p];
+      el.appendChild(sp);
+    }
+  }
+  if(last){
+    if(cells[last.from])cells[last.from].classList.add('hl','hl-from');
+    if(cells[last.to])cells[last.to].classList.add('hl');
+  }
+}
+buildGrid(boardGrid);
+fillCoords();
+
+/* ---------- stepper ---------- */
+var idx=0, timer=null;
+var slider=document.getElementById('slider');
+var btnPrev=document.getElementById('btnPrev'),btnNext=document.getElementById('btnNext'),
+    btnReset=document.getElementById('btnReset'),btnPlay=document.getElementById('btnPlay');
+var stepLabel=document.getElementById('stepLabel'),turnLabel=document.getElementById('turnLabel'),
+    fullMoveLabel=document.getElementById('fullMoveLabel');
+var mpNum=document.getElementById('mpNum'),mpColor=document.getElementById('mpColor'),
+    mpPiece=document.getElementById('mpPiece'),mpRoute=document.getElementById('mpRoute'),
+    mpBadges=document.getElementById('mpBadges'),mpWhat=document.getElementById('mpWhat'),
+    mpWhy=document.getElementById('mpWhy'),mpNot=document.getElementById('mpNot');
+
+function stopPlay(){
+  if(timer){clearInterval(timer);timer=null;}
+  btnPlay.textContent='▶ Reproducir';
+}
+function gotoStep(n){
+  idx=Math.max(0,Math.min(TOTAL,n));
+  render();
+}
+function render(){
+  renderBoard(POSITIONS[idx],idx);
+  /* panel */
+  if(idx===0){
+    mpNum.textContent='POSICIÓN INICIAL';
+    mpColor.style.display='none';
+    mpPiece.textContent='Todas las piezas en su lugar';
+    mpRoute.textContent='—';
+    mpBadges.innerHTML='<span class="chip">Blancas: filas 1–2</span><span class="chip">Negras: filas 7–8</span>';
+    mpWhat.textContent='El tablero muestra la posición inicial estándar del ajedrez. Cada pieza ocupa su casilla de origen.';
+    mpWhy.textContent='Pulsa «Siguiente» (o «Reproducir») para ver cómo las blancas tienden la trampa Ponziani movimiento a movimiento.';
+    mpNot.textContent='—';
+    stepLabel.textContent='Posición inicial';
+    turnLabel.textContent='';
+    fullMoveLabel.innerHTML='Usa el control deslizante para saltar a cualquier momento de la partida.';
+  }else{
+    var m=MAIN_STEPS[idx-1];
+    var num=Math.ceil(idx/2);
+    var isW=m.side==='w';
+    mpNum.textContent='MOVIMIENTO '+idx+' — '+(isW?'BLANCAS':'NEGRAS');
+    mpColor.style.display='inline-block';
+    mpColor.textContent=isW?'♔ BLANCAS':'♚ NEGRAS';
+    mpColor.className='chip '+(isW?'wt':'bk');
+    mpPiece.textContent=m.piece+' '+m.color;
+    mpRoute.textContent=m.from+' → '+m.to;
+    var b='';
+    if(m.cap)b+='<span class="chip red">⚔ CAPTURA</span>';
+    if(m.promoFlag)b+='<span class="chip pur">♛ PROMOCIÓN = DAMA</span>';
+    if(m.disco)b+='<span class="chip amb">⚡ JAQUE A LA DESCUBIERTA</span>';
+    if(m.check&&!m.mate)b+='<span class="chip amb">¡JAQUE!</span>';
+    if(m.mate)b+='<span class="chip red">☠ ¡JAQUE MATE!</span>';
+    mpBadges.innerHTML=b;
+    mpWhat.textContent=m.what;
+    mpWhy.textContent=m.why;
+    mpNot.textContent=m.notation;
+    stepLabel.textContent='Movimiento '+idx+' de '+TOTAL;
+    turnLabel.textContent=num+'. '+(isW?'BLANCAS':'NEGRAS');
+    var wNot=MAIN_STEPS[2*num-2]?MAIN_STEPS[2*num-2].notation:'';
+    var bNot=MAIN_STEPS[2*num-1]?MAIN_STEPS[2*num-1].notation:'';
+    fullMoveLabel.innerHTML='Jugada completa '+num+': <code>'+wNot+(bNot?(' '+bNot):' …')+'</code>';
+  }
+  slider.value=idx;
+  slider.style.setProperty('--p',(idx/TOTAL*100)+'%');
+  btnPrev.disabled = idx===0;
+  btnNext.disabled = idx===TOTAL;
+  /* tabla activa */
+  var tds=document.querySelectorAll('#movesBody td.click');
+  Array.prototype.forEach.call(tds,function(td){
+    var s=parseInt(td.getAttribute('data-step'),10);
+    td.classList.toggle('on', s===idx);
+  });
+  /* chips activos */
+  var chips=document.querySelectorAll('#phaseChips .pchip');
+  Array.prototype.forEach.call(chips,function(ch){
+    ch.classList.toggle('on', parseInt(ch.getAttribute('data-step'),10)===idx);
+  });
+}
+btnNext.addEventListener('click',function(){stopPlay();gotoStep(idx+1);});
+btnPrev.addEventListener('click',function(){stopPlay();gotoStep(idx-1);});
+btnReset.addEventListener('click',function(){stopPlay();gotoStep(0);});
+slider.addEventListener('input',function(){stopPlay();gotoStep(parseInt(slider.value,10));});
+btnPlay.addEventListener('click',function(){
+  if(timer){stopPlay();return;}
+  if(idx>=TOTAL){idx=0;render();}
+  btnPlay.textContent='⏸ Pausa';
+  timer=setInterval(function(){
+    if(idx>=TOTAL){stopPlay();return;}
+    idx++;render();
+    if(idx>=TOTAL)stopPlay();
+  }, REDUCED?2200:1400);
+});
+
+/* tabla de movimientos */
+(function(){
+  var tb=document.getElementById('movesBody'),html='';
+  TABLE_ROWS.forEach(function(row,i){
+    var wStep=2*i+1, bStep=2*i+2;
+    html+='<tr><td class="jn">'+(i+1)+'.</td>'+
+      '<td class="click" data-step="'+wStep+'">'+row[0]+'</td>'+
+      '<td class="'+(row[1]?'click':'')+'" '+(row[1]?('data-step="'+bStep+'"'):'')+'>'+(row[1]||'—')+'</td></tr>';
+  });
+  tb.innerHTML=html;
+  tb.addEventListener('click',function(e){
+    var td=e.target.closest('td.click');
+    if(!td)return;
+    stopPlay();
+    gotoStep(parseInt(td.getAttribute('data-step'),10));
+    document.getElementById('boardZone').scrollIntoView({behavior:REDUCED?'auto':'smooth',block:'start'});
+  });
+})();
+
+/* chips de fase y botones "ver en tablero" */
+document.getElementById('phaseChips').addEventListener('click',function(e){
+  var ch=e.target.closest('.pchip');if(!ch)return;
+  stopPlay();gotoStep(parseInt(ch.getAttribute('data-step'),10));
+});
+Array.prototype.forEach.call(document.querySelectorAll('.go-board'),function(b){
+  b.addEventListener('click',function(){
+    showSection('partida');
+    var n=parseInt(b.getAttribute('data-step'),10);
+    setTimeout(function(){
+      gotoStep(n);
+      document.getElementById('boardZone').scrollIntoView({behavior:REDUCED?'auto':'smooth',block:'start'});
+    },60);
+  });
+});
+
+/* teclado */
+document.addEventListener('keydown',function(e){
+  if(!document.getElementById('partida').classList.contains('active'))return;
+  if(e.target.tagName==='INPUT')return;
+  if(e.key==='ArrowRight'){stopPlay();gotoStep(idx+1);}
+  if(e.key==='ArrowLeft'){stopPlay();gotoStep(idx-1);}
+});
+
+/* ============================================================
+   SPA — navegación
+============================================================ */
+var pages=document.querySelectorAll('.page');
+var navBtns=document.querySelectorAll('.navbtn');
+var nav=document.getElementById('nav');
+function showSection(id){
+  pages.forEach(function(p){p.classList.toggle('active',p.id===id);});
+  navBtns.forEach(function(b){
+    var on=b.getAttribute('data-sec')===id;
+    b.classList.toggle('active',on);
+    if(on){b.scrollIntoView({inline:'center',block:'nearest',behavior:REDUCED?'auto':'smooth'});}
+  });
+  window.scrollTo({top:0,behavior:'auto'});
+  if(id==='creditos' && !REDUCED){
+    /* reinicia la animación de portada al entrar en créditos */
+    var sv=document.querySelector('#creditsCover svg');
+    if(sv && sv.setCurrentTime){try{sv.setCurrentTime(0);}catch(err){}}
+  }
+  updateProgress();
+}
+navBtns.forEach(function(b){
+  b.addEventListener('click',function(){showSection(b.getAttribute('data-sec'));});
+});
+Array.prototype.forEach.call(document.querySelectorAll('button[data-sec]:not(.navbtn)'),function(b){
+  b.addEventListener('click',function(){showSection(b.getAttribute('data-sec'));});
+});
+document.getElementById('brandBtn').addEventListener('click',function(){showSection('home');});
+
+/* barra de progreso */
+var pbar=document.getElementById('pbar');
+function updateProgress(){
+  var h=document.documentElement;
+  var max=h.scrollHeight-window.innerHeight;
+  var pct=max>0?(window.scrollY/max)*100:0;
+  pbar.style.width=Math.max(0,Math.min(100,pct))+'%';
+}
+window.addEventListener('scroll',updateProgress,{passive:true});
+window.addEventListener('resize',updateProgress);
+
+/* volver arriba */
+var toTop=document.getElementById('toTop');
+window.addEventListener('scroll',function(){
+  toTop.classList.toggle('show',window.scrollY>350);
+},{passive:true});
+toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:REDUCED?'auto':'smooth'});});
+
+/* quiz */
+Array.prototype.forEach.call(document.querySelectorAll('.qa'),function(qa){
+  var btn=qa.querySelector('.qa-btn');
+  btn.addEventListener('click',function(){
+    qa.classList.toggle('open');
+    btn.textContent=qa.classList.contains('open')?'Ocultar respuesta':'Ver respuesta';
+  });
+});
+
+/* accesibilidad: pausar animaciones SMIL si se prefiere menos movimiento */
+if(REDUCED){
+  Array.prototype.forEach.call(document.querySelectorAll('svg'),function(s){
+    try{s.pauseAnimations();}catch(err){}
+  });
+}
+
+/* init */
+render();
+updateProgress();
+})();
+</script>
+</body>
+</html>
