@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAPTURA AL PASO · Tutorial Interactivo de Ajedrez — Rubén Sbarsky</title>
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f; --accent:#00d4ff;
+  --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+  --text:#e2e8f0; --muted:#94a3b8; --dim:#64748b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.65;overflow-x:hidden}
+button{font-family:inherit}
+code{background:#101c36;border:1px solid var(--border);padding:1px 7px;border-radius:6px;color:var(--accent);font-size:.92em}
+/* ---------- barra de progreso ---------- */
+#progress-bar{position:fixed;top:0;left:0;height:4px;width:0;z-index:1200;background:linear-gradient(90deg,var(--accent),var(--purple));box-shadow:0 0 12px rgba(0,212,255,.7)}
+/* ---------- navbar ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(15,23,42,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:10px;height:60px;padding:0 14px}
+.brand{font-weight:800;color:var(--accent);white-space:nowrap;font-size:14px;letter-spacing:1px;flex-shrink:0}
+.brand span{color:var(--text)}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;padding:8px 0}
+.tabs::-webkit-scrollbar{display:none}
+.nav-btn{white-space:nowrap;padding:8px 14px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.5px;transition:.2s}
+.nav-btn:hover{color:var(--accent);border-color:var(--border)}
+.nav-btn.active{background:var(--accent);color:#06121f;font-weight:800;box-shadow:0 0 16px rgba(0,212,255,.45)}
+.nav-btn.creditos{border-color:rgba(168,85,247,.55);color:var(--purple)}
+.nav-btn.creditos.active{background:var(--purple);color:#fff;border-color:var(--purple);box-shadow:0 0 16px rgba(168,85,247,.5)}
+/* ---------- páginas SPA ---------- */
+.page{display:none;max-width:1080px;margin:0 auto;padding:86px 16px 40px}
+.page.active{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* ---------- HOME ---------- */
+.hero-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 0 40px rgba(0,212,255,.12);margin-bottom:26px;background:#060a14}
+.hero-svg{display:block;width:100%;height:auto}
+.home-badge{display:inline-flex;gap:8px;align-items:center;background:#00d4ff14;border:1px solid rgba(0,212,255,.5);color:var(--accent);padding:6px 16px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:14px}
+h1.home-title{font-size:clamp(34px,6.5vw,62px);font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#7dd3fc,var(--accent),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+.home-sub{font-size:clamp(16px,2.6vw,22px);color:var(--muted);margin-top:8px;font-weight:600}
+.home-author{color:var(--dim);margin-top:4px;font-style:italic}
+.home-desc{margin-top:16px;color:var(--text);max-width:860px;font-size:15px}
+.quote{margin:22px 0;padding:18px 22px;border-left:4px solid var(--accent);background:linear-gradient(90deg,rgba(0,212,255,.08),transparent);border-radius:0 12px 12px 0;font-size:clamp(15px,2.4vw,19px);font-style:italic;color:var(--text)}
+.quote small{display:block;margin-top:8px;color:var(--dim);font-style:normal;letter-spacing:1px;font-size:12px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;transition:.25s}
+.metric:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,212,255,.12)}
+.metric b{display:block;font-size:clamp(24px,4vw,34px);color:var(--accent);font-weight:900}
+.metric span{font-size:12px;color:var(--muted);letter-spacing:.5px}
+.dt-chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.chip{display:inline-flex;gap:6px;align-items:center;padding:6px 14px;border-radius:999px;font-size:13px;border:1px solid var(--border);background:#0a0e1a;color:var(--muted);font-weight:600}
+.chip.accent{border-color:rgba(0,212,255,.5);color:var(--accent)}
+.chip.amber{border-color:rgba(245,158,11,.5);color:var(--amber)}
+.chip.green{border-color:rgba(34,197,94,.5);color:var(--green)}
+.chip.purple{border-color:rgba(168,85,247,.5);color:var(--purple)}
+/* ---------- secciones ---------- */
+.sec-head{display:flex;gap:14px;align-items:center;margin:6px 0 20px;flex-wrap:wrap}
+.sec-icon{width:54px;height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.4);flex-shrink:0}
+.sec-head h2{font-size:clamp(22px,4vw,32px);font-weight:800;letter-spacing:.5px}
+.sec-head .sec-tag{font-size:11px;color:var(--dim);letter-spacing:2px;font-weight:700}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin:18px 0}
+.card h3{font-size:clamp(17px,2.6vw,21px);margin-bottom:12px;color:var(--text);font-weight:800}
+.card h3 .n{color:var(--accent)}
+.card p{color:var(--muted);font-size:14.5px;margin-bottom:10px}
+.card p:last-child{margin-bottom:0}
+.card b,.card strong{color:var(--text)}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.big-mark{font-size:clamp(20px,3vw,28px);font-weight:900;letter-spacing:1px;color:var(--accent)}
+.klist{list-style:none}
+.klist li{padding:8px 0 8px 26px;position:relative;color:var(--muted);font-size:14.5px;border-bottom:1px dashed #1e3a5f55}
+.klist li:last-child{border-bottom:none}
+.klist li::before{content:"▸";position:absolute;left:6px;color:var(--accent)}
+.klist.check li::before{content:"✔";color:var(--green)}
+.klist.cross li::before{content:"✘";color:var(--red)}
+/* ---------- callouts ---------- */
+.callout{border-left:4px solid;border-radius:8px;padding:14px 18px;margin:16px 0;background:#0a0e1a;font-size:14.5px;color:var(--muted)}
+.callout b{color:var(--text)}
+.co-tag{display:inline-block;font-weight:800;font-size:11px;letter-spacing:2px;margin-bottom:6px}
+.c-info{border-color:var(--accent)} .c-info .co-tag{color:var(--accent)}
+.c-ej{border-color:var(--green)} .c-ej .co-tag{color:var(--green)}
+.c-warn{border-color:var(--amber)} .c-warn .co-tag{color:var(--amber)}
+.c-err{border-color:var(--red)} .c-err .co-tag{color:var(--red)}
+/* ---------- tablas ---------- */
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);margin:14px 0}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:440px}
+.tbl th{background:#101c36;color:var(--accent);text-align:left;padding:12px 14px;letter-spacing:1px;font-size:12px;text-transform:uppercase;border-bottom:2px solid var(--border)}
+.tbl td{padding:11px 14px;border-bottom:1px solid #1e3a5f66;color:var(--muted)}
+.tbl tr:nth-child(even) td{background:#0d152680}
+.tbl td b{color:var(--text)}
+/* ---------- pasos numerados ---------- */
+.steps{counter-reset:stp;list-style:none}
+.steps li{display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed #1e3a5f55;color:var(--muted);font-size:14.5px}
+.steps li:last-child{border-bottom:none}
+.step-n{counter-increment:stp;width:34px;height:34px;border-radius:50%;background:rgba(0,212,255,.12);border:1px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:14px}
+.step-n::before{content:counter(stp)}
+.steps b{color:var(--text)}
+/* ---------- flujo ---------- */
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
+.flow-item{background:#101c36;border:1px solid var(--border);padding:9px 14px;border-radius:8px;font-size:13.5px;color:var(--text);font-weight:600}
+.flow-arrow{color:var(--accent);font-size:18px;font-weight:800}
+/* ---------- frase ---------- */
+.phrase-card{text-align:center;background:linear-gradient(135deg,#0f172a,#101c36);border:1px solid rgba(0,212,255,.45);box-shadow:0 0 30px rgba(0,212,255,.08)}
+.phrase{font-size:clamp(19px,3.4vw,30px);font-weight:900;letter-spacing:1.5px;line-height:1.5}
+.phrase .w1{color:var(--amber)} .phrase .w2{color:var(--accent)} .phrase .w3{color:var(--green)}
+/* ---------- errores ---------- */
+.err-card{border-left:4px solid var(--red)}
+.err-quote{font-size:15px;color:var(--text);font-weight:700;font-style:italic;margin-bottom:8px}
+.err-badge{display:inline-block;background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.5);padding:3px 12px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:1px;margin-bottom:10px}
+/* ---------- tableros ---------- */
+.board-mount{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin:20px 0}
+.board-mount.compact{padding:14px}
+.b-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.b-tag{background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.5);color:var(--accent);font-size:11px;font-weight:800;letter-spacing:1.5px;padding:4px 12px;border-radius:999px}
+.b-title{color:var(--muted);font-size:14px;font-weight:600}
+.board-frame{max-width:440px;margin:0 auto}
+.board-mount.compact .board-frame{max-width:350px}
+.board-area{display:flex;gap:6px;align-items:stretch}
+.rank-coords{display:flex;flex-direction:column;width:18px;flex-shrink:0}
+.rank-coords span{flex:1;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--dim);font-weight:700}
+.board-grid{flex:1;display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;border:2px solid var(--border);border-radius:8px;overflow:hidden;background:#0a0e1a}
+.sq{position:relative;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,5vw,30px);line-height:1;user-select:none}
+.board-mount.compact .sq{font-size:clamp(13px,4.2vw,24px)}
+.sq.light{background:#31456e}
+.sq.dark{background:#1b2a4a}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--accent),inset 0 0 18px rgba(0,212,255,.5)}
+.sq.hl-ep{box-shadow:inset 0 0 0 3px var(--red),inset 0 0 18px rgba(239,68,68,.5);animation:epPulse 1.4s ease-in-out infinite}
+@keyframes epPulse{0%,100%{box-shadow:inset 0 0 0 3px var(--red),inset 0 0 14px rgba(239,68,68,.4)}50%{box-shadow:inset 0 0 0 3px var(--red),inset 0 0 26px rgba(239,68,68,.75)}}
+.sq.hl-mark{box-shadow:inset 0 0 0 3px var(--green),inset 0 0 16px rgba(34,197,94,.45)}
+.pw{color:#f8fafc;text-shadow:0 2px 4px rgba(0,0,0,.7)}
+.pb{color:#0b1220;text-shadow:0 0 3px rgba(203,213,225,.55)}
+.file-row{display:flex;gap:6px;margin-top:4px}
+.file-spacer{width:18px;flex-shrink:0}
+.file-coords{flex:1;display:grid;grid-template-columns:repeat(8,1fr)}
+.file-coords span{text-align:center;font-size:12px;color:var(--dim);font-weight:700}
+.b-controls{margin-top:14px;background:#0a0e1a;border:1px solid var(--border);border-radius:10px;padding:14px}
+.b-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.btn{background:#101c36;border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;transition:.2s;min-height:42px}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);box-shadow:0 0 14px rgba(0,212,255,.3)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-accent{background:var(--accent);color:#06121f;border-color:var(--accent)}
+.btn-accent:hover:not(:disabled){color:#06121f;background:#7de6ff;box-shadow:0 0 18px rgba(0,212,255,.6)}
+.b-slider{width:100%;accent-color:var(--accent);cursor:pointer;height:22px}
+.b-ind{display:flex;justify-content:space-between;gap:8px;margin-top:10px;font-size:13px;color:var(--muted);flex-wrap:wrap;font-weight:600}
+.b-turn{color:var(--accent);font-weight:800;letter-spacing:.5px}
+.b-panel{margin-top:14px;background:#0a0e1a;border:1px solid var(--border);border-radius:10px;padding:16px}
+.p-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.p-badge{font-size:12px;font-weight:800;letter-spacing:1px;padding:5px 12px;border-radius:6px}
+.p-badge.w{background:#f1f5f9;color:#0f172a}
+.p-badge.b{background:#1e293b;color:#e2e8f0;border:1px solid #475569}
+.p-badge.init{background:rgba(0,212,255,.14);color:var(--accent);border:1px solid rgba(0,212,255,.5)}
+.p-not{font-size:13px;color:var(--muted)}
+.p-piece{font-size:15px;color:var(--muted);font-weight:700}
+.p-route{font-size:clamp(20px,3vw,26px);font-weight:900;color:var(--text);margin:4px 0 12px;letter-spacing:1px}
+.p-route .arr{color:var(--accent)}
+.p-block{margin-top:10px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--muted)}
+.p-label{font-weight:800;color:var(--accent);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.p-block.why .p-label{color:var(--green)}
+.p-epnote{margin-top:10px;font-size:13px;color:#fca5a5;border:1px dashed rgba(239,68,68,.5);background:rgba(239,68,68,.07);padding:9px 12px;border-radius:8px;font-weight:700}
+/* ---------- ejercicios ---------- */
+.ex-card .ex-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.ex-num{background:rgba(168,85,247,.14);border:1px solid rgba(168,85,247,.55);color:var(--purple);font-size:12px;font-weight:800;letter-spacing:1.5px;padding:4px 14px;border-radius:999px}
+.ex-q{font-size:15px;color:var(--text);font-weight:600;margin:6px 0 12px}
+.reveal-btn{width:100%;background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.55);color:var(--purple)}
+.reveal-btn:hover{border-color:var(--purple);color:var(--purple);box-shadow:0 0 14px rgba(168,85,247,.3)}
+.answer{border-radius:10px;padding:16px;margin-top:12px;border:1px solid;font-size:14.5px;color:var(--muted)}
+.answer b{color:var(--text)}
+.a-title{font-size:17px;font-weight:900;letter-spacing:1px;margin-bottom:6px}
+.answer.si{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.5)} .answer.si .a-title{color:var(--green)}
+.answer.no{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.5)} .answer.no .a-title{color:var(--red)}
+.hidden{display:none!important}
+/* ---------- quiz ---------- */
+.score-card{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-color:rgba(0,212,255,.45)}
+#quiz-score{font-weight:800;color:var(--accent);font-size:15px;letter-spacing:.5px}
+.quiz-card .q-head{display:inline-block;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.5);color:var(--accent);font-size:12px;font-weight:800;letter-spacing:1.5px;padding:4px 14px;border-radius:999px;margin-bottom:10px}
+.q-btns{display:flex;gap:10px;margin-top:12px}
+.q-btn{flex:1;font-weight:900;letter-spacing:1px}
+.q-btn.correct{background:rgba(34,197,94,.18);border-color:var(--green);color:var(--green)}
+.q-btn.wrong{background:rgba(239,68,68,.18);border-color:var(--red);color:var(--red)}
+.quiz-fb{margin-top:12px;padding:12px 14px;border-radius:8px;font-size:14px}
+.quiz-fb.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.5);color:#bbf7d0}
+.quiz-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.5);color:#fecaca}
+/* ---------- créditos ---------- */
+.credit-card{text-align:center;border-color:rgba(168,85,247,.5)}
+.credit-card h2{font-size:clamp(22px,4vw,30px);margin:14px 0 4px}
+.credit-author{font-size:clamp(17px,3vw,22px);color:var(--accent);font-weight:800;letter-spacing:1px}
+.fiat{font-style:italic;color:var(--purple);font-size:clamp(15px,2.6vw,19px);letter-spacing:1px;margin-top:14px;font-weight:600}
+/* ---------- volver arriba / footer ---------- */
+.to-top{position:fixed;right:18px;bottom:18px;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#06121f;border:none;font-size:20px;font-weight:900;cursor:pointer;opacity:0;pointer-events:none;transition:.3s;z-index:1050;box-shadow:0 4px 20px rgba(0,212,255,.5)}
+.to-top.show{opacity:1;pointer-events:auto}
+.footer{border-top:1px solid var(--border);background:var(--card);text-align:center;padding:28px 16px;color:var(--dim);font-size:13.5px;line-height:2}
+.footer .fiat{margin-top:4px}
+/* ---------- responsive / accesibilidad ---------- */
+@media (max-width:640px){
+  .page{padding:80px 10px 30px}
+  .card{padding:16px}
+  .brand{font-size:12px}
+  .nav-btn{font-size:12px;padding:7px 11px}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">♟ <span>CAPTURA AL PASO</span></div>
+    <nav class="tabs" id="tabs" aria-label="Secciones del tutorial">
+      <button class="nav-btn active" data-target="sec-inicio" type="button">INICIO</button>
+      <button class="nav-btn" data-target="sec-que" type="button">¿QUÉ ES?</button>
+      <button class="nav-btn" data-target="sec-paso" type="button">PASO A PASO</button>
+      <button class="nav-btn" data-target="sec-cond" type="button">CONDICIONES</button>
+      <button class="nav-btn" data-target="sec-inverso" type="button">EJ. INVERSO</button>
+      <button class="nav-btn" data-target="sec-noex" type="button">NO EXISTE</button>
+      <button class="nav-btn" data-target="sec-pensar" type="button">CÓMO PENSAR</button>
+      <button class="nav-btn" data-target="sec-patrones" type="button">PATRONES</button>
+      <button class="nav-btn" data-target="sec-errores" type="button">ERRORES</button>
+      <button class="nav-btn" data-target="sec-ejercicios" type="button">EJERCICIOS</button>
+      <button class="nav-btn" data-target="sec-test" type="button">TEST</button>
+      <button class="nav-btn" data-target="sec-resumen" type="button">RESUMEN</button>
+      <button class="nav-btn creditos" data-target="sec-creditos" type="button">CRÉDITOS</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ SVG DE PORTADA (symbol reutilizado en HOME y CRÉDITOS) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id="bgG" cx="35%" cy="40%" r="85%">
+      <stop offset="0%" stop-color="#13223f"/>
+      <stop offset="55%" stop-color="#0a1226"/>
+      <stop offset="100%" stop-color="#060a14"/>
+    </radialGradient>
+    <linearGradient id="titleG" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="55%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <radialGradient id="glowG" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
+    </radialGradient>
+    <g id="pawnShape">
+      <circle cx="0" cy="-18" r="11"/>
+      <path d="M -7,-10 C -7,-2 -13,3 -15,10 L 15,10 C 13,3 7,-2 7,-10 Z"/>
+      <rect x="-18" y="12" width="36" height="9" rx="4"/>
+    </g>
+  </defs>
+
+  <symbol id="coverArt" viewBox="0 0 1600 900">
+    <!-- fondo -->
+    <rect x="0" y="0" width="1600" height="900" fill="url(#bgG)"/>
+    <g id="bgGrid"></g>
+    <text x="1330" y="860" font-size="430" fill="#0d1830" opacity="0.6" font-family="'Segoe UI',system-ui,sans-serif">♟</text>
+    <ellipse cx="390" cy="450" rx="430" ry="390" fill="url(#glowG)">
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="6s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <!-- tablero -->
+    <rect x="98" y="158" width="584" height="584" rx="16" fill="none" stroke="#00d4ff" stroke-opacity="0.22" stroke-width="2"/>
+    <g id="heroSquares"></g>
+    <rect x="102" y="162" width="576" height="576" rx="12" fill="none" stroke="#1e3a5f" stroke-width="4"/>
+    <g id="heroCoords"></g>
+
+    <!-- destello ámbar en d5 (llega el peón negro) -->
+    <rect x="320" y="380" width="70" height="70" fill="#f59e0b" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.45;0.2;0;0" keyTimes="0;0.20;0.235;0.40;0.46;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- casilla fantasma d6 (casilla atravesada / destino de la captura) -->
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;0;0.95;0.95;0;0" keyTimes="0;0.22;0.27;0.44;0.49;1" dur="12s" repeatCount="indefinite"/>
+      <rect x="323" y="313" width="64" height="64" fill="#00d4ff" fill-opacity="0.12"/>
+      <rect x="323" y="313" width="64" height="64" fill="none" stroke="#00d4ff" stroke-width="3" stroke-dasharray="10 7"/>
+    </g>
+
+    <!-- trayectoria vertical d7→d5 -->
+    <line x1="355" y1="275" x2="355" y2="415" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" stroke-dasharray="140" stroke-dashoffset="140" opacity="0">
+      <animate attributeName="stroke-dashoffset" values="140;140;0;0;140" keyTimes="0;0.10;0.20;0.94;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.85;0.85;0;0" keyTimes="0;0.10;0.115;0.88;0.93;1" dur="12s" repeatCount="indefinite"/>
+    </line>
+
+    <!-- flecha diagonal de captura e5→d6 -->
+    <line x1="425" y1="415" x2="355" y2="345" stroke="#00d4ff" stroke-width="4" stroke-linecap="round" stroke-dasharray="100" stroke-dashoffset="100" opacity="0">
+      <animate attributeName="stroke-dashoffset" values="100;100;0;0;100" keyTimes="0;0.35;0.45;0.94;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.35;0.36;0.90;0.95;1" dur="12s" repeatCount="indefinite"/>
+    </line>
+    <polygon points="0,0 16,7 16,-7" fill="#00d4ff" transform="translate(355,345) rotate(-135)" opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.445;0.455;0.90;1" dur="12s" repeatCount="indefinite"/>
+    </polygon>
+
+    <!-- retícula objetivo sobre d5 -->
+    <g transform="translate(355,415)" opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.21;0.26;0.43;0.47;1" dur="12s" repeatCount="indefinite"/>
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite"/>
+        <circle r="32" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="11 8"/>
+        <line x1="0" y1="-44" x2="0" y2="-36" stroke="#f59e0b" stroke-width="3"/>
+        <line x1="0" y1="36" x2="0" y2="44" stroke="#f59e0b" stroke-width="3"/>
+        <line x1="-44" y1="0" x2="-36" y2="0" stroke="#f59e0b" stroke-width="3"/>
+        <line x1="36" y1="0" x2="44" y2="0" stroke="#f59e0b" stroke-width="3"/>
+      </g>
+    </g>
+
+    <!-- PEÓN NEGRO: d7 → d5, luego desaparece capturado -->
+    <g transform="translate(355,275)">
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 140;0 140;0 0;0 0" keyTimes="0;0.10;0.20;0.80;0.90;1" dur="12s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;1;0;0;0;1;1" keyTimes="0;0.445;0.465;0.80;0.90;0.955;1" dur="12s" repeatCount="indefinite"/>
+        <ellipse cx="0" cy="23" rx="20" ry="5" fill="#000" opacity="0.35"/>
+        <use href="#pawnShape" fill="#0b1220" stroke="#67e8f9" stroke-width="2"/>
+      </g>
+    </g>
+
+    <!-- PEÓN BLANCO: e5 → d6 captura al paso -->
+    <g transform="translate(425,415)">
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0 0;0 0;-70 -70;-70 -70;0 0;0 0" keyTimes="0;0.35;0.45;0.80;0.90;1" dur="12s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.80;0.90;0.95;1" dur="12s" repeatCount="indefinite"/>
+        <ellipse cx="0" cy="23" rx="20" ry="5" fill="#000" opacity="0.35"/>
+        <use href="#pawnShape" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+      </g>
+    </g>
+
+    <!-- ondas de impacto en d5 -->
+    <circle cx="355" cy="415" fill="none" stroke="#00d4ff" stroke-width="3" r="6" opacity="0">
+      <animate attributeName="r" values="6;6;70;70" keyTimes="0;0.45;0.53;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.9;0;0" keyTimes="0;0.45;0.455;0.54;1" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="355" cy="415" fill="none" stroke="#f59e0b" stroke-width="2" r="6" opacity="0">
+      <animate attributeName="r" values="6;6;88;88" keyTimes="0;0.47;0.56;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0;0.7;0;0" keyTimes="0;0.47;0.475;0.57;1" dur="12s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- etiquetas de casillas -->
+    <text x="314" y="281" text-anchor="end" font-size="17" fill="#94a3b8" font-family="'Segoe UI',system-ui,sans-serif" opacity="0.9">d7
+      <animate attributeName="opacity" values="0.9;0.9;0;0;0.9;0.9" keyTimes="0;0.11;0.16;0.90;0.955;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+    <text x="314" y="421" text-anchor="end" font-size="17" fill="#f59e0b" font-family="'Segoe UI',system-ui,sans-serif" opacity="0">d5
+      <animate attributeName="opacity" values="0;0;0.95;0.95;0;0" keyTimes="0;0.205;0.23;0.88;0.93;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+    <text x="396" y="351" text-anchor="start" font-size="17" fill="#00d4ff" font-family="'Segoe UI',system-ui,sans-serif" opacity="0">d6
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.25;0.29;0.86;0.91;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+    <text x="466" y="421" text-anchor="start" font-size="17" fill="#94a3b8" font-family="'Segoe UI',system-ui,sans-serif" opacity="0.75">e5</text>
+
+    <!-- ================= columna derecha ================= -->
+    <rect x="760" y="150" width="400" height="42" rx="21" fill="#0f172a" stroke="#00d4ff" stroke-width="1.5">
+      <animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="3s" repeatCount="indefinite"/>
+    </rect>
+    <text x="960" y="178" text-anchor="middle" font-size="17" fill="#00d4ff" letter-spacing="3" font-weight="700" font-family="'Segoe UI',system-ui,sans-serif">♟ TUTORIAL INTERACTIVO · AJEDREZ</text>
+
+    <text x="760" y="284" font-size="92" font-weight="900" letter-spacing="2" fill="url(#titleG)" font-family="'Segoe UI',system-ui,sans-serif">CAPTURA</text>
+    <text x="760" y="376" font-size="92" font-weight="900" letter-spacing="2" fill="url(#titleG)" font-family="'Segoe UI',system-ui,sans-serif">AL PASO</text>
+    <rect x="760" y="394" width="240" height="6" rx="3" fill="#00d4ff">
+      <animate attributeName="width" values="0;240;240" keyTimes="0;0.08;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+    <text x="760" y="438" font-size="25" fill="#94a3b8" font-family="'Segoe UI',system-ui,sans-serif">La regla más curiosa de los peones, explicada desde cero</text>
+
+    <!-- chips de las tres claves -->
+    <g font-family="'Segoe UI',system-ui,sans-serif" font-weight="800" font-size="20" text-anchor="middle">
+      <rect x="760" y="470" width="210" height="48" rx="24" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <rect x="760" y="470" width="210" height="48" rx="24" fill="#f59e0b" opacity="0">
+        <animate attributeName="opacity" values="0;0;0.5;0.22;0.22;0;0" keyTimes="0;0.10;0.15;0.24;0.80;0.86;1" dur="12s" repeatCount="indefinite"/>
+      </rect>
+      <text x="865" y="501" fill="#f59e0b">DOS CASILLAS</text>
+      <rect x="990" y="470" width="160" height="48" rx="24" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <rect x="990" y="470" width="160" height="48" rx="24" fill="#00d4ff" opacity="0">
+        <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.23;0.28;0.80;0.86;1" dur="12s" repeatCount="indefinite"/>
+      </rect>
+      <text x="1070" y="501" fill="#00d4ff">AL LADO</text>
+      <rect x="1170" y="470" width="240" height="48" rx="24" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
+      <rect x="1170" y="470" width="240" height="48" rx="24" fill="#22c55e" opacity="0">
+        <animate attributeName="opacity" values="0;0;0.55;0.55;0;0" keyTimes="0;0.37;0.43;0.80;0.86;1" dur="12s" repeatCount="indefinite"/>
+      </rect>
+      <text x="1290" y="501" fill="#22c55e">INMEDIATAMENTE</text>
+    </g>
+
+    <!-- tarjeta de notación -->
+    <rect x="760" y="560" width="320" height="64" rx="12" fill="#0f172a" stroke="#00d4ff" stroke-width="2"/>
+    <rect x="760" y="560" width="320" height="64" rx="12" fill="#00d4ff" opacity="0">
+      <animate attributeName="opacity" values="0;0;0.18;0.18;0;0" keyTimes="0;0.47;0.51;0.82;0.87;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+    <text x="920" y="603" text-anchor="middle" font-size="34" font-weight="800" fill="#e2e8f0" font-family="'Segoe UI',system-ui,sans-serif">e5×d6 e.p.</text>
+    <text x="760" y="656" font-size="18" font-style="italic" fill="#64748b" font-family="'Segoe UI',system-ui,sans-serif">«en passant» — del francés: «de paso»</text>
+
+    <!-- textos de fase -->
+    <text x="760" y="706" font-size="22" font-weight="700" fill="#f59e0b" opacity="0" font-family="'Segoe UI',system-ui,sans-serif">1... d7–d5 · el peón negro avanza DOS casillas
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.105;0.125;0.42;0.455;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+    <text x="760" y="706" font-size="22" font-weight="700" fill="#00d4ff" opacity="0" font-family="'Segoe UI',system-ui,sans-serif">2. exd6 e.p. · ¡el peón blanco captura AL PASO!
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.465;0.485;0.86;0.90;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+    <text x="760" y="792" font-size="24" font-style="italic" fill="#64748b" font-family="'Segoe UI',system-ui,sans-serif">by Rubén Sbarsky ♟</text>
+  </symbol>
+</svg>
+
+<main>
+<!-- ==================== HOME ==================== -->
+<section id="sec-inicio" class="page active">
+  <div class="hero-wrap">
+    <svg class="hero-svg" viewBox="0 0 1600 900" role="img" aria-label="Animación de la captura al paso: el peón negro avanza dos casillas y el peón blanco lo captura al paso"><use href="#coverArt"></use></svg>
+  </div>
+  <div class="home-badge">♟ TUTORIAL INTERACTIVO · AJEDREZ · REGLAS ESPECIALES</div>
+  <h1 class="home-title">CAPTURA AL PASO</h1>
+  <div class="home-sub">La regla más curiosa de los peones explicada desde cero</div>
+  <div class="home-author">by Rubén Sbarsky</div>
+  <p class="home-desc">Un tutorial completo para entender el <b>en passant</b> desde cero absoluto: qué es, cómo captura normalmente un peón, cuáles son las <b>cuatro condiciones</b> obligatorias, cuándo <b>NO</b> existe la captura, cómo pensar como un jugador de ajedrez y cuáles son los errores típicos. Con <b>tableros interactivos paso a paso</b>, ejemplos visuales, ejercicios resueltos y un mini-test final.</p>
+  <div class="quote">“Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.”<small>— CITA DEL TUTORIAL</small></div>
+  <div class="metrics">
+    <div class="metric"><b>16</b><span>TABLEROS INTERACTIVOS</span></div>
+    <div class="metric"><b>4</b><span>CONDICIONES OBLIGATORIAS</span></div>
+    <div class="metric"><b>8</b><span>EJERCICIOS RESUELTOS</span></div>
+    <div class="metric"><b>6</b><span>CASOS DEL TEST FINAL</span></div>
+    <div class="metric"><b>5</b><span>ERRORES TÍPICOS</span></div>
+    <div class="metric"><b>54</b><span>BLOQUES DE CONTENIDO</span></div>
+  </div>
+  <div class="flow">
+    <span class="flow-item">🔑 DOS CASILLAS</span><span class="flow-arrow">·</span>
+    <span class="flow-item">📍 AL LADO</span><span class="flow-arrow">·</span>
+    <span class="flow-item">⚡ INMEDIATAMENTE</span>
+  </div>
+  <div class="dt-chips">
+    <span class="chip accent">📅 FECHA: 05/09/2026</span>
+    <span class="chip purple">🕒 HORA: 18:03:08</span>
+    <span class="chip green">✅ 100% autónomo · sin conexión</span>
+  </div>
+</section>
+
+<!-- ==================== ¿QUÉ ES? ==================== -->
+<section id="sec-que" class="page">
+  <div class="sec-head"><div class="sec-icon">♟</div><div><div class="sec-tag">SECCIÓN 1 · FUNDAMENTOS</div><h2>¿Qué es la captura al paso?</h2></div></div>
+
+  <div class="card">
+    <h3><span class="n">1 ·</span> Una regla especial del ajedrez</h3>
+    <p>La <b>captura al paso</b> es una regla especial del ajedrez que permite a un <b>peón</b> capturar a otro peón de una manera diferente a la captura normal.</p>
+    <p>Es una de las reglas más extrañas del ajedrez porque:</p>
+    <div class="callout c-warn"><span class="co-tag">LA CLAVE DE TODO</span><br><b>EL PEÓN QUE CAPTURAS NO ESTÁ EN LA CASILLA A LA QUE MUEVES TU PEÓN.</b></div>
+    <p>Por eso al principio resulta tan difícil de entender. Pero cuando veas varios ejemplos, será muy sencilla.</p>
+    <p>La captura al paso también se conoce como <b>en passant</b>, que es una expresión francesa que significa aproximadamente: <b>«de paso»</b>.</p>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">2 ·</span> Primero: ¿cómo captura normalmente un peón?</h3>
+    <p>Antes de estudiar la captura al paso tenemos que recordar cómo captura un peón. Un peón:</p>
+    <ul class="klist">
+      <li><b>Avanza hacia delante.</b></li>
+      <li><b>Captura en diagonal.</b></li>
+    </ul>
+    <p>Por ejemplo, un peón blanco situado en <b>e5</b> puede capturar una pieza negra situada en <b>d6</b> o en <b>f6</b>:</p>
+    <div class="flow"><span class="flow-item">Peón blanco e5 → d6</span><span class="flow-arrow">ó</span><span class="flow-item">Peón blanco e5 → f6</span></div>
+    <p>Pero normalmente <b>NO</b> puede capturar algo que esté directamente delante. Por ejemplo: <code>e5 → e6</code>. Eso sería un <b>avance</b>, no una captura.</p>
+    <div id="b-normal" class="board-mount compact"></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">3 ·</span> Entonces, ¿qué tiene de especial la captura al paso?</h3>
+    <p>La captura al paso permite una situación excepcional. Imagina:</p>
+    <ul class="klist">
+      <li><b>BLANCAS:</b> peón en e5.</li>
+      <li><b>NEGRAS:</b> peón en d7.</li>
+    </ul>
+    <p>Ahora juegan las negras: <code>d7 → d5</code>. El peón negro avanza <b>DOS casillas</b>. Normalmente, el peón blanco de e5 no podría capturarlo porque el peón negro ha terminado en d5. <b>Pero existe una regla especial.</b></p>
+    <div class="callout c-ej"><span class="co-tag">EJEMPLO</span><br>El peón blanco puede capturarlo: <b>e5 → d6</b>. El peón negro de d5 desaparece. Esto es: <code>e5xd6 e.p.</code></div>
+    <p>Vamos a verlo con todo detalle, movimiento a movimiento, en la siguiente sección.</p>
+  </div>
+</section>
+
+<!-- ==================== PASO A PASO ==================== -->
+<section id="sec-paso" class="page">
+  <div class="sec-head"><div class="sec-icon">🎬</div><div><div class="sec-tag">SECCIÓN 2 · EL EJEMPLO PRINCIPAL</div><h2>Veámoslo paso a paso</h2></div></div>
+
+  <div class="callout c-info"><span class="co-tag">INFO · TABLERO INTERACTIVO</span><br>Usa los controles situados <b>debajo del tablero</b>: pulsa <b>Siguiente ▶</b> para avanzar cada movimiento, <b>◀ Anterior</b> para retroceder, el <b>deslizador</b> para saltar a cualquier posición y <b>↺ Reset</b> para volver al inicio.</div>
+
+  <div id="b-paso" class="board-mount"></div>
+
+  <div class="card">
+    <h3><span class="n">7 ·</span> ¿Por qué el peón termina en d6?</h3>
+    <p>Esta es probablemente <b>la pregunta más importante</b>. Porque la captura al paso funciona como si el peón negro hubiera avanzado solamente una casilla:</p>
+    <div class="flow">
+      <span class="flow-item">En lugar de: d7 → d5</span><span class="flow-arrow">→</span>
+      <span class="flow-item">Imaginamos: d7 → d6</span><span class="flow-arrow">→</span>
+      <span class="flow-item">El peón blanco captura normalmente: e5 → d6</span>
+    </div>
+    <p>El peón blanco de e5 podría capturar normalmente ese peón en d6. La regla permite hacer esa captura <b>aunque el peón negro haya avanzado dos casillas</b>. Por eso se llama <b class="big-mark">CAPTURA AL PASO</b>.</p>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">16 ·</span> ¿Por qué existe esta regla?</h3>
+    <p>Aquí está la explicación histórica y lógica:</p>
+    <ol class="steps">
+      <li><div><b>Originalmente</b>, los peones solamente podían avanzar <b>una casilla</b>.</div></li>
+      <li><div>Después se permitió que un peón pudiera avanzar <b>dos casillas</b> en su primer movimiento.</div></li>
+      <li><div>Eso creaba una situación extraña: imagina un peón blanco en e5 y un peón negro en d7. Si las negras solamente pudieran avanzar una casilla (<code>d7–d6</code>), el peón blanco podría capturarlo: <code>e5xd6</code>.</div></li>
+      <li><div>Pero como las negras pueden hacer <code>d7–d5</code>, el peón negro <b>«salta» la casilla d6</b>. La captura al paso evita que ese salto permita <b>escapar de una captura</b> que habría sido posible si el peón solamente hubiera avanzado una casilla.</div></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">17 ·</span> Muy importante: NO es una captura normal</h3>
+    <p>Compara las dos situaciones:</p>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <tr><th>CAPTURA NORMAL</th><th>CAPTURA AL PASO</th></tr>
+        <tr>
+          <td>Peón blanco: <b>e5 → d6</b><br>Hay una pieza negra en: <b>d6</b><br>La captura es normal.</td>
+          <td>Peón blanco: <b>e5 → d6</b><br>Pero el peón negro está en: <b>d5</b> y acaba de jugar <b>d7 → d5</b><br>El peón negro <b>desaparece</b>.</td>
+        </tr>
+      </table>
+    </div>
+    <p>Esta es la <b>diferencia fundamental</b>.</p>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">24 ·</span> ¿Cómo se escribe?</h3>
+    <p>En notación algebraica se suele indicar <code>e.p.</code>, que significa <b>en passant</b>. Por ejemplo: <code>exd6 e.p.</code> significa: <i>«El peón de e5 captura en d6 al paso.»</i></p>
+    <div class="callout c-info"><span class="co-tag">INFO</span><br>En muchas notaciones modernas la indicación <b>«e.p.»</b> puede omitirse porque la jugada ya queda determinada por la posición.</div>
+  </div>
+</section>
+
+<!-- ==================== CONDICIONES ==================== -->
+<section id="sec-cond" class="page">
+  <div class="sec-head"><div class="sec-icon">🔒</div><div><div class="sec-tag">SECCIÓN 3 · REGLAS</div><h2>Las 4 condiciones</h2></div></div>
+
+  <div class="callout c-warn"><span class="co-tag">ADVERTENCIA</span><br>No puedes hacer una captura al paso cuando quieras. Deben cumplirse <b>TODAS</b> estas condiciones.</div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3><span class="n">CONDICIÓN 1 ·</span> Debe ser un PEÓN</h3>
+      <p>La captura al paso <b>solamente afecta a peones</b>. No existe:</p>
+      <ul class="klist cross">
+        <li>Captura al paso de un caballo.</li>
+        <li>Captura al paso de un alfil.</li>
+        <li>Captura al paso de una torre.</li>
+        <li>Captura al paso de una dama.</li>
+        <li>Captura al paso de un rey.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="n">CONDICIÓN 2 ·</span> Avance de DOS CASILLAS de golpe</h3>
+      <p>El peón enemigo debe avanzar <b>DOS CASILLAS DE GOLPE</b>. Por ejemplo: <code>d7 → d5</code> o <code>e2 → e4</code>.</p>
+      <div class="callout c-err"><span class="co-tag">ERROR</span><br>Si avanza solamente una casilla (<code>d7 → d6</code>), <b>NO existe</b> captura al paso.</div>
+    </div>
+    <div class="card">
+      <h3><span class="n">CONDICIÓN 3 ·</span> Tu peón en la posición adecuada</h3>
+      <p>Para que un peón <b>blanco</b> pueda hacer una captura al paso, debe estar en <b>la quinta fila</b>: <code>e5</code>, <code>d5</code>, <code>f5</code>, <code>c5</code>…</p>
+      <p>Para que un peón <b>negro</b> pueda hacerla, debe estar en <b>la cuarta fila</b>: <code>e4</code>, <code>d4</code>, <code>f4</code>, <code>c4</code>…</p>
+    </div>
+    <div class="card">
+      <h3><span class="n">CONDICIÓN 4 ·</span> INMEDIATAMENTE (la más importante)</h3>
+      <p>La captura al paso debe hacerse <b>INMEDIATAMENTE</b>. Es decir:</p>
+      <div class="flow"><span class="flow-item">Las negras juegan d7–d5</span><span class="flow-arrow">→</span><span class="flow-item">Las blancas responden exd6 e.p.</span></div>
+      <p>Pero si las blancas hacen <b>otra jugada</b>, ya <b>NO</b> pueden hacer la captura al paso. La oportunidad desaparece.</p>
+    </div>
+  </div>
+
+  <div class="callout c-err" style="text-align:center"><span class="co-tag">RESUMEN DE LAS CUATRO CONDICIONES</span><br>
+    1. Tiene que ser un <b>peón</b> · 2. El peón enemigo acaba de avanzar <b>dos casillas</b> · 3. Tu peón está <b>justo al lado</b> y en la <b>fila adecuada</b> · 4. Debes capturar <b>inmediatamente</b>.<br><br>
+    <b class="big-mark" style="color:var(--red)">SI FALTA UNA SOLA CONDICIÓN: NO HAY CAPTURA AL PASO.</b>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">40 ·</span> Tabla rápida</h3>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <tr><th>SITUACIÓN</th><th>¿CAPTURA AL PASO?</th></tr>
+        <tr><td>Peón enemigo avanza 2 casillas</td><td><b>Posiblemente</b></td></tr>
+        <tr><td>Peón enemigo avanza 1 casilla</td><td>❌ No</td></tr>
+        <tr><td>Tu peón está en la fila incorrecta</td><td>❌ No</td></tr>
+        <tr><td>No tienes un peón al lado</td><td>❌ No</td></tr>
+        <tr><td>No la haces inmediatamente</td><td>❌ No</td></tr>
+        <tr><td>Es otro tipo de pieza</td><td>❌ No</td></tr>
+        <tr><td>Se cumplen todas las condiciones</td><td>✅ <b>Posiblemente</b></td></tr>
+        <tr><td>La captura deja a tu rey en jaque</td><td>❌ No es legal</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== EJEMPLO INVERSO ==================== -->
+<section id="sec-inverso" class="page">
+  <div class="sec-head"><div class="sec-icon">🔄</div><div><div class="sec-tag">SECCIÓN 4 · TAMBIÉN PARA LAS NEGRAS</div><h2>Ejemplo 2 — el caso inverso</h2></div></div>
+
+  <div class="card">
+    <h3><span class="n">13 ·</span> Las negras también pueden capturar al paso</h3>
+    <p>Hasta ahora hemos visto: peón blanco en e5 y peón negro en d7. Pero también puede ocurrir <b>al revés</b>. Imagina:</p>
+    <ul class="klist">
+      <li><b>Peón negro</b> en <b>e4</b>.</li>
+      <li><b>Peón blanco</b> en <b>d2</b>.</li>
+    </ul>
+    <p>Las blancas juegan <code>d2 → d4</code>: el peón blanco avanza dos casillas. Ahora el peón negro de e4 puede capturarlo al paso. Las negras juegan <code>e4 → d3</code> y el peón blanco de d4 desaparece. La jugada sería: <code>exd3 e.p.</code></p>
+  </div>
+
+  <div id="b-inverso" class="board-mount"></div>
+
+  <div class="card">
+    <h3><span class="n">39 ·</span> El patrón para las negras</h3>
+    <p>También funciona para las negras en ambos lados:</p>
+    <div class="grid-2">
+      <div class="callout c-ej"><span class="co-tag">LADO DAMA</span><br>Peón negro en <b>e4</b> · Peón blanco: <b>d2 → d4</b><br>Entonces: <code>e4xd3 e.p.</code></div>
+      <div class="callout c-ej"><span class="co-tag">LADO REY</span><br>Peón negro en <b>e4</b> · Peón blanco: <b>f2 → f4</b><br>Entonces: <code>e4xf3 e.p.</code></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CUANDO NO EXISTE ==================== -->
+<section id="sec-noex" class="page">
+  <div class="sec-head"><div class="sec-icon">🚫</div><div><div class="sec-tag">SECCIÓN 5 · CONTRAEJEMPLOS</div><h2>Cuándo NO existe captura al paso</h2></div></div>
+
+  <div class="card">
+    <h3><span class="n">EJEMPLO 3 ·</span> El peón está en la fila equivocada</h3>
+    <p>Blancas: peón en <b>e4</b>. Negras: peón en <b>d7</b>. Las negras juegan <code>d7–d5</code>. ¿Puede el peón blanco capturar al paso? <b>NO.</b> ¿Por qué? Porque el peón blanco está en <b>e4</b> y no en <b>e5</b>. Le falta una fila. Por tanto: <b>NO HAY CAPTURA AL PASO.</b></p>
+    <div id="b-no-fila" class="board-mount compact"></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">EJEMPLO 4 ·</span> Tampoco existe: cerca no es suficiente</h3>
+    <p>Blancas: peón en <b>e5</b>. Negras: peón en <b>d6</b>. Las negras NO pueden hacer una captura al paso simplemente porque el peón esté cerca. La captura al paso <b>solamente aparece inmediatamente después</b> de que el peón enemigo haya hecho un movimiento de <b>DOS CASILLAS</b>.</p>
+    <div id="b-no-avance" class="board-mount compact"></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">EJEMPLO 5 ·</span> El peón avanza una sola casilla</h3>
+    <p>Blancas: peón en <b>e5</b>. Negras: peón en <b>d6</b>. Las negras juegan <code>d6–d5</code>. Ahora el peón negro solamente avanzó <b>una casilla</b>. ¿Puede el peón blanco capturarlo al paso? <b>NO. No existe captura al paso.</b></p>
+    <div id="b-una-casilla" class="board-mount compact"></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">EJEMPLO 6 ·</span> Se perdió la oportunidad</h3>
+    <p>Peón blanco en <b>e5</b>, peón negro en <b>d7</b>. Las negras juegan <code>d7–d5</code>: ahora <b>existe</b> captura al paso. Pero las blancas juegan <code>Cf3</code> en vez de <code>exd6 e.p.</code> Después de esa jugada, <b>YA NO PUEDEN HACERLA</b>, aunque el peón negro siga en d5. La oportunidad desapareció.</p>
+    <div id="b-oportunidad" class="board-mount compact"></div>
+  </div>
+
+  <div class="callout c-warn"><span class="co-tag">ADVERTENCIA · MUY IMPORTANTE</span><br>
+    No pienses: <i>«Como todavía puedo capturar ese peón, puedo hacerlo después.»</i> <b>NO.</b><br>
+    La captura al paso es una oportunidad <b>DE UNA SOLA JUGADA</b>. Si no la utilizas inmediatamente: <b>SE ACABÓ.</b>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">41 ·</span> La captura al paso NO es una «captura a distancia»</h3>
+    <p>Esto es importante. No significa: <i>«Mi peón puede capturar cualquier peón que pase cerca.»</i> <b>NO.</b> Solamente funciona en una situación extremadamente concreta. Tiene que ocurrir:</p>
+    <div class="flow">
+      <span class="flow-item">Peón enemigo en su posición inicial</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">Avanza exactamente dos casillas</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">Queda justo al lado de tu peón</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">Tu peón puede capturarlo inmediatamente</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">Tu peón avanza en diagonal a la casilla que el peón enemigo atravesó</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">El peón enemigo desaparece</span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CÓMO PENSAR ==================== -->
+<section id="sec-pensar" class="page">
+  <div class="sec-head"><div class="sec-icon">🧠</div><div><div class="sec-tag">SECCIÓN 6 · MÉTODO DE PENSAMIENTO</div><h2>Cómo pensar como un jugador de ajedrez</h2></div></div>
+
+  <div class="card">
+    <h3><span class="n">15 ·</span> Una forma muy fácil de recordarlo</h3>
+    <p>Piensa en esta situación como un diálogo entre peones:</p>
+    <div class="flow">
+      <span class="flow-item">🗨 PEÓN ENEMIGO: «Estoy en mi posición inicial.»</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">«Voy a avanzar dos casillas.»</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">«¡He pasado por una casilla que controla tu peón!»</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">Tu peón dice: «No tan rápido.»</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">Y lo captura: <b>AL PASO</b></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">18 ·</span> La pregunta que debes hacerte durante una partida</h3>
+    <p>Cuando el rival mueve un peón dos casillas, piensa inmediatamente:</p>
+    <div class="big-mark" style="text-align:center;margin:10px 0">«¿EXISTE UNA CAPTURA AL PASO?»</div>
+    <p>No siempre existirá. Pero debes comprobarlo. Por ejemplo: las negras juegan <code>d7–d5</code>. Mira tus peones blancos. ¿Tienes un peón en <b>c5</b> o en <b>e5</b>? Si sí, existe la posibilidad. Si no, no puedes capturar al paso.</p>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">29 ·</span> Una regla mental muy sencilla</h3>
+    <p>Cuando veas <b>PEÓN ENEMIGO + AVANCE DE DOS CASILLAS</b>, enciende una pequeña alarma mental:</p>
+    <div class="big-mark" style="text-align:center;margin:10px 0">🚨 «¡CAPTURA AL PASO!»</div>
+    <p>Después comprueba si tienes un peón justo al lado. Si no lo tienes: no pasa nada. Si lo tienes: comprueba si la captura es <b>legal</b> y si te <b>conviene</b>.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3><span class="n">25 ·</span> ¿La captura al paso es obligatoria?</h3>
+      <p><b>NO.</b> Si tienes derecho a capturar al paso, puedes decidir: <b>hacerla o no hacerla</b>. Puedes jugar otra cosa. Pero si haces otra jugada, <b>pierdes ese derecho</b>.</p>
+    </div>
+    <div class="card">
+      <h3><span class="n">26 ·</span> ¿Puede capturar al paso un peón clavado?</h3>
+      <p>Aquí aparece una cuestión más avanzada. Como cualquier otra jugada, la captura al paso <b>debe ser legal</b>. Por ejemplo, si mover tu peón al paso deja a tu propio rey en jaque: <b>NO PUEDES HACERLA</b>. La regla especial de captura al paso no permite ignorar las reglas normales de seguridad del rey.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">28 ·</span> Capturar no siempre es bueno</h3>
+    <p>Supongamos que puedes capturar al paso. Antes de hacerlo pregunta: <b>«¿Qué ocurre después?»</b> Porque quizá <code>e5xd6 e.p.</code> sea legal, pero después el rival tenga una táctica fuerte. Por eso seguimos utilizando nuestro método:</p>
+    <div class="flow">
+      <span class="flow-item">¿QUÉ CAMBIÓ?</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">¿QUÉ AMENAZA?</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">¿QUÉ PUEDO CAPTURAR?</span><span class="flow-arrow">↓</span>
+      <span class="flow-item">¿QUÉ PASA DESPUÉS?</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">27 ·</span> Esto es muy importante para aprender a pensar</h3>
+    <p>Cuando tu rival mueve un peón dos casillas, no pienses solamente: <i>«Ha avanzado un peón.»</i> Piensa: <b>«¿HA CAMBIADO ALGO TÁCTICAMENTE?»</b> Comprueba:</p>
+    <ol class="steps">
+      <li><div>¿Tengo un peón <b>al lado</b>?</div></li>
+      <li><div>¿Está en la <b>fila adecuada</b>?</div></li>
+      <li><div>¿El rival acaba de avanzar <b>dos casillas</b>?</div></li>
+      <li><div>¿Puedo <b>capturar al paso</b>?</div></li>
+      <li><div>¿La captura sería <b>legal</b>?</div></li>
+      <li><div>¿<b>Me interesa</b> hacerla?</div></li>
+    </ol>
+    <p>Esto último también es importante: <b>que puedas hacer una captura no significa que debas hacerla.</b></p>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">43 ·</span> Método completo después de cada movimiento del rival</h3>
+    <ol class="steps">
+      <li><div><b>¿ESTOY EN JAQUE?</b> Primero el rey.</div></li>
+      <li><div><b>¿QUÉ CAMBIÓ?</b> ¿Qué pieza se movió?</div></li>
+      <li><div><b>¿HIZO UN PEÓN UN AVANCE DE DOS CASILLAS?</b></div></li>
+      <li><div>Si sí: <b>¿EXISTE CAPTURA AL PASO?</b> Mira tus peones.</div></li>
+      <li><div><b>¿ES LEGAL?</b> Comprueba tu rey.</div></li>
+      <li><div><b>¿ME CONVIENE?</b> No captures automáticamente. Calcula qué ocurre después.</div></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">44 ·</span> La captura al paso como ejercicio de atención</h3>
+    <p>Esta regla es muy buena para entrenar la <b>visión ajedrecística</b>. ¿Por qué? Porque obliga a mirar:</p>
+    <ul class="klist check">
+      <li>Dónde estaba el peón.</li>
+      <li>Dónde terminó.</li>
+      <li>Cuántas casillas avanzó.</li>
+      <li>Qué casilla atravesó.</li>
+      <li>Qué peones enemigos están al lado.</li>
+      <li>Si la captura es legal.</li>
+      <li>Si la captura es conveniente.</li>
+    </ul>
+    <p>Es decir: <b>TE OBLIGA A PENSAR EN LO QUE ACABA DE OCURRIR.</b> Y eso es exactamente lo que debe hacer un buen jugador.</p>
+  </div>
+</section>
+
+<!-- ==================== PATRONES ==================== -->
+<section id="sec-patrones" class="page">
+  <div class="sec-head"><div class="sec-icon">🧩</div><div><div class="sec-tag">SECCIÓN 7 · RECONOCIMIENTO</div><h2>Los patrones que debes aprender</h2></div></div>
+
+  <div class="card">
+    <h3><span class="n">38 ·</span> Hay dos patrones básicos</h3>
+    <div class="grid-2">
+      <div class="callout c-ej"><span class="co-tag">PATRÓN A</span><br>Peón blanco en <b>e5</b> · Peón negro: <b>d7 → d5</b><br>Entonces: <code>e5xd6 e.p.</code></div>
+      <div class="callout c-ej"><span class="co-tag">PATRÓN B</span><br>Peón blanco en <b>e5</b> · Peón negro: <b>f7 → f5</b><br>Entonces: <code>e5xf6 e.p.</code></div>
+    </div>
+    <p>Es <b>exactamente el mismo concepto</b>: el peón enemigo avanza dos casillas pasando junto a tu peón. Tu peón puede capturarlo «de paso».</p>
+  </div>
+
+  <div class="card phrase-card">
+    <h3><span class="n">42 ·</span> La frase para memorizar</h3>
+    <p>Apréndete esta frase. Si recuerdas estas tres cosas, ya tienes prácticamente toda la regla:</p>
+    <div class="phrase"><span class="w1">DOS CASILLAS.</span> <span class="w2">AL LADO.</span> <span class="w3">INMEDIATAMENTE.</span></div>
+    <div class="grid-3" style="margin-top:18px">
+      <div class="callout c-warn" style="margin:0"><span class="co-tag">DOS CASILLAS</span><br>El enemigo acaba de avanzar dos.</div>
+      <div class="callout c-info" style="margin:0"><span class="co-tag">AL LADO</span><br>Tu peón está justo al lado.</div>
+      <div class="callout c-ej" style="margin:0"><span class="co-tag">INMEDIATAMENTE</span><br>Debes hacerlo en tu siguiente jugada.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">50 ·</span> La idea más importante de todo el tutorial</h3>
+    <p>No intentes memorizar: <i>«e5–d6, e4–d3, c5–b6…»</i>. Memoriza el <b>CONCEPTO</b>:</p>
+    <div class="callout c-info"><span class="co-tag">EL CONCEPTO</span><br>
+      <b>UN PEÓN AVANZA DOS CASILLAS Y PASA JUNTO A UN PEÓN ENEMIGO.</b><br>
+      El peón enemigo tiene derecho a capturarlo <b>COMO SI SOLO HUBIERA AVANZADO UNA CASILLA</b>.<br>
+      Y debe hacerlo <b>INMEDIATAMENTE</b>.
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ERRORES ==================== -->
+<section id="sec-errores" class="page">
+  <div class="sec-head"><div class="sec-icon">⚠️</div><div><div class="sec-tag">SECCIÓN 8 · EVITA ESTOS FALLOS</div><h2>Errores típicos</h2></div></div>
+
+  <div class="grid-2">
+    <div class="card err-card">
+      <span class="err-badge">ERROR TÍPICO Nº 1</span>
+      <div class="err-quote">«Mi peón está al lado, así que puedo capturar al paso.»</div>
+      <p><b style="color:var(--red)">❌ INCORRECTO.</b> Tiene que haber ocurrido un avance de <b>DOS CASILLAS</b> y además debe ser <b>INMEDIATO</b>.</p>
+    </div>
+    <div class="card err-card">
+      <span class="err-badge">ERROR TÍPICO Nº 2</span>
+      <div class="err-quote">«El peón enemigo está en d5, así que mi peón de e5 puede capturarlo al paso.»</div>
+      <p><b style="color:var(--red)">❌ INCORRECTO.</b> No basta con que estén en esas casillas. El peón negro tiene que haber llegado a d5 mediante <code>d7–d5</code> <b>justo en la jugada anterior</b>.</p>
+    </div>
+    <div class="card err-card">
+      <span class="err-badge">ERROR TÍPICO Nº 3</span>
+      <div class="err-quote">«Me olvidé de capturar al paso, pero todavía puedo hacerlo.»</div>
+      <p><b style="color:var(--red)">❌ INCORRECTO.</b> Una vez que haces otra jugada, <b>se pierde el derecho</b>.</p>
+    </div>
+    <div class="card err-card">
+      <span class="err-badge">ERROR TÍPICO Nº 4</span>
+      <div class="err-quote">«Siempre debo capturar al paso cuando puedo.»</div>
+      <p><b style="color:var(--red)">❌ INCORRECTO.</b> Es una <b>opción</b>. Como cualquier otra jugada, tienes que preguntarte: <b>¿es buena?</b></p>
+    </div>
+    <div class="card err-card">
+      <span class="err-badge">ERROR TÍPICO Nº 5</span>
+      <div class="err-quote">«Captura al paso significa que mi peón captura hacia delante.»</div>
+      <p><b style="color:var(--red)">❌ INCORRECTO.</b> Tu peón sigue moviéndose <b>diagonalmente</b>. La única cosa especial es: el peón capturado <b>desaparece de una casilla diferente</b>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== EJERCICIOS ==================== -->
+<section id="sec-ejercicios" class="page">
+  <div class="sec-head"><div class="sec-icon">✏️</div><div><div class="sec-tag">SECCIÓN 9 · PRÁCTICA</div><h2>Ejercicios (1–8)</h2></div></div>
+  <div class="callout c-info"><span class="co-tag">CÓMO TRABAJAR</span><br>En cada ejercicio: usa el tablero para reproducir el movimiento del rival, <b>piensa tu respuesta</b> y después pulsa <b>«Mostrar respuesta»</b>.</div>
+
+  <div class="grid-2">
+    <article class="card ex-card">
+      <div class="ex-top"><span class="ex-num">EJERCICIO 1</span><span class="chip">Peón e5 · Peón d7</span></div>
+      <div id="b-e1" class="board-mount compact"></div>
+      <p class="ex-q">Negras juegan: <code>d7–d5</code>. ¿Existe captura al paso?</p>
+      <button class="btn reveal-btn" data-target="a-e1" type="button">🔍 Mostrar respuesta</button>
+      <div id="a-e1" class="answer si hidden"><div class="a-title">✅ SÍ</div><p>Las blancas pueden jugar <code>e5xd6 e.p.</code> El peón blanco termina en <b>d6</b> y el peón negro desaparece.</p></div>
+    </article>
+
+    <article class="card ex-card">
+      <div class="ex-top"><span class="ex-num">EJERCICIO 2</span><span class="chip">Peón e4 · Peón d7</span></div>
+      <div id="b-e2" class="board-mount compact"></div>
+      <p class="ex-q">Negras juegan: <code>d7–d5</code>. ¿Captura al paso?</p>
+      <button class="btn reveal-btn" data-target="a-e2" type="button">🔍 Mostrar respuesta</button>
+      <div id="a-e2" class="answer no hidden"><div class="a-title">❌ NO</div><p>El peón blanco está en <b>e4</b>. Necesitaría estar en <b>e5</b>.</p></div>
+    </article>
+
+    <article class="card ex-card">
+      <div class="ex-top"><span class="ex-num">EJERCICIO 3</span><span class="chip">Peón e5 · Peón d7</span></div>
+      <div id="b-e3" class="board-mount compact"></div>
+      <p class="ex-q">Negras juegan: <code>d7–d6</code>. ¿Captura al paso?</p>
+      <button class="btn reveal-btn" data-target="a-e3" type="button">🔍 Mostrar respuesta</button>
+      <div id="a-e3" class="answer no hidden"><div class="a-title">❌ NO</div><p>El peón negro solamente avanzó <b>una casilla</b>.</p></div>
+    </article>
+
+    <article class="card ex-card">
+      <div class="ex-top"><span class="ex-num">EJERCICIO 4</span><span class="chip">Peón e5 · Peón d7 · ♘ g1</span></div>
+      <div id="b-e4" class="board-mount compact"></div>
+      <p class="ex-q">Negras juegan <code>d7–d5</code>. Las blancas juegan <code>Cf3</code>. Después quieren hacer <code>exd6 e.p.</code> ¿Pueden?</p>
+      <button class="btn reveal-btn" data-target="a-e4" type="button">🔍 Mostrar respuesta</button>
+      <div id="a-e4" class="answer no hidden"><div class="a-title">❌ NO</div><p>Han perdido la oportunidad. La captura al paso solamente estaba disponible <b>inmediatamente después</b> de <code>d7–d5</code>.</p></div>
+    </article>
+
+    <article class="card ex-card">
+      <div class="ex-top"><span class="ex-num">EJERCICIO 5</span><span class="chip">Peón c5 · Peón b7</span></div>
+      <div id="b-e5" class="board-mount compact"></div>
+      <p class="ex-q">Negras juegan: <code>b7–b5</code>. ¿Puede el peón blanco capturar al paso?</p>
+      <button class="btn reveal-btn" data-target="a-e5" type="button">🔍 Mostrar respuesta</button>
+      <div id="a-e5" class="answer si hidden"><div class="a-title">✅ SÍ</div><p>Las blancas pueden jugar <code>c5xb6 e.p.</code> El peón blanco termina en <b>b6</b> y el peón negro de b5 desaparece.</p></div>
+    </article>
+
+    <article class="card ex-card">
+      <div class="ex-top"><span class="ex-num">EJERCICIO 6</span><span class="chip">Peón f5 · Peón g7</span></div>
+      <div id="b-e6" class="board-mount compact"></div>
+      <p class="ex-q">Negras juegan: <code>g7–g5</code>. ¿Captura al paso?</p>
+      <button class="btn reveal-btn" data-target="a-e6" type="button">🔍 Mostrar respuesta</button>
+      <div id="a-e6" class="answer si hidden"><div class="a-title">✅ SÍ</div><p>Las blancas pueden jugar <code>fxg6 e.p.</code> El peón blanco pasa de <b>f5 → g6</b> y el peón negro de g5 desaparece.</p></div>
+    </article>
+
+    <article class="card ex-card">
+      <div class="ex-top"><span class="ex-num">EJERCICIO 7</span><span class="chip">Peón d5 · Peón e7</span></div>
+      <div id="b-e7" class="board-mount compact"></div>
+      <p class="ex-q">Negras juegan: <code>e7–e5</code>. ¿Captura al paso?</p>
+      <button class="btn reveal-btn" data-target="a-e7" type="button">🔍 Mostrar respuesta</button>
+      <div id="a-e7" class="answer si hidden"><div class="a-title">✅ SÍ</div><p>Las blancas pueden jugar <code>dxe6 e.p.</code> El peón blanco pasa de <b>d5 → e6</b> y el peón negro de e5 desaparece.</p></div>
+    </article>
+
+    <article class="card ex-card">
+      <div class="ex-top"><span class="ex-num">EJERCICIO 8 · ¡PIENSA!</span><span class="chip">Peón e5 · Peón f7</span></div>
+      <div id="b-e8" class="board-mount compact"></div>
+      <p class="ex-q">Negras juegan: <code>f7–f5</code>. ¿Existe captura al paso? Piensa antes de mostrar la respuesta.</p>
+      <button class="btn reveal-btn" data-target="a-e8" type="button">🔍 Mostrar respuesta</button>
+      <div id="a-e8" class="answer si hidden"><div class="a-title">✅ SÍ</div><p>Las blancas pueden jugar <code>exf6 e.p.</code> El peón blanco va de <b>e5 → f6</b> y el peón negro de f5 desaparece.</p></div>
+    </article>
+  </div>
+</section>
+
+<!-- ==================== TEST FINAL ==================== -->
+<section id="sec-test" class="page">
+  <div class="sec-head"><div class="sec-icon">🎯</div><div><div class="sec-tag">SECCIÓN 10 · EVALUACIÓN</div><h2>Mini-test final</h2></div></div>
+  <div class="callout c-info"><span class="co-tag">INSTRUCCIONES</span><br>Responde mentalmente <b>antes</b> de pulsar un botón. Después comprueba tu respuesta. Hay <b>6 casos</b>.</div>
+
+  <div class="card score-card">
+    <div id="quiz-score">Aciertos: 0 de 6 · Respondidos: 0 de 6</div>
+    <button id="quiz-reset" class="btn" type="button">↺ Reiniciar test</button>
+  </div>
+
+  <div class="grid-2">
+    <article class="card quiz-card" data-case="A" data-fb="Es el caso clásico: las blancas juegan <code>e5xd6 e.p.</code>">
+      <div class="q-head">CASO A</div>
+      <p>Peón blanco en <b>e5</b>. El peón negro hace <code>d7–d5</code>. ¿Captura al paso?</p>
+      <div class="q-btns"><button class="btn q-btn" data-v="si" type="button">SÍ</button><button class="btn q-btn" data-v="no" type="button">NO</button></div>
+      <div class="quiz-fb hidden"></div>
+    </article>
+    <article class="card quiz-card" data-case="B" data-fb="El peón blanco está en e4: necesitaría estar en e5. La fila es incorrecta.">
+      <div class="q-head">CASO B</div>
+      <p>Peón blanco en <b>e4</b>. El peón negro hace <code>d7–d5</code>. ¿Captura al paso?</p>
+      <div class="q-btns"><button class="btn q-btn" data-v="si" type="button">SÍ</button><button class="btn q-btn" data-v="no" type="button">NO</button></div>
+      <div class="quiz-fb hidden"></div>
+    </article>
+    <article class="card quiz-card" data-case="C" data-fb="El peón negro avanzó solo una casilla (d7–d6). Falta la condición del avance doble.">
+      <div class="q-head">CASO C</div>
+      <p>Peón blanco en <b>e5</b>. El peón negro hace <code>d7–d6</code>. ¿Captura al paso?</p>
+      <div class="q-btns"><button class="btn q-btn" data-v="si" type="button">SÍ</button><button class="btn q-btn" data-v="no" type="button">NO</button></div>
+      <div class="quiz-fb hidden"></div>
+    </article>
+    <article class="card quiz-card" data-case="D" data-fb="La captura al paso es una oportunidad de una sola jugada: si no se hace inmediatamente, se pierde.">
+      <div class="q-head">CASO D</div>
+      <p>Peón blanco en <b>e5</b>. El peón negro hace <code>d7–d5</code>. Las blancas hacen <b>otra jugada</b>. ¿Pueden después capturar al paso?</p>
+      <div class="q-btns"><button class="btn q-btn" data-v="si" type="button">SÍ</button><button class="btn q-btn" data-v="no" type="button">NO</button></div>
+      <div class="quiz-fb hidden"></div>
+    </article>
+    <article class="card quiz-card" data-case="E" data-fb="Las blancas juegan <code>cxb6 e.p.</code>: el peón de c5 captura al paso el peón que avanzó de b7 a b5.">
+      <div class="q-head">CASO E</div>
+      <p>Peón blanco en <b>c5</b>. El peón negro hace <code>b7–b5</code>. ¿Captura al paso?</p>
+      <div class="q-btns"><button class="btn q-btn" data-v="si" type="button">SÍ</button><button class="btn q-btn" data-v="no" type="button">NO</button></div>
+      <div class="quiz-fb hidden"></div>
+    </article>
+    <article class="card quiz-card" data-case="F" data-fb="Las negras juegan <code>exd3 e.p.</code>: el caso inverso, con el peón negro en la cuarta fila.">
+      <div class="q-head">CASO F</div>
+      <p>Peón negro en <b>e4</b>. El peón blanco hace <code>d2–d4</code>. ¿Captura al paso?</p>
+      <div class="q-btns"><button class="btn q-btn" data-v="si" type="button">SÍ</button><button class="btn q-btn" data-v="no" type="button">NO</button></div>
+      <div class="quiz-fb hidden"></div>
+    </article>
+  </div>
+</section>
+
+<!-- ==================== RESUMEN ==================== -->
+<section id="sec-resumen" class="page">
+  <div class="sec-head"><div class="sec-icon">📌</div><div><div class="sec-tag">SECCIÓN 11 · SÍNTESIS</div><h2>Resumen definitivo</h2></div></div>
+
+  <div class="card">
+    <h3><span class="n">51 ·</span> La captura al paso en 8 puntos</h3>
+    <p>Es una captura especial entre peones. Para que sea posible:</p>
+    <ol class="steps">
+      <li><div>Un peón enemigo debe avanzar <b>DOS CASILLAS</b> desde su posición inicial.</div></li>
+      <li><div>Debe quedar <b>justo al lado</b> de tu peón.</div></li>
+      <li><div>Tu peón debe estar en la <b>posición correcta</b> para capturar al paso.</div></li>
+      <li><div>Debes hacerlo <b>INMEDIATAMENTE</b>.</div></li>
+      <li><div>Tu captura es <b>diagonal</b>.</div></li>
+      <li><div>Tu peón termina en la <b>casilla que el peón enemigo atravesó</b>.</div></li>
+      <li><div>El peón enemigo <b>desaparece</b> aunque no esté en la casilla donde termina tu peón.</div></li>
+      <li><div>La jugada debe ser <b>legal</b> y no puede dejar a tu propio rey en jaque.</div></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">52 ·</span> El ejemplo que debes recordar</h3>
+    <p>Si solamente vas a recordar un ejemplo, que sea este:</p>
+    <div class="flow">
+      <span class="flow-item">BLANCAS: Peón e5</span><span class="flow-arrow">+</span>
+      <span class="flow-item">NEGRAS: Peón d7</span><span class="flow-arrow">→</span>
+      <span class="flow-item">NEGRAS: d7–d5</span><span class="flow-arrow">→</span>
+      <span class="flow-item">BLANCAS: exd6 e.p.</span>
+    </div>
+    <p><b>Resultado:</b> peón blanco <b>e5 → d6</b> · el peón negro <b>desaparece de d5</b>. Eso es <b class="big-mark">CAPTURA AL PASO</b>.</p>
+    <div id="b-recuerdo" class="board-mount compact"></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">54 ·</span> Tu regla de oro</h3>
+    <p>Cuando veas que el rival mueve un peón dos casillas:</p>
+    <div class="big-mark" style="text-align:center;margin:10px 0">🧠 DETENTE. No juegues automáticamente.</div>
+    <p>Pregúntate:</p>
+    <div class="flow">
+      <span class="flow-item">«¿ACABA DE CREARSE UNA CAPTURA AL PASO?»</span><span class="flow-arrow">→</span>
+      <span class="flow-item">«¿ES LEGAL?»</span><span class="flow-arrow">→</span>
+      <span class="flow-item">«¿ME CONVIENE?»</span>
+    </div>
+    <p>Si haces esto unas cuantas veces, la captura al paso dejará de parecer una regla extraña. Se convertirá simplemente en: <i>«Ah, el rival acaba de avanzar dos casillas. Tengo que comprobar la captura al paso.»</i></p>
+    <p>Y ahí es cuando has dejado de memorizar una regla y has empezado a <b>PENSAR COMO UN JUGADOR DE AJEDREZ</b>.</p>
+  </div>
+
+  <div class="card phrase-card">
+    <div style="font-size:34px;margin-bottom:8px">♟️ FIN</div>
+    <h3 style="margin-bottom:10px">CAPTURA AL PASO · by Rubén Sbarsky</h3>
+    <div class="phrase"><span class="w1">DOS CASILLAS.</span> <span class="w2">AL LADO.</span> <span class="w3">INMEDIATAMENTE.</span></div>
+    <p style="margin-top:12px">Ese es el secreto.</p>
+  </div>
+</section>
+
+<!-- ==================== CRÉDITOS ==================== -->
+<section id="sec-creditos" class="page">
+  <div class="sec-head"><div class="sec-icon">👨‍💻</div><div><div class="sec-tag">CRÉDITOS Y AUTORÍA</div><h2>Sobre este tutorial</h2></div></div>
+
+  <div class="hero-wrap">
+    <svg class="hero-svg" viewBox="0 0 1600 900" role="img" aria-label="Animación de la captura al paso"><use href="#coverArt"></use></svg>
+  </div>
+
+  <div class="card credit-card">
+    <span class="chip purple">♟ TUTORIAL INTERACTIVO DE AJEDREZ</span>
+    <h2>CAPTURA AL PASO</h2>
+    <p style="color:var(--muted)">La regla más curiosa de los peones explicada desde cero</p>
+    <div class="credit-author">Rubén Sbarsky</div>
+    <div class="dt-chips" style="justify-content:center;margin-top:16px">
+      <span class="chip accent">📅 FECHA: 05/09/2026</span>
+      <span class="chip accent">🕒 HORA: 18:03:08</span>
+    </div>
+    <p style="margin-top:16px">Material elaborado con fines exclusivamente <b>educativos y divulgativos</b>. Todos los tableros son interactivos y funcionan sin conexión a Internet.</p>
+    <div class="fiat">Fiat iustitia, ruat caelum.</div>
+  </div>
+</section>
+</main>
+
+<button class="to-top" id="toTop" type="button" aria-label="Volver arriba">↑</button>
+
+<footer class="footer">
+  <div>📚 Tutorial solo con fines Educativos y Divulgación</div>
+  <div>👨‍💻 Créditos: Rubén Sbarsky</div>
+  <div>📅 FECHA: 05/09/2026 · Hora: 18:03:08</div>
+  <div class="fiat">Fiat iustitia, ruat caelum.</div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= decoración del SVG de portada (casillas, coordenadas, rejilla) ================= */
+var NS='http://www.w3.org/2000/svg';
+function mkT(x,y,txt,size,fill){var t=document.createElementNS(NS,'text');t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','middle');t.setAttribute('font-size',size||16);t.setAttribute('fill',fill||'#5b6b85');t.setAttribute('font-weight','700');t.setAttribute('font-family',"'Segoe UI',system-ui,sans-serif");t.textContent=txt;return t;}
+var hx=document.getElementById('heroSquares');
+if(hx){var bx=110,by=170,s=70,r2,c2;
+  for(r2=0;r2<8;r2++){for(c2=0;c2<8;c2++){
+    var rc=document.createElementNS(NS,'rect');
+    rc.setAttribute('x',bx+c2*s);rc.setAttribute('y',by+r2*s);
+    rc.setAttribute('width',s);rc.setAttribute('height',s);
+    rc.setAttribute('fill',((r2+c2)%2===0)?'#2b4166':'#152238');
+    hx.appendChild(rc);
+  }}}
+var hc=document.getElementById('heroCoords');
+if(hc){var filesL='abcdefgh',i2;
+  for(i2=0;i2<8;i2++){
+    hc.appendChild(mkT(110+i2*70+35,170+8*70+28,filesL[i2],16));
+    hc.appendChild(mkT(110-22,170+i2*70+35+6,String(8-i2),16));
+  }}
+var hg=document.getElementById('bgGrid');
+if(hg){var gx,gy;
+  for(gx=0;gx<=1600;gx+=80){var l1=document.createElementNS(NS,'line');l1.setAttribute('x1',gx);l1.setAttribute('y1',0);l1.setAttribute('x2',gx);l1.setAttribute('y2',900);l1.setAttribute('stroke','#1e3a5f');l1.setAttribute('stroke-opacity','0.12');hg.appendChild(l1);}
+  for(gy=0;gy<=900;gy+=80){var l2=document.createElementNS(NS,'line');l2.setAttribute('x1',0);l2.setAttribute('y1',gy);l2.setAttribute('x2',1600);l2.setAttribute('y2',gy);l2.setAttribute('stroke','#1e3a5f');l2.setAttribute('stroke-opacity','0.12');hg.appendChild(l2);}
+}
+
+/* ================= motor genérico de tableros ================= */
+var FILES=['a','b','c','d','e','f','g','h'];
+var GLYPH={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+
+function clonePos(p){return Object.assign({},p);}
+function applyStep(pos,st){
+  var np=clonePos(pos);
+  if(st.ep&&st.captureSq){delete np[st.captureSq];}
+  var pc=np[st.from];
+  delete np[st.from];
+  np[st.to]=pc;
+  return np;
+}
+function buildPositions(initial,steps){
+  var arr=[clonePos(initial)],i;
+  for(i=0;i<steps.length;i++){arr.push(applyStep(arr[arr.length-1],steps[i]));}
+  return arr;
+}
+function stepHTML(st,n){
+  var cls=(st.color==='BLANCAS')?'w':'b';
+  return '<div class="p-top"><span class="p-badge '+cls+'">MOVIMIENTO '+n+' — '+st.color+'</span>'+
+    (st.notation?'<span class="p-not">Notación: <code>'+st.notation+'</code></span>':'')+'</div>'+
+    '<div class="p-piece">'+st.piece+'</div>'+
+    '<div class="p-route">'+st.from+' <span class="arr">→</span> '+st.to+'</div>'+
+    '<div class="p-block"><div class="p-label">¿Qué ocurre?</div><p>'+st.what+'</p></div>'+
+    '<div class="p-block why"><div class="p-label">¿Por qué es importante?</div><p>'+st.why+'</p></div>'+
+    (st.ep?'<div class="p-epnote">♟ Captura al paso: el peón capturado desaparece de '+st.captureSq+' aunque tu peón termine en '+st.to+'.</div>':'');
+}
+function initHTML(cfg){
+  return '<div class="p-top"><span class="p-badge init">POSICIÓN INICIAL</span></div>'+
+    '<div class="p-block"><div class="p-label">¿Qué vemos?</div><p>'+cfg.initWhat+'</p></div>'+
+    (cfg.initWhy?'<div class="p-block why"><div class="p-label">Para tener en cuenta</div><p>'+cfg.initWhy+'</p></div>':'');
+}
+function createBoard(cfg){
+  var mount=document.getElementById(cfg.id);
+  if(!mount){return;}
+  var steps=cfg.steps||[];
+  var positions=buildPositions(cfg.initial,steps);
+  var hasSteps=steps.length>0;
+  mount.innerHTML=
+    '<div class="b-head"><span class="b-tag">'+(cfg.tag||'TABLERO')+'</span>'+(cfg.title?'<span class="b-title">'+cfg.title+'</span>':'')+'</div>'+
+    '<div class="board-frame">'+
+      '<div class="board-area">'+
+        '<div class="rank-coords">'+[8,7,6,5,4,3,2,1].map(function(n){return '<span>'+n+'</span>';}).join('')+'</div>'+
+        '<div class="board-grid" role="img" aria-label="Tablero de ajedrez 8 por 8"></div>'+
+      '</div>'+
+      '<div class="file-row"><div class="file-spacer"></div><div class="file-coords">'+FILES.map(function(f){return '<span>'+f+'</span>';}).join('')+'</div></div>'+
+    '</div>'+
+    (hasSteps?
+    '<div class="b-controls">'+
+      '<div class="b-btns">'+
+        '<button class="btn b-prev" type="button">◀ Anterior</button>'+
+        '<button class="btn b-reset" type="button">↺ Reset</button>'+
+        '<button class="btn btn-accent b-next" type="button">Siguiente ▶</button>'+
+      '</div>'+
+      '<input class="b-slider" type="range" min="0" max="'+steps.length+'" value="0" step="1" aria-label="Deslizador de movimientos">'+
+      '<div class="b-ind"><span class="b-count"></span><span class="b-turn"></span></div>'+
+    '</div>':'')+
+    '<div class="b-panel" aria-live="polite"></div>';
+
+  var grid=mount.querySelector('.board-grid');
+  var sqEls={},rr,cc;
+  for(rr=0;rr<8;rr++){for(cc=0;cc<8;cc++){
+    var name=FILES[cc]+(8-rr);
+    var d=document.createElement('div');
+    d.className='sq '+(((rr+cc)%2===0)?'light':'dark');
+    d.dataset.sq=name;
+    grid.appendChild(d);
+    sqEls[name]=d;
+  }}
+  if(cfg.staticHl){cfg.staticHl.forEach(function(sq){if(sqEls[sq]){sqEls[sq].classList.add('hl-mark');}});}
+
+  var panel=mount.querySelector('.b-panel');
+  var cur=0;
+  function render(){
+    var pos=positions[cur];
+    for(var nm in sqEls){
+      var el=sqEls[nm];
+      var pc=pos[nm];
+      el.innerHTML=pc?'<span class="'+(pc===pc.toUpperCase()?'pw':'pb')+'">'+GLYPH[pc]+'</span>':'';
+      el.classList.remove('hl','hl-ep');
+    }
+    var st=null;
+    if(cur>0){
+      st=steps[cur-1];
+      sqEls[st.from].classList.add('hl');
+      sqEls[st.to].classList.add('hl');
+      if(st.ep&&st.captureSq&&sqEls[st.captureSq]){sqEls[st.captureSq].classList.add('hl-ep');}
+    }
+    panel.innerHTML=st?stepHTML(st,cur):initHTML(cfg);
+    if(hasSteps){
+      mount.querySelector('.b-count').textContent='Movimiento '+cur+' de '+steps.length;
+      mount.querySelector('.b-turn').textContent=st?('Turno jugado: '+st.color):'Posición inicial · espera el movimiento';
+      mount.querySelector('.b-slider').value=String(cur);
+      mount.querySelector('.b-prev').disabled=(cur===0);
+      mount.querySelector('.b-next').disabled=(cur===steps.length);
+    }
+  }
+  if(hasSteps){
+    mount.querySelector('.b-prev').addEventListener('click',function(){if(cur>0){cur--;render();}});
+    mount.querySelector('.b-next').addEventListener('click',function(){if(cur<steps.length){cur++;render();}});
+    mount.querySelector('.b-reset').addEventListener('click',function(){cur=0;render();});
+    mount.querySelector('.b-slider').addEventListener('input',function(e){cur=parseInt(e.target.value,10)||0;render();});
+  }
+  render();
+}
+
+/* ================= configuraciones de todos los tableros ================= */
+var boards=[
+/* --- recordatorio: captura normal --- */
+{id:'b-normal',tag:'RECORDATORIO',title:'El peón captura en diagonal',
+ initial:{e5:'P',d6:'p',f6:'p'},
+ initWhat:'Peón blanco en e5 con dos piezas negras capturable: puede capturar en diagonal hacia delante, en d6 o en f6 (e5→d6 ó e5→f6). Las casillas marcadas en verde son las capturas posibles.',
+ initWhy:'En cambio, directamente delante (e6) el peón NO puede capturar: eso sería un avance, no una captura. Recuerda siempre: el peón avanza hacia delante pero captura en diagonal.',
+ steps:[],staticHl:['d6','f6']},
+
+/* --- ejemplo principal --- */
+{id:'b-paso',tag:'EJEMPLO PRINCIPAL · CAPTURA AL PASO',title:'Peón blanco e5 · Peón negro d7',
+ initial:{e5:'P',d7:'p'},
+ initWhat:'Posición inicial: peón blanco en e5 y peón negro en d7. Las negras están a punto de avanzar su peón dos casillas.',
+ initWhy:'Observa que el peón blanco de e5 controla las casillas d6 y f6: precisamente la casilla por la que pasará el peón negro si avanza dos.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'d7',to:'d5',notation:'d7–d5',
+   what:'El peón negro avanza DOS casillas de golpe: de d7 a d5, atravesando la casilla d6.',
+   why:'Este avance doble activa la posibilidad de captura al paso: el peón negro ha pasado por d6, una casilla controlada por el peón blanco de e5.'},
+  {color:'BLANCAS',piece:'Peón blanco',from:'e5',to:'d6',ep:true,captureSq:'d5',notation:'exd6 e.p.',
+   what:'El peón blanco se mueve en diagonal de e5 a d6 y el peón negro de d5 desaparece. Atención: NO captura algo que esté en d6; captura el peón que está en d5.',
+   why:'Funciona como si el peón negro hubiera avanzado solo una casilla (d7→d6) y el peón blanco lo hubiera capturado normalmente. Por eso se llama captura AL PASO.'}
+ ]},
+
+/* --- ejemplo inverso --- */
+{id:'b-inverso',tag:'EJEMPLO 2 · CASO INVERSO',title:'Las negras capturan al paso',
+ initial:{e4:'p',d2:'P'},
+ initWhat:'Peón negro en e4 y peón blanco en d2. Ahora mueven las blancas.',
+ initWhy:'La captura al paso también funciona a favor de las negras: su peón está en la cuarta fila, la fila correcta para que un peón negro capture al paso.',
+ steps:[
+  {color:'BLANCAS',piece:'Peón blanco',from:'d2',to:'d4',notation:'d2–d4',
+   what:'El peón blanco avanza dos casillas de golpe: de d2 a d4, atravesando la casilla d3.',
+   why:'Al pasar por d3, una casilla controlada por el peón negro de e4, se activa la posibilidad de captura al paso.'},
+  {color:'NEGRAS',piece:'Peón negro',from:'e4',to:'d3',ep:true,captureSq:'d4',notation:'exd3 e.p.',
+   what:'El peón negro se mueve en diagonal de e4 a d3 y el peón blanco de d4 desaparece.',
+   why:'Es exactamente el mismo concepto que en el ejemplo principal, pero ejecutado por las negras: capturan el peón que pasó junto a ellas.'}
+ ]},
+
+/* --- ejemplo 3 --- */
+{id:'b-no-fila',tag:'EJEMPLO 3 · NO EXISTE',title:'La fila equivocada',
+ initial:{e4:'P',d7:'p'},
+ initWhat:'Peón blanco en e4 (¡no en e5!) y peón negro en d7.',
+ initWhy:'Compara con el ejemplo principal: aquí el peón blanco está una fila más atrás.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'d7',to:'d5',notation:'d7–d5',
+   what:'El peón negro avanza dos casillas: de d7 a d5.',
+   why:'Aunque el avance es de dos casillas, NO hay captura al paso: el peón blanco está en e4 y necesitaría estar en e5. Le falta una fila; la condición de la fila adecuada no se cumple.'}
+ ]},
+
+/* --- ejemplo 4 --- */
+{id:'b-no-avance',tag:'EJEMPLO 4 · NO EXISTE',title:'Cerca no es suficiente',
+ initial:{e5:'P',d6:'p'},
+ initWhat:'Peón blanco en e5 y peón negro en d6: los peones están juntos, en diagonal.',
+ initWhy:'No basta con que los peones estén cerca. La captura al paso solamente aparece inmediatamente después de que el peón enemigo haya hecho un movimiento de DOS casillas. Aquí no acaba de ocurrir ningún avance doble, así que NO existe captura al paso.',
+ steps:[]},
+
+/* --- ejemplo 5 --- */
+{id:'b-una-casilla',tag:'EJEMPLO 5 · NO EXISTE',title:'Avance de una sola casilla',
+ initial:{e5:'P',d6:'p'},
+ initWhat:'Peón blanco en e5 y peón negro en d6. Juegan las negras.',
+ initWhy:'Observa cuántas casillas avanza el peón negro en su movimiento.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'d6',to:'d5',notation:'d6–d5',
+   what:'El peón negro avanza UNA sola casilla: de d6 a d5.',
+   why:'Como el avance es de una sola casilla, NO existe captura al paso. La condición del avance de dos casillas no se cumple.'}
+ ]},
+
+/* --- ejemplo 6 --- */
+{id:'b-oportunidad',tag:'EJEMPLO 6 · SE PERDIÓ LA OPORTUNIDAD',title:'El momento exacto',
+ initial:{e5:'P',d7:'p',g1:'N'},
+ initWhat:'Peón blanco en e5, peón negro en d7 y caballo blanco en g1. Juegan las negras.',
+ initWhy:'Atención a lo que ocurre con la oportunidad de captura al paso en cada movimiento.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'d7',to:'d5',notation:'d7–d5',
+   what:'El peón negro avanza dos casillas: de d7 a d5. En este preciso momento SÍ existe captura al paso: exd6 e.p.',
+   why:'La oportunidad acaba de nacer... pero solo dura una jugada.'},
+  {color:'BLANCAS',piece:'Caballo blanco',from:'g1',to:'f3',notation:'Cf3',
+   what:'Las blancas juegan otra cosa: caballo de g1 a f3, en lugar de capturar al paso.',
+   why:'Aunque el peón negro siga en d5, YA NO pueden hacer exd6 e.p. La oportunidad desapareció para siempre: la captura al paso debía hacerse inmediatamente.'}
+ ]},
+
+/* --- ejercicios --- */
+{id:'b-e1',tag:'EJERCICIO 1',title:'Planteamiento',
+ initial:{e5:'P',d7:'p'},
+ initWhat:'Blancas: peón en e5. Negras: peón en d7. Juegan las negras.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'d7',to:'d5',notation:'d7–d5',
+   what:'Las negras avanzan su peón dos casillas: de d7 a d5.',
+   why:'Ahora decide tú: ¿se cumplen las cuatro condiciones? ¿Existe captura al paso?'}
+ ]},
+{id:'b-e2',tag:'EJERCICIO 2',title:'Planteamiento',
+ initial:{e4:'P',d7:'p'},
+ initWhat:'Blancas: peón en e4. Negras: peón en d7. Juegan las negras.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'d7',to:'d5',notation:'d7–d5',
+   what:'Las negras avanzan su peón dos casillas: de d7 a d5.',
+   why:'Mira con atención la fila en la que está el peón blanco antes de responder.'}
+ ]},
+{id:'b-e3',tag:'EJERCICIO 3',title:'Planteamiento',
+ initial:{e5:'P',d7:'p'},
+ initWhat:'Blancas: peón en e5. Negras: peón en d7. Juegan las negras.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'d7',to:'d6',notation:'d7–d6',
+   what:'Las negras avanzan el peón una sola casilla: de d7 a d6.',
+   why:'¿Cuántas casillas avanzó el peón negro? ¿Se cumple la condición del avance doble?'}
+ ]},
+{id:'b-e4',tag:'EJERCICIO 4',title:'Planteamiento',
+ initial:{e5:'P',d7:'p',g1:'N'},
+ initWhat:'Blancas: peón en e5 y caballo en g1. Negras: peón en d7. Juegan las negras.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'d7',to:'d5',notation:'d7–d5',
+   what:'Las negras avanzan dos casillas: de d7 a d5. En este momento existe captura al paso.',
+   why:'Pero observa lo que hacen las blancas en el siguiente movimiento...'},
+  {color:'BLANCAS',piece:'Caballo blanco',from:'g1',to:'f3',notation:'Cf3',
+   what:'Las blancas juegan otra cosa: caballo de g1 a f3.',
+   why:'Después de esta jugada quieren hacer exd6 e.p. ¿Todavía pueden? Piensa en la condición del tiempo.'}
+ ]},
+{id:'b-e5',tag:'EJERCICIO 5',title:'Planteamiento',
+ initial:{c5:'P',b7:'p'},
+ initWhat:'Blancas: peón en c5. Negras: peón en b7. Juegan las negras.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'b7',to:'b5',notation:'b7–b5',
+   what:'El peón negro avanza dos casillas: de b7 a b5.',
+   why:'El peón blanco de c5 está justo al lado, en la quinta fila. ¿Qué ocurriría?'}
+ ]},
+{id:'b-e6',tag:'EJERCICIO 6',title:'Planteamiento',
+ initial:{f5:'P',g7:'p'},
+ initWhat:'Blancas: peón en f5. Negras: peón en g7. Juegan las negras.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'g7',to:'g5',notation:'g7–g5',
+   what:'El peón negro avanza dos casillas: de g7 a g5.',
+   why:'El peón blanco de f5 está justo al lado, en la quinta fila. ¿Existe captura al paso?'}
+ ]},
+{id:'b-e7',tag:'EJERCICIO 7',title:'Planteamiento',
+ initial:{d5:'P',e7:'p'},
+ initWhat:'Blancas: peón en d5. Negras: peón en e7. Juegan las negras.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'e7',to:'e5',notation:'e7–e5',
+   what:'El peón negro avanza dos casillas: de e7 a e5.',
+   why:'El peón blanco de d5 está justo al lado, en la quinta fila. ¿Qué ocurriría?'}
+ ]},
+{id:'b-e8',tag:'EJERCICIO 8 · PIENSA',title:'Planteamiento',
+ initial:{e5:'P',f7:'p'},
+ initWhat:'Blancas: peón en e5. Negras: peón en f7. Juegan las negras.',
+ steps:[
+  {color:'NEGRAS',piece:'Peón negro',from:'f7',to:'f5',notation:'f7–f5',
+   what:'El peón negro avanza dos casillas: de f7 a f5.',
+   why:'Piensa antes de mostrar la respuesta: ¿se cumplen las cuatro condiciones?'}
+ ]},
+
+/* --- el ejemplo que debes recordar (posición final) --- */
+{id:'b-recuerdo',tag:'RESULTADO FINAL',title:'Después de exd6 e.p.',
+ initial:{d6:'P'},
+ initWhat:'Así queda el tablero tras el ejemplo principal: el peón blanco está en d6 y el peón negro ha desaparecido de d5. Eso es la CAPTURA AL PASO.',
+ steps:[]}
+];
+boards.forEach(createBoard);
+
+/* ================= botones de respuesta (ejercicios) ================= */
+document.querySelectorAll('.reveal-btn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=document.getElementById(b.dataset.target);
+    if(!t){return;}
+    var isHidden=t.classList.toggle('hidden');
+    b.textContent=isHidden?'🔍 Mostrar respuesta':'🙈 Ocultar respuesta';
+  });
+});
+
+/* ================= quiz / test final ================= */
+var quizAnswers={A:'si',B:'no',C:'no',D:'no',E:'si',F:'si'};
+var quizScore=0,quizDone=0;
+var quizCards=document.querySelectorAll('.quiz-card');
+function quizScoreUpdate(){
+  var el=document.getElementById('quiz-score');
+  if(el){el.textContent='Aciertos: '+quizScore+' de 6 · Respondidos: '+quizDone+' de 6';}
+}
+quizCards.forEach(function(card){
+  var cid=card.dataset.case;
+  card.querySelectorAll('.q-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      if(card.classList.contains('done')){return;}
+      card.classList.add('done');
+      quizDone++;
+      var fb=card.querySelector('.quiz-fb');
+      if(btn.dataset.v===quizAnswers[cid]){
+        quizScore++;
+        btn.classList.add('correct');
+        fb.className='quiz-fb ok';
+        fb.innerHTML='✅ ¡Correcto! '+card.dataset.fb;
+      }else{
+        btn.classList.add('wrong');
+        var okBtn=card.querySelector('.q-btn[data-v="'+quizAnswers[cid]+'"]');
+        if(okBtn){okBtn.classList.add('correct');}
+        fb.className='quiz-fb bad';
+        fb.innerHTML='❌ Incorrecto. '+card.dataset.fb;
+      }
+      fb.classList.remove('hidden');
+      quizScoreUpdate();
+    });
+  });
+});
+var qReset=document.getElementById('quiz-reset');
+if(qReset){qReset.addEventListener('click',function(){
+  quizScore=0;quizDone=0;
+  quizCards.forEach(function(card){
+    card.classList.remove('done');
+    card.querySelectorAll('.q-btn').forEach(function(b){b.classList.remove('correct','wrong');});
+    var fb=card.querySelector('.quiz-fb');fb.classList.add('hidden');fb.innerHTML='';
+  });
+  quizScoreUpdate();
+});}
+
+/* ================= navegación SPA ================= */
+var pages=document.querySelectorAll('.page');
+var navBtns=document.querySelectorAll('.nav-btn');
+var bar=document.getElementById('progress-bar');
+var toTop=document.getElementById('toTop');
+
+function updateProgress(){
+  var doc=document.documentElement;
+  var max=doc.scrollHeight-window.innerHeight;
+  var p=(max>0)?(window.scrollY||doc.scrollTop)/max*100:0;
+  if(bar){bar.style.width=p+'%';}
+  if(toTop){toTop.classList.toggle('show',(window.scrollY||doc.scrollTop)>300);}
+}
+function showPage(id){
+  pages.forEach(function(p){p.classList.toggle('active',p.id===id);});
+  navBtns.forEach(function(b){
+    var on=(b.dataset.target===id);
+    b.classList.toggle('active',on);
+    if(on){try{b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});}catch(e){}}
+  });
+  window.scrollTo(0,0);
+  updateProgress();
+}
+navBtns.forEach(function(b){
+  b.addEventListener('click',function(){showPage(b.dataset.target);});
+});
+if(toTop){toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});}
+window.addEventListener('scroll',updateProgress,{passive:true});
+window.addEventListener('resize',updateProgress);
+updateProgress();
+
+/* ================= accesibilidad: reducir movimiento ================= */
+if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.querySelectorAll('svg.hero-svg').forEach(function(s){
+    try{s.pauseAnimations();}catch(e){}
+  });
+}
+})();
+</script>
+</body>
+</html>
