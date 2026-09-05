@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aprende a Pensar como un Jugador de Ajedrez · Tutorial Interactivo</title>
+<style>
+/* ============ RESET & BASE ============ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f;
+  --cyan:#00d4ff; --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+  --text:#e2e8f0; --muted:#94a3b8; --dim:#64748b;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  line-height:1.65; overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,212,255,.06), transparent),
+    linear-gradient(rgba(30,58,95,.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,58,95,.14) 1px, transparent 1px);
+  background-size:100% 100%, 44px 44px, 44px 44px;
+}
+button,input{font-family:inherit}
+::selection{background:rgba(0,212,255,.3)}
+
+/* ============ PROGRESS BAR ============ */
+#progressBar{position:fixed;top:0;left:0;height:4px;width:0%;z-index:1200;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  box-shadow:0 0 10px rgba(0,212,255,.7);transition:width .1s linear}
+
+/* ============ NAVBAR ============ */
+nav#topNav{position:fixed;top:4px;left:0;right:0;z-index:1100;
+  background:rgba(10,14,26,.94);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;padding:8px 14px}
+.brand{display:flex;align-items:center;gap:9px;flex-shrink:0;cursor:pointer;user-select:none}
+.brand .kn{font-size:26px;line-height:1;color:var(--cyan);filter:drop-shadow(0 0 6px rgba(0,212,255,.6))}
+.brand b{font-size:14px;letter-spacing:.5px}
+.brand small{display:block;font-size:10px;color:var(--muted);font-weight:400;letter-spacing:1.5px;text-transform:uppercase}
+.nav-scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;padding:2px}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-btn{flex-shrink:0;background:transparent;border:1px solid transparent;color:var(--muted);
+  font-size:12.5px;font-weight:600;letter-spacing:.6px;padding:7px 12px;border-radius:8px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;text-transform:uppercase}
+.nav-btn:hover{color:var(--text);border-color:var(--border);background:rgba(30,58,95,.35)}
+.nav-btn.active{color:#031018;background:var(--cyan);box-shadow:0 0 14px rgba(0,212,255,.45)}
+.nav-btn.credits{border-color:var(--purple);color:#d8b4fe}
+.nav-btn.credits.active{background:var(--purple);color:#fff}
+
+/* ============ LAYOUT ============ */
+main{max-width:1140px;margin:0 auto;padding:96px 18px 60px}
+.view{display:none}
+.view.active{display:block;animation:fadeIn .45s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ============ COMPONENTS ============ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:18px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+
+.sec-head{margin:6px 0 22px}
+.sec-head .kicker{font-size:11.5px;letter-spacing:3px;color:var(--cyan);font-weight:700;text-transform:uppercase}
+.sec-head h2{font-size:clamp(1.55rem,3.4vw,2.3rem);margin:6px 0 8px;line-height:1.2}
+.sec-head .ico{font-size:30px;margin-right:8px;vertical-align:-4px}
+.sec-head p{color:var(--muted);max-width:820px}
+.sub-h{font-size:1.08rem;font-weight:700;margin:22px 0 12px;color:#fff;display:flex;align-items:center;gap:8px}
+.sub-h::before{content:"";width:5px;height:20px;background:var(--cyan);border-radius:3px;box-shadow:0 0 8px rgba(0,212,255,.6)}
+
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
+  padding:4px 12px;border-radius:999px;border:1px solid var(--cyan);color:var(--cyan);background:rgba(0,212,255,.08)}
+.badge.amber{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.08)}
+.badge.green{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.08)}
+.badge.red{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.08)}
+.badge.purple{border-color:var(--purple);color:#d8b4fe;background:rgba(168,85,247,.08)}
+
+.chip{display:inline-block;font-size:12.5px;padding:3px 10px;border-radius:7px;background:#12233c;border:1px solid var(--border);color:var(--text)}
+.san{font-family:Consolas,'Courier New',monospace;font-weight:700;color:var(--cyan);background:rgba(0,212,255,.09);
+  border:1px solid rgba(0,212,255,.35);padding:2px 9px;border-radius:7px;font-size:.95em;white-space:nowrap}
+.san.big{font-size:1.35rem;padding:5px 14px}
+
+/* callouts */
+.co{border-radius:10px;padding:15px 17px;margin:16px 0;border:1px solid;border-left-width:5px;font-size:.97rem}
+.co .co-t{font-weight:800;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;display:block}
+.co.info{background:rgba(0,212,255,.06);border-color:rgba(0,212,255,.4);border-left-color:var(--cyan)}
+.co.info .co-t{color:var(--cyan)}
+.co.ex{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.4);border-left-color:var(--green)}
+.co.ex .co-t{color:var(--green)}
+.co.warn{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.45);border-left-color:var(--amber)}
+.co.warn .co-t{color:var(--amber)}
+.co.err{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.45);border-left-color:var(--red)}
+.co.err .co-t{color:var(--red)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.95rem;min-width:420px}
+th{background:#122340;color:var(--cyan);text-align:left;padding:10px 14px;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:9px 14px;border-bottom:1px solid rgba(30,58,95,.5)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(0,212,255,.04)}
+
+/* lists */
+ul.clean{list-style:none}
+ul.clean li{padding:7px 0 7px 26px;position:relative;color:#cbd5e1}
+ul.clean li::before{content:"▸";position:absolute;left:6px;color:var(--cyan)}
+ol.steps{list-style:none;counter-reset:st}
+ol.steps li{counter-increment:st;padding:10px 12px 10px 52px;position:relative;background:#0d1b30;
+  border:1px solid var(--border);border-radius:9px;margin-bottom:8px}
+ol.steps li::before{content:counter(st,decimal-leading-zero);position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  font-weight:800;color:#031018;background:var(--cyan);width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:.78rem}
+
+/* quote */
+.quote{border:1px solid var(--border);border-left:5px solid var(--cyan);background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(168,85,247,.05));
+  border-radius:12px;padding:24px;font-size:1.12rem;font-style:italic;color:#e0f2fe;text-align:center}
+.quote small{display:block;margin-top:10px;font-style:normal;color:var(--muted);font-size:.8rem;letter-spacing:2px}
+
+/* ============ HOME ============ */
+.cover-wrap{margin:-14px 0 26px}
+.cover-wrap svg{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--border);
+  box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 40px rgba(0,212,255,.08)}
+.home-title{font-size:clamp(1.8rem,4.6vw,3.1rem);line-height:1.12;margin:14px 0 10px;font-weight:800}
+.home-title span{background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+.home-sub{font-size:clamp(1rem,2.2vw,1.3rem);color:#bae6fd;font-weight:600}
+.home-desc{color:var(--muted);max-width:860px;margin:14px 0 22px;font-size:1.02rem}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:transform .2s,border-color .2s}
+.metric:hover{transform:translateY(-3px);border-color:var(--cyan)}
+.metric b{display:block;font-size:1.7rem;color:var(--cyan)}
+.metric:nth-child(2) b{color:var(--green)}.metric:nth-child(3) b{color:var(--amber)}.metric:nth-child(4) b{color:var(--purple)}
+.metric span{font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.dt-chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+/* ============ CHESS BOARD ============ */
+.game-layout{display:grid;grid-template-columns:minmax(280px,470px) 1fr;gap:22px;align-items:start}
+.board-col{min-width:0}
+.board-frame{background:#0d1526;border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 10px 34px rgba(0,0,0,.45)}
+.board-area{display:flex;gap:6px}
+.coords-ranks{display:grid;grid-template-rows:repeat(8,1fr);width:18px;font-size:11px;color:var(--dim);text-align:center}
+.coords-ranks span{display:flex;align-items:center;justify-content:center}
+.board-grid{flex:1;display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;border:2px solid #1e3a5f;border-radius:6px;overflow:hidden}
+.sq{position:relative;display:flex;align-items:center;justify-content:center}
+.sq.light{background:#24425f}.sq.dark{background:#101c30}
+.sq .pc{font-size:clamp(20px,5.4vw,34px);line-height:1;user-select:none;z-index:2}
+.pc.pw{color:#f8fafc;text-shadow:0 2px 3px rgba(0,0,0,.75)}
+.pc.pb{color:#050a14;text-shadow:0 0 2px rgba(148,197,255,.55),0 1px 2px rgba(0,0,0,.5)}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--cyan),inset 0 0 16px rgba(0,212,255,.5)}
+.sq.hl .pc{filter:drop-shadow(0 0 5px rgba(0,212,255,.8))}
+.sq.kcheck{box-shadow:inset 0 0 0 3px var(--red),inset 0 0 18px rgba(239,68,68,.6);animation:chk .7s ease-in-out infinite alternate}
+@keyframes chk{from{filter:brightness(1)}to{filter:brightness(1.5)}}
+.board-grid.names .sq{cursor:pointer}
+.board-grid.names .sq::after{content:attr(data-sq);position:absolute;top:2px;left:3px;font-size:8.5px;color:rgba(226,232,240,.55);z-index:1}
+.board-grid.names .sq:hover{box-shadow:inset 0 0 0 2px var(--cyan)}
+.coords-files{display:grid;grid-template-columns:repeat(8,1fr);margin-left:24px;font-size:11px;color:var(--dim);text-align:center;margin-top:4px}
+.sq-info{margin-top:10px;text-align:center;font-size:.95rem;color:#bae6fd;min-height:24px}
+
+/* stepper controls — SIEMPRE justo debajo del tablero */
+.stepper{background:#0d1526;border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:12px}
+.st-btns{display:flex;gap:8px;flex-wrap:wrap}
+.st-btns button{flex:1;min-width:96px;background:#122340;border:1px solid var(--border);color:var(--text);
+  font-weight:700;font-size:.9rem;padding:11px 10px;border-radius:9px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.st-btns button:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.25)}
+.st-btns button:disabled{opacity:.35;cursor:not-allowed}
+.st-btns button.primary{background:var(--cyan);color:#031018;border-color:var(--cyan)}
+.st-btns button.primary:hover:not(:disabled){background:#5ee6ff;color:#031018}
+.st-btns button.reset{flex:.7}
+.st-slider{margin:14px 0 6px}
+input[type=range]{width:100%;appearance:none;-webkit-appearance:none;height:6px;border-radius:3px;background:#1e3a5f;outline:none}
+input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--cyan);cursor:pointer;box-shadow:0 0 10px rgba(0,212,255,.7);border:2px solid #04121c}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--cyan);cursor:pointer;border:2px solid #04121c}
+.st-ind{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin-top:4px}
+.st-ind b{color:var(--cyan)}
+
+/* move panel */
+.mv-panel .mv-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.mv-head .tag{font-size:.72rem;font-weight:800;letter-spacing:1.5px;padding:4px 10px;border-radius:6px}
+.tag.w{background:#e2e8f0;color:#0a0e1a}
+.tag.b{background:#020617;color:#e2e8f0;border:1px solid #475569}
+.mv-big{font-size:1.12rem;font-weight:700;margin-bottom:12px;line-height:1.5}
+.mv-big .arrow{color:var(--cyan)}
+.mv-block{background:#0d1b30;border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:10px}
+.mv-block .lb{font-size:.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.mv-block.q .lb{color:var(--cyan)}
+.mv-block.p .lb{color:var(--amber)}
+.mv-panel .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+
+/* movelist */
+.movelist{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px;margin-top:10px}
+.ml-row{display:flex;align-items:center;gap:6px;background:#0d1b30;border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-size:.82rem}
+.ml-row .n{color:var(--dim);font-weight:700;min-width:20px}
+.ml-chip{cursor:pointer;padding:2px 8px;border-radius:6px;border:1px solid transparent;color:#cbd5e1;font-family:Consolas,monospace;font-size:.82rem;transition:all .15s}
+.ml-chip:hover{border-color:var(--cyan)}
+.ml-chip.done{color:var(--muted)}
+.ml-chip.cur{background:var(--cyan);color:#031018;font-weight:800;box-shadow:0 0 8px rgba(0,212,255,.5)}
+.ml-chip.empty{visibility:hidden}
+
+/* ============ METHOD CARDS ============ */
+.carta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.carta-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s}
+.carta-card:hover{transform:translateY(-4px);border-color:var(--cyan)}
+.carta-card .letter{font-size:2.4rem;font-weight:800;line-height:1;color:var(--cyan);text-shadow:0 0 14px rgba(0,212,255,.5)}
+.carta-card:nth-child(2) .letter{color:var(--green);text-shadow:0 0 14px rgba(34,197,94,.5)}
+.carta-card:nth-child(3) .letter{color:var(--amber);text-shadow:0 0 14px rgba(245,158,11,.5)}
+.carta-card:nth-child(4) .letter{color:var(--red);text-shadow:0 0 14px rgba(239,68,68,.5)}
+.carta-card:nth-child(5) .letter{color:var(--purple);text-shadow:0 0 14px rgba(168,85,247,.5)}
+.carta-card h4{margin:8px 0 4px;font-size:1rem}
+.carta-card p{font-size:.88rem;color:var(--muted)}
+.flow{display:flex;flex-direction:column;align-items:center;gap:4px}
+.flow .node{background:#122340;border:1px solid var(--border);border-radius:10px;padding:12px 26px;font-weight:700;min-width:250px;text-align:center}
+.flow .node.c1{border-color:var(--cyan);color:var(--cyan)}
+.flow .node.c2{border-color:var(--red);color:#fca5a5}
+.flow .node.c3{border-color:var(--green);color:#86efac}
+.flow .arr{color:var(--dim);font-size:1.1rem}
+.flow .q{font-size:.82rem;color:var(--muted);font-weight:400}
+
+/* ============ EXERCISES ============ */
+details.qa{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+details.qa summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:600}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary .san{flex-shrink:0}
+details.qa summary::after{content:"+";color:var(--cyan);font-size:1.3rem;font-weight:800;transition:transform .2s;flex-shrink:0}
+details.qa[open] summary::after{transform:rotate(45deg)}
+details.qa[open] summary{border-bottom:1px solid var(--border);background:rgba(0,212,255,.04)}
+details.qa .ans{padding:14px 16px;color:#a7f3d0;background:rgba(34,197,94,.05);font-size:.95rem}
+details.qa .ans b{color:var(--green)}
+
+/* pieces cards */
+.piece-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:all .2s}
+.piece-card:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.piece-card .gl{font-size:2.8rem;line-height:1.2;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.piece-card .lt{font-family:Consolas,monospace;font-size:1.5rem;font-weight:800;color:var(--cyan)}
+.piece-card .nm{font-size:.9rem;color:var(--muted);margin-top:2px}
+
+/* level cards */
+.lvl{border-left-width:5px!important}
+.lvl.l1{border-left-color:var(--cyan)!important}
+.lvl.l2{border-left-color:var(--amber)!important}
+.lvl.l3{border-left-color:var(--green)!important}
+.lvl .lv-tag{font-size:.72rem;font-weight:800;letter-spacing:2px}
+.lvl.l1 .lv-tag{color:var(--cyan)}.lvl.l2 .lv-tag{color:var(--amber)}.lvl.l3 .lv-tag{color:var(--green)}
+
+.lang-box{border-radius:12px;padding:20px;border:1px solid}
+.lang-box.l1{border-color:rgba(0,212,255,.45);background:rgba(0,212,255,.05)}
+.lang-box.l2{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.05)}
+
+/* back to top */
+#toTop{position:fixed;right:18px;bottom:18px;z-index:1150;width:48px;height:48px;border-radius:50%;
+  background:var(--cyan);color:#031018;border:none;font-size:1.3rem;font-weight:800;cursor:pointer;
+  box-shadow:0 4px 18px rgba(0,212,255,.5);opacity:0;pointer-events:none;transition:all .25s}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{transform:translateY(-3px)}
+
+/* footer */
+footer{border-top:1px solid var(--border);margin-top:30px;padding:28px 18px;text-align:center;color:var(--muted);font-size:.9rem;background:#0c1322}
+footer .latin{font-style:italic;color:#bae6fd;margin-top:10px;letter-spacing:.5px}
+footer p{margin:3px 0}
+
+/* credits */
+.credit-card{text-align:center;padding:30px 22px}
+.credit-card .who{font-size:1.6rem;font-weight:800;color:var(--cyan);margin:8px 0}
+
+@media (max-width:860px){
+  .game-layout{grid-template-columns:1fr}
+  main{padding-top:104px}
+}
+@media (max-width:480px){
+  .brand small{display:none}
+  .nav-btn{padding:7px 9px;font-size:11.5px}
+  .card{padding:16px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div id="progressBar"></div>
+
+<nav id="topNav">
+  <div class="brand" onclick="go('home')">
+    <span class="kn">♞</span>
+    <span><b>AJEDREZ</b><small>Piensa como un jugador</small></span>
+  </div>
+  <div class="nav-scroll" id="navScroll">
+    <button class="nav-btn active" data-sec="home">Inicio</button>
+    <button class="nav-btn" data-sec="pensar">Pensar</button>
+    <button class="nav-btn" data-sec="tablero">Tablero y casillas</button>
+    <button class="nav-btn" data-sec="piezas">Piezas y letras</button>
+    <button class="nav-btn" data-sec="capturas">Capturas y jaques</button>
+    <button class="nav-btn" data-sec="avanzado">Notación avanzada</button>
+    <button class="nav-btn" data-sec="partida">La partida</button>
+    <button class="nav-btn" data-sec="metodo">Método C.A.R.T.A.</button>
+    <button class="nav-btn" data-sec="lenguajes">Dos lenguajes</button>
+    <button class="nav-btn" data-sec="ejercicios">Ejercicios</button>
+    <button class="nav-btn credits" data-sec="creditos">Créditos</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section class="view active" id="sec-home">
+  <div class="cover-wrap" id="coverHome"></div>
+
+  <span class="badge">Tutorial interactivo · Ajedrez · Método práctico</span>
+  <h1 class="home-title">Aprende a <span>Pensar</span> como un Jugador de Ajedrez</h1>
+  <p class="home-sub">Método práctico para aprender a pensar durante TODA la partida</p>
+  <p class="home-desc">
+    Este tutorial te enseña, desde cero, el sistema de pensamiento que utiliza un jugador de ajedrez:
+    primero la idea fundamental (qué preguntarse en cada turno), después la notación algebraica completa
+    para poder leer y escribir partidas, y finalmente el método definitivo <b>C.A.R.T.A. + J.C.A.</b>
+    aplicado sobre una partida real, jugada a jugada, en un tablero interactivo paso a paso.
+  </p>
+
+  <div class="quote">
+    «Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.»
+    <small>— CITA DEL TUTORIAL</small>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><b>4</b><span>Partes del método</span></div>
+    <div class="metric"><b>61</b><span>Capítulos guiados</span></div>
+    <div class="metric"><b>23</b><span>Movimientos paso a paso</span></div>
+    <div class="metric"><b>2</b><span>Lenguajes: notación + pensamiento</span></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:10px">📖 ¿Qué contiene este tutorial?</h3>
+    <div class="grid2">
+      <ul class="clean">
+        <li><b>Parte I — Aprender a pensar:</b> la idea fundamental y las preguntas continuas del jugador.</li>
+        <li><b>Parte II — Notación algebraica desde cero:</b> casillas, columnas, filas, piezas, capturas, jaques, enroques, promoción y desambiguación.</li>
+      </ul>
+      <ul class="clean">
+        <li><b>Parte III — Cómo usar la notación para aprender a pensar:</b> los tres niveles de lectura de una jugada.</li>
+        <li><b>Parte IV — El método completo para pensar:</b> C.A.R.T.A. + J.C.A., la regla YO → RIVAL → YO y el método definitivo de 16 comprobaciones.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="dt-chips">
+    <span class="chip">📅 Fecha: <b>05/09/2026</b></span>
+    <span class="chip">🕒 Hora: <b>18:03:08</b></span>
+    <span class="chip">👨‍💻 Rubén Sbarsky</span>
+    <span class="chip">🎓 Solo con fines educativos</span>
+  </div>
+</section>
+
+<!-- ================= PENSAR ================= -->
+<section class="view" id="sec-pensar">
+  <div class="sec-head">
+    <span class="kicker">Parte I · Capítulo 1</span>
+    <h2><span class="ico">🧠</span>Aprender a pensar</h2>
+    <p>La idea fundamental: qué hace realmente la cabeza de un jugador de ajedrez durante la partida.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="color:#fca5a5;margin-bottom:10px">❌ Lo que NO es el ajedrez</h3>
+      <p>Jugar al ajedrez <b>no consiste en memorizar muchas jugadas</b>.</p>
+      <p style="margin-top:10px">Tampoco consiste en mirar el tablero y pensar:<br>
+      <em style="color:var(--muted)">«¿Qué pieza puedo mover?»</em></p>
+    </div>
+    <div class="card" style="border-color:rgba(0,212,255,.4)">
+      <h3 style="color:var(--cyan);margin-bottom:10px">✅ Lo que SÍ hace un jugador</h3>
+      <p>Un jugador de ajedrez <b>intenta responder continuamente</b> a una serie de preguntas concretas.
+      Esta forma de pensar es mucho más importante que conocer cientos de aperturas.</p>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Las preguntas continuas del jugador</h3>
+  <div class="grid3">
+    <div class="card" style="margin:0"><span style="font-size:1.5rem">🔄</span><h4>¿Qué acaba de cambiar?</h4><p style="color:var(--muted);font-size:.9rem">Cada jugada del rival transforma la posición.</p></div>
+    <div class="card" style="margin:0"><span style="font-size:1.5rem">🎯</span><h4>¿Qué amenaza mi rival?</h4><p style="color:var(--muted);font-size:.9rem">Descubrir la intención contraria antes de nada.</p></div>
+    <div class="card" style="margin:0"><span style="font-size:1.5rem">👑</span><h4>¿Hay amenaza inmediata contra mi rey?</h4><p style="color:var(--muted);font-size:.9rem">La seguridad del rey manda siempre.</p></div>
+    <div class="card" style="margin:0"><span style="font-size:1.5rem">🛡️</span><h4>¿Hay alguna pieza mía atacada?</h4><p style="color:var(--muted);font-size:.9rem">Detectar piezas en peligro.</p></div>
+    <div class="card" style="margin:0"><span style="font-size:1.5rem">⚔️</span><h4>¿Hay alguna pieza enemiga que pueda capturar?</h4><p style="color:var(--muted);font-size:.9rem">No dejar pasar material gratis.</p></div>
+    <div class="card" style="margin:0"><span style="font-size:1.5rem">💪</span><h4>¿Qué jugadas fuertes tengo?</h4><p style="color:var(--muted);font-size:.9rem">Buscar jugadas activas y con intención.</p></div>
+    <div class="card" style="margin:0"><span style="font-size:1.5rem">🔮</span><h4>¿Qué responderá mi rival?</h4><p style="color:var(--muted);font-size:.9rem">Anticipar la mejor respuesta contraria.</p></div>
+    <div class="card" style="margin:0"><span style="font-size:1.5rem">🗺️</span><h4>¿Qué posición queda después?</h4><p style="color:var(--muted);font-size:.9rem">Evaluar el resultado del cambio.</p></div>
+  </div>
+
+  <div class="co info" style="margin-top:20px">
+    <span class="co-t">INFO</span>
+    Esta forma de pensar es <b>mucho más importante que conocer cientos de aperturas</b>.
+    El resto del tutorial te da las herramientas para aplicarla: notación (para leer la partida)
+    y método (para pensarla).
+  </div>
+</section>
+
+<!-- ================= TABLERO ================= -->
+<section class="view" id="sec-tablero">
+  <div class="sec-head">
+    <span class="kicker">Parte II · Capítulos 2 a 7</span>
+    <h2><span class="ico">🗺️</span>Notación algebraica: el tablero y las casillas</h2>
+    <p>Antes de escribir jugadas necesitas saber identificar cada casilla. El tablero tiene «dirección».</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:10px">¿Qué es la notación algebraica? <span class="chip">Cap. 2</span></h3>
+    <p>La notación algebraica es <b>el sistema utilizado para escribir las jugadas de una partida de ajedrez</b>.</p>
+    <div class="grid3" style="margin-top:14px">
+      <div class="mv-block"><span class="lb">Ejemplo 1</span><span class="san">1. e4 d5</span><br><small style="color:var(--muted)">Las blancas jugaron e4; las negras jugaron d5.</small></div>
+      <div class="mv-block"><span class="lb">Ejemplo 2</span><span class="san">3. Nc3</span><br><small style="color:var(--muted)">El caballo blanco fue a c3.</small></div>
+      <div class="mv-block"><span class="lb">Ejemplo 3</span><span class="san">10...Qxh2+</span><br><small style="color:var(--muted)">La dama negra capturó una pieza en h2 y dio jaque.</small></div>
+    </div>
+    <p style="margin-top:14px;color:var(--muted)">Al principio parece complicado. En realidad, una vez que entiendes las reglas básicas, es bastante lógico.</p>
+  </div>
+
+  <h3 class="sub-h">Primero: el tablero tiene «dirección» <span class="chip">Cap. 3</span></h3>
+  <p style="color:var(--muted);margin-bottom:12px">
+    Las <b style="color:var(--cyan)">letras (a–h)</b> representan las <b>COLUMNAS</b> y los
+    <b style="color:var(--amber)">números (1–8)</b> representan las <b>FILAS</b>.
+    <b>Pulsa cualquier casilla</b> para ver cómo se forma su nombre.
+  </p>
+
+  <div class="game-layout">
+    <div class="board-col">
+      <div class="board-frame">
+        <div class="board-area">
+          <div class="coords-ranks"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+          <div class="board-grid names" id="coordsBoard"></div>
+        </div>
+        <div class="coords-files"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+        <div class="sq-info" id="sqInfo">Toca una casilla…</div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <h4 style="color:var(--cyan)">Las columnas <span class="chip">Cap. 4</span></h4>
+        <p>Mirando el tablero desde el lado de las blancas, las columnas son:</p>
+        <p style="font-family:Consolas,monospace;font-size:1.3rem;letter-spacing:8px;color:#fff;margin:8px 0">a b c d e f g h</p>
+      </div>
+      <div class="card" style="margin-bottom:12px">
+        <h4 style="color:var(--amber)">Las filas <span class="chip">Cap. 5</span></h4>
+        <p>Las filas son:</p>
+        <p style="font-family:Consolas,monospace;font-size:1.3rem;letter-spacing:8px;color:#fff;margin:8px 0">1 2 3 4 5 6 7 8</p>
+        <p><span class="san">a1</span> significa <b>columna a + fila 1</b>. &nbsp; <span class="san">e4</span> significa <b>columna e + fila 4</b>.</p>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--green)">Cada casilla tiene un nombre único <span class="chip">Cap. 6</span></h4>
+        <p>Esto es fundamental. La casilla siempre necesita <b>LETRA + NÚMERO</b>:</p>
+        <p style="font-family:Consolas,monospace;margin-top:8px">
+          <span class="chip">a1</span> <span class="chip">b2</span> <span class="chip">c3</span> <span class="chip">d4</span>
+          <span class="chip">e5</span> <span class="chip">f6</span> <span class="chip">g7</span> <span class="chip">h8</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>Ejemplo: el peón de e2 <span class="chip">Cap. 7</span></h3>
+    <p>Al comienzo de una partida, el peón blanco está en <span class="san">e2</span>. Si avanza dos casillas:
+    <b style="color:var(--cyan)">e2 → e4</b>, la notación algebraica es simplemente <span class="san big">e4</span>.</p>
+    <div class="co warn">
+      <span class="co-t">Regla especial del peón</span>
+      ¿Por qué no escribimos «Pe4»? Porque los peones tienen una regla especial:
+      <b>PARA UN MOVIMIENTO NORMAL DE PEÓN SE ESCRIBE SOLAMENTE LA CASILLA DE DESTINO.</b><br>
+      Por eso: e2 → e4 se escribe <span class="san">e4</span>.
+    </div>
+  </div>
+</section>
+
+<!-- ================= PIEZAS ================= -->
+<section class="view" id="sec-piezas">
+  <div class="sec-head">
+    <span class="kicker">Parte II · Capítulos 8 a 14</span>
+    <h2><span class="ico">♟️</span>Las piezas, sus letras y cómo se escribe una partida</h2>
+    <p>Las piezas utilizan letras inglesas, no españolas. Apréndelas: será tu alfabeto del ajedrez.</p>
+  </div>
+
+  <h3 class="sub-h">Las letras de las piezas <span class="chip">Cap. 8 y 9</span></h3>
+  <div class="tbl-wrap card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th>Pieza</th><th>Español</th><th>Notación</th><th>¿Por qué esa letra?</th></tr></thead>
+      <tbody>
+        <tr><td>♔</td><td>Rey</td><td><span class="san">K</span></td><td>King (inglés)</td></tr>
+        <tr><td>♕</td><td>Dama</td><td><span class="san">Q</span></td><td>Queen (inglés)</td></tr>
+        <tr><td>♖</td><td>Torre</td><td><span class="san">R</span></td><td>Rook (inglés)</td></tr>
+        <tr><td>♗</td><td>Alfil</td><td><span class="san">B</span></td><td>Bishop (inglés)</td></tr>
+        <tr><td>♘</td><td>Caballo</td><td><span class="san">N</span></td><td><b>Knight</b> — por eso es N y no C</td></tr>
+        <tr><td>♙</td><td>Peón</td><td><span class="chip">— (sin letra)</span></td><td>Solo se escribe la casilla de destino</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid3" style="margin-top:14px">
+    <div class="piece-card"><div class="gl">♔</div><div class="lt">K</div><div class="nm">Rey</div></div>
+    <div class="piece-card"><div class="gl">♕</div><div class="lt">Q</div><div class="nm">Dama</div></div>
+    <div class="piece-card"><div class="gl">♖</div><div class="lt">R</div><div class="nm">Torre</div></div>
+    <div class="piece-card"><div class="gl">♗</div><div class="lt">B</div><div class="nm">Alfil</div></div>
+    <div class="piece-card"><div class="gl">♘</div><div class="lt">N</div><div class="nm">Caballo</div></div>
+    <div class="piece-card"><div class="gl">♙</div><div class="lt">—</div><div class="nm">Peón (sin letra)</div></div>
+  </div>
+
+  <div class="co info">
+    <span class="co-t">Truco de memoria</span>
+    Apréndelas en este orden: <b style="font-family:Consolas,monospace;font-size:1.1rem">K Q R B N</b> — y recuerda: el peón no tiene letra.
+  </div>
+
+  <h3 class="sub-h">Movimiento normal de una pieza <span class="chip">Cap. 10, 11 y 12</span></h3>
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <h4>Ejemplo: <span class="san">Nc3</span></h4>
+      <p>Supongamos que un caballo está en <b>b1</b> y va a <b>c3</b>. Se escribe <span class="san">Nc3</span>.</p>
+      <ul class="clean" style="margin-top:8px">
+        <li>La <b>N</b> significa: caballo.</li>
+        <li>El <b>c3</b> significa: casilla de destino.</li>
+        <li>Por tanto, Nc3 = «Caballo a c3».</li>
+      </ul>
+      <p style="margin-top:8px;color:var(--muted);font-size:.9rem">En nuestra partida, <span class="san">3. Nc3</span> significa: Caballo b1 → c3.
+      La notación no dice explícitamente que salió de b1 porque normalmente el movimiento queda determinado por la posición.</p>
+    </div>
+    <div class="card" style="margin:0">
+      <h4>Ejemplo: <span class="san">4. Nf3</span></h4>
+      <p>Las blancas juegan <span class="san">4. Nf3</span>. Significa: Caballo → f3.</p>
+      <p style="margin-top:8px">En nuestra partida: <b>Caballo g1 → f3</b>. Por tanto: <span class="san">Nf3</span>.</p>
+    </div>
+  </div>
+
+  <h3 class="sub-h">El número de la jugada <span class="chip">Cap. 13</span></h3>
+  <div class="card">
+    <ul class="clean">
+      <li>Cuando ves <span class="san">1. e4</span>, el número <b>1.</b> significa: <b>primera jugada de las blancas</b>.</li>
+      <li>Después, <span class="san">1...d5</span> significa: <b>primera jugada de las negras</b>.</li>
+      <li>Los tres puntos <b style="font-family:Consolas,monospace">...</b> indican que estamos hablando de la jugada de las negras.</li>
+    </ul>
+  </div>
+
+  <h3 class="sub-h">Cómo se escribe una partida <span class="chip">Cap. 14</span></h3>
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <p style="font-family:Consolas,monospace;font-size:1.1rem;line-height:2">
+        1. e4 d5<br>2. exd5 Qxd5<br>3. Nc3 Qa5
+      </p>
+    </div>
+    <div class="card" style="margin:0">
+      <p>Esto significa:</p>
+      <ul class="clean" style="margin-top:6px">
+        <li><b>Jugada 1</b> — Blancas: e4 · Negras: d5</li>
+        <li><b>Jugada 2</b> — Blancas: exd5 · Negras: Qxd5</li>
+        <li><b>Jugada 3</b> — Blancas: Nc3 · Negras: Qa5</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAPTURAS ================= -->
+<section class="view" id="sec-capturas">
+  <div class="sec-head">
+    <span class="kicker">Parte II · Capítulos 15 a 31</span>
+    <h2><span class="ico">⚔️</span>Capturas, jaques, mate y enroque</h2>
+    <p>Los símbolos que convierten la notación en un lenguaje completo: la «x», el «+», el «#» y el enroque.</p>
+  </div>
+
+  <h3 class="sub-h">¿Qué significa la «x»? <span class="chip">Cap. 15, 16 y 17</span></h3>
+  <div class="card">
+    <p>La letra <span class="san big">x</span> significa <b>CAPTURA</b>. Vamos a desmontar <span class="san big">exd5</span>:</p>
+    <div class="grid3" style="margin-top:12px">
+      <div class="mv-block"><span class="lb">Primera letra · e</span>Indica que el peón que captura procede de la <b>columna e</b>.</div>
+      <div class="mv-block"><span class="lb">El símbolo · x</span>Significa <b>captura</b>.</div>
+      <div class="mv-block"><span class="lb">El destino · d5</span>Es la casilla <b>donde captura</b>.</div>
+    </div>
+    <p style="margin-top:12px"><b>exd5 = el peón de e captura en d5.</b> En nuestra partida: peón e4 → d5 capturando el peón negro. Por eso: <span class="san">2. exd5</span>.</p>
+    <div class="co warn">
+      <span class="co-t">¿Por qué no es «ed5»?</span>
+      Porque necesitamos saber que hubo una captura. Por eso: <b>e4 → e5</b> se escribe <span class="san">e5</span>,
+      pero <b>e4 → d5 capturando una pieza</b> se escribe <span class="san">exd5</span>. <b>La x es fundamental.</b>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Captura de una pieza <span class="chip">Cap. 18 y 19</span></h3>
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <p>Supongamos que una dama va de <b>d5 → h5</b> sin capturar. Se escribe <span class="san">Qh5</span>.</p>
+      <p style="margin-top:8px">Pero si la dama va de <b>h5 → h2</b> y captura una pieza: <span class="san">Qxh2</span>.</p>
+      <ul class="clean" style="margin-top:8px">
+        <li>La <b>Q</b> significa dama.</li>
+        <li>La <b>x</b> significa captura.</li>
+        <li>El <b>h2</b> indica dónde capturó.</li>
+      </ul>
+      <p style="margin-top:8px"><b>Qxh2 = dama captura en h2.</b></p>
+    </div>
+    <div class="card" style="margin:0">
+      <h4>Aplicación directa a nuestra partida</h4>
+      <p style="margin-top:6px">La jugada <span class="san big">10...Qxh2+</span> significa:</p>
+      <ul class="clean" style="margin-top:6px">
+        <li><b>Q</b> = dama.</li>
+        <li><b>x</b> = captura.</li>
+        <li><b>h2</b> = casilla de destino.</li>
+        <li><b>+</b> = jaque.</li>
+      </ul>
+      <p style="margin-top:8px;color:#fde68a"><b>La dama negra captura en h2 y da jaque.</b></p>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Jaque «+» y jaque mate «#» <span class="chip">Cap. 20, 21 y 22</span></h3>
+  <div class="grid2">
+    <div class="card" style="margin:0;border-color:rgba(245,158,11,.5)">
+      <h4 style="color:var(--amber)">+ = JAQUE</h4>
+      <p>El rey está siendo atacado, <b>pero existe alguna forma legal de escapar</b>. Se escribe <span class="san">+</span>.</p>
+      <p style="margin-top:8px"><span class="san">Qxh2+</span> = la dama captura en h2 y da jaque.<br>
+      <span class="san">Qxf4+</span> = la dama captura en f4 y da jaque.</p>
+    </div>
+    <div class="card" style="margin:0;border-color:rgba(239,68,68,.5)">
+      <h4 style="color:var(--red)"># = JAQUE MATE</h4>
+      <p>El rey está siendo atacado y <b>no existe ninguna respuesta legal</b>. Se escribe <span class="san">#</span>.</p>
+      <p style="margin-top:8px"><span class="san">Qh7#</span> significaría: la dama va a h7 y da jaque mate.</p>
+      <p style="margin-top:8px"><b>La diferencia es: + = jaque · # = jaque mate.</b></p>
+    </div>
+  </div>
+
+  <h3 class="sub-h">El enroque <span class="chip">Cap. 23, 24 y 25</span></h3>
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <h4><span class="san big">O-O</span> · Enroque corto</h4>
+      <p style="margin:8px 0">En nuestra partida aparece <span class="san">6. O-O</span>: es una jugada especial, el <b>ENROQUE CORTO</b>. Cuando las blancas hacen O-O ocurre:</p>
+      <ul class="clean">
+        <li>Rey: <b>e1 → g1</b></li>
+        <li>Torre: <b>h1 → f1</b></li>
+      </ul>
+      <p style="margin-top:8px;color:var(--muted)">Todo queda resumido en: <span class="san">O-O</span>.</p>
+    </div>
+    <div class="card" style="margin:0">
+      <h4><span class="san big">O-O-O</span> · Enroque largo</h4>
+      <p style="margin:8px 0">El enroque largo, para las blancas, significa:</p>
+      <ul class="clean">
+        <li>Rey: <b>e1 → c1</b></li>
+        <li>Torre: <b>a1 → d1</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Los peones: movimiento y captura <span class="chip">Cap. 26, 27, 28 y 29</span></h3>
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <h4>Movimiento normal</h4>
+      <p style="margin-top:6px">Los peones <b>no tienen letra</b>:</p>
+      <ul class="clean" style="margin-top:6px">
+        <li><span class="san">e4</span> = peón a e4.</li>
+        <li><span class="san">h3</span> = peón a h3.</li>
+        <li><span class="san">f4</span> = peón a f4.</li>
+      </ul>
+    </div>
+    <div class="card" style="margin:0">
+      <h4>Captura de peón</h4>
+      <p style="margin-top:6px">Aquí sí aparece una letra (la columna de origen):</p>
+      <ul class="clean" style="margin-top:6px">
+        <li><span class="san">exd5</span> = el peón de la columna e captura en d5.</li>
+        <li><span class="san">hxg4</span> = el peón de la columna h captura en g4.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h4>Desmontemos <span class="san">hxg4</span> en nuestra partida</h4>
+    <p style="margin-top:6px"><b>h</b> = peón de la columna h · <b>x</b> = captura · <b>g4</b> = casilla donde captura.
+    Por tanto: <b>peón de h captura en g4</b>.</p>
+    <ul class="clean" style="margin-top:6px">
+      <li><span class="san">8. hxg4</span> — el peón blanco de h3 captura el alfil negro que estaba en g4.</li>
+      <li><span class="san">8...hxg4</span> — el peón negro de h5 captura ese peón en g4.</li>
+    </ul>
+    <div class="co err">
+      <span class="co-t">Error frecuente</span>
+      ¿Por qué no se escribe <b>Pxg4</b>? Porque el peón no lleva letra. <b>Nunca escribimos Pxg4.</b>
+      En notación algebraica estándar escribimos <span class="san">hxg4</span>: la h nos dice desde qué columna salió el peón.
+    </div>
+  </div>
+
+  <h3 class="sub-h">Cuando una pieza captura <span class="chip">Cap. 30 y 31</span></h3>
+  <div class="card">
+    <p>Para las piezas utilizamos: <b style="color:var(--cyan)">pieza + x + casilla</b></p>
+    <div class="tbl-wrap" style="margin-top:10px">
+      <table>
+        <thead><tr><th>Notación</th><th>Significado</th></tr></thead>
+        <tbody>
+          <tr><td><span class="san">Qxd5</span></td><td>Dama captura en d5.</td></tr>
+          <tr><td><span class="san">Nxf6</span></td><td>Caballo captura en f6.</td></tr>
+          <tr><td><span class="san">Bxh7</span></td><td>Alfil captura en h7.</td></tr>
+          <tr><td><span class="san">Rxe5</span></td><td>Torre captura en e5.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="co ex" style="margin-top:14px">
+      <span class="co-t">Ejemplo · Nuestra partida: Qxd5</span>
+      Después de <span class="san">2. exd5</span>, las negras hacen <span class="san">2...Qxd5</span>.
+      Desmontemos: <b>Q</b> = dama · <b>x</b> = captura · <b>d5</b> = casilla donde captura.
+      Por tanto: <b>la dama negra captura el peón blanco que está en d5</b>.
+    </div>
+  </div>
+</section>
+
+<!-- ================= AVANZADO ================= -->
+<section class="view" id="sec-avanzado">
+  <div class="sec-head">
+    <span class="kicker">Parte II · Capítulos 34 a 42</span>
+    <h2><span class="ico">🧩</span>Notación avanzada: desambiguación, promoción y más</h2>
+    <p>Los últimos recursos del sistema: piezas iguales, coronación de peones, captura al paso y la partida como lenguaje.</p>
+  </div>
+
+  <div class="co info">
+    <span class="co-t">Una cosa muy importante · Cap. 34</span>
+    <b>La notación no explica el porqué.</b> La notación <span class="san">Nf3</span> solamente nos dice «Caballo a f3».
+    No nos dice: «El caballo fue a f3 porque desarrolla una pieza, controla el centro y ayuda a preparar el enroque.»
+    <b>La notación registra QUÉ SE JUGÓ. El análisis ajedrecístico explica POR QUÉ SE JUGÓ.</b> Nunca confundas ambas cosas.
+  </div>
+
+  <div class="card">
+    <h3>Notación = mapa de la partida <span class="chip">Cap. 35</span></h3>
+    <p>Puedes pensar en la notación algebraica como una especie de <b>GPS</b>. Por ejemplo, <span class="san">Nc3</span>
+    nos dice dónde llegó el caballo. Pero para saber si fue buena jugada necesitamos analizar:</p>
+    <div class="grid4" style="margin-top:10px">
+      <span class="chip">qué atacó</span><span class="chip">qué defendió</span>
+      <span class="chip">qué dejó de defender</span><span class="chip">qué amenaza creó</span>
+      <span class="chip">qué respondió el rival</span>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Dos piezas iguales, misma casilla: desambiguación <span class="chip">Cap. 36 y 37</span></h3>
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <p>Imagina que tienes dos caballos: uno en <b>c3</b> y otro en <b>e3</b>, y ambos pueden ir a d5. ¿Cómo sabemos cuál movió? La notación añade información:</p>
+      <ul class="clean" style="margin-top:8px">
+        <li><span class="san">Ncd5</span> = el caballo de la <b>columna c</b> va a d5.</li>
+        <li><span class="san">Ned5</span> = el caballo de la <b>columna e</b> va a d5.</li>
+      </ul>
+      <p style="margin-top:8px">Esto se llama <b>DESAMBIGUACIÓN</b>. No necesitas dominarlo ahora, pero debes saber que existe.</p>
+    </div>
+    <div class="card" style="margin:0">
+      <p>Si dos torres pueden ir a e1, podría aparecer:</p>
+      <ul class="clean" style="margin-top:8px">
+        <li><span class="san">Rae1</span> — torre de la columna a.</li>
+        <li><span class="san">Rfe1</span> — torre de la columna f.</li>
+      </ul>
+      <p style="margin-top:8px">La letra adicional identifica de qué columna salió la torre.
+      <b>La notación añade solamente la información necesaria</b> para saber exactamente qué pieza se movió.</p>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Promoción del peón <span class="chip">Cap. 38 y 39</span></h3>
+  <div class="card">
+    <p>Cuando un peón llega a la última fila puede convertirse en: <b>dama, torre, alfil o caballo</b>.</p>
+    <div class="grid2" style="margin-top:10px">
+      <div class="mv-block"><span class="lb">Promoción simple</span><span class="san">e8=Q</span> — el peón llega a e8 y se convierte en dama. Si además da jaque: <span class="san">e8=Q+</span></div>
+      <div class="mv-block"><span class="lb">Captura y promoción</span><span class="san">dxe8=Q</span> — el peón de la columna d captura en e8 y se convierte en dama.</div>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Captura al paso <span class="chip">Cap. 40</span></h3>
+  <div class="card">
+    <p>La captura al paso también tiene notación. Por ejemplo, <span class="san">exd6 e.p.</span> puede utilizarse para indicar:
+    <b>el peón de e captura al paso en d6</b>.</p>
+    <p style="margin-top:8px;color:var(--muted)">En algunas bases de datos modernas simplemente puede aparecer <span class="san">exd6</span>,
+    porque la posición deja claro que fue una captura al paso.</p>
+  </div>
+
+  <h3 class="sub-h">Abreviaturas importantes <span class="chip">Cap. 41</span></h3>
+  <div class="tbl-wrap card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th>Símbolo</th><th>Significado</th><th>Símbolo</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td><span class="san">K</span></td><td>Rey</td><td><span class="san">O-O</span></td><td>Enroque corto</td></tr>
+        <tr><td><span class="san">Q</span></td><td>Dama</td><td><span class="san">O-O-O</span></td><td>Enroque largo</td></tr>
+        <tr><td><span class="san">R</span></td><td>Torre</td><td><span class="san">=Q</span></td><td>Promoción a dama</td></tr>
+        <tr><td><span class="san">B</span></td><td>Alfil</td><td><span class="san">=R</span></td><td>Promoción a torre</td></tr>
+        <tr><td><span class="san">N</span></td><td>Caballo</td><td><span class="san">=B</span></td><td>Promoción a alfil</td></tr>
+        <tr><td><span class="san">x</span></td><td>Captura</td><td><span class="san">=N</span></td><td>Promoción a caballo</td></tr>
+        <tr><td><span class="san">+</span></td><td>Jaque</td><td><span class="san">#</span></td><td>Jaque mate</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-h">La partida como una frase <span class="chip">Cap. 42</span></h3>
+  <div class="card">
+    <p>Puedes aprender a leer la notación <b>como si fuera un lenguaje</b>. Por ejemplo, <span class="san big">Qxf4+</span> léelo mentalmente:</p>
+    <p style="font-size:1.15rem;color:#fde68a;margin:10px 0"><em>«Dama captura f4 jaque.»</em></p>
+    <p>No necesitas pensar todavía en la notación. <b>Primero tradúcela al español.</b> Después, con práctica, dejarás de necesitar la traducción.</p>
+  </div>
+</section>
+
+<!-- ================= PARTIDA ================= -->
+<section class="view" id="sec-partida">
+  <div class="sec-head">
+    <span class="kicker">Capítulos 32 y 33 · Tablero interactivo</span>
+    <h2><span class="ico">♞</span>Nuestra partida completa, traducida</h2>
+    <p>Reproduce la partida <b>movimiento a movimiento</b>. Cada paso es el movimiento de un solo bando.
+    Usa los controles situados bajo el tablero para avanzar, retroceder o saltar a cualquier posición.</p>
+  </div>
+
+  <div class="card" style="font-family:Consolas,monospace;font-size:.95rem;line-height:2;color:#cbd5e1">
+    1. e4 d5 &nbsp;·&nbsp; 2. exd5 Qxd5 &nbsp;·&nbsp; 3. Nc3 Qa5 &nbsp;·&nbsp; 4. Nf3 Bg4 &nbsp;·&nbsp; 5. Be2 Nf6 &nbsp;·&nbsp;
+    6. O-O Nc6 &nbsp;·&nbsp; 7. h3 h5 &nbsp;·&nbsp; 8. hxg4 hxg4 &nbsp;·&nbsp; 9. Nh2 Qh5 &nbsp;·&nbsp;
+    10. f4 Qxh2+ &nbsp;·&nbsp; 11. Kf2 Qxf4+ &nbsp;·&nbsp; 12. Ke1
+  </div>
+
+  <div class="game-layout">
+    <div class="board-col">
+      <div class="board-frame">
+        <div class="board-area">
+          <div class="coords-ranks"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+          <div class="board-grid" id="gameBoard"></div>
+        </div>
+        <div class="coords-files"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+      </div>
+
+      <!-- CONTROLES justo debajo del tablero -->
+      <div class="stepper">
+        <div class="st-btns">
+          <button id="gPrev">◀ Anterior</button>
+          <button id="gNext" class="primary">Siguiente ▶</button>
+          <button id="gReset" class="reset" title="Volver a la posición inicial">⟲</button>
+        </div>
+        <div class="st-slider"><input type="range" id="gSlider" min="0" max="23" value="0" step="1"></div>
+        <div class="st-ind">
+          <span id="gIndStep">Posición inicial</span>
+          <span id="gIndMove">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card mv-panel" id="gPanel" style="min-height:300px"></div>
+      <div class="card">
+        <h4 style="margin-bottom:4px">📜 Registro de movimientos</h4>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:8px">Pulsa cualquier movimiento para saltar a esa posición.</p>
+        <div class="movelist" id="gMoveList"></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-h">La partida completa, traducida frase a frase <span class="chip">Cap. 32</span></h3>
+  <div class="tbl-wrap card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th>#</th><th>BLANCAS</th><th>Qué significa</th><th>NEGRAS</th><th>Qué significa</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><span class="san">e4</span></td><td>Peón e2 → e4.</td><td><span class="san">d5</span></td><td>Peón d7 → d5.</td></tr>
+        <tr><td>2</td><td><span class="san">exd5</span></td><td>El peón blanco de e4 captura en d5.</td><td><span class="san">Qxd5</span></td><td>La dama negra captura en d5.</td></tr>
+        <tr><td>3</td><td><span class="san">Nc3</span></td><td>Caballo b1 → c3.</td><td><span class="san">Qa5</span></td><td>La dama negra va de d5 → a5.</td></tr>
+        <tr><td>4</td><td><span class="san">Nf3</span></td><td>Caballo g1 → f3.</td><td><span class="san">Bg4</span></td><td>Alfil c8 → g4.</td></tr>
+        <tr><td>5</td><td><span class="san">Be2</span></td><td>Alfil f1 → e2.</td><td><span class="san">Nf6</span></td><td>Caballo g8 → f6.</td></tr>
+        <tr><td>6</td><td><span class="san">O-O</span></td><td>Las blancas hacen enroque corto.</td><td><span class="san">Nc6</span></td><td>Caballo b8 → c6.</td></tr>
+        <tr><td>7</td><td><span class="san">h3</span></td><td>Peón h2 → h3.</td><td><span class="san">h5</span></td><td>Peón h7 → h5.</td></tr>
+        <tr><td>8</td><td><span class="san">hxg4</span></td><td>El peón blanco de h3 captura el alfil negro en g4.</td><td><span class="san">hxg4</span></td><td>El peón negro de h5 captura ese peón en g4.</td></tr>
+        <tr><td>9</td><td><span class="san">Nh2</span></td><td>Caballo f3 → h2.</td><td><span class="san">Qh5</span></td><td>Dama a5 → h5.</td></tr>
+        <tr><td>10</td><td><span class="san">f4</span></td><td>Peón f2 → f4.</td><td><span class="san">Qxh2+</span></td><td>La dama negra captura el caballo blanco en h2 y da jaque.</td></tr>
+        <tr><td>11</td><td><span class="san">Kf2</span></td><td>Rey g1 → f2.</td><td><span class="san">Qxf4+</span></td><td>La dama negra captura el peón de f4 y da jaque.</td></tr>
+        <tr><td>12</td><td><span class="san">Ke1</span></td><td>Rey f2 → e1.</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="co ex">
+    <span class="co-t">Ahora puedes leer toda la partida · Cap. 33</span>
+    La notación ya no debería parecerte un código misterioso. Ahora puedes leerla como:
+    <em>«Peón a e4, peón a d5, captura en d5, dama captura en d5, caballo a c3, dama a a5…»</em>
+    Y poco a poco tu cerebro empieza a convertir automáticamente <span class="san">Nf3</span> en:
+    <b>«Caballo a f3.»</b>
+  </div>
+</section>
+
+<!-- ================= MÉTODO ================= -->
+<section class="view" id="sec-metodo">
+  <div class="sec-head">
+    <span class="kicker">Parte III y IV · Capítulos 47 a 55</span>
+    <h2><span class="ico">🧭</span>El método completo para pensar</h2>
+    <p>C.A.R.T.A. + J.C.A., la regla YO → RIVAL → YO y el método definitivo de 16 comprobaciones antes de cada jugada.</p>
+  </div>
+
+  <div class="card">
+    <h3>La notación no es el objetivo <span class="chip">Cap. 47</span></h3>
+    <p>No estudies notación para convertirte en una máquina de escribir jugadas. Estúdiala porque te permite:</p>
+    <div class="grid3" style="margin-top:10px">
+      <span class="chip">reconstruir partidas</span>
+      <span class="chip">estudiar partidas de grandes jugadores</span>
+      <span class="chip">analizar tus propios errores</span>
+      <span class="chip">seguir una apertura</span>
+      <span class="chip">analizar posiciones</span>
+      <span class="chip">resolver ejercicios</span>
+      <span class="chip">utilizar motores de ajedrez</span>
+      <span class="chip">leer libros y tutoriales</span>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Cada jugada tiene tres niveles <span class="chip">Cap. 48</span></h3>
+  <p style="color:var(--muted);margin-bottom:12px">Cuando veas <span class="san">10...Qxh2+</span>, aprende a pensar en tres niveles:</p>
+  <div class="grid3">
+    <div class="card lvl l1" style="margin:0"><span class="lv-tag">NIVEL 1 — NOTACIÓN</span><p style="font-family:Consolas,monospace;font-size:1.2rem;margin:6px 0">Qxh2+</p><p style="color:var(--muted);font-size:.9rem">Dama captura en h2 y da jaque.</p></div>
+    <div class="card lvl l2" style="margin:0"><span class="lv-tag">NIVEL 2 — TABLERO</span><p style="margin-top:6px">La dama negra estaba en h5 y fue a h2.</p></div>
+    <div class="card lvl l3" style="margin:0"><span class="lv-tag">NIVEL 3 — AJEDREZ</span><p style="margin-top:6px">La dama entra en la zona del rey, captura el caballo y obliga al rey blanco a responder.</p></div>
+  </div>
+  <div class="co info" style="margin-top:14px"><span class="co-t">Recuerda</span><b>El tercer nivel es el más importante.</b></div>
+
+  <div class="card">
+    <h3>El objetivo del entrenamiento <span class="chip">Cap. 49</span></h3>
+    <p>No queremos que tu cerebro haga esto para siempre: <em>Q = dama · x = captura · h2 = casilla</em>.</p>
+    <p style="margin-top:8px">Queremos que con el tiempo haga directamente:</p>
+    <p style="font-size:1.1rem;color:#fde68a;margin:8px 0"><em>«¡La dama acaba de entrar en h2 y mi rey está en peligro!»</em></p>
+    <p><b style="color:var(--cyan)">La notación es el puente.</b></p>
+  </div>
+
+  <h3 class="sub-h">C.A.R.T.A. — tu checklist en cada turno <span class="chip">Cap. 50</span></h3>
+  <p style="color:var(--muted);margin-bottom:12px">Cada vez que sea tu turno:</p>
+  <div class="carta-grid">
+    <div class="carta-card"><div class="letter">C</div><h4>COMPRUEBA EL REY</h4><p>¿Estoy en jaque?</p></div>
+    <div class="carta-card"><div class="letter">A</div><h4>AMENAZAS</h4><p>¿Qué amenaza el rival?</p></div>
+    <div class="carta-card"><div class="letter">R</div><h4>REVISA</h4><p>¿Qué piezas están atacadas o indefensas?</p></div>
+    <div class="carta-card"><div class="letter">T</div><h4>TÁCTICAS</h4><p>Busca: jaques, capturas, amenazas.</p></div>
+    <div class="carta-card"><div class="letter">A</div><h4>ANALIZA</h4><p>¿Qué responderá el rival?</p></div>
+  </div>
+
+  <h3 class="sub-h" style="margin-top:26px">J.C.A. — el orden para buscar jugadas <span class="chip">Cap. 51</span></h3>
+  <div class="grid3">
+    <div class="card" style="margin:0;text-align:center;border-color:rgba(239,68,68,.5)"><div style="font-size:2rem;font-weight:800;color:var(--red)">J</div><h4>JAQUES</h4><p style="color:var(--muted);font-size:.9rem">Primero para ti. Después para el rival.</p></div>
+    <div class="card" style="margin:0;text-align:center;border-color:rgba(245,158,11,.5)"><div style="font-size:2rem;font-weight:800;color:var(--amber)">C</div><h4>CAPTURAS</h4><p style="color:var(--muted);font-size:.9rem">Primero para ti. Después para el rival.</p></div>
+    <div class="card" style="margin:0;text-align:center;border-color:rgba(34,197,94,.5)"><div style="font-size:2rem;font-weight:800;color:var(--green)">A</div><h4>AMENAZAS</h4><p style="color:var(--muted);font-size:.9rem">Primero para ti. Después para el rival.</p></div>
+  </div>
+
+  <h3 class="sub-h" style="margin-top:26px">La regla «YO → RIVAL → YO» <span class="chip">Cap. 52</span></h3>
+  <div class="card">
+    <p style="margin-bottom:14px">Cuando encuentres una jugada candidata:</p>
+    <div class="flow">
+      <div class="node c1">YO<br><span class="q">¿Qué juego?</span></div>
+      <div class="arr">↓</div>
+      <div class="node c2">RIVAL<br><span class="q">¿Cuál es su mejor respuesta?</span></div>
+      <div class="arr">↓</div>
+      <div class="node c3">YO<br><span class="q">¿Qué hago entonces?</span></div>
+    </div>
+    <p style="margin-top:14px;text-align:center;color:var(--muted)">No hace falta calcular veinte movimientos. <b style="color:var(--text)">Empieza con dos o tres.</b></p>
+  </div>
+
+  <div class="co warn">
+    <span class="co-t">El error que debes evitar · Cap. 53</span>
+    Nunca pienses: <em>«Esta jugada parece buena.»</em><br>
+    Piensa: <em>«Esta jugada parece buena. Ahora voy a intentar demostrar que funciona.»</em><br>
+    Y ponte del lado del rival. Pregunta: <b>«¿Cómo puedo castigar mi propia jugada?»</b><br>
+    Esta costumbre te hará mejorar muchísimo.
+  </div>
+
+  <h3 class="sub-h">EL MÉTODO DEFINITIVO — durante una partida <span class="chip">Cap. 54</span></h3>
+  <ol class="steps">
+    <li>¿Estoy en jaque?</li>
+    <li>¿Qué acaba de cambiar?</li>
+    <li>¿Qué amenaza mi rival?</li>
+    <li>¿Tiene jaques?</li>
+    <li>¿Tiene capturas?</li>
+    <li>¿Tiene amenazas?</li>
+    <li>¿Tengo jaques?</li>
+    <li>¿Tengo capturas?</li>
+    <li>¿Tengo amenazas?</li>
+    <li>¿Hay piezas indefensas?</li>
+    <li>¿Cuáles son mis jugadas candidatas?</li>
+    <li>¿Qué responderá el rival?</li>
+    <li>¿Qué haría yo si fuera el rival?</li>
+    <li>¿Mi jugada deja algo gratis?</li>
+    <li>¿Mi rey queda seguro?</li>
+    <li><b>Ahora sí: juego.</b></li>
+  </ol>
+
+  <div class="co info" style="margin-top:16px">
+    <span class="co-t">Y después de la jugada… · Cap. 55</span>
+    <b>Vuelve a empezar.</b> Porque ahora el tablero ha cambiado. Tu rival tiene el turno.
+    Cuando termine su jugada: <b>REINICIA EL PROCESO.</b>
+  </div>
+</section>
+
+<!-- ================= LENGUAJES ================= -->
+<section class="view" id="sec-lenguajes">
+  <div class="sec-head">
+    <span class="kicker">Capítulos 56 a 61</span>
+    <h2><span class="ico">🗣️</span>Los dos lenguajes: ver las intenciones</h2>
+    <p>El objetivo real no es memorizar símbolos: es aprender a ver lo que está pasando en el tablero.</p>
+  </div>
+
+  <div class="card">
+    <h3>Tu objetivo real <span class="chip">Cap. 56</span></h3>
+    <p>No es memorizar <em>e4, d5, exd5, Qxd5…</em> — es <b>aprender a ver</b>:</p>
+    <div class="grid3" style="margin-top:10px">
+      <span class="chip">«El peón atacó.»</span>
+      <span class="chip">«La dama recapturó.»</span>
+      <span class="chip">«El caballo atacó la dama.»</span>
+      <span class="chip">«El alfil atacó el caballo.»</span>
+      <span class="chip">«El rey se enrocó.»</span>
+      <span class="chip">«El peón expulsó al alfil.»</span>
+      <span class="chip">«La dama se acercó al rey.»</span>
+      <span class="chip">«La dama encontró una captura con jaque.»</span>
+    </div>
+    <p style="margin-top:12px;color:#86efac;font-weight:700">Eso es empezar a pensar ajedrez.</p>
+  </div>
+
+  <div class="quote" style="margin:18px 0">
+    NO PREGUNTES PRIMERO «¿QUÉ JUEGO?»<br>Pregunta: <b>«¿QUÉ ESTÁ PASANDO?»</b><br>
+    Después: «¿Qué quiere mi rival?» · Después: «¿Qué puedo hacer?» · Y finalmente: «¿Qué hará él después?»
+    <small>— LA FRASE QUE QUIERO QUE RECUERDES · CAP. 57</small>
+  </div>
+
+  <h3 class="sub-h">Resumen de notación algebraica <span class="chip">Cap. 58</span></h3>
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <h4>🗺️ Tablero</h4>
+      <p style="font-family:Consolas,monospace;margin:6px 0">a b c d e f g h · 1 2 3 4 5 6 7 8</p>
+      <h4 style="margin-top:12px">♟️ Piezas</h4>
+      <p style="margin-top:4px">K = Rey · Q = Dama · R = Torre · B = Alfil · N = Caballo · Peón = sin letra</p>
+      <h4 style="margin-top:12px">➡️ Movimiento</h4>
+      <ul class="clean" style="margin-top:4px;font-size:.92rem">
+        <li><span class="san">e4</span> = peón a e4</li>
+        <li><span class="san">Nf3</span> = caballo a f3</li>
+        <li><span class="san">Bc4</span> = alfil a c4</li>
+        <li><span class="san">Qh5</span> = dama a h5</li>
+        <li><span class="san">Rf1</span> = torre a f1</li>
+      </ul>
+    </div>
+    <div class="card" style="margin:0">
+      <h4>⚔️ Captura (x)</h4>
+      <ul class="clean" style="margin-top:4px;font-size:.92rem">
+        <li><span class="san">exd5</span> = peón de e captura en d5</li>
+        <li><span class="san">Nxf7</span> = caballo captura en f7</li>
+        <li><span class="san">Qxd5</span> = dama captura en d5</li>
+        <li><span class="san">Bxh7</span> = alfil captura en h7</li>
+      </ul>
+      <h4 style="margin-top:12px">Jaque y mate</h4>
+      <ul class="clean" style="margin-top:4px;font-size:.92rem">
+        <li><span class="san">+</span> = jaque · <span class="san">Qxh2+</span> dama captura en h2 y da jaque</li>
+        <li><span class="san">#</span> = jaque mate · <span class="san">Qh7#</span> dama va a h7 y da jaque mate</li>
+      </ul>
+      <h4 style="margin-top:12px">Enroque · Promoción · Desambiguación</h4>
+      <ul class="clean" style="margin-top:4px;font-size:.92rem">
+        <li><span class="san">O-O</span> corto · <span class="san">O-O-O</span> largo</li>
+        <li><span class="san">e8=Q</span> peón llega a e8 y se convierte en dama</li>
+        <li><span class="san">Ncd5</span> caballo de la columna c va a d5 · <span class="san">Rae1</span> torre de la columna a va a e1</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Tu primer objetivo <span class="chip">Cap. 59</span></h3>
+  <div class="card">
+    <p><b>No intentes aprenderlo todo de memoria.</b> Durante tus próximas partidas concéntrate solamente en estas seis cosas:</p>
+    <div class="grid4" style="margin-top:10px">
+      <span class="chip"><span class="san">e4</span> = peón</span>
+      <span class="chip"><span class="san">Nf3</span> = caballo</span>
+      <span class="chip"><span class="san">Bc4</span> = alfil</span>
+      <span class="chip"><span class="san">Qh5</span> = dama</span>
+      <span class="chip"><span class="san">x</span> = captura</span>
+      <span class="chip"><span class="san">+</span> = jaque</span>
+    </div>
+    <p style="margin-top:12px">Después añade: <span class="san">K</span> = rey · <span class="san">R</span> = torre · <span class="san">O-O</span> = enroque · <span class="san">#</span> = mate.</p>
+    <p style="margin-top:6px;color:var(--muted)">Y posteriormente: promoción, desambiguación y captura al paso.</p>
+  </div>
+
+  <h3 class="sub-h">La gran conexión <span class="chip">Cap. 60</span></h3>
+  <div class="grid2">
+    <div class="lang-box l1">
+      <span class="badge">LENGUAJE 1 — NOTACIÓN</span>
+      <p style="font-family:Consolas,monospace;font-size:1.8rem;color:var(--cyan);margin-top:12px">Qxh2+</p>
+      <p style="color:var(--muted);font-size:.9rem;margin-top:8px">El primer lenguaje <b>describe</b>.</p>
+    </div>
+    <div class="lang-box l2">
+      <span class="badge amber">LENGUAJE 2 — PENSAMIENTO</span>
+      <p style="margin-top:12px"><em>«La dama negra captura mi caballo en h2 y da jaque. Mi rey está obligado a responder.
+      Tengo que analizar las posibilidades de escapar, capturar la dama o bloquear el ataque.»</em></p>
+      <p style="color:var(--muted);font-size:.9rem;margin-top:8px">El segundo lenguaje <b>piensa</b>.</p>
+    </div>
+  </div>
+  <div class="co info" style="margin-top:14px"><span class="co-t">Nuestro objetivo</span><b>Y NUESTRO OBJETIVO ES QUE APRENDAS EL SEGUNDO.</b></div>
+
+  <h3 class="sub-h">Regla final <span class="chip">Cap. 61</span></h3>
+  <div class="card">
+    <p>Cuando veas una partida escrita <span class="san">1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5</span>,
+    no la leas simplemente como símbolos. Haz esto:</p>
+    <div class="grid3" style="margin-top:12px">
+      <div class="mv-block"><span class="lb">1. e4</span>«El peón ocupa el centro.»<br><span class="lb" style="margin-top:8px">...d5</span>«Las negras desafían el centro.»</div>
+      <div class="mv-block"><span class="lb">2. exd5</span>«Las blancas capturan.»<br><span class="lb" style="margin-top:8px">...Qxd5</span>«La dama recaptura.»</div>
+      <div class="mv-block"><span class="lb">3. Nc3</span>«El caballo se desarrolla y ataca la dama.»</div>
+    </div>
+    <p style="margin-top:14px">Ahora estás empezando a hacer algo mucho más importante que leer notación:
+    <b style="color:var(--cyan)">ESTÁS APRENDIENDO A VER LAS INTENCIONES DE LAS JUGADAS.</b><br>
+    Y eso es exactamente lo que significa <b>empezar a pensar como un jugador de ajedrez</b>.</p>
+  </div>
+</section>
+
+<!-- ================= EJERCICIOS ================= -->
+<section class="view" id="sec-ejercicios">
+  <div class="sec-head">
+    <span class="kicker">Capítulos 43 a 46 · Práctica</span>
+    <h2><span class="ico">🏋️</span>Ejercicios de traducción</h2>
+    <p>Traduce la notación al español… y después hazlo al revés. Pulsa cada ejercicio para ver la respuesta.</p>
+  </div>
+
+  <h3 class="sub-h">Ejercicio de traducción <span class="chip">Cap. 43</span></h3>
+  <details class="qa"><summary>Traduce: <span class="san">1. e4</span></summary><div class="ans"><b>Respuesta:</b> Peón a e4.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">2. Nf3</span></summary><div class="ans"><b>Respuesta:</b> Caballo a f3.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">3. Qh5</span></summary><div class="ans"><b>Respuesta:</b> Dama a h5.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">4. Bc4</span></summary><div class="ans"><b>Respuesta:</b> Alfil a c4.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">5. Rf1</span></summary><div class="ans"><b>Respuesta:</b> Torre a f1.</div></details>
+
+  <h3 class="sub-h" style="margin-top:24px">Ejercicio de capturas <span class="chip">Cap. 44</span></h3>
+  <details class="qa"><summary>Traduce: <span class="san">Qxd5</span></summary><div class="ans"><b>Respuesta:</b> Dama captura en d5.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">Nxf7</span></summary><div class="ans"><b>Respuesta:</b> Caballo captura en f7.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">Bxh7</span></summary><div class="ans"><b>Respuesta:</b> Alfil captura en h7.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">Rxe5</span></summary><div class="ans"><b>Respuesta:</b> Torre captura en e5.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">exd5</span></summary><div class="ans"><b>Respuesta:</b> Peón de la columna e captura en d5.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">hxg4</span></summary><div class="ans"><b>Respuesta:</b> Peón de la columna h captura en g4.</div></details>
+
+  <h3 class="sub-h" style="margin-top:24px">Ejercicio de jaques <span class="chip">Cap. 45</span></h3>
+  <details class="qa"><summary>Traduce: <span class="san">Qh5+</span></summary><div class="ans"><b>Respuesta:</b> Dama a h5, jaque.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">Qxh2+</span></summary><div class="ans"><b>Respuesta:</b> Dama captura en h2, jaque.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">Qxf4+</span></summary><div class="ans"><b>Respuesta:</b> Dama captura en f4, jaque.</div></details>
+  <details class="qa"><summary>Traduce: <span class="san">Qh7#</span></summary><div class="ans"><b>Respuesta:</b> Dama va a h7, jaque mate.</div></details>
+
+  <h3 class="sub-h" style="margin-top:24px">Ahora hazlo al revés <span class="chip">Cap. 46</span></h3>
+  <div class="co info"><span class="co-t">Instrucción</span>Aprende también a convertir una descripción en notación.</div>
+  <details class="qa"><summary>«Caballo g1 a f3» → ¿notación?</summary><div class="ans"><b>Respuesta:</b> <span class="san">Nf3</span></div></details>
+  <details class="qa"><summary>«Dama captura en d5» → ¿notación?</summary><div class="ans"><b>Respuesta:</b> <span class="san">Qxd5</span></div></details>
+  <details class="qa"><summary>«Peón de e captura en d5» → ¿notación?</summary><div class="ans"><b>Respuesta:</b> <span class="san">exd5</span></div></details>
+  <details class="qa"><summary>«Dama captura en h2 y da jaque» → ¿notación?</summary><div class="ans"><b>Respuesta:</b> <span class="san">Qxh2+</span></div></details>
+  <details class="qa"><summary>«Enroque corto» → ¿notación?</summary><div class="ans"><b>Respuesta:</b> <span class="san">O-O</span></div></details>
+</section>
+
+<!-- ================= CRÉDITOS ================= -->
+<section class="view" id="sec-creditos">
+  <div class="sec-head">
+    <span class="kicker">Sobre este tutorial</span>
+    <h2><span class="ico">🏛️</span>Créditos</h2>
+  </div>
+  <div class="cover-wrap" id="coverCredits"></div>
+  <div class="card credit-card">
+    <span class="badge purple">Tutorial educativo</span>
+    <h3 style="margin-top:14px;font-size:1.4rem">Aprende a Pensar como un Jugador de Ajedrez</h3>
+    <p style="color:var(--muted)">Método práctico para aprender a pensar durante toda la partida</p>
+    <div class="who">Rubén Sbarsky</div>
+    <div class="dt-chips" style="justify-content:center">
+      <span class="chip">📅 Fecha: <b>05/09/2026</b></span>
+      <span class="chip">🕒 Hora: <b>18:03:08</b></span>
+    </div>
+    <p style="margin-top:16px;color:var(--muted)">Este material tiene una indicación exclusivamente <b>educativa y de divulgación</b>.
+    Estúdialo, practícalo con el tablero paso a paso y compártelo.</p>
+    <p class="latin" style="margin-top:14px;font-style:italic;color:#bae6fd">Fiat iustitia, ruat caelum.</p>
+  </div>
+</section>
+
+</main>
+
+<button id="toTop" title="Volver arriba" aria-label="Volver arriba">↑</button>
+
+<footer>
+  <p>📚 Tutorial solo con fines Educativos y Divulgación</p>
+  <p>👨‍💻 Créditos: Rubén Sbarsky</p>
+  <p>📅 FECHA: 05/09/2026 · Hora: 18:03:08</p>
+  <p class="latin">Fiat iustitia, ruat caelum.</p>
+</footer>
+
+<script>
+"use strict";
+/* ==================================================================
+   SVG DE PORTADA ANIMADO (16:9) — se inserta en HOME y se clona en CRÉDITOS
+   ================================================================== */
+const COVER_SVG = `
+<svg class="cover-svg" viewBox="0 0 960 540" role="img" aria-label="Animación de ajedrez: movimientos de peón, caballo y dama con jaque, junto a los dos lenguajes del ajedrecista" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cbg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1120"/><stop offset="1" stop-color="#0a0e1a"/>
+    </linearGradient>
+    <radialGradient id="cvig" cx="0.5" cy="0.42" r="0.75">
+      <stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.5"/>
+    </radialGradient>
+    <filter id="fglow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="fglowBig" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="960" height="540" fill="url(#cbg)"/>
+  <g stroke="#1e3a5f" stroke-width="1" opacity="0.22">
+    <path d="M0 90 H960 M0 180 H960 M0 270 H960 M0 360 H960 M0 450 H960"/>
+    <path d="M120 0 V540 M240 0 V540 M360 0 V540 M480 0 V540 M600 0 V540 M720 0 V540 M840 0 V540"/>
+  </g>
+
+  <!-- chip superior -->
+  <rect x="60" y="24" width="252" height="26" rx="13" fill="#0f172a" stroke="#1e3a5f"/>
+  <text x="186" y="41" text-anchor="middle" font-size="11" letter-spacing="2" fill="#7dd3fc" font-family="Consolas,monospace">MÉTODO C.A.R.T.A. + J.C.A.</text>
+  <rect x="700" y="24" width="200" height="26" rx="13" fill="#0f172a" stroke="#1e3a5f"/>
+  <text x="800" y="41" text-anchor="middle" font-size="11" letter-spacing="2" fill="#64748b" font-family="Consolas,monospace">PARTE I — IV · 61 CAPÍTULOS</text>
+
+  <!-- ========= TABLERO ========= -->
+  <rect x="54" y="74" width="412" height="412" rx="10" fill="#0d1526" stroke="#00d4ff" stroke-opacity="0.45" stroke-width="1.5">
+    <animate attributeName="stroke-opacity" values="0.3;0.75;0.3" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  <g id="bSq"></g>
+  <!-- coordenadas -->
+  <g font-size="11" fill="#64748b" font-family="Consolas,monospace" text-anchor="middle">
+    <text x="85" y="505">a</text><text x="135" y="505">b</text><text x="185" y="505">c</text><text x="235" y="505">d</text>
+    <text x="285" y="505">e</text><text x="335" y="505">f</text><text x="385" y="505">g</text><text x="435" y="505">h</text>
+    <text x="47" y="109">8</text><text x="47" y="159">7</text><text x="47" y="209">6</text><text x="47" y="259">5</text>
+    <text x="47" y="309">4</text><text x="47" y="359">3</text><text x="47" y="409">2</text><text x="47" y="459">1</text>
+  </g>
+
+  <!-- casillas resaltadas sincronizadas -->
+  <g>
+    <rect x="260" y="280" width="50" height="50" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;0.32;0.10;0.10" keyTimes="0;0.09;0.12;0.3;1" dur="12s" repeatCount="indefinite"/></rect>
+    <rect x="210" y="230" width="50" height="50" fill="#a855f7" opacity="0"><animate attributeName="opacity" values="0;0;0.3;0.1;0.1" keyTimes="0;0.18;0.21;0.4;1" dur="12s" repeatCount="indefinite"/></rect>
+    <rect x="160" y="330" width="50" height="50" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;0.3;0.08;0.08" keyTimes="0;0.34;0.37;0.55;1" dur="12s" repeatCount="indefinite"/></rect>
+    <rect x="310" y="280" width="50" height="50" fill="#00d4ff" opacity="0"><animate attributeName="opacity" values="0;0;0.3;0.08;0.08" keyTimes="0;0.52;0.55;0.7;1" dur="12s" repeatCount="indefinite"/></rect>
+    <rect x="410" y="380" width="50" height="50" fill="#ef4444" opacity="0"><animate attributeName="opacity" values="0;0;0.4;0.12;0.12" keyTimes="0;0.68;0.71;0.9;1" dur="12s" repeatCount="indefinite"/></rect>
+  </g>
+
+  <!-- piezas estáticas (posición inicial, sin e2/b1/d7/d8) -->
+  <g font-size="30" text-anchor="middle" opacity="0.34">
+    <g fill="#cbd5e1">
+      <text x="85" y="466">♖</text><text x="185" y="466">♗</text><text x="235" y="466">♕</text><text x="335" y="466">♗</text><text x="385" y="466">♘</text><text x="435" y="466">♖</text>
+      <text x="85" y="416">♙</text><text x="135" y="416">♙</text><text x="185" y="416">♙</text><text x="235" y="416">♙</text><text x="335" y="416">♙</text><text x="385" y="416">♙</text><text x="435" y="416">♙</text>
+    </g>
+    <g fill="#94a3b8">
+      <text x="85" y="116">♜</text><text x="135" y="116">♞</text><text x="185" y="116">♝</text><text x="285" y="116">♚</text><text x="335" y="116">♝</text><text x="385" y="116">♞</text><text x="435" y="116">♜</text>
+      <text x="85" y="166">♟</text><text x="135" y="166">♟</text><text x="185" y="166">♟</text><text x="285" y="166">♟</text><text x="335" y="166">♟</text><text x="385" y="166">♟</text><text x="435" y="166">♟</text>
+    </g>
+  </g>
+
+  <!-- rey blanco e1 (se ilumina en rojo con el jaque) -->
+  <text x="285" y="466" font-size="32" text-anchor="middle" fill="#f8fafc" filter="url(#fglow)">♔
+    <animate attributeName="fill" values="#f8fafc;#f8fafc;#ef4444;#ef4444;#f8fafc" keyTimes="0;0.68;0.72;0.92;1" dur="12s" repeatCount="indefinite"/>
+  </text>
+
+  <!-- PEÓN BLANCO e2 -> e4 -->
+  <g>
+    <text x="285" y="416" font-size="32" text-anchor="middle" fill="#f8fafc" filter="url(#fglow)">♙</text>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 -100;0 -100" keyTimes="0;0.04;0.09;1" dur="12s" repeatCount="indefinite"/>
+  </g>
+  <!-- PEÓN NEGRO d7 -> d5 -->
+  <g>
+    <text x="235" y="166" font-size="32" text-anchor="middle" fill="#cbd5e1" filter="url(#fglow)">♟</text>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 100;0 100" keyTimes="0;0.13;0.18;1" dur="12s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- CABALLO BLANCO: b1->c3->d5->f4->h5 -->
+  <g>
+    <circle r="4" fill="#00d4ff" opacity="0">
+      <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.25;0.34;0.43;0.52;0.61;1" keyPoints="0;0;0.25;0.5;0.75;1;1" path="M135 455 Q150 380 185 355 Q195 280 235 255 Q295 240 335 305 Q395 230 435 255"/>
+      <animate attributeName="opacity" values="0;0;0.85;0" keyTimes="0;0.25;0.4;0.66" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <text x="135" y="466" font-size="34" text-anchor="middle" fill="#00d4ff" filter="url(#fglowBig)">♘
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.24;0.26;0.96;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+    <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.25;0.34;0.43;0.52;0.61;1" keyPoints="0;0;0.25;0.5;0.75;1;1" path="M0 0 Q15 -75 50 -100 Q60 -175 100 -200 Q160 -215 200 -150 Q260 -225 300 -200"/>
+  </g>
+
+  <!-- DAMA NEGRA: d8->h4->h2 -->
+  <g>
+    <circle r="4" fill="#a855f7" opacity="0">
+      <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.35;0.52;0.58;0.68;1" keyPoints="0;0;0.666;0.666;1;1" path="M235 105 L435 305 L435 405"/>
+      <animate attributeName="opacity" values="0;0;0.85;0" keyTimes="0;0.35;0.55;0.75" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <text x="235" y="116" font-size="34" text-anchor="middle" fill="#a855f7" filter="url(#fglowBig)">♛
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.34;0.36;0.96;1" dur="12s" repeatCount="indefinite"/>
+    </text>
+    <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.35;0.52;0.58;0.68;1" keyPoints="0;0;0.666;0.666;1;1" path="M0 0 L200 200 L200 300"/>
+  </g>
+
+  <!-- destello JAQUE en h2 -->
+  <g opacity="0">
+    <circle cx="435" cy="405" r="30" fill="none" stroke="#ef4444" stroke-width="3">
+      <animate attributeName="r" values="14;40" dur="1.1s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-opacity" values="1;0" dur="1.1s" repeatCount="indefinite"/>
+    </circle>
+    <text x="435" y="422" font-size="48" font-weight="bold" text-anchor="middle" fill="#ef4444" filter="url(#fglowBig)">+</text>
+    <animate attributeName="opacity" values="0;0;1;0.55;1;0.55;1;0" keyTimes="0;0.69;0.71;0.77;0.82;0.87;0.9;0.96" dur="12s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- ========= PANEL DERECHO: LOS DOS LENGUAJES ========= -->
+  <text x="520" y="86" font-size="13" letter-spacing="3" fill="#7dd3fc" font-family="Consolas,monospace">LOS DOS LENGUAJES DEL AJEDRECISTA</text>
+
+  <rect x="520" y="100" width="380" height="112" rx="12" fill="#0f172a" stroke="#00d4ff" stroke-opacity="0.4"/>
+  <text x="540" y="126" font-size="11.5" letter-spacing="2" fill="#7dd3fc" font-family="Consolas,monospace">LENGUAJE 1 · NOTACIÓN</text>
+  <text x="540" y="186" font-size="48" font-weight="bold" fill="#00d4ff" font-family="Consolas,monospace" filter="url(#fglow)">Qxh2+
+    <animate attributeName="opacity" values="0.55;1;0.55" dur="2.6s" repeatCount="indefinite"/>
+  </text>
+
+  <path d="M710 218 V252" stroke="#00d4ff" stroke-width="2.5" stroke-dasharray="6 6">
+    <animate attributeName="stroke-dashoffset" values="24;0" dur="1.1s" repeatCount="indefinite"/>
+  </path>
+  <path d="M703 248 L710 260 L717 248 Z" fill="#00d4ff"/>
+
+  <rect x="520" y="266" width="380" height="118" rx="12" fill="#0f172a" stroke="#f59e0b" stroke-opacity="0.45">
+    <animate attributeName="stroke-opacity" values="0.25;0.25;0.9;0.9;0.25" keyTimes="0;0.68;0.72;0.93;1" dur="12s" repeatCount="indefinite"/>
+  </rect>
+  <text x="540" y="292" font-size="11.5" letter-spacing="2" fill="#fbbf24" font-family="Consolas,monospace">LENGUAJE 2 · PENSAMIENTO</text>
+  <g>
+    <text x="540" y="322" font-size="15.5" fill="#fde68a">«La dama captura mi caballo en h2</text>
+    <text x="540" y="346" font-size="15.5" fill="#fde68a">y da jaque: ¡mi rey está en peligro!»</text>
+    <animate attributeName="opacity" values="0.3;0.3;1;1;0.3" keyTimes="0;0.66;0.72;0.94;1" dur="12s" repeatCount="indefinite"/>
+  </g>
+  <text x="540" y="372" font-size="11" fill="#64748b">El primer lenguaje describe · el segundo piensa</text>
+
+  <!-- preguntas del jugador -->
+  <text x="520" y="414" font-size="11" letter-spacing="2" fill="#64748b" font-family="Consolas,monospace">ANTES DE MOVER, EL JUGADOR SE PREGUNTA:</text>
+  <g font-size="13" font-family="Consolas,monospace">
+    <text x="524" y="438" fill="#94a3b8">¿Qué acaba de cambiar?<animate attributeName="opacity" values="0.25;1;1;0.25;0.25" keyTimes="0;0.05;0.14;0.2;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="524" y="460" fill="#94a3b8">¿Qué amenaza mi rival?<animate attributeName="opacity" values="0.25;0.25;1;1;0.25;0.25" keyTimes="0;0.15;0.2;0.3;0.36;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="524" y="482" fill="#94a3b8">¿Tengo jaques, capturas, amenazas?<animate attributeName="opacity" values="0.25;0.25;1;1;0.25;0.25" keyTimes="0;0.31;0.36;0.46;0.52;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="524" y="504" fill="#94a3b8">¿Qué responderá mi rival?<animate attributeName="opacity" values="0.25;0.25;1;1;0.25" keyTimes="0;0.47;0.52;0.64;1" dur="12s" repeatCount="indefinite"/></text>
+  </g>
+
+  <!-- tira de notación inferior -->
+  <rect x="40" y="516" width="880" height="20" rx="6" fill="#0f172a" stroke="#1e3a5f" opacity="0.85"/>
+  <text x="52" y="530" font-size="12" font-family="Consolas,monospace" fill="#64748b">1. e4 d5 · 2. exd5 Qxd5 · 3. Nc3 Qa5 · 4. Nf3 Bg4 · 5. Be2 Nf6 · 6. O-O Nc6 · 7. h3 h5 · 8. hxg4 hxg4 · 9. Nh2 Qh5 · 10. f4 <tspan fill="#ef4444">Qxh2+</tspan> · 11. Kf2 <tspan fill="#ef4444">Qxf4+</tspan> · 12. Ke1</text>
+  <rect x="52" y="518" width="3" height="16" fill="#00d4ff">
+    <animate attributeName="x" values="52;900" dur="12s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.2;1" dur="1s" repeatCount="indefinite"/>
+  </rect>
+
+  <rect width="960" height="540" fill="url(#cvig)" pointer-events="none"/>
+</svg>`;
+
+/* generar casillas del tablero del SVG */
+(function(){
+  const holder=document.createElement('div'); holder.innerHTML=COVER_SVG;
+  const svg=holder.firstElementChild;
+  if(!svg) return;
+  const g=svg.querySelector('#bSq');
+  if(!g) return;
+  const NS='http://www.w3.org/2000/svg';
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+    const rect=document.createElementNS(NS,'rect');
+    rect.setAttribute('x',60+c*50); rect.setAttribute('y',80+r*50);
+    rect.setAttribute('width',50); rect.setAttribute('height',50);
+    rect.setAttribute('fill',((r+c)%2===0)?'#1b3350':'#0d1b30');
+    rect.setAttribute('stroke','#23405f'); rect.setAttribute('stroke-width','0.5');
+    g.appendChild(rect);
+  }
+  const str=new XMLSerializer().serializeToString(svg);
+  document.getElementById('coverHome').innerHTML=str;      // HOME: arriba, visible al abrir
+  document.getElementById('coverCredits').innerHTML=str;   // CRÉDITOS: exactamente el mismo SVG
+})();
+
+/* ==================================================================
+   MOTOR DE AJEDREZ (tablero interactivo) — HTML + CSS + JS vanilla
+   ================================================================== */
+const GLYPHS={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+
+function initialPosition(){
+  const p={}, back=['R','N','B','Q','K','B','N','R'];
+  for(let i=0;i<8;i++){
+    const f='abcdefgh'[i];
+    p[f+'1']=back[i]; p[f+'2']='P'; p[f+'7']='p'; p[f+'8']=back[i].toLowerCase();
+  }
+  return p;
+}
+function clonePos(p){return Object.assign({},p);}
+function applyMove(pos,mv){
+  const np=clonePos(pos);
+  if(mv.castle==='w'){ np['g1']=np['e1']; delete np['e1']; np['f1']=np['h1']; delete np['h1']; }
+  else if(mv.castle==='b'){ np['c8']=np['e8']; delete np['e8']; np['d8']=np['a8']; delete np['a8']; }
+  else { np[mv.to]=np[mv.from]; delete np[mv.from]; }
+  return np;
+}
+function buildPositions(steps){
+  const arr=[initialPosition()];
+  for(const mv of steps) arr.push(applyMove(arr[arr.length-1],mv));
+  return arr;
+}
+function buildGrid(boardEl){
+  boardEl.innerHTML='';
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+    const f='abcdefgh'[c], sq=f+(8-r);
+    const d=document.createElement('div');
+    d.className='sq '+(((r+c)%2===0)?'light':'dark');
+    d.dataset.sq=sq;
+    d.innerHTML='<span class="pc"></span>';
+    boardEl.appendChild(d);
+  }
+}
+function renderBoard(boardEl,pos){
+  for(const cell of boardEl.children){
+    const code=pos[cell.dataset.sq], pc=cell.querySelector('.pc');
+    pc.textContent=code?GLYPHS[code]:'';
+    pc.className='pc '+(code?(code===code.toUpperCase()?'pw':'pb'):'');
+  }
+}
+function fillCoords(container){ /* coordenadas ya presentes en el HTML */ }
+
+/* ---- LA PARTIDA DEL TUTORIAL: cada movimiento por separado ---- */
+const GAME=[
+ {n:1,color:'w',pieza:'Peón blanco',from:'e2',to:'e4',san:'e4',
+  que:'El peón blanco avanza dos casillas y ocupa e4.',
+  por:'Las blancas ocupan el centro del tablero.'},
+ {n:1,color:'b',pieza:'Peón negro',from:'d7',to:'d5',san:'d5',
+  que:'El peón negro avanza dos casillas y ocupa d5.',
+  por:'Las negras desafían el centro.'},
+ {n:2,color:'w',pieza:'Peón blanco',from:'e4',to:'d5',san:'exd5',capture:true,
+  que:'El peón blanco de e4 captura el peón negro en d5.',
+  por:'Las blancas capturan: eliminan el peón central negro.'},
+ {n:2,color:'b',pieza:'Dama negra',from:'d8',to:'d5',san:'Qxd5',capture:true,
+  que:'La dama negra captura en d5: recupera el peón blanco.',
+  por:'La dama recaptura. Ahora la dama está en el centro.'},
+ {n:3,color:'w',pieza:'Caballo blanco',from:'b1',to:'c3',san:'Nc3',
+  que:'El caballo blanco sale de b1 y va a c3.',
+  por:'El caballo se desarrolla y ataca la dama negra.'},
+ {n:3,color:'b',pieza:'Dama negra',from:'d5',to:'a5',san:'Qa5',
+  que:'La dama negra se mueve de d5 a a5.',
+  por:'La dama se aparta del ataque del caballo de c3.'},
+ {n:4,color:'w',pieza:'Caballo blanco',from:'g1',to:'f3',san:'Nf3',
+  que:'El caballo blanco sale de g1 y va a f3.',
+  por:'Segundo caballo que se desarrolla hacia el centro.'},
+ {n:4,color:'b',pieza:'Alfil negro',from:'c8',to:'g4',san:'Bg4',
+  que:'El alfil negro sale de c8 y va a g4.',
+  por:'El alfil se desarrolla apuntando al caballo de f3.'},
+ {n:5,color:'w',pieza:'Alfil blanco',from:'f1',to:'e2',san:'Be2',
+  que:'El alfil blanco se mueve de f1 a e2.',
+  por:'El alfil se desarrolla y despeja el camino del enroque.'},
+ {n:5,color:'b',pieza:'Caballo negro',from:'g8',to:'f6',san:'Nf6',
+  que:'El caballo negro sale de g8 y va a f6.',
+  por:'Las negras desarrollan su caballo hacia el centro.'},
+ {n:6,color:'w',pieza:'Enroque corto blanco',castle:'w',from:'e1',to:'g1',san:'O-O',
+  que:'Enroque corto: el rey blanco va de e1 a g1 y la torre de h1 a f1.',
+  por:'Las blancas ponen su rey en seguridad y activan la torre.'},
+ {n:6,color:'b',pieza:'Caballo negro',from:'b8',to:'c6',san:'Nc6',
+  que:'El caballo negro sale de b8 y va a c6.',
+  por:'Las negras completan el desarrollo de ese caballo.'},
+ {n:7,color:'w',pieza:'Peón blanco',from:'h2',to:'h3',san:'h3',
+  que:'El peón blanco avanza una casilla: de h2 a h3.',
+  por:'El peón se prepara para expulsar al alfil de g4.'},
+ {n:7,color:'b',pieza:'Peón negro',from:'h7',to:'h5',san:'h5',
+  que:'El peón negro avanza dos casillas: de h7 a h5.',
+  por:'El peón negro avanza por el flanco de rey.'},
+ {n:8,color:'w',pieza:'Peón blanco',from:'h3',to:'g4',san:'hxg4',capture:true,
+  que:'El peón blanco de h3 captura el alfil negro que estaba en g4.',
+  por:'El peón captura una pieza: el alfil negro desaparece del tablero.'},
+ {n:8,color:'b',pieza:'Peón negro',from:'h5',to:'g4',san:'hxg4',capture:true,
+  que:'El peón negro de h5 captura ese peón blanco en g4.',
+  por:'Las negras recapturan con el peón de h5.'},
+ {n:9,color:'w',pieza:'Caballo blanco',from:'f3',to:'h2',san:'Nh2',
+  que:'El caballo blanco retrocede de f3 a h2.',
+  por:'El caballo se coloca en h2, junto al rey enrocado.'},
+ {n:9,color:'b',pieza:'Dama negra',from:'a5',to:'h5',san:'Qh5',
+  que:'La dama negra se mueve de a5 a h5.',
+  por:'La dama se acerca al rey blanco por el flanco de rey.'},
+ {n:10,color:'w',pieza:'Peón blanco',from:'f2',to:'f4',san:'f4',
+  que:'El peón blanco avanza dos casillas: de f2 a f4.',
+  por:'El peón avanza en el flanco de rey.'},
+ {n:10,color:'b',pieza:'Dama negra',from:'h5',to:'h2',san:'Qxh2+',capture:true,check:true,
+  que:'La dama negra captura el caballo blanco en h2 y da jaque.',
+  por:'La dama entra en la zona del rey: obliga al rey blanco a responder.'},
+ {n:11,color:'w',pieza:'Rey blanco',from:'g1',to:'f2',san:'Kf2',
+  que:'El rey blanco se mueve de g1 a f2 para escapar del jaque.',
+  por:'El rey responde al jaque desplazándose (el peón de g2 frena a la dama en la fila 2).'},
+ {n:11,color:'b',pieza:'Dama negra',from:'h2',to:'f4',san:'Qxf4+',capture:true,check:true,
+  que:'La dama negra captura el peón de f4 y da jaque.',
+  por:'La dama encuentra una captura con jaque a lo largo de la columna f.'},
+ {n:12,color:'w',pieza:'Rey blanco',from:'f2',to:'e1',san:'Ke1',
+  que:'El rey blanco se mueve de f2 a e1 para escapar del jaque.',
+  por:'El rey vuelve hacia el centro: fin de la secuencia del tutorial.'}
+];
+GAME.forEach((m,i)=>m.idx=i+1);
+const POSITIONS=buildPositions(GAME);
+
+/* ---- stepper genérico ---- */
+function createStepper(cfg){
+  let cur=0;
+  const {board,slider,prev,next,reset,indStep,indMove,panel,list}=cfg;
+  buildGrid(board);
+
+  /* lista de movimientos agrupada por jugada completa */
+  const totalMoves=GAME.length, totalPairs=Math.ceil(totalMoves/2);
+  for(let k=1;k<=totalPairs;k++){
+    const w=GAME.find(m=>m.n===k&&m.color==='w'), b=GAME.find(m=>m.n===k&&m.color==='b');
+    const row=document.createElement('div'); row.className='ml-row';
+    row.innerHTML=`<span class="n">${k}.</span>`+
+      (w?`<span class="ml-chip" data-i="${w.idx}">${w.san}</span>`:'<span class="ml-chip empty">·</span>')+
+      (b?`<span class="ml-chip" data-i="${b.idx}">${b.san}</span>`:'<span class="ml-chip empty">·</span>');
+    list.appendChild(row);
+  }
+  list.addEventListener('click',e=>{
+    const t=e.target.closest('.ml-chip'); if(!t||!t.dataset.i)return;
+    update(parseInt(t.dataset.i,10));
+  });
+
+  function panelHTML(i){
+    if(i===0){
+      return `<div class="mv-head"><span class="badge">Posición inicial</span></div>
+        <div class="mv-big">Todas las piezas en su casilla de salida.</div>
+        <div class="mv-block q"><span class="lb">¿Qué hacemos?</span>
+        Pulsa <b>Siguiente ▶</b> o mueve el deslizador para reproducir la partida movimiento a movimiento.
+        Cada paso es el movimiento de un solo bando: primero BLANCAS, luego NEGRAS.</div>
+        <div class="mv-block p"><span class="lb">Recuerda</span>
+        Movimiento = acción de un solo bando. Jugada completa = movimiento de BLANCAS + movimiento de NEGRAS.</div>`;
+    }
+    const m=GAME[i-1], colTxt=m.color==='w'?'BLANCAS':'NEGRAS';
+    const moveLine=m.castle
+      ? `Enroque corto: Rey e1 <span class="arrow">→</span> g1 · Torre h1 <span class="arrow">→</span> f1`
+      : `${m.pieza}: ${m.from} <span class="arrow">→</span> ${m.to}`;
+    let badges=`<span class="badge ${m.color==='w'?'':'purple'}">${colTxt}</span>`;
+    if(m.capture) badges+='<span class="badge amber">⚔ Captura</span>';
+    if(m.check) badges+='<span class="badge red">+ Jaque</span>';
+    return `<div class="mv-head"><span class="badge green">MOVIMIENTO ${i} — ${colTxt}</span></div>
+      <div class="mv-big">${moveLine} &nbsp;<span class="san">${m.san}</span></div>
+      <div class="badges">${badges}</div>
+      <div class="mv-block q"><span class="lb">¿Qué ocurre?</span>${m.que}</div>
+      <div class="mv-block p"><span class="lb">¿Por qué es importante?</span>${m.por}</div>`;
+  }
+
+  function update(i){
+    cur=Math.max(0,Math.min(i,totalMoves));
+    renderBoard(board,POSITIONS[cur]);
+    /* resaltado origen/destino del último movimiento */
+    board.querySelectorAll('.hl,.kcheck').forEach(el=>el.classList.remove('hl','kcheck'));
+    if(cur>0){
+      const m=GAME[cur-1];
+      const mark=sq=>{const el=board.querySelector(`[data-sq="${sq}"]`); if(el)el.classList.add('hl');};
+      if(m.castle){ mark('e1');mark('g1');mark('h1');mark('f1'); }
+      else{ mark(m.from);mark(m.to); }
+      if(m.check){ /* marcar al rey que recibe el jaque */
+        const kingSq=m.color==='w'?'k':'K';
+        for(const cell of board.children){
+          if(POSITIONS[cur][cell.dataset.sq]===kingSq) cell.classList.add('kcheck');
+        }
+      }
+    }
+    slider.value=cur;
+    indStep.innerHTML=cur===0?'Posición inicial':`Movimiento <b>${cur}</b> de ${totalMoves}`;
+    if(cur===0){ indMove.textContent='—'; }
+    else{
+      const m=GAME[cur-1];
+      indMove.innerHTML=`${m.n}${m.color==='w'?'.':'...'} <b>${m.color==='w'?'BLANCAS':'NEGRAS'}</b> · ${m.san}`;
+    }
+    panel.innerHTML=panelHTML(cur);
+    prev.disabled=cur===0; next.disabled=cur===totalMoves;
+    list.querySelectorAll('.ml-chip[data-i]').forEach(ch=>{
+      const ci=parseInt(ch.dataset.i,10);
+      ch.classList.toggle('cur',ci===cur);
+      ch.classList.toggle('done',ci<cur);
+    });
+  }
+  prev.addEventListener('click',()=>update(cur-1));
+  next.addEventListener('click',()=>update(cur+1));
+  reset.addEventListener('click',()=>update(0));
+  slider.max=totalMoves;
+  slider.addEventListener('input',()=>update(parseInt(slider.value,10)));
+  update(0);
+}
+
+createStepper({
+  board:document.getElementById('gameBoard'),
+  slider:document.getElementById('gSlider'),
+  prev:document.getElementById('gPrev'),
+  next:document.getElementById('gNext'),
+  reset:document.getElementById('gReset'),
+  indStep:document.getElementById('gIndStep'),
+  indMove:document.getElementById('gIndMove'),
+  panel:document.getElementById('gPanel'),
+  list:document.getElementById('gMoveList')
+});
+
+/* ---- tablero de coordenadas (sección Tablero) ---- */
+(function(){
+  const cb=document.getElementById('coordsBoard');
+  buildGrid(cb); cb.classList.add('names');
+  const info=document.getElementById('sqInfo');
+  cb.addEventListener('click',e=>{
+    const cell=e.target.closest('.sq'); if(!cell)return;
+    const sq=cell.dataset.sq, letra=sq[0], num=sq[1];
+    info.innerHTML=`Casilla <b style="color:var(--cyan);font-family:Consolas,monospace">${sq}</b> = columna <b>${letra}</b> + fila <b>${num}</b>`;
+    cb.querySelectorAll('.sq').forEach(s=>s.style.boxShadow='');
+    cell.style.boxShadow='inset 0 0 0 3px var(--amber)';
+  });
+})();
+
+/* ==================================================================
+   SPA · navegación · progreso · volver arriba
+   ================================================================== */
+const views=[...document.querySelectorAll('main .view')];
+const navBtns=[...document.querySelectorAll('.nav-btn')];
+
+function go(id){
+  views.forEach(v=>v.classList.toggle('active',v.id==='sec-'+id));
+  navBtns.forEach(b=>{
+    b.classList.toggle('active',b.dataset.sec===id);
+    if(b.dataset.sec===id) b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+  });
+  window.scrollTo({top:0,behavior:'auto'});
+  /* reinicia la animación SMIL de la portada al entrar en HOME o CRÉDITOS */
+  if(id==='home'||id==='creditos'){
+    document.querySelectorAll('svg.cover-svg').forEach(s=>{ if(s.setCurrentTime) s.setCurrentTime(0); });
+  }
+  updateProgress();
+}
+navBtns.forEach(b=>b.addEventListener('click',()=>go(b.dataset.sec)));
+
+const toTop=document.getElementById('toTop');
+function updateProgress(){
+  const h=document.documentElement;
+  const max=h.scrollHeight-window.innerHeight;
+  const p=max>0?(window.scrollY/max)*100:0;
+  document.getElementById('progressBar').style.width=p+'%';
+  toTop.classList.toggle('show',window.scrollY>420);
+}
+window.addEventListener('scroll',updateProgress,{passive:true});
+window.addEventListener('resize',updateProgress);
+toTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+updateProgress();
+
+/* accesibilidad: reducir movimiento (también pausa las animaciones SMIL del SVG) */
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.querySelectorAll('svg.cover-svg').forEach(s=>{ if(s.pauseAnimations) s.pauseAnimations(); });
+}
+</script>
+</body>
+</html>
