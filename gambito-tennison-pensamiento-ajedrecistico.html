@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Del Gambito Tennison al Pensamiento Ajedrecístico — Tutorial Interactivo</title>
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f; --accent:#00d4ff;
+  --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+  --txt:#e2e8f0; --muted:#94a3b8; --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;overflow-x:hidden}
+/* ---------- PROGRESS BAR ---------- */
+#progressBar{position:fixed;top:0;left:0;height:4px;width:0;z-index:1300;background:linear-gradient(90deg,var(--accent),var(--purple));box-shadow:0 0 10px rgba(0,212,255,.7)}
+/* ---------- NAVBAR ---------- */
+nav#topnav{position:fixed;top:0;left:0;right:0;z-index:1200;background:rgba(10,14,26,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;height:60px;padding:0 14px}
+.brand{font-weight:800;font-size:15px;white-space:nowrap;color:var(--accent);letter-spacing:1px;display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.brand .kn{font-size:22px}
+#navScroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;padding:4px 2px}
+#navScroll::-webkit-scrollbar{display:none}
+.nav-btn{flex:0 0 auto;background:transparent;border:1px solid transparent;color:var(--muted);font-size:12.5px;font-weight:600;letter-spacing:.6px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:.2s;font-family:inherit}
+.nav-btn:hover{color:var(--txt);border-color:var(--border)}
+.nav-btn.active{background:rgba(0,212,255,.12);border-color:var(--accent);color:var(--accent);box-shadow:0 0 12px rgba(0,212,255,.25)}
+/* ---------- LAYOUT ---------- */
+main{padding:84px 0 40px;max-width:1180px;margin:0 auto;padding-left:18px;padding-right:18px}
+.panel{display:none}
+.panel.active{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;gap:16px;align-items:flex-start;margin:26px 0 22px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.sec-ico{font-size:34px;background:var(--card);border:1px solid var(--border);border-radius:12px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:0 0 18px rgba(0,212,255,.12)}
+.sec-head h2{font-size:clamp(22px,4vw,30px);letter-spacing:.5px}
+.sec-head p{color:var(--muted);font-size:14px;margin-top:4px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card h3{font-size:17px;margin-bottom:10px;color:var(--accent);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h4{font-size:14.5px;color:var(--txt);margin:12px 0 6px}
+.card p{font-size:14.5px;color:#cbd5e1;margin-bottom:8px}
+.card ul,.card ol{padding-left:22px;margin:8px 0;font-size:14.5px;color:#cbd5e1}
+.card li{margin-bottom:5px}
+.grid{display:grid;gap:16px;margin-bottom:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;padding:4px 12px;border-radius:999px;border:1px solid var(--border);color:var(--accent);background:rgba(0,212,255,.08)}
+.badge.w{color:var(--green);border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)}
+.badge.b{color:var(--purple);border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.08)}
+.badge.r{color:var(--red);border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08)}
+.badge.a{color:var(--amber);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08)}
+blockquote.big{border-left:4px solid var(--accent);background:linear-gradient(90deg,rgba(0,212,255,.08),transparent);padding:16px 18px;border-radius:0 10px 10px 0;font-size:16px;font-weight:600;margin:14px 0;color:#f1f5f9}
+blockquote.red{border-left-color:var(--red);background:linear-gradient(90deg,rgba(239,68,68,.08),transparent)}
+blockquote.green{border-left-color:var(--green);background:linear-gradient(90deg,rgba(34,197,94,.08),transparent)}
+blockquote.purple{border-left-color:var(--purple);background:linear-gradient(90deg,rgba(168,85,247,.08),transparent)}
+/* callouts */
+.callout{border-radius:8px;padding:13px 16px;margin:12px 0;font-size:14px;border:1px solid;display:flex;gap:10px;align-items:flex-start}
+.callout .ico{font-size:17px;flex:0 0 auto}
+.co-info{border-color:rgba(0,212,255,.45);background:rgba(0,212,255,.07)}
+.co-ok{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.07)}
+.co-warn{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.07)}
+.co-err{border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.07)}
+.co-tag{font-weight:800;font-size:11px;letter-spacing:1.5px;display:block;margin-bottom:3px}
+.co-info .co-tag{color:var(--accent)}.co-ok .co-tag{color:var(--green)}.co-warn .co-tag{color:var(--amber)}.co-err .co-tag{color:var(--red)}
+/* comparison */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.vs>div{border-radius:10px;padding:14px;font-size:13.5px}
+.vs .p{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35)}
+.vs .f{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.35)}
+.vs .lbl{font-weight:800;font-size:11px;letter-spacing:1.5px;display:block;margin-bottom:6px}
+.vs .p .lbl{color:var(--red)}.vs .f .lbl{color:var(--green)}
+@media(max-width:560px){.vs{grid-template-columns:1fr}}
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:999px;background:#0d1830;border:1px solid var(--border);color:#cbd5e1}
+.chip.acc{border-color:rgba(0,212,255,.5);color:var(--accent)}
+.chip.red{border-color:rgba(239,68,68,.5);color:#fca5a5}
+button.chip{cursor:pointer;font-family:inherit;transition:.2s}
+button.chip:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 10px rgba(0,212,255,.25)}
+/* flow */
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.flow .node{background:#0d1830;border:1px solid var(--border);border-radius:8px;padding:8px 13px;font-size:12.5px;font-weight:700;letter-spacing:.5px;color:var(--txt)}
+.flow .node.hot{border-color:var(--red);color:#fca5a5}
+.flow .node.win{border-color:var(--green);color:var(--green)}
+.flow .arr{color:var(--accent);font-weight:800}
+/* pre / code blocks */
+pre.nota{background:#080d19;border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-size:15px;line-height:1.9;overflow-x:auto;color:#e2e8f0;font-family:'Consolas','Segoe UI',monospace}
+pre.nota .mw{color:var(--accent);font-weight:700}
+pre.nota .mb{color:var(--purple);font-weight:700}
+/* tables */
+.tbl-wrap{overflow-x:auto;margin:10px 0;border-radius:10px;border:1px solid var(--border)}
+table.tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+.tbl th{background:#0d1830;color:var(--accent);text-align:left;padding:11px 14px;border-bottom:2px solid var(--border);font-size:12.5px;letter-spacing:1px}
+.tbl td{padding:10px 14px;border-bottom:1px solid #14233d;color:#cbd5e1}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(0,212,255,.04)}
+/* HOME */
+.hero-svg{margin:0 0 22px}
+.hero-svg svg{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--border);box-shadow:0 10px 40px rgba(0,0,0,.5),0 0 30px rgba(0,212,255,.08)}
+.home-title{text-align:center;margin:10px 0 6px}
+.home-title h1{font-size:clamp(26px,5.2vw,44px);letter-spacing:.5px;background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
+.home-title .sub{color:var(--accent);font-weight:700;letter-spacing:2.5px;font-size:clamp(12px,2.4vw,16px);text-transform:uppercase;margin-top:8px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.metric .n{font-size:26px;font-weight:800;color:var(--accent)}
+.metric .l{font-size:11.5px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.ficha{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0}
+.ficha .item{background:#0d1830;border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:13.5px}
+.ficha .item b{color:var(--accent)}
+/* ---------- CHESS BOARD ---------- */
+.board-block{margin:18px 0 26px}
+.board-frame{display:grid;grid-template-columns:auto 1fr;grid-template-rows:1fr auto;gap:6px;max-width:540px;margin:0 auto}
+.board-grid{grid-column:2;grid-row:1;display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;border:2px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.coords-ranks{grid-column:1;grid-row:1;display:flex;flex-direction:column;justify-content:space-around;align-items:center;font-size:12px;color:var(--muted);font-weight:700;min-width:18px}
+.coords-files{grid-column:2;grid-row:2;display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-size:12px;color:var(--muted);font-weight:700}
+.sq{display:flex;align-items:center;justify-content:center;position:relative;line-height:1}
+.sq.light{background:#1d3557}
+.sq.dark{background:#0e1a30}
+.sq .gl{font-size:clamp(17px,4.6vw,34px);user-select:none}
+.sq .wp{color:#f8fafc;text-shadow:0 2px 4px rgba(0,0,0,.75)}
+.sq .bp{color:#060b16;text-shadow:0 0 2px rgba(226,232,240,.55),0 1px 2px rgba(148,163,184,.5)}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--accent),inset 0 0 16px rgba(0,212,255,.55)}
+.sq.chk{box-shadow:inset 0 0 0 3px var(--red),inset 0 0 18px rgba(239,68,68,.6);animation:chkPulse 1s ease-in-out infinite}
+@keyframes chkPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5)}}
+/* controls directly under the board */
+.board-controls{max-width:560px;margin:14px auto 0;display:flex;flex-direction:column;gap:10px}
+.bc-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{background:var(--card);border:1px solid var(--border);color:var(--txt);padding:10px 18px;border-radius:8px;font-weight:700;font-size:13.5px;cursor:pointer;transition:.2s;font-family:inherit;letter-spacing:.5px}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);box-shadow:0 0 12px rgba(0,212,255,.3)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#04121a}
+.btn.primary:hover:not(:disabled){color:#04121a;filter:brightness(1.15)}
+.bc-slider{width:100%;accent-color:var(--accent);cursor:pointer;height:22px}
+.bc-ind{text-align:center;font-size:13px;color:var(--muted)}
+.bc-ind b{color:var(--accent)}
+.bc-ind .full{display:block;font-size:12.5px;margin-top:2px}
+.move-panel{max-width:640px;margin:16px auto 0;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+.mp-head{font-weight:800;font-size:13px;letter-spacing:1.5px;color:var(--accent);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.mp-head.dark{color:var(--purple)}
+.mp-head.init{color:var(--amber)}
+.mp-piece{font-size:16px;font-weight:700;margin-bottom:10px}
+.mp-piece .from-to{color:var(--accent)}
+.mp-piece .nota{display:inline-block;margin-left:8px;font-size:12px;color:var(--muted);font-weight:600;border:1px solid var(--border);border-radius:6px;padding:2px 8px}
+.mp-tag{display:block;font-size:11px;font-weight:800;letter-spacing:1.5px;margin-bottom:3px}
+.mp-q{margin-bottom:10px;font-size:14px;color:#cbd5e1}.mp-q .mp-tag{color:var(--green)}
+.mp-w{font-size:14px;color:#cbd5e1}.mp-w .mp-tag{color:var(--amber)}
+.jump-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px auto 0;max-width:640px}
+/* timeline */
+.tl{position:relative;margin-top:10px}
+.tl-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 18px 14px;margin-bottom:14px;position:relative}
+.tl-card .num{position:absolute;top:-13px;left:16px;background:var(--accent);color:#04121a;font-weight:800;font-size:12px;border-radius:999px;padding:3px 12px;letter-spacing:1px}
+.tl-card.concept .num{background:var(--purple);color:#fff}
+.tl-card h4{color:var(--txt);font-size:15.5px;margin:6px 0 8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tl-card p{font-size:14px;color:#cbd5e1;margin-bottom:7px}
+/* accordion */
+.acc{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.acc-btn{width:100%;background:transparent;border:none;color:var(--txt);font-family:inherit;font-size:14.5px;font-weight:700;padding:15px 18px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.acc-btn .chev{color:var(--accent);transition:.3s;font-size:13px}
+.acc.open .acc-btn .chev{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.acc.open .acc-body{max-height:900px}
+.acc-inner{padding:0 18px 16px;font-size:14px;color:#cbd5e1}
+/* question chips */
+.q-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin:12px 0}
+.q-chip{background:#0d1830;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;cursor:pointer;transition:.2s;display:flex;gap:10px;align-items:center}
+.q-chip .let{background:var(--border);color:var(--accent);font-weight:800;border-radius:6px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;flex:0 0 auto}
+.q-chip.on{border-color:var(--green);background:rgba(34,197,94,.09)}
+.q-chip.on .let{background:var(--green);color:#04121a}
+/* checklist */
+.chk-item{display:flex;gap:10px;align-items:flex-start;background:#0d1830;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;cursor:pointer;font-size:13.5px;transition:.2s}
+.chk-item:hover{border-color:var(--accent)}
+.chk-item input{accent-color:var(--accent);width:17px;height:17px;margin-top:2px;flex:0 0 auto;cursor:pointer}
+.chk-item.done{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.07);color:#86efac}
+.progress-mini{height:8px;background:#0d1830;border:1px solid var(--border);border-radius:99px;overflow:hidden;margin:10px 0}
+.progress-mini .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .3s;border-radius:99px}
+/* rules */
+.rule-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;gap:14px;align-items:flex-start}
+.rule-card .rn{font-size:22px;font-weight:800;color:var(--accent);min-width:34px}
+.rule-card .rt{font-size:13.5px;font-weight:700;color:#f1f5f9;letter-spacing:.3px}
+/* notation cards */
+.n-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.n-card .sym{font-size:20px;font-weight:800;color:var(--accent);font-family:'Consolas',monospace}
+.n-card .desc{font-size:13px;color:#cbd5e1;margin-top:6px}
+/* misc */
+.mini-board-wrap{max-width:380px;margin:14px auto}
+.back-top{position:fixed;bottom:22px;right:22px;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#04121a;border:none;font-size:20px;font-weight:800;cursor:pointer;z-index:1100;opacity:0;pointer-events:none;transition:.3s;box-shadow:0 6px 18px rgba(0,212,255,.4)}
+.back-top.show{opacity:1;pointer-events:auto}
+.back-top:hover{transform:translateY(-3px)}
+footer{border-top:1px solid var(--border);margin-top:30px;padding:26px 18px;text-align:center;font-size:13px;color:var(--muted);line-height:2}
+footer b{color:var(--accent)}
+footer .motto{color:#cbd5e1;font-style:italic}
+.credits-card{text-align:center;padding:30px 20px}
+.credits-card .author{font-size:26px;font-weight:800;color:var(--accent);margin:10px 0 4px}
+@media(max-width:640px){
+  main{padding-left:12px;padding-right:12px}
+  .sec-ico{width:50px;height:50px;font-size:26px}
+  .card{padding:16px}
+  .brand span.txt{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div id="progressBar"></div>
+
+<nav id="topnav">
+  <div class="brand"><span class="kn">♞</span><span class="txt">TENNISON·LAB</span></div>
+  <div id="navScroll"></div>
+</nav>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section id="home" class="panel active">
+  <div class="hero-svg" id="heroMount"></div>
+  <div style="text-align:center"><span class="badge">♞ TUTORIAL INTERACTIVO · APRENDER A PENSAR EN AJEDREZ</span></div>
+  <div class="home-title">
+    <h1>Del Gambito Tennison al Pensamiento Ajedrecístico</h1>
+    <div class="sub">Aprender a pensar como un jugador de ajedrez</div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <p>Esta partida es corta: sólo dura <b>seis jugadas de las blancas</b>. Sin embargo, contiene una enorme cantidad de material para aprender a pensar en ajedrez. A primera vista podría estudiarse como una pequeña trampa de apertura; eso sería desperdiciar lo más importante.</p>
+    <p>La verdadera pregunta no es <em>«¿Cómo hago esta trampa?»</em>. La verdadera pregunta es: <em>«¿Cómo puedo reconocer por mí mismo una posición en la que una pieza aparentemente perdida, una dama aparentemente sacrificada o una pieza atacada pueden formar parte de una combinación ganadora?»</em>. Ese es el objetivo de este tutorial.</p>
+    <blockquote class="big">EN AJEDREZ NO DEBES PREGUNTAR SOLAMENTE QUÉ PIEZA PUEDES GANAR. DEBES PREGUNTAR QUÉ ESTÁ INTENTANDO HACER EL RIVAL Y QUÉ CONSECUENCIAS TIENE TU CAPTURA.</blockquote>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="n">6</div><div class="l">Jugadas blancas</div></div>
+    <div class="metric"><div class="n">11</div><div class="l">Movimientos analizados</div></div>
+    <div class="metric"><div class="n">15</div><div class="l">Reglas mentales</div></div>
+    <div class="metric"><div class="n">7</div><div class="l">Ejercicios</div></div>
+    <div class="metric"><div class="n">22</div><div class="l">Preguntas por turno (A–V)</div></div>
+    <div class="metric"><div class="n">10</div><div class="l">Pasos del proceso mental</div></div>
+  </div>
+  <div class="card">
+    <h3>🧩 La partida que estudiaremos</h3>
+    <div class="chips">
+      <span class="chip acc">1. e4 d5</span><span class="chip acc">2. Cf3 dxe4</span><span class="chip acc">3. Ce5 f6</span><span class="chip acc">4. Dh5+ g6</span><span class="chip acc">5. Ac4 gxh5</span><span class="chip red">6. Af7#</span>
+    </div>
+    <blockquote class="big green">«Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.»</blockquote>
+    <div class="ficha">
+      <div class="item">📅 <b>FECHA:</b> 06/09/2026</div>
+      <div class="item">🕙 <b>HORA:</b> 10:24:08</div>
+      <div class="item">👨‍💻 <b>AUTOR:</b> Rubén Sbarsky</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PENSAMIENTO ================= -->
+<section id="pensamiento" class="panel">
+  <div class="sec-head"><div class="sec-ico">🧠</div><div><h2>Qué significa realmente «pensar ajedrecísticamente»</h2><p>La diferencia entre mover piezas y tomar decisiones</p></div></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>😅 Así piensa un principiante</h3>
+      <ul>
+        <li>«Quiero mover mi caballo.»</li>
+        <li>«Me están atacando el caballo, tengo que salvarlo.»</li>
+        <li>«Mi rival me ofrece una dama, ¡puedo capturarla!»</li>
+        <li>«Estoy ganando material.»</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🎯 Así piensa el jugador que desarrolla pensamiento ajedrecístico</h3>
+      <p>Después de cada jugada pregunta:</p>
+      <ol>
+        <li>¿Qué acaba de cambiar?</li>
+        <li>¿Qué amenaza mi rival?</li>
+        <li>¿Qué piezas están atacadas?</li>
+        <li>¿Qué piezas están defendidas?</li>
+        <li>¿Hay algún jaque?</li>
+        <li>¿Hay alguna captura importante?</li>
+        <li>¿Hay alguna amenaza más fuerte que la que parece evidente?</li>
+        <li>¿Qué jugadas forzantes tengo?</li>
+        <li>¿Qué responderá el rival si hago mi jugada?</li>
+        <li>¿Cuál es su respuesta más fuerte?</li>
+        <li>¿Qué posición queda después?</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="vs">
+    <div class="p"><span class="lbl">PRINCIPIANTE</span>Ve una <b>pieza</b>.</div>
+    <div class="f"><span class="lbl">JUGADOR QUE PIENSA</span>Ve una <b>posición completa</b>.</div>
+  </div>
+
+  <div class="card">
+    <h3>⚖️ La diferencia entre mover piezas y tomar decisiones</h3>
+    <p>Una jugada de ajedrez tiene dos niveles.</p>
+    <h4>Nivel 1 — El movimiento físico</h4>
+    <p>Por ejemplo: Caballo g1 → f3.</p>
+    <h4>Nivel 2 — La decisión ajedrecística</h4>
+    <p>¿Por qué f3? Porque:</p>
+    <ul>
+      <li>desarrolla una pieza;</li>
+      <li>participa en el control del centro;</li>
+      <li>prepara determinadas posibilidades;</li>
+      <li>cambia la posición;</li>
+      <li>influye sobre otras casillas.</li>
+    </ul>
+    <blockquote class="big">UNA JUGADA NO ES SOLAMENTE UN MOVIMIENTO. ES UNA DECISIÓN SOBRE CÓMO QUIERES QUE SEA LA POSICIÓN DESPUÉS DEL MOVIMIENTO.</blockquote>
+    <div class="callout co-info"><span class="ico">ℹ️</span><div><span class="co-tag">INFO</span>Esto será fundamental durante toda la partida.</div></div>
+  </div>
+</section>
+
+<!-- ================= PARTIDA ================= -->
+<section id="partida" class="panel">
+  <div class="sec-head"><div class="sec-ico">♟️</div><div><h2>Reconstrucción de la partida</h2><p>El Gambito Tennison, movimiento a movimiento, en un tablero interactivo</p></div></div>
+
+  <div class="card">
+    <h3>📜 La partida completa</h3>
+    <pre class="nota">1. <span class="mw">e4</span> <span class="mb">d5</span>
+2. <span class="mw">Cf3</span> <span class="mb">dxe4</span>
+3. <span class="mw">Ce5</span> <span class="mb">f6</span>
+4. <span class="mw">Dh5+</span> <span class="mb">g6</span>
+5. <span class="mw">Ac4</span> <span class="mb">gxh5</span>
+6. <span class="mw">Af7#</span></pre>
+    <p>Ahora vamos a reconstruirla. Usa el tablero interactivo: avanza y retrocede <b>movimiento por movimiento</b> (cada paso es el movimiento de un solo bando).</p>
+  </div>
+
+  <div id="board1" class="board-block"></div>
+
+  <h3 style="margin:30px 0 6px;font-size:20px">📖 La partida explicada paso a paso</h3>
+  <p style="color:var(--muted);font-size:13.5px;margin-bottom:22px">Tarjetas de jugadas (azul/morado) y conceptos intercalados que surgen de cada posición.</p>
+  <div class="tl" id="timeline"></div>
+</section>
+
+<!-- ================= MÉTODO ================= -->
+<section id="metodo" class="panel">
+  <div class="sec-head"><div class="sec-ico">🧮</div><div><h2>El método universal para pensar en cada turno</h2><p>C.A.L.C.U.L.A. + el proceso de 10 pasos</p></div></div>
+
+  <div class="card">
+    <h3>🔤 Método C.A.L.C.U.L.A.</h3>
+    <p>A partir de esta partida podemos construir un método. Vamos a llamarlo <b>C.A.L.C.U.L.A.</b>:</p>
+    <div class="grid g3" id="calcula"></div>
+  </div>
+
+  <div id="pasos"></div>
+
+  <div class="card">
+    <h3>🌳 El árbol mental (Paso 7 ampliado)</h3>
+    <p>La secuencia puede visualizarse así:</p>
+    <div class="flow">
+      <span class="node">MI JUGADA</span><span class="arr">↓</span>
+      <span class="node">MEJOR RESPUESTA DEL RIVAL</span><span class="arr">↓</span>
+      <span class="node">MI RESPUESTA</span><span class="arr">↓</span>
+      <span class="node">MEJOR RESPUESTA DEL RIVAL</span><span class="arr">↓</span>
+      <span class="node">POSICIÓN RESULTANTE</span><span class="arr">↓</span>
+      <span class="node win">EVALUACIÓN</span>
+    </div>
+    <blockquote class="big red">Nunca calcules pensando: «Mi rival hará lo que yo quiero». Calcula pensando: «¿Cuál es la respuesta MÁS FUERTE que puede encontrar?»</blockquote>
+  </div>
+
+  <div class="card">
+    <h3>🛡️ La mejor defensa del rival</h3>
+    <p>Supongamos que encuentras una combinación fantástica. No preguntes «¿Puede funcionar?». Pregunta: <b>«¿Puede funcionar contra la mejor defensa?»</b>. Hay una enorme diferencia. El rival no está obligado a elegir tu respuesta favorita.</p>
+    <blockquote class="big">CALCULA CONTRA EL RIVAL MÁS FUERTE QUE PUEDAS IMAGINAR, NO CONTRA EL RIVAL QUE TE GUSTARÍA TENER.</blockquote>
+  </div>
+
+  <div class="card">
+    <h3>🔁 La secuencia mental completa</h3>
+    <div class="flow">
+      <span class="node">OBSERVAR</span><span class="arr">→</span><span class="node">CAMBIOS</span><span class="arr">→</span><span class="node">AMENAZAS</span><span class="arr">→</span><span class="node">PELIGROS</span><span class="arr">→</span><span class="node">JAQUES / CAPTURAS / AMENAZAS</span><span class="arr">→</span><span class="node">CANDIDATAS</span><span class="arr">→</span><span class="node">CÁLCULO</span><span class="arr">→</span><span class="node">MEJOR DEFENSA</span><span class="arr">→</span><span class="node">EVALUACIÓN</span><span class="arr">→</span><span class="node">COMPROBACIÓN FINAL</span><span class="arr">→</span><span class="node win">JUGAR</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONCEPTOS ================= -->
+<section id="conceptos" class="panel">
+  <div class="sec-head"><div class="sec-ico">💡</div><div><h2>Conceptos clave</h2><p>Amenazas, visión de túnel, sacrificios, coordinación, defensores y casillas críticas</p></div></div>
+  <div id="conceptos-grid"></div>
+</section>
+
+<!-- ================= ERRORES ================= -->
+<section id="errores" class="panel">
+  <div class="sec-head"><div class="sec-ico">⚠️</div><div><h2>Errores, automatismos y lecciones</h2><p>Seguridad del rey, desarrollo, tiempos, iniciativa y los cinco errores de las negras</p></div></div>
+  <div id="errores-content"></div>
+</section>
+
+<!-- ================= PREGUNTAS ================= -->
+<section id="preguntas" class="panel">
+  <div class="sec-head"><div class="sec-ico">❓</div><div><h2>Las preguntas que debes hacerte en cada turno</h2><p>La lista completa A–V y la versión corta para usar durante una partida</p></div></div>
+
+  <div class="card">
+    <h3>🔠 Memoriza esta secuencia (A–V)</h3>
+    <p style="color:var(--muted);font-size:13px">Pulsa cada pregunta para marcarla como trabajada: <b id="qCount" style="color:var(--green)">0 / 22</b></p>
+    <div class="q-grid" id="qGrid"></div>
+  </div>
+
+  <div class="card">
+    <h3>⚡ Una versión corta para usar durante una partida</h3>
+    <p>No puedes hacer una lista gigantesca después de cada jugada si estás jugando una partida real. Por eso utiliza esta versión:</p>
+    <ol id="shortList"></ol>
+    <div class="callout co-ok"><span class="ico">✅</span><div><span class="co-tag">EJEMPLO</span>Esta lista sí puedes memorizarla.</div></div>
+  </div>
+</section>
+
+<!-- ================= EJERCICIOS ================= -->
+<section id="ejercicios" class="panel">
+  <div class="sec-head"><div class="sec-ico">🏋️</div><div><h2>Ejercicios prácticos</h2><p>Siete ejercicios sobre la partida, con tablero de entrenamiento propio</p></div></div>
+
+  <div class="card">
+    <h3>🎯 Tablero de entrenamiento</h3>
+    <p>Este segundo tablero es independiente. Usa los botones de salto para colocar el tablero en la posición exacta de cada ejercicio y luego avanza o retrocede movimiento a movimiento.</p>
+  </div>
+  <div id="board2" class="board-block"></div>
+
+  <div id="ejercicios-list"></div>
+</section>
+
+<!-- ================= NOTACIÓN ================= -->
+<section id="notacion" class="panel">
+  <div class="sec-head"><div class="sec-ico">🔤</div><div><h2>Notación algebraica desde cero</h2><p>Coordenadas, letras de las piezas, símbolos y la partida en lenguaje humano</p></div></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>🗺️ El tablero y sus coordenadas</h3>
+      <p>El tablero tiene:</p>
+      <ul>
+        <li><b>columnas:</b> a, b, c, d, e, f, g, h;</li>
+        <li><b>filas:</b> 1, 2, 3, 4, 5, 6, 7, 8.</li>
+      </ul>
+      <p>Cada casilla tiene una coordenada. Ejemplos que aparecen en esta partida: <b>e4 · h5 · f7 · e8</b> (resaltadas en el mini-tablero).</p>
+      <div class="mini-board-wrap"><div id="miniBoard"></div></div>
+    </div>
+    <div class="card">
+      <h3>🔡 Las letras de las piezas (notación española)</h3>
+      <div class="tbl-wrap"><table class="tbl">
+        <tr><th>Letra</th><th>Pieza</th></tr>
+        <tr><td><b>R</b></td><td>Rey</td></tr>
+        <tr><td><b>D</b></td><td>Dama</td></tr>
+        <tr><td><b>T</b></td><td>Torre</td></tr>
+        <tr><td><b>A</b></td><td>Alfil</td></tr>
+        <tr><td><b>C</b></td><td>Caballo</td></tr>
+        <tr><td><b>—</b></td><td>El peón normalmente no utiliza letra</td></tr>
+      </table></div>
+      <p>Por eso <b>e4</b> significa: «El peón va a e4.»</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📝 Cada notación de la partida, explicada</h3>
+    <div class="grid g3" id="notationGrid"></div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Tabla de símbolos</h3>
+    <div class="tbl-wrap"><table class="tbl" id="symbolTable"></table></div>
+    <p>En esta partida aparecen: <span class="chips" style="display:inline-flex"><span class="chip">e4</span><span class="chip">Cf3</span><span class="chip">dxe4</span><span class="chip">Ce5</span><span class="chip">f6</span><span class="chip">Dh5+</span><span class="chip">g6</span><span class="chip">Ac4</span><span class="chip">gxh5</span><span class="chip red">Af7#</span></span></p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>♟️ La partida completa en notación algebraica</h3>
+      <pre class="nota">1. <span class="mw">e4</span> <span class="mb">d5</span>
+2. <span class="mw">Cf3</span> <span class="mb">dxe4</span>
+3. <span class="mw">Ce5</span> <span class="mb">f6</span>
+4. <span class="mw">Dh5+</span> <span class="mb">g6</span>
+5. <span class="mw">Ac4</span> <span class="mb">gxh5</span>
+6. <span class="mw">Af7#</span></pre>
+    </div>
+    <div class="card">
+      <h3>🗣️ La partida completa en lenguaje humano</h3>
+      <ol style="font-size:13.5px">
+        <li>Las blancas avanzan el peón de e2 a e4.</li>
+        <li>1... Las negras avanzan el peón de d7 a d5.</li>
+        <li>Las blancas desarrollan el caballo de g1 a f3.</li>
+        <li>2... Las negras capturan el peón de e4 con el peón que estaba en d5.</li>
+        <li>Las blancas llevan el caballo de f3 a e5.</li>
+        <li>3... Las negras avanzan el peón de f7 a f6 para atacar el caballo.</li>
+        <li>Las blancas llevan la dama de d1 a h5 y dan jaque.</li>
+        <li>4... Las negras responden con el peón de g7 a g6, bloqueando el jaque y atacando la dama.</li>
+        <li>Las blancas desarrollan el alfil de f1 a c4, ignorando temporalmente los ataques contra dama y caballo y preparando la entrada en f7.</li>
+        <li>5... Las negras llevan el peón de g6 a h5 y capturan la dama blanca.</li>
+        <li>Las blancas llevan el alfil de c4 a f7 y dan jaque mate.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ENTRENAMIENTO ================= -->
+<section id="entrenamiento" class="panel">
+  <div class="sec-head"><div class="sec-ico">📈</div><div><h2>Entrenamiento y patrón mental</h2><p>Cómo convertir esta partida en un entrenador permanente</p></div></div>
+  <div id="train-content"></div>
+</section>
+
+<!-- ================= REGLAS ================= -->
+<section id="reglas" class="panel">
+  <div class="sec-head"><div class="sec-ico">📏</div><div><h2>Reglas mentales y lección final</h2><p>15 reglas para memorizar, el resumen maestro y lo que debes ver en una posición</p></div></div>
+  <div id="reglas-content"></div>
+</section>
+
+<!-- ================= MAESTRO ================= -->
+<section id="maestro" class="panel">
+  <div class="sec-head"><div class="sec-ico">🏆</div><div><h2>Método maestro y conclusión</h2><p>La partida final traducida y tu proceso para la próxima partida</p></div></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>📜 Línea principal</h3>
+      <pre class="nota">1. <span class="mw">e4</span> <span class="mb">d5</span>
+2. <span class="mw">Cf3</span> <span class="mb">dxe4</span>
+3. <span class="mw">Ce5</span> <span class="mb">f6</span>
+4. <span class="mw">Dh5+</span> <span class="mb">g6</span>
+5. <span class="mw">Ac4</span> <span class="mb">gxh5</span>
+6. <span class="mw">Af7#</span></pre>
+    </div>
+    <div class="card">
+      <h3>🧾 Traducción completa</h3>
+      <ul style="font-size:13px">
+        <li><b>1.</b> Peón e2 → e4 · Peón d7 → d5</li>
+        <li><b>2.</b> Caballo g1 → f3 · Peón d5 → e4, capturando el peón blanco</li>
+        <li><b>3.</b> Caballo f3 → e5 · Peón f7 → f6, atacando el caballo</li>
+        <li><b>4.</b> Dama d1 → h5, jaque · Peón g7 → g6, bloqueando el jaque y atacando la dama</li>
+        <li><b>5.</b> Alfil f1 → c4 · Peón g6 → h5, capturando la dama</li>
+        <li><b>6.</b> Alfil c4 → f7, jaque mate</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧭 Método maestro para tu próxima partida</h3>
+    <p>Cuando juegues tu próxima partida, intenta no pensar «¿Qué pieza quiero mover?». Empieza pensando:</p>
+    <div class="flow">
+      <span class="node">¿QUÉ ACABA DE CAMBIAR?</span><span class="arr">→</span>
+      <span class="node">¿QUÉ AMENAZA MI RIVAL?</span><span class="arr">→</span>
+      <span class="node">¿ESTOY EN PELIGRO?</span><span class="arr">→</span>
+      <span class="node">¿TENGO JAQUES, CAPTURAS O AMENAZAS?</span><span class="arr">→</span>
+      <span class="node">¿QUÉ JUGADAS CANDIDATAS TENGO?</span><span class="arr">→</span>
+      <span class="node">¿CUÁL ES LA RESPUESTA MÁS FUERTE DEL RIVAL?</span><span class="arr">→</span>
+      <span class="node">¿QUÉ POSICIÓN QUEDA?</span><span class="arr">→</span>
+      <span class="node win">¿PUEDO HACER MI JUGADA SIN DEJAR UNA TÁCTICA EN CONTRA? → JUGAR</span>
+    </div>
+    <div class="callout co-info"><span class="ico">ℹ️</span><div><span class="co-tag">INFO</span>Ese proceso es mucho más importante que memorizar una apertura.</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🎓 Conclusión</h3>
+    <p>Esta partida empezó con <b>1. e4 d5</b> y terminó seis jugadas después con <b>6. Af7#</b>. Pero su verdadero contenido no está en esas seis jugadas. Está en todo lo que ocurre entre ellas.</p>
+    <ul>
+      <li>Un principiante puede aprender una secuencia.</li>
+      <li>Un jugador de ajedrez aprende un patrón.</li>
+      <li>Y un jugador que está desarrollando pensamiento ajedrecístico aprende algo todavía más importante: <b>cómo descubrir el patrón por sí mismo</b>.</li>
+    </ul>
+    <p>La próxima vez que una pieza tuya sea atacada, no la muevas automáticamente. La próxima vez que puedas capturar una pieza enemiga, no captures automáticamente. La próxima vez que el rival mueva un peón, no pienses que «sólo movió un peón». Y la próxima vez que encuentres una jugada brillante, no te preguntes solamente «¿Funciona?». Pregúntate:</p>
+    <blockquote class="big">«¿QUÉ HARÁ EL RIVAL PARA DEFENDERSE?»</blockquote>
+    <p>Ese cambio de preguntas es uno de los primeros pasos para empezar a pensar como un verdadero jugador de ajedrez.</p>
+  </div>
+</section>
+
+<!-- ================= CRÉDITOS ================= -->
+<section id="creditos" class="panel">
+  <div class="sec-head"><div class="sec-ico">🏅</div><div><h2>Créditos</h2><p>Sobre este tutorial</p></div></div>
+  <div class="hero-svg" id="creditsMount"></div>
+  <div class="card credits-card">
+    <span class="badge">TUTORIAL EDUCATIVO INTERACTIVO</span>
+    <h3 style="justify-content:center;font-size:20px;margin-top:14px">Del Gambito Tennison al Pensamiento Ajedrecístico</h3>
+    <p style="color:var(--muted)">Aprender a pensar como un jugador de ajedrez</p>
+    <div class="author">👨‍💻 Rubén Sbarsky</div>
+    <div class="ficha">
+      <div class="item">📅 <b>FECHA:</b> 06/09/2026</div>
+      <div class="item">🕙 <b>HORA:</b> 10:24:08</div>
+    </div>
+    <p style="margin-top:12px">Material creado con fines exclusivamente educativos y de divulgación del pensamiento ajedrecístico.</p>
+    <blockquote class="big purple" style="margin-top:16px">Fiat iustitia, ruat caelum.</blockquote>
+  </div>
+</section>
+
+</main>
+
+<button class="back-top" id="backTop" title="Volver arriba">↑</button>
+
+<footer>
+  📚 Tutorial solo con fines Educativos y Divulgación<br>
+  👨‍💻 Créditos: <b>Rubén Sbarsky</b><br>
+  📅 FECHA: <b>06/09/2026</b> · Hora: <b>10:24:08</b><br>
+  <span class="motto">Fiat iustitia, ruat caelum.</span>
+</footer>
+
+<script>
+"use strict";
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FECHA = "06/09/2026", HORA = "10:24:08";
+
+/* ============================================================
+   1. SVG DE PORTADA ANIMADO (Gambito Tennison) — se reutiliza
+      idéntico en HOME y en CRÉDITOS mediante esta función.
+   ============================================================ */
+function heroSVG(){
+  const FX=900, FY=170, S=70, DUR=16;
+  const cx=f=>FX+f*S+S/2, cyy=r=>FY+(8-r)*S+S/2;
+  let board="";
+  for(let r=8;r>=1;r--){for(let f=0;f<8;f++){
+    const light=((f+r)%2===0);
+    board+=`<rect x="${FX+f*S}" y="${FY+(8-r)*S}" width="${S}" height="${S}" fill="${light?"#1d3557":"#0e1a30"}" stroke="#0a1122" stroke-width="1"/>`;
+  }}
+  let coords="";
+  const fl="abcdefgh";
+  for(let f=0;f<8;f++){coords+=`<text x="${FX+f*S+S/2}" y="${FY+8*S+24}" font-size="17" fill="#64748b" text-anchor="middle" font-weight="700">${fl[f]}</text>`;}
+  for(let r=1;r<=8;r++){coords+=`<text x="${FX-20}" y="${FY+(8-r)*S+S/2+6}" font-size="17" fill="#64748b" text-anchor="middle" font-weight="700">${r}</text>`;}
+  let grid="";
+  for(let x=0;x<=1600;x+=80){grid+=`<line x1="${x}" y1="0" x2="${x}" y2="900" stroke="#1e3a5f" stroke-width="1" opacity="0.12"/>`;}
+  for(let y=0;y<=900;y+=80){grid+=`<line x1="0" y1="${y}" x2="1600" y2="${y}" stroke="#1e3a5f" stroke-width="1" opacity="0.12"/>`;}
+  const flash=(f,r,color,t0,t1,pk)=>{
+    const a=t0/DUR,b=((t0+t1)/2)/DUR,c=t1/DUR;
+    return `<rect x="${FX+f*S}" y="${FY+(8-r)*S}" width="${S}" height="${S}" rx="8" fill="${color}"><animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;${pk};0;0" keyTimes="0;${a.toFixed(4)};${b.toFixed(4)};${c.toFixed(4)};1"/></rect>`;
+  };
+  let flashes="";
+  flashes+=flash(4,4,"#00d4ff",0.55,1.35,.7)+flash(3,5,"#a855f7",0.55,1.35,.7);
+  flashes+=flash(4,4,"#a855f7",2.55,3.35,.7);
+  flashes+=flash(4,5,"#00d4ff",3.9,4.7,.55);
+  flashes+=flash(5,6,"#a855f7",4.15,4.95,.7);
+  flashes+=flash(7,5,"#00d4ff",6.05,6.7,.55);
+  flashes+=flash(6,6,"#a855f7",6.3,7.1,.7);
+  flashes+=flash(2,4,"#00d4ff",8.05,8.7,.55);
+  flashes+=flash(7,5,"#ef4444",9.1,9.9,.85);
+  flashes+=`<rect x="${FX+5*S}" y="${FY+(8-7)*S}" width="${S}" height="${S}" rx="8" fill="#ef4444"><animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;0.9;0.3;0" keyTimes="0;0.672;0.695;0.96;1"/></rect>`;
+  const capA=[0.5,2.2,4.2,6.2,8.4,10.8];
+  const caps=["1. e4 d5","2. Cf3 dxe4","3. Ce5 f6","4. Dh5+ g6","5. Ac4 gxh5","6. Af7#  ★ JAQUE MATE"];
+  let capsHtml="";
+  caps.forEach((t,i)=>{
+    const ta=(capA[i]/DUR).toFixed(4), tb=(capA[i]/DUR+0.03).toFixed(4);
+    const y=300+i*52, last=i===5;
+    capsHtml+=`<g>
+      <circle cx="92" cy="${y-9}" r="7" fill="${last?"#ef4444":"#00d4ff"}"/>
+      <text x="116" y="${y}" font-size="${last?30:28}" font-weight="${last?800:600}" fill="${last?"#ef4444":"#cbd5e1"}" font-family="Consolas,monospace">${t}</text>
+      <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;${ta};${tb};0.97;1"/>
+    </g>`;
+  });
+  const chipTxt=["OBSERVAR","PREGUNTAR","CALCULAR","EVALUAR","DECIDIR"];
+  let chipsHtml="";
+  chipTxt.forEach((t,i)=>{
+    const x=60+i*196, ta=((12+i*0.5)/DUR).toFixed(4), tb=((12.3+i*0.5)/DUR).toFixed(4);
+    chipsHtml+=`<g><rect x="${x}" y="796" width="176" height="46" rx="10" fill="#0f172a" stroke="${i===4?"#22c55e":"#00d4ff"}" stroke-width="1.5"/>
+    <text x="${x+88}" y="826" font-size="19" font-weight="800" fill="${i===4?"#22c55e":"#00d4ff"}" text-anchor="middle" letter-spacing="2">${t}</text>
+    ${i<4?`<text x="${x+188}" y="828" font-size="24" fill="#00d4ff" text-anchor="middle">→</text>`:""}
+    <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;${ta};${tb};0.97;1"/></g>`;
+  });
+  return `<svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animación del Gambito Tennison: la combinación que termina en Af7 jaque mate">
+  <defs>
+    <radialGradient id="bgR" cx="75%" cy="20%" r="90%">
+      <stop offset="0%" stop-color="#132342"/><stop offset="55%" stop-color="#0a0e1a"/><stop offset="100%" stop-color="#070a13"/>
+    </radialGradient>
+    <linearGradient id="divG" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bgR)"/>
+  ${grid}
+  <text x="1560" y="880" font-size="300" opacity="0.05" fill="#00d4ff" text-anchor="end">♞</text>
+  <!-- títulos -->
+  <text x="80" y="84" font-size="19" fill="#64748b" letter-spacing="6" font-weight="700">APRENDER A PENSAR COMO UN JUGADOR DE AJEDREZ</text>
+  <text x="80" y="152" font-size="66" fill="#f8fafc" font-weight="800" letter-spacing="2">GAMBITO TENNISON</text>
+  <text x="82" y="192" font-size="26" fill="#00d4ff" font-weight="600" letter-spacing="1">Del gambito al pensamiento ajedrecístico</text>
+  <rect x="80" y="210" width="520" height="3" fill="url(#divG)"/>
+  ${capsHtml}
+  ${chipsHtml}
+  <!-- tablero -->
+  <g>${board}</g>
+  <rect x="${FX-4}" y="${FY-4}" width="${8*S+8}" height="${8*S+8}" rx="10" fill="none" stroke="#00d4ff" stroke-opacity="0.35" stroke-width="2"/>
+  ${coords}
+  ${flashes}
+  <!-- diagonal c4-f7 -->
+  <line x1="${cx(2)}" y1="${cyy(4)}" x2="${cx(5)}" y2="${cyy(7)}" stroke="#00d4ff" stroke-width="4" stroke-dasharray="298" stroke-dashoffset="298" stroke-linecap="round" filter="url(#glow)">
+    <animate attributeName="stroke-dashoffset" dur="${DUR}s" repeatCount="indefinite" values="298;298;0;0" keyTimes="0;0.5125;0.565;1"/>
+    <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;0.9;0.9;0" keyTimes="0;0.5125;0.565;0.96;1"/>
+  </line>
+  <!-- rey negro en e8 -->
+  <g>
+    <text x="${cx(4)}" y="${cyy(8)}" font-size="56" text-anchor="middle" dy="19" fill="#94a3b8">♚</text>
+    <animateTransform attributeName="transform" type="translate" dur="${DUR}s" repeatCount="indefinite" values="0 0;0 0;-6 0;6 0;-4 0;4 0;0 0;0 0" keyTimes="0;0.68;0.688;0.696;0.704;0.712;0.72;1"/>
+  </g>
+  <!-- caballo g1-f3-e5 -->
+  <g opacity="0" filter="url(#glow)">
+    <text x="0" y="0" font-size="54" text-anchor="middle" dy="19" fill="#f8fafc">♞</text>
+    <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.045;0.065;0.95;1"/>
+    <animateMotion dur="${DUR}s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;0.5;0.5;1;1" keyTimes="0;0.05;0.125;0.1875;0.2625;1" path="M ${cx(6)},${cyy(1)} L ${cx(5)},${cyy(3)} L ${cx(4)},${cyy(5)}"/>
+  </g>
+  <!-- dama d1-h5 -->
+  <g opacity="0" filter="url(#glow)">
+    <text x="0" y="0" font-size="54" text-anchor="middle" dy="19" fill="#f8fafc">♛</text>
+    <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.30;0.325;0.575;0.59;1"/>
+    <animateMotion dur="${DUR}s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.3125;0.3875;1" path="M ${cx(3)},${cyy(1)} L ${cx(7)},${cyy(5)}"/>
+  </g>
+  <!-- signo + del jaque -->
+  <text x="${cx(7)+34}" y="${cyy(5)-30}" font-size="46" font-weight="800" fill="#f59e0b" filter="url(#glow)">+
+    <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.387;0.40;0.52;0.55;1"/>
+  </text>
+  <!-- alfil f1-c4-f7 -->
+  <g opacity="0" filter="url(#glow)">
+    <text x="0" y="0" font-size="54" text-anchor="middle" dy="19" fill="#f8fafc">♝</text>
+    <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.42;0.445;0.95;1"/>
+    <animateMotion dur="${DUR}s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;0.5;0.5;1;1" keyTimes="0;0.4375;0.5125;0.60;0.675;1" path="M ${cx(5)},${cyy(1)} L ${cx(2)},${cyy(4)} L ${cx(5)},${cyy(7)}"/>
+  </g>
+  <!-- explosión en f7 -->
+  <circle cx="${cx(5)}" cy="${cyy(7)}" fill="none" stroke="#ef4444" stroke-width="5">
+    <animate attributeName="r" dur="${DUR}s" repeatCount="indefinite" values="0;0;55;120;120" keyTimes="0;0.681;0.70;0.78;1"/>
+    <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;0.95;0;0" keyTimes="0;0.681;0.70;0.78;1"/>
+  </circle>
+  <circle cx="${cx(5)}" cy="${cyy(7)}" fill="none" stroke="#00d4ff" stroke-width="3">
+    <animate attributeName="r" dur="${DUR}s" repeatCount="indefinite" values="0;0;40;95;95" keyTimes="0;0.688;0.71;0.80;1"/>
+    <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;0.9;0;0" keyTimes="0;0.688;0.71;0.80;1"/>
+  </circle>
+  <!-- banner MATE -->
+  <g>
+    <rect x="96" y="636" width="640" height="92" rx="14" fill="#0f172a" stroke="#ef4444" stroke-width="2"/>
+    <text x="416" y="678" font-size="34" font-weight="800" fill="#ef4444" text-anchor="middle" letter-spacing="2" filter="url(#glow)">6. Af7# — JAQUE MATE</text>
+    <text x="416" y="712" font-size="19" fill="#94a3b8" text-anchor="middle">El material no importa cuando hay mate: MATE &gt; MATERIAL</text>
+    <animate attributeName="opacity" dur="${DUR}s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.681;0.712;0.965;1"/>
+  </g>
+</svg>`;
+}
+function mountSvg(id){
+  const el=document.getElementById(id);
+  el.innerHTML=heroSVG();
+  if(REDUCED){const s=el.querySelector("svg"); if(s&&s.pauseAnimations) s.pauseAnimations();}
+}
+
+/* ============================================================
+   2. MOTOR DE AJEDREZ (tablero 8x8, stepper, panel didáctico)
+   ============================================================ */
+const FILES=["a","b","c","d","e","f","g","h"];
+const GLYPH={K:"♚",Q:"♛",R:"♜",B:"♝",N:"♞",P:"♟"};
+function initPos(){
+  const p={},back=["r","n","b","q","k","b","n","r"];
+  for(let i=0;i<8;i++){const f=FILES[i];
+    p[f+"8"]=back[i];p[f+"7"]="p";p[f+"2"]="P";p[f+"1"]=back[i].toUpperCase();}
+  return p;
+}
+function buildPositions(steps){
+  const arr=[initPos()];
+  for(const s of steps){
+    const p=Object.assign({},arr[arr.length-1]);
+    const pc=p[s.from]; delete p[s.from]; p[s.to]=pc; arr.push(p);
+  }
+  return arr;
+}
+function buildGrid(el){
+  for(let r=8;r>=1;r--){for(let f=0;f<8;f++){
+    const sq=document.createElement("div");
+    const id=FILES[f]+r;
+    sq.className="sq "+(((f+r)%2)?"dark":"light");
+    sq.dataset.sq=id; el.appendChild(sq);
+  }}
+}
+function renderBoard(gridEl,pos,hlFrom,hlTo,checkSq){
+  for(const sq of gridEl.children){
+    const id=sq.dataset.sq, pc=pos[id];
+    sq.innerHTML=pc?`<span class="gl ${pc===pc.toUpperCase()?"wp":"bp"}">${GLYPH[pc.toUpperCase()]}</span>`:"";
+    sq.classList.toggle("hl", id===hlFrom||id===hlTo);
+    sq.classList.toggle("chk", !!checkSq&&id===checkSq);
+  }
+}
+/* La línea principal del Gambito Tennison — cada movimiento individual */
+const LINE_STEPS=[
+ {color:"BLANCAS",piece:"Peón blanco",from:"e2",to:"e4",nota:"e4",num:1,
+  que:"El peón de e2 avanza dos casillas hasta e4. Abandona e2, abre líneas para la dama (d1) y el alfil (f1) y ocupa una casilla central.",
+  porque:"En la apertura el centro es extremadamente importante: debes prestar atención a las casillas centrales y a cómo tus piezas participan en ellas."},
+ {color:"NEGRAS",piece:"Peón negro",from:"d7",to:"d5",nota:"d5",num:1,
+  que:"Las negras responden ocupando también una zona central. Esta posición corresponde a la Defensa Escandinava.",
+  porque:"La idea general de la respuesta es enfrentarse inmediatamente al peón blanco de e4."},
+ {color:"BLANCAS",piece:"Caballo blanco",from:"g1",to:"f3",nota:"Cf3",num:2,
+  que:"El caballo de g1 se desarrolla a f3 (la letra C significa Caballo). Las blancas NO juegan 2.exd5, la captura directa: permiten que las negras capturen el peón de e4.",
+  porque:"Desarrollar es sacar las piezas hacia casillas activas. Al no recuperar el peón inmediatamente nace el Gambito Tennison: se ofrece material buscando compensación."},
+ {color:"NEGRAS",piece:"Peón negro",from:"d5",to:"e4",nota:"dxe4",num:2,capture:true,
+  que:"El peón que estaba en d5 captura la pieza que estaba en e4 (la «x» significa captura). Las negras han ganado aparentemente un peón.",
+  porque:"Aquí comienza una lección importante: un principiante piensa «voy ganando»; un jugador que piensa pregunta «¿qué consecuencias tiene esta captura?»."},
+ {color:"BLANCAS",piece:"Caballo blanco",from:"f3",to:"e5",nota:"Ce5",num:3,
+  que:"El caballo blanco avanza a una casilla central y avanzada.",
+  porque:"El jugador negro no debe preguntar sólo «¿puedo echar al caballo?», sino: ¿qué amenaza?, ¿qué líneas debilito si lo ataco?, ¿qué ocurrirá con mi rey?, ¿estoy desarrollando mis piezas?"},
+ {color:"NEGRAS",piece:"Peón negro",from:"f7",to:"f6",nota:"f6",num:3,
+  que:"El peón f6 controla e5 y ataca al caballo. A primera vista parece lógico: «el caballo está en e5, lo ataco, tiene que marcharse».",
+  porque:"Pero la casilla f7 queda vacía y la estructura defensiva alrededor del rey cambia. Cada vez que muevas un peón pregúntate qué casillas deja de controlar: los peones no pueden regresar."},
+ {color:"BLANCAS",piece:"Dama blanca",from:"d1",to:"h5",nota:"Dh5+",num:4,check:true,
+  que:"La dama se desplaza desde d1 hasta h5 (la «D» significa Dama) y da jaque al rey por la diagonal disponible.",
+  porque:"El signo «+» significa jaque. El jaque es forzante: obliga al rival a responder. Por eso los jaques son la primera categoría de jugadas que debemos buscar."},
+ {color:"NEGRAS",piece:"Peón negro",from:"g7",to:"g6",nota:"g6",num:4,
+  que:"El peón bloquea la línea de ataque de la dama y, además, ataca a la dama situada en h5.",
+  porque:"Las negras responden al jaque, pero el movimiento también modifica las defensas alrededor del rey. Defenderse del jaque no significa que el peligro haya desaparecido."},
+ {color:"BLANCAS",piece:"Alfil blanco",from:"f1",to:"c4",nota:"Ac4",num:5,
+  que:"El alfil sale desde f1 hasta c4 (diagonal f1–e2–d3–c4) y apunta hacia f7 por la diagonal c4–d5–e6–f7. f7 se convierte en el punto crítico del ataque.",
+  porque:"Las blancas NO salvan inmediatamente la dama ni el caballo: «hay algo más importante que salvar estas piezas». El alfil entra en la combinación."},
+ {color:"NEGRAS",piece:"Peón negro",from:"g6",to:"h5",nota:"gxh5",num:5,capture:true,capturedPiece:"Dama",
+  que:"El peón de g6 captura la dama blanca situada en h5. Desde el punto de vista material parece un desastre para las blancas.",
+  porque:"Error fundamental: las negras ven DAMA y capturan sin preguntar «¿qué ocurre después de mi captura?». Una captura nunca debe terminar el cálculo en el momento en que retiramos la pieza."},
+ {color:"BLANCAS",piece:"Alfil blanco",from:"c4",to:"f7",nota:"Af7#",num:6,check:true,mate:true,
+  que:"El alfil entra en f7 (secuencia c4–d5–e6–f7). El signo «#» significa JAQUE MATE.",
+  porque:"El rey negro está en jaque; no puede capturar el alfil porque el caballo de e5 protege f7; e7 está ocupada por su propio peón, d8 por su dama y f8 por su alfil, y d7 la controla el caballo. No hay escape ni interposición posible: las propias piezas negras forman una jaula para su rey."}
+];
+function panelHTML(steps,i){
+  if(i===0){
+    return `<div class="mp-head init">POSICIÓN INICIAL</div>
+    <div class="mp-piece">Todas las piezas en sus casillas de origen</div>
+    <div class="mp-q"><span class="mp-tag">¿QUÉ VEMOS?</span>El tablero preparado. Las blancas ocupan las filas 1 y 2, las negras las filas 7 y 8. Pulsa «Siguiente ▶» para comenzar la reconstrucción movimiento a movimiento.</div>
+    <div class="mp-w"><span class="mp-tag">RECUERDA</span>Cada paso del tablero es un movimiento de un solo bando: primero BLANCAS, luego NEGRAS, y así sucesivamente.</div>`;
+  }
+  const m=steps[i-1];
+  let badges="";
+  if(m.capture) badges+=`<span class="badge r">CAPTURA${m.capturedPiece?" DE "+m.capturedPiece.toUpperCase():""}</span> `;
+  if(m.mate) badges+=`<span class="badge r">JAQUE MATE #</span>`;
+  else if(m.check) badges+=`<span class="badge a">JAQUE +</span>`;
+  const dark=m.color==="NEGRAS";
+  return `<div class="mp-head ${dark?"dark":""}">MOVIMIENTO ${i} — ${m.color} ${badges}</div>
+  <div class="mp-piece">${m.piece}: <span class="from-to">${m.from} → ${m.to}</span><span class="nota">Notación: ${m.nota}</span></div>
+  <div class="mp-q"><span class="mp-tag">¿QUÉ OCURRE?</span>${m.que}</div>
+  <div class="mp-w"><span class="mp-tag">¿POR QUÉ ES IMPORTANTE?</span>${m.porque}</div>`;
+}
+function createBoard(cfg){
+  const root=document.getElementById(cfg.mountId);
+  const steps=cfg.steps, positions=buildPositions(steps);
+  let idx=0;
+  let ranks="";for(let r=8;r>=1;r--)ranks+=`<div>${r}</div>`;
+  let files="";for(const f of FILES)files+=`<div>${f}</div>`;
+  root.innerHTML=`
+  <div class="board-frame">
+    <div class="coords-ranks">${ranks}</div>
+    <div class="board-grid"></div>
+    <div></div><div class="coords-files">${files}</div>
+  </div>
+  <div class="board-controls">
+    <div class="bc-btns">
+      <button class="btn" data-act="prev">◀ Anterior</button>
+      <button class="btn" data-act="reset">⟲ Reset</button>
+      <button class="btn primary" data-act="next">Siguiente ▶</button>
+    </div>
+    <input type="range" class="bc-slider" min="0" max="${steps.length}" value="0" aria-label="Movimiento del tablero">
+    <div class="bc-ind"></div>
+    ${cfg.jumps?`<div class="jump-chips">${cfg.jumps.map(j=>`<button class="chip" data-step="${j.step}">${j.label}</button>`).join("")}</div>`:""}
+  </div>
+  <div class="move-panel"></div>`;
+  const grid=root.querySelector(".board-grid"); buildGrid(grid);
+  const slider=root.querySelector(".bc-slider"), ind=root.querySelector(".bc-ind"), panel=root.querySelector(".move-panel");
+  const bPrev=root.querySelector('[data-act="prev"]'), bNext=root.querySelector('[data-act="next"]'), bReset=root.querySelector('[data-act="reset"]');
+  function draw(){
+    const m=idx>0?steps[idx-1]:null;
+    renderBoard(grid,positions[idx], m?m.from:null, m?m.to:null, (m&&(m.check||m.mate))?"e8":null);
+    panel.innerHTML=panelHTML(steps,idx);
+    slider.value=idx;
+    let full="";
+    if(idx>0){
+      const num=Math.ceil(idx/2), side=idx%2?"BLANCAS":"NEGRAS";
+      full=`<span class="full">Jugada completa ${num} · ${idx%2?num+".":"..."} ${side} (${m.nota})</span>`;
+    }
+    ind.innerHTML=`<b>Movimiento ${idx} de ${steps.length}</b> · ${idx===0?"Posición inicial":steps[idx-1].color}${full}`;
+    bPrev.disabled=idx===0; bNext.disabled=idx===steps.length;
+  }
+  bNext.addEventListener("click",()=>{if(idx<steps.length){idx++;draw();}});
+  bPrev.addEventListener("click",()=>{if(idx>0){idx--;draw();}});
+  bReset.addEventListener("click",()=>{idx=0;draw();});
+  slider.addEventListener("input",()=>{idx=parseInt(slider.value,10);draw();});
+  if(cfg.jumps){root.querySelectorAll(".jump-chips .chip").forEach(b=>{
+    b.addEventListener("click",()=>{idx=parseInt(b.dataset.step,10);draw();});
+  });}
+  draw();
+  return {goTo(i){idx=Math.max(0,Math.min(steps.length,i));draw();}};
+}
+
+/* ============================================================
+   3. DATOS DE CONTENIDO (tarjetas de la partida, conceptos…)
+   ============================================================ */
+const TIMELINE=[
+ {t:"JUGADA 1 — e4",c:"BLANCAS",move:true,h:`<p><b>Peón: e2 → e4.</b> Notación: <b>e4</b>. El peón de e2 avanza dos casillas hasta e4.</p><h4>¿Qué cambia?</h4><p>El peón abandona e2. Esto abre líneas para otras piezas, especialmente para la dama situada en d1 y para el alfil situado en f1. Además, el peón ocupa una casilla central.</p><div class="callout co-info"><span class="ico">ℹ️</span><div><span class="co-tag">IDEA AJEDRECÍSTICA</span>En la apertura, el centro es extremadamente importante. No significa que debas obsesionarte con ocupar el centro siempre: significa que debes prestar atención a las casillas centrales y a cómo tus piezas pueden participar en ellas.</div></div>`},
+ {t:"JUGADA 1... d5",c:"NEGRAS",move:true,h:`<p><b>Peón: d7 → d5.</b> Notación: <b>d5</b>. Las negras responden ocupando también una zona central.</p><p>Esta posición corresponde a la <b>Defensa Escandinava</b>. La idea general de la respuesta es enfrentarse inmediatamente al peón de e4.</p>`},
+ {t:"JUGADA 2 — Cf3",c:"BLANCAS",move:true,h:`<p><b>Caballo: g1 → f3.</b> Notación: <b>Cf3</b>. La letra C significa Caballo. El caballo de g1 va a f3.</p><h4>¿Por qué es importante?</h4><p>El caballo se desarrolla. «Desarrollar» significa sacar las piezas de sus posiciones iniciales hacia casillas donde tengan actividad.</p><p>Pero aquí aparece una idea más profunda: las blancas <b>NO</b> juegan <b>2. exd5</b>, que sería una captura directa. Juegan <b>2. Cf3</b> y permiten que las negras capturen el peón de e4. Esto da lugar al <b>Gambito Tennison</b>.</p>`},
+ {t:"¿QUÉ ES UN GAMBITO?",c:"CONCEPTO",h:`<p>Un gambito consiste, de manera general, en <b>ofrecer material buscando obtener algo a cambio</b>. Por ejemplo:</p><div class="chips"><span class="chip">desarrollo</span><span class="chip">tiempos</span><span class="chip">actividad</span><span class="chip">iniciativa</span><span class="chip">apertura de líneas</span><span class="chip">ataque</span><span class="chip">dificultades para el rey enemigo</span></div><blockquote class="big red">SACRIFICAR MATERIAL NO ES BUENO POR SÍ MISMO.</blockquote><p>Si entregas un peón y no obtienes compensación, simplemente has perdido un peón. Por eso debemos aprender a preguntar: <b>«¿Qué recibo a cambio?»</b></p>`},
+ {t:"JUGADA 2... dxe4",c:"NEGRAS",move:true,h:`<p><b>Peón: d5 → e4.</b> El peón negro captura el peón blanco situado en e4. Notación: <b>dxe4</b>. La «x» significa <b>CAPTURA</b>: «el peón que estaba en d5 captura la pieza que estaba en e4».</p><p>Ahora las negras han ganado aparentemente un peón. Pero aquí comienza una de las lecciones más importantes.</p>`},
+ {t:"MATERIAL NO ES LO MISMO QUE POSICIÓN",c:"CONCEPTO",h:`<p>Después de 1.e4 d5 2.Cf3 dxe4 las negras han ganado un peón. Un principiante puede pensar: «Voy ganando». Pero un jugador de ajedrez debe pensar: <b>«Sí, he ganado un peón. ¿Qué consecuencias tiene?»</b></p><p>Hay que mirar:</p><div class="chips"><span class="chip acc">desarrollo</span><span class="chip acc">actividad</span><span class="chip acc">seguridad del rey</span><span class="chip acc">amenazas</span><span class="chip acc">piezas disponibles</span><span class="chip acc">iniciativa</span></div><blockquote class="big">Una ventaja material no garantiza automáticamente una posición ganadora.</blockquote>`},
+ {t:"JUGADA 3 — Ce5",c:"BLANCAS",move:true,h:`<p><b>Caballo: f3 → e5.</b> Notación: <b>Ce5</b>. El caballo blanco avanza a una casilla central y avanzada. Ahora debemos detenernos.</p><h4>Pregunta para el jugador</h4><p>Las negras acaban de ganar un peón y las blancas colocan el caballo en e5. ¿Qué debe preguntarse el jugador negro? No solamente «¿puedo echar al caballo?», sino:</p><ul><li>«¿Qué amenaza?»</li><li>«¿Qué líneas estoy debilitando si lo ataco?»</li><li>«¿Qué ocurrirá con mi rey?»</li><li>«¿Estoy desarrollando mis piezas?»</li></ul>`},
+ {t:"JUGADA 3... f6",c:"NEGRAS",move:true,h:`<p><b>Peón: f7 → f6.</b> Notación: <b>f6</b>. La finalidad inmediata es atacar al caballo de e5: el peón negro situado en f6 controla e5. Por tanto, 3...f6 <b>ATACA AL CABALLO</b>.</p><p>A primera vista parece lógico: «El caballo está en e5. Lo ataco. Tiene que marcharse.» Pero aquí aparece una de las grandes lecciones de la partida.</p>`},
+ {t:"NO MIRES SOLAMENTE LA PIEZA ATACADA",c:"CONCEPTO",h:`<p>Cuando atacas una pieza, debes mirar también qué has cambiado al mover tu pieza. El peón estaba en <b>f7</b>; ahora está en <b>f6</b>. La casilla f7 queda vacía. Además, el movimiento del peón modifica la estructura defensiva alrededor del rey.</p><blockquote class="big">CADA VEZ QUE MUEVAS UN PEÓN, PREGÚNTATE QUÉ CASILLAS DEJA DE CONTROLAR.</blockquote><p>Los peones no pueden regresar. Por eso sus movimientos son especialmente importantes.</p>`},
+ {t:"EL PROBLEMA DE LA SEGURIDAD DEL REY",c:"CONCEPTO",h:`<p>El rey negro está en e8. La dama blanca está en d1. La diagonal <b>d1 → e2 → f3 → g4 → h5</b> queda disponible para la dama según la posición. La jugada <b>4. Dh5+</b> coloca la dama en h5 y produce jaque.</p><blockquote class="big red">UNA DEBILIDAD CERCA DEL REY PUEDE SER MÁS IMPORTANTE QUE UN PEÓN GANADO.</blockquote>`},
+ {t:"JUGADA 4 — Dh5+",c:"BLANCAS",move:true,h:`<p><b>Dama: d1 → h5.</b> Notación: <b>Dh5+</b>. La «D» significa Dama. El signo «+» significa <b>JAQUE</b>.</p><p>Por tanto, Dh5+ significa: «La dama se desplaza desde d1 hasta h5 y da jaque al rey.»</p>`},
+ {t:"¿POR QUÉ EL JAQUE ES TAN IMPORTANTE?",c:"CONCEPTO",h:`<p>Cuando das jaque, el rival tiene que responder al jaque. Eso hace que el movimiento sea <b>forzante</b>. Una de las primeras categorías de jugadas que debemos buscar siempre son:</p><div class="chips"><span class="chip acc">JAQUES</span><span class="chip acc">CAPTURAS</span><span class="chip acc">AMENAZAS</span></div><p>Esta tríada suele resumirse así: <b>JAQUES — CAPTURAS — AMENAZAS</b>. No significa que siempre debamos jugar una de ellas: significa que debemos comprobarlas.</p>`},
+ {t:"JUGADA 4... g6",c:"NEGRAS",move:true,h:`<p><b>Peón: g7 → g6.</b> Notación: <b>g6</b>. El peón bloquea la línea de ataque de la dama: las negras responden al jaque.</p><p>Pero ahora aparece otro problema: el movimiento g7 → g6 también modifica las defensas alrededor del rey. Además, el peón de g6 <b>ataca la dama</b> situada en h5.</p>`},
+ {t:"AQUÍ APARECE UNA SITUACIÓN CRÍTICA",c:"CONCEPTO",h:`<p>Tenemos: caballo blanco en e5, dama blanca en h5, peón negro en f6, peón negro en g6 y rey negro en e8.</p><ul><li>El peón f6 ataca al caballo e5.</li><li>El peón g6 ataca a la dama h5.</li></ul><p>Las negras parecen estar atacando <b>simultáneamente dos piezas blancas</b>. La reacción de un principiante podría ser: «¡Perfecto! Estoy atacando el caballo y la dama.» Pero aquí debemos detenernos.</p>`},
+ {t:"LA PREGUNTA MÁS IMPORTANTE DE TODA LA PARTIDA",c:"CONCEPTO",h:`<p>Cuando el rival deja una pieza aparentemente gratis, pregunta:</p><blockquote class="big red">«¿POR QUÉ?»</blockquote><p>Si alguien pudiera capturar tu dama sin consecuencias, normalmente eso sería fantástico. Pero si el rival deja su dama para ser capturada y, al mismo tiempo, prepara un ataque contra el rey... hay que investigar.</p><blockquote class="big">Esta pregunta puede salvarte muchas partidas: «¿QUÉ QUIERE REALMENTE MI RIVAL?»</blockquote>`},
+ {t:"JUGADA 5 — Ac4",c:"BLANCAS",move:true,h:`<p><b>Alfil: f1 → c4.</b> Notación: <b>Ac4</b>. El alfil sale desde f1 hasta c4 (diagonal f1–e2–d3–c4).</p><p>Ahora apunta hacia <b>f7</b> por la diagonal <b>c4 → d5 → e6 → f7</b>. La casilla f7 se convierte en el punto crítico del ataque.</p>`},
+ {t:"¿POR QUÉ Ac4 ES TAN IMPORTANTE?",c:"CONCEPTO",h:`<p>Porque las blancas NO salvan inmediatamente la dama. Tampoco salvan inmediatamente el caballo. Juegan <b>5. Ac4</b>. Eso significa: «Hay algo más importante que salvar estas piezas.» El alfil entra en la combinación.</p><blockquote class="big">CUANDO UNA PIEZA ESTÁ ATACADA, NO ESTÁS OBLIGADO A SALVARLA INMEDIATAMENTE.</blockquote><p>Antes debes comprobar: jaques, capturas, amenazas, ataques contra el rey, combinaciones y sacrificios.</p>`},
+ {t:"PENSAMIENTO DE PRINCIPIANTE VS. PENSAMIENTO AJEDRECÍSTICO",c:"CONCEPTO",h:`
+ <div class="vs"><div class="p"><span class="lbl">PRINCIPIANTE</span>«Mi dama está atacada. Tengo que moverla.»</div><div class="f"><span class="lbl">JUGADOR QUE APRENDE A PENSAR</span>«Mi dama está atacada. Antes de moverla, ¿tengo una jugada más fuerte?»</div></div>
+ <div class="vs"><div class="p"><span class="lbl">PRINCIPIANTE</span>«Mi caballo está atacado.»</div><div class="f"><span class="lbl">PENSAMIENTO AJEDRECÍSTICO</span>«Mi caballo está atacado. ¿Puedo ignorar el ataque porque existe una amenaza contra el rey?»</div></div>
+ <div class="vs"><div class="p"><span class="lbl">PRINCIPIANTE</span>«Me pueden ganar la dama.»</div><div class="f"><span class="lbl">PENSAMIENTO AJEDRECÍSTICO</span>«Si mi rival captura la dama, ¿qué ocurre después?»</div></div>
+ <p>Esta última pregunta es fundamental.</p>`},
+ {t:"JUGADA 5... gxh5",c:"NEGRAS",move:true,h:`<p><b>Peón: g6 → h5.</b> El peón negro de g6 captura la dama blanca situada en h5. Notación: <b>gxh5</b> (la «x» significa captura).</p><p>Las negras han ganado la dama. Desde el punto de vista material parece un desastre para las blancas. <b>Pero todavía no hemos terminado de calcular.</b></p>`},
+ {t:"EL ERROR FUNDAMENTAL DE LAS NEGRAS",c:"CONCEPTO",h:`<p>Las negras ven <b>DAMA</b>. La dama vale muchísimo materialmente. La capturan. Pero no hacen la pregunta correcta:</p><blockquote class="big red">«¿QUÉ OCURRE DESPUÉS DE MI CAPTURA?»</blockquote><p>Esta es una de las mayores diferencias entre jugar ajedrez por impulsos y calcular. Una captura nunca debería terminar en nuestra cabeza en el momento en que retiramos la pieza capturada. Debemos continuar: «Capturo... ¿y entonces? ¿Qué puede hacer el rival? ¿Tiene un jaque? ¿Tiene una amenaza de mate?»</p>`},
+ {t:"LA REGLA DE LA CAPTURA",c:"CONCEPTO",h:`<p>Cada vez que tengas la posibilidad de capturar una pieza aparentemente importante:</p><div class="vs"><div class="p"><span class="lbl">NO PIENSES</span>«¡Gano una pieza!»</div><div class="f"><span class="lbl">PIENSA</span>«Si capturo, ¿qué puede hacer mi rival inmediatamente después?»</div></div><p>Esta regla habría cambiado completamente la decisión de las negras.</p>`},
+ {t:"JUGADA 6 — Af7#",c:"BLANCAS",move:true,h:`<p><b>Alfil: c4 → f7.</b> Notación: <b>Af7#</b>. El signo «#» significa <b>JAQUE MATE</b>. El alfil entra en f7 siguiendo la secuencia <b>c4 → d5 → e6 → f7</b>.</p>`},
+ {t:"¿POR QUÉ Af7# ES JAQUE MATE?",c:"CONCEPTO",h:`<p>Para entender un mate hay que comprobar:</p><ol><li>¿El rey está en jaque?</li><li>¿Puede capturar la pieza que da jaque?</li><li>¿Puede escapar?</li><li>¿Puede otra pieza bloquear el jaque?</li></ol><p>En esta posición: el rey negro está en e8, el alfil blanco llega a f7 y el caballo blanco está en e5 y <b>protege f7</b>; el rey negro no puede capturar el alfil, las casillas de escape están ocupadas o controladas y no existe una interposición posible. Por eso es mate.</p>`},
+ {t:"EL CABALLO DE e5 ES FUNDAMENTAL",c:"CONCEPTO",h:`<p>El caballo blanco está en e5. Desde e5 controla: <b>c4, c6, d3, d7, f3, f7, g4 y g6</b>. Son especialmente importantes en esta posición <b>f7</b> y <b>d7</b>.</p><p>El caballo protege al alfil situado en f7. Por eso el rey negro no puede simplemente jugar Rxf7.</p><blockquote class="big">UNA PIEZA DEBE EVALUARSE NO SÓLO POR DÓNDE ESTÁ, SINO POR LAS CASILLAS QUE CONTROLA.</blockquote>`},
+ {t:"LAS PROPIAS PIEZAS NEGRAS CONTRIBUYEN AL MATE",c:"CONCEPTO",h:`<p>Las propias piezas negras limitan las casillas de escape del rey: peón negro en <b>e7</b>, dama negra en <b>d8</b>, alfil negro en <b>f8</b>. El rey está en e8 y sus propias piezas ocupan casillas a su alrededor.</p><blockquote class="big purple">LAS PIEZAS PROPIAS PUEDEN CONVERTIRSE EN UNA JAULA PARA EL REY.</blockquote><p>Una posición puede parecer llena de piezas defensoras, pero esas mismas piezas pueden quitarle casillas al rey.</p><h4>¿Qué es una «jaula del rey»?</h4><p>No es necesario memorizar el término como una categoría formal. La idea es sencilla: el rey necesita casillas para escapar. Si tus propias piezas ocupan algunas y las piezas enemigas controlan otras, el rey puede quedar sin salida. Por eso, al atacar al rey, no debemos mirar únicamente al rey: debemos mirar <b>¿dónde puede escapar?</b></p>`}
+];
+const CALCULA=[
+ ["C","CAMBIOS","¿Qué acaba de cambiar?"],
+ ["A","AMENAZAS","¿Qué amenaza el rival?"],
+ ["L","LÍNEAS","¿Qué líneas se han abierto o cerrado?"],
+ ["C","CANDIDATAS","¿Qué jugadas fuertes puedo considerar?"],
+ ["U","RESPUESTA","¿Cuál es la mejor respuesta del rival?"],
+ ["L","LECTURA","¿Qué posición queda después?"],
+ ["A","AJUSTE","¿Mi jugada sigue siendo buena después de comprobar la posición?"]
+];
+const PASOS=[
+ {n:1,t:"OBSERVAR",h:`<p>Después de cada jugada del rival: <b>NO MUEVAS AUTOMÁTICAMENTE</b>. Primero observa. Pregunta: «¿Qué acaba de jugar?»</p><p>En esta partida: <b>3...f6</b> — el rival mueve peón f7 → f6.</p>`},
+ {n:2,t:"IDENTIFICAR LOS CAMBIOS",h:`<p>Pregunta: «¿Qué cambió?» Antes: peón en f7. Después: peón en f6. Por tanto:</p><ul><li>f7 queda libre;</li><li>el peón ahora ataca e5;</li><li>cambia la estructura defensiva;</li><li>cambia la seguridad del rey.</li></ul>`},
+ {n:3,t:"DETECTAR AMENAZAS",h:`<p>Pregunta: «¿Qué quiere hacer el rival?» Después de 3...f6 el rival quiere <b>ATACAR EL CABALLO DE e5</b>. Pero eso no es todo: también debemos preguntar «¿Qué debilidades ha creado?»</p>`},
+ {n:4,t:"COMPROBAR PELIGROS",h:`<p>Antes de pensar en nuestro ataque: ¿Estoy en jaque? ¿Tengo una pieza atacada? ¿Hay mate? ¿Hay una captura? ¿Hay una amenaza inmediata?</p><div class="callout co-ok"><span class="ico">✅</span><div><span class="co-tag">EJEMPLO</span>Esta comprobación evita muchas derrotas.</div></div>`},
+ {n:5,t:"BUSCAR JUGADAS FORZANTES",h:`<p>Busca primero <b>JAQUES</b> (¿puedo dar jaque?), <b>CAPTURAS</b> (¿puedo capturar algo importante?) y <b>AMENAZAS</b> (¿puedo crear una amenaza seria?).</p><p>En esta partida, después de 3...f6 aparece <b>4. Dh5+</b>: es una jugada forzante.</p>`},
+ {n:6,t:"CREAR JUGADAS CANDIDATAS",h:`<p>Una jugada candidata es una jugada que merece ser calculada. No tienes que calcular absolutamente todas las jugadas posibles: busca primero las que tengan sentido. Por ejemplo: jaques, capturas, amenazas, defensa necesaria y mejoras importantes de piezas.</p><p>En esta partida, <b>Dh5+</b> es candidata porque da jaque.</p>`},
+ {n:7,t:"CALCULAR",h:`<p>Ahora viene el verdadero pensamiento. No basta con «Dh5+ parece buena». Debemos calcular:</p><div class="flow"><span class="node">4. Dh5+</span><span class="arr">→</span><span class="node">4...g6</span><span class="arr">→</span><span class="node">5. Ac4</span><span class="arr">→</span><span class="node">5...gxh5</span><span class="arr">→</span><span class="node win">6. Af7#</span></div><p>«¿Qué puede hacer el rival? ¿Qué puedo hacer yo?» Esto es cálculo.</p>`},
+ {n:8,t:"EVALUAR",h:`<p>Después de calcular, evalúa la posición:</p><ul><li><b>MATERIAL</b> — ¿Quién tiene más piezas o peones?</li><li><b>ACTIVIDAD</b> — ¿Quién tiene las piezas más activas?</li><li><b>SEGURIDAD DEL REY</b> — ¿Está seguro mi rey? ¿Está seguro el suyo?</li><li><b>DESARROLLO</b> — ¿Quién tiene más piezas desarrolladas?</li><li><b>COORDINACIÓN</b> — ¿Trabajan juntas mis piezas?</li><li><b>INICIATIVA</b> — ¿Quién está obligando al otro a responder?</li></ul><p>En esta partida, la iniciativa de las blancas termina siendo decisiva.</p>`},
+ {n:9,t:"COMPROBACIÓN FINAL",h:`<p>Antes de ejecutar la jugada: «¿Qué puede capturar mi rival? ¿Tiene algún jaque? ¿Tiene alguna táctica? ¿Estoy dejando una pieza indefensa? ¿He pasado por alto un mate?»</p><div class="callout co-warn"><span class="ico">⚠️</span><div><span class="co-tag">ADVERTENCIA</span>Esta comprobación final es especialmente importante cuando haces una jugada aparentemente brillante.</div></div>`},
+ {n:10,t:"JUGAR",h:`<p>Sólo después: <b>JUEGA</b>.</p>`}
+];
+const CONCEPTOS=[
+ {t:"🎯 El concepto más importante: las amenazas",h:`<p>Una amenaza es algo que el rival puede conseguir si tú no haces nada. Por ejemplo: «Mi dama está atacada» — eso es una amenaza. Pero puede existir otra amenaza más importante: «Mi rey está a punto de recibir mate». La segunda amenaza es mucho más importante.</p><blockquote class="big">NO TODAS LAS AMENAZAS TIENEN EL MISMO VALOR.</blockquote>`},
+ {t:"🔄 La jugada del rival cambia la posición",h:`<p>Esta regla debe convertirse en hábito:</p><blockquote class="big">DESPUÉS DE CADA JUGADA DEL RIVAL, LA POSICIÓN ES NUEVA.</blockquote><p>Aunque sólo haya movido un peón. En esta partida, 3...f6 parece una simple jugada para atacar un caballo, pero cambia: la casilla f7, las líneas alrededor del rey, la estructura de peones, la seguridad del rey y las posibilidades tácticas de las blancas.</p>`},
+ {t:"🕳️ El error de las negras: visión de túnel",h:`<p>Las negras se concentran en «el caballo de e5» y no ven toda la posición. Esto se puede llamar <b>VISIÓN DE TÚNEL</b>: el jugador sólo observa el objetivo inmediato y deja de mirar el resto del tablero.</p><p>Ejemplo: «Quiero ganar ese caballo.» Pero no pregunta: «¿Qué pasa con mi rey?»</p>`},
+ {t:"🧭 Cómo evitar la visión de túnel",h:`<p>Cada vez que quieras atacar una pieza, haz tres preguntas:</p><ol><li>¿Qué pieza estoy atacando?</li><li>¿Qué he dejado de defender al hacer mi jugada?</li><li>¿Qué amenazas tiene el rival?</li></ol><blockquote class="big red">ANTES DE CAPTURAR, MIRA EL REY.</blockquote>`},
+ {t:"💰 La codicia material",h:`<p>La partida contiene un ejemplo perfecto de codicia. Las negras ven la dama blanca en h5; la dama tiene enorme valor material y la capturan.</p><p>Pero la pregunta correcta no es «¿Cuánto gano?», sino:</p><blockquote class="big">«¿Qué consigo realmente después de capturar?»</blockquote>`},
+ {t:"⚖️ El material no siempre es lo más importante",h:`<p>En una posición táctica: <b>MATE &gt; MATERIAL</b>.</p><div class="callout co-err"><span class="ico">⛔</span><div><span class="co-tag">ERROR</span>Si puedes ganar la dama pero recibes mate inmediatamente después: NO HAS GANADO LA DAMA. HAS PERDIDO LA PARTIDA.</div></div><p>Por eso el valor de una pieza no puede analizarse aislado de la posición.</p>`},
+ {t:"🎁 Sacrificios",h:`<p>En esta partida las blancas permiten que su dama sea capturada. Esto tiene características de sacrificio dentro de la combinación. Pero debemos ser muy precisos: no significa «siempre que puedas entregar la dama, hazlo» — eso sería una conclusión absurda.</p><blockquote class="big">UNA PIEZA ENTREGADA SÓLO TIENE SENTIDO SI LA POSICIÓN RESULTANTE LO JUSTIFICA.</blockquote>`},
+ {t:"🧪 Cómo evaluar un sacrificio",h:`<p>Pregúntate:</p><ol><li>¿Qué entrego?</li><li>¿Qué gano?</li><li>¿Qué amenaza creo?</li><li>¿Se abre una línea?</li><li>¿Se debilita el rey enemigo?</li><li>¿Desaparece un defensor?</li><li>¿Mis piezas quedan activas?</li><li>¿Tengo jaques?</li><li>¿Puedo recuperar material?</li><li>¿Existe mate?</li><li>¿Qué pasa si el rival acepta?</li><li>¿Qué pasa si rechaza?</li></ol><blockquote class="big">Y sobre todo: ¿QUÉ POSICIÓN QUEDA DESPUÉS DE TODA LA COMBINACIÓN?</blockquote>`},
+ {t:"📐 La regla del sacrificio",h:`<p>NO evalúes «entregué la dama». Evalúa: «Entregué la dama y después...» y continúa calculando.</p><div class="flow"><span class="node">Dama capturada</span><span class="arr">↓</span><span class="node">Alfil entra en f7</span><span class="arr">↓</span><span class="node win">Jaque mate</span></div><p>La posición final determina el valor real de la combinación.</p>`},
+ {t:"🤝 Coordinación de piezas",h:`<p>Las blancas no atacan con una sola pieza. Participan: <b>dama, caballo y alfil</b>. La combinación funciona porque las piezas se ayudan:</p><ul><li>La dama lleva al rey a una posición incómoda.</li><li>El caballo controla casillas críticas.</li><li>El alfil entra en f7.</li></ul><blockquote class="big">UNA PIEZA FUERTE ES MUCHO MÁS PELIGROSA CUANDO ESTÁ APOYADA POR OTRAS PIEZAS.</blockquote>`},
+ {t:"🎯 La importancia de las casillas críticas",h:`<p>En esta partida, <b>f7</b> es una casilla crítica:</p><ol><li>Primero, 3...f6 hace que el peón abandone f7.</li><li>Después, 5. Ac4: el alfil apunta hacia f7.</li><li>Finalmente, 6. Af7#: el alfil ocupa f7.</li></ol><p>Un buen jugador debe aprender a identificar: <b>¿qué casilla es importante en esta posición?</b> No siempre será f7: podrá ser una casilla delante del rey, una casilla de entrada, una casilla débil, una casilla sin defensor o una casilla que permita un jaque.</p>`},
+ {t:"🛡️ Defensores",h:`<p>Una pieza defendida no debe evaluarse igual que una pieza indefensa. El caballo de e5 defiende f7; por eso <b>Rxf7 no funciona</b>.</p><blockquote class="big">Pregunta fundamental: «¿QUIÉN DEFIENDE ESA CASILLA?» Y después: «¿PUEDO ELIMINAR AL DEFENSOR?»</blockquote><p>Este pensamiento es la base de muchas combinaciones.</p>`},
+ {t:"🧨 El concepto de eliminación de defensores",h:`<p>Una combinación frecuente consiste en:</p><ol><li>encontrar una pieza importante;</li><li>identificar quién la defiende;</li><li>eliminar o desviar al defensor;</li><li>capturar el objetivo.</li></ol><p>En esta partida ocurre algo relacionado con esta lógica, aunque el caballo permanece en e5 y continúa defendiendo f7.</p><blockquote class="big">NUNCA MIRES UNA PIEZA IMPORTANTE SIN MIRAR QUIÉN LA DEFIENDE.</blockquote>`},
+ {t:"⚔️ Ataque doble (precisión terminológica)",h:`<p>Después de 4...g6 hay un ataque simultáneo a dos piezas: el peón de f6 ataca el caballo de e5 y el peón de g6 ataca la dama de h5.</p><div class="callout co-info"><span class="ico">ℹ️</span><div><span class="co-tag">INFO</span>Conviene precisar: esto NO es un ataque doble en el sentido más estricto de «una misma pieza ataca dos objetivos». Son dos ataques realizados por dos peones distintos.</div></div><p>Pero pedagógicamente la situación es importantísima: <b>dos piezas blancas están siendo atacadas al mismo tiempo</b>. Lección: cuando tengas dos piezas atacadas, no asumas automáticamente que tienes que salvarlas. Primero busca jaque, mate, captura o una amenaza más fuerte.</p>`},
+ {t:"🤔 ¿Qué habría hecho un principiante?",h:`<p>Después de 4...g6 probablemente pensaría: «Mi dama está atacada. Mi caballo está atacado. ¡Tengo que salvar algo!»</p><p>Pero el pensamiento fuerte es: «Estoy siendo atacado en dos piezas. Antes de retirarlas, ¿puedo hacer algo más fuerte?» Las blancas encuentran <b>5. Ac4</b>.</p>`},
+ {t:"🚫 No toda pieza atacada debe ser salvada",h:`<p>Esta es una de las lecciones más importantes del tutorial. Cuando una pieza es atacada:</p><div class="vs"><div class="p"><span class="lbl">NO HAGAS AUTOMÁTICAMENTE</span>«Retirar pieza.»</div><div class="f"><span class="lbl">HAZ</span>«¿Qué jugadas forzantes tengo?»</div></div><p>Porque quizá exista: un mate, una captura de dama, una clavada, una amenaza de mate o un ataque contra el rey.</p>`}
+];
+const ERRORES_A=[
+ {n:"ERROR 1",t:"Atacar automáticamente",h:`<p><b>3...f6</b> — Las negras ven el caballo y quieren expulsarlo. No consideran suficientemente las consecuencias sobre la seguridad del rey.</p><div class="callout co-ok"><span class="ico">✅</span><div><span class="co-tag">LECCIÓN</span>Antes de atacar una pieza: «¿Qué debilidad creo?»</div></div>`},
+ {n:"ERROR 2",t:"Descuidar el rey",h:`<p>El movimiento f7 → f6 cambia las defensas alrededor del rey.</p><div class="callout co-ok"><span class="ico">✅</span><div><span class="co-tag">LECCIÓN</span>Cada movimiento de peón alrededor del rey merece especial atención.</div></div>`},
+ {n:"ERROR 3",t:"Codicia material",h:`<p><b>5...gxh5</b> — Las negras capturan la dama.</p><div class="callout co-ok"><span class="ico">✅</span><div><span class="co-tag">LECCIÓN</span>Antes de capturar una pieza de gran valor: «¿Qué puede hacer el rival después?»</div></div>`},
+ {n:"ERROR 4",t:"No buscar la amenaza del rival",h:`<p>Las negras observan la dama, pero no detectan correctamente la amenaza contra f7.</p><div class="callout co-ok"><span class="ico">✅</span><div><span class="co-tag">LECCIÓN</span>No mires sólo la pieza que puedes capturar. Mira el rey.</div></div>`},
+ {n:"ERROR 5",t:"No calcular una jugada más",h:`<p>Después de 5...gxh5 las negras podrían haber necesitado preguntarse: «¿Cuál es la respuesta blanca?» La respuesta es <b>6. Af7#</b>.</p><div class="callout co-ok"><span class="ico">✅</span><div><span class="co-tag">LECCIÓN</span>Una captura no termina el cálculo.</div></div>`}
+];
+const PREGUNTAS_AV=[
+ ["A","¿Qué acaba de cambiar?"],["B","¿Qué amenaza el rival?"],["C","¿Estoy en peligro?"],
+ ["D","¿Tengo jaques?"],["E","¿Tengo capturas?"],["F","¿Tengo amenazas?"],
+ ["G","¿Qué piezas están indefensas?"],["H","¿Qué piezas están mal colocadas?"],["I","¿Cuál es mi pieza más activa?"],
+ ["J","¿Cuál es mi peor pieza?"],["K","¿Cuál es el punto débil del rival?"],["L","¿Quién lo defiende?"],
+ ["M","¿Puedo eliminar al defensor?"],["N","¿Hay una clavada?"],["O","¿Hay una horquilla?"],
+ ["P","¿Hay un ataque doble?"],["Q","¿Hay una desviación?"],["R","¿Qué jugadas candidatas tengo?"],
+ ["S","¿Cuál es la mejor defensa del rival?"],["T","¿Qué ocurre después?"],["U","¿Estoy dejando algo sin defender?"],
+ ["V","¿Mi rey está seguro?"]
+];
+const SHORT_LIST=["¿Qué cambió?","¿Qué amenaza?","¿Jaques, capturas o amenazas?","¿Qué candidatas tengo?","¿Qué hará el rival?","¿Qué pasa después?","¿Dejo algo sin defender?"];
+const EJERCICIOS=[
+ {t:"EJERCICIO 1 — Detectar el error",pos:5,h:`<p>Posición después de 1.e4 d5 2.Cf3 dxe4 3.Ce5. Ahora juegan negras y la partida da <b>3...f6</b>.</p><h4>Preguntas</h4><ol><li>¿Qué pieza está atacando el peón?</li><li>¿Qué casilla abandona el peón?</li><li>¿Qué ocurre alrededor del rey negro?</li><li>¿Qué jugada forzante podrían buscar las blancas?</li></ol><h4>Solución</h4><p>El peón f7 → f6 ataca al caballo de e5, pero abandona f7 y modifica la estructura defensiva del rey. Las blancas encuentran <b>4. Dh5+</b>.</p><blockquote class="big green">CUANDO ATAQUES UNA PIEZA, MIRA QUÉ DEFENSAS ESTÁS ABANDONANDO.</blockquote>`},
+ {t:"EJERCICIO 2 — No salvar automáticamente la pieza",pos:8,h:`<p>Después de 1.e4 d5 2.Cf3 dxe4 3.Ce5 f6 4.Dh5+ g6 las negras atacan el caballo de e5 y la dama de h5.</p><h4>Pregunta</h4><p>¿Qué harías como blancas? No pienses inmediatamente en la solución. Pregúntate:</p><ol><li>¿Estoy obligado a mover una pieza?</li><li>¿Tengo una jugada forzante?</li><li>¿Puedo atacar al rey?</li><li>¿Qué pieza puedo desarrollar con amenaza?</li></ol><h4>Solución de la partida</h4><p><b>5. Ac4</b> — el alfil f1 → c4 apunta hacia f7.</p><blockquote class="big green">UNA PIEZA ATACADA PUEDE SER MENOS IMPORTANTE QUE UNA AMENAZA DE MATE.</blockquote>`},
+ {t:"EJERCICIO 3 — La captura de la dama",pos:10,h:`<p>Después de 5. Ac4 las negras juegan <b>5...gxh5</b>.</p><h4>Pregunta</h4><p>Las negras han capturado la dama. ¿Debemos detener el cálculo aquí? <b>NO.</b> Debemos preguntar: «¿Qué puede hacer ahora el blanco?»</p><h4>Solución</h4><p><b>6. Af7#</b> — Alfil: c4 → f7. Jaque mate.</p><blockquote class="big green">EL CÁLCULO CONTINÚA DESPUÉS DE LA CAPTURA.</blockquote>`},
+ {t:"EJERCICIO 4 — Encontrar el defensor",pos:11,h:`<p>En la posición final, después de <b>6. Af7#</b>.</p><h4>Pregunta</h4><p>¿Qué pieza blanca protege al alfil de f7?</p><h4>Solución</h4><p>El caballo situado en <b>e5</b>. El caballo controla f7. Por eso el rey negro no puede capturar el alfil.</p>`},
+ {t:"EJERCICIO 5 — Encontrar las casillas de escape",pos:11,h:`<p>Después de <b>6. Af7#</b> el rey negro está en e8.</p><h4>Pregunta</h4><p>¿Qué casillas cercanas podrían parecer posibles?</p><h4>Solución</h4><ul><li>e7 está ocupada por un peón negro;</li><li>d8 está ocupada por la dama negra;</li><li>f8 está ocupada por el alfil negro;</li><li>d7 está controlada por el caballo blanco.</li></ul><p>Además, el alfil en f7 da el jaque. Conclusión: el rey no dispone de una salida válida.</p>`},
+ {t:"EJERCICIO 6 — Pensar como las negras",pos:7,h:`<p>Imagina que eres las negras después de <b>4. Dh5+</b>. Tienes que responder al jaque.</p><p>Tu objetivo no debe ser solamente «quitarme el jaque». También debes preguntar: «¿Qué posición queda después?»</p><blockquote class="big green">DEFENDERSE DEL JAQUE NO SIGNIFICA QUE EL PELIGRO HAYA DESAPARECIDO.</blockquote><p>Después de responder a un jaque, vuelve a evaluar toda la posición.</p>`},
+ {t:"EJERCICIO 7 — La pregunta «¿Por qué?»",pos:9,h:`<p>Después de <b>5. Ac4</b> la dama blanca está atacada.</p><h4>Pregunta</h4><p>«¿Por qué las blancas permiten que capturen su dama?»</p><h4>Solución</h4><p>La respuesta correcta no es «porque la dama no importa». La respuesta es: <b>«porque existe una combinación que culmina en mate»</b>.</p><blockquote class="big green">CUANDO EL RIVAL HACE ALGO QUE PARECE ABSURDO, BUSCA LA RAZÓN.</blockquote>`}
+];
+const NOTATIONS=[
+ ["e4","Peón de e2 → e4. No aparece la letra P porque los peones no utilizan letra."],
+ ["Cf3","Caballo → f3. En esta posición: caballo g1 → f3."],
+ ["Ce5","Caballo → e5. Aquí: caballo f3 → e5."],
+ ["dxe4","La «x» significa captura: peón de d5 → e4 capturando la pieza que estaba en e4."],
+ ["Dh5+","Dama d1 → h5 y da jaque. «+» = JAQUE."],
+ ["gxh5","Peón g6 → h5 capturando la dama. «x» = captura."],
+ ["Ac4","Alfil f1 → c4."],
+ ["Af7#","Alfil c4 → f7. «#» = JAQUE MATE."]
+];
+const SYMBOLS=[["C","Caballo"],["A","Alfil"],["D","Dama"],["T","Torre"],["R","Rey"],["x","Captura"],["+","Jaque"],["#","Jaque mate"],["O-O","Enroque corto"],["O-O-O","Enroque largo"]];
+const REGLAS=[
+ "DESPUÉS DE CADA JUGADA, LA POSICIÓN ES NUEVA.",
+ "ANTES DE ATACAR UNA PIEZA, MIRA QUÉ HAS DEJADO DE DEFENDER.",
+ "ANTES DE CAPTURAR, PREGUNTA: «¿QUÉ PASA DESPUÉS?»",
+ "UNA PIEZA ATACADA NO SIEMPRE TIENE QUE MOVERSE.",
+ "ANTES DE SALVAR UNA PIEZA, BUSCA JAQUES, CAPTURAS Y AMENAZAS.",
+ "EL MATERIAL NO ES MÁS IMPORTANTE QUE EL MATE.",
+ "SI EL RIVAL TE REGALA ALGO, PREGUNTA POR QUÉ.",
+ "CALCULA LA MEJOR DEFENSA DEL RIVAL.",
+ "NO TERMINES EL CÁLCULO EN TU PROPIA JUGADA.",
+ "UNA CAPTURA NO ES EL FINAL DE UNA COMBINACIÓN.",
+ "MIRA SIEMPRE AL REY.",
+ "PREGUNTA QUIÉN DEFIENDE LA CASILLA CRÍTICA.",
+ "LOS PEONES NO SÓLO AVANZAN: TAMBIÉN ABREN Y CIERRAN LÍNEAS Y ABANDONAN CASILLAS.",
+ "NO CONFUNDAS GANAR MATERIAL CON GANAR LA PARTIDA.",
+ "UNA AMENAZA DE MATE PUEDE SER MÁS IMPORTANTE QUE UNA PIEZA."
+];
+const CHECKLIST=[
+ "¿Qué acaba de cambiar?","¿Qué amenaza el rival?","¿Estoy en jaque?","¿Tengo una pieza atacada?",
+ "¿Tengo un jaque?","¿Tengo una captura?","¿Tengo una amenaza?","¿Qué jugadas candidatas tengo?",
+ "¿Cuál es la mejor respuesta del rival?","¿Qué pasa después?","¿Qué puede capturar el rival?",
+ "¿Tiene algún jaque?","¿Estoy dejando una pieza indefensa?","¿Mi rey está seguro?"
+];
+const TRAIN_MODULES=[
+ ["⏱️ 10 MINUTOS — AMENAZAS","Toma posiciones. Antes de mirar la solución: «¿Qué amenaza el rival?»"],
+ ["⏱️ 10 MINUTOS — JUGADAS FORZANTES","Busca jaques, capturas y amenazas. No juegues: sólo identifica candidatos."],
+ ["⏱️ 10 MINUTOS — CÁLCULO","Elige una jugada candidata y calcula: mi jugada → mejor respuesta → mi respuesta → mejor respuesta."],
+ ["⏱️ 10 MINUTOS — DEFENSA","Después de encontrar una combinación, pregunta: «¿Cómo podría defenderse el rival?» Busca la mejor defensa."],
+ ["⏱️ 10 MINUTOS — REVISIÓN","Pregúntate: «¿Qué error cometí?» Clasifícalo: táctica, cálculo, evaluación, automatismo, codicia o seguridad del rey."]
+];
+const TRAIN_STOPS=[
+ ["Tras 1.e4 d5","Detente. Pregunta: «¿Qué jugaría?»"],
+ ["Tras 2.Cf3 dxe4","Detente. Pregunta: «¿Qué cambió?»"],
+ ["Tras 3.Ce5 f6","Detente. Pregunta: «¿Qué debilidad apareció?»"],
+ ["Tras 4.Dh5+ g6","Detente. Pregunta: «¿Salvaría la dama o buscaría otra cosa?»"],
+ ["Tras 5.Ac4","Detente. Pregunta: «¿Qué quiere conseguir el alfil?»"],
+ ["Posición final","Intenta encontrar 6. Af7#."]
+];
+const SEE_POS=[
+ ["👑 REYES","¿Dónde están? ¿Están seguros?"],
+ ["♜ PIEZAS","¿Cuáles están activas? ¿Cuáles están indefensas?"],
+ ["♙ PEONES","¿Qué casillas controlan? ¿Qué casillas han abandonado?"],
+ ["➖ LÍNEAS","¿Qué diagonales están abiertas? ¿Qué columnas están abiertas?"],
+ ["🔲 CASILLAS","¿Cuáles son débiles? ¿Cuáles son críticas?"],
+ ["⚠️ AMENAZAS","¿Qué quiere conseguir cada jugador?"],
+ ["⏳ TIEMPO","¿Quién está obligando al otro a responder?"]
+];
+const MENTOR=[
+ ["pieza atacada","¿Tengo algo más fuerte?"],
+ ["posibilidad de capturar","¿Qué pasa después?"],
+ ["un peón rival movido","¿Qué casillas ha abandonado?"],
+ ["un ataque contra el rey","¿Dónde puede escapar?"],
+ ["una jugada encontrada","¿Cuál es la mejor defensa?"],
+ ["la sensación de haber ganado material","¿Estoy olvidando el mate?"]
+];
+
+/* ============================================================
+   4. RENDER DE SECCIONES
+   ============================================================ */
+function renderTimeline(){
+  const el=document.getElementById("timeline");
+  el.innerHTML=TIMELINE.map((it,i)=>{
+    const cls=it.move?"":"concept";
+    const chip=it.c==="BLANCAS"?'<span class="badge w">BLANCAS</span>':it.c==="NEGRAS"?'<span class="badge b">NEGRAS</span>':'<span class="badge" style="color:var(--purple);border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.08)">CONCEPTO</span>';
+    return `<div class="tl-card ${cls}"><span class="num">${String(i+1).padStart(2,"0")}</span><h4>${it.t} ${chip}</h4>${it.h}</div>`;
+  }).join("");
+}
+function renderCalcula(){
+  document.getElementById("calcula").innerHTML=CALCULA.map(c=>`<div class="card" style="margin:0;text-align:center"><div style="font-size:34px;font-weight:800;color:var(--accent)">${c[0]}</div><div style="font-weight:800;letter-spacing:2px;font-size:13px;color:var(--amber);margin:4px 0">${c[1]}</div><p style="font-size:13.5px;margin:0">${c[2]}</p></div>`).join("");
+}
+function renderPasos(){
+  document.getElementById("pasos").innerHTML=PASOS.map(p=>`<div class="card"><h3><span class="badge">${"PASO "+p.n}</span> ${p.t}</h3>${p.h}</div>`).join("");
+}
+function renderConceptos(){
+  document.getElementById("conceptos-grid").innerHTML=`<div class="grid g2">${CONCEPTOS.map(c=>`<div class="card" style="margin:0"><h3>${c.t}</h3>${c.h}</div>`).join("")}</div>`;
+}
+function renderErrores(){
+  const el=document.getElementById("errores-content");
+  let html=`
+  <div class="grid g2">
+    <div class="card"><h3>🏰 Seguridad del rey</h3><p>La partida es principalmente una lección sobre seguridad del rey. Las negras mueven el peón f, mueven el peón g, dejan zonas sensibles, no desarrollan sus piezas menores y permiten que las blancas coordinen dama, caballo y alfil.</p><blockquote class="big red">EN LA APERTURA, NO PIERDAS DE VISTA LA SEGURIDAD DE TU REY MIENTRAS PERSIGUES MATERIAL.</blockquote></div>
+    <div class="card"><h3>🚀 Desarrollo</h3><p>Desarrollar significa llevar las piezas desde sus casillas iniciales hacia posiciones activas. En la partida, las blancas desarrollan:</p><div class="flow"><span class="node">Caballo g1 → f3 → e5</span><span class="node">Alfil f1 → c4 → f7</span></div><p>Mientras tanto, las negras realizan varios movimientos de peones. Esto crea una diferencia de actividad.</p><blockquote class="big green">LOS PEONES SON IMPORTANTES, PERO NO SUSTITUYEN EL DESARROLLO DE LAS PIEZAS.</blockquote></div>
+    <div class="card"><h3>⏱️ Tiempos</h3><p>En ajedrez, un «tiempo» puede entenderse como una oportunidad de realizar una jugada útil. Si tú mueves una pieza dos veces mientras el rival desarrolla dos piezas diferentes, puedes estar perdiendo tiempos de desarrollo.</p><p>Las negras gastan tiempos en <b>f6</b> y <b>g6</b>; las blancas utilizan sus movimientos para activar caballo, dama y alfil. La iniciativa comienza a crecer.</p></div>
+    <div class="card"><h3>🔥 Iniciativa</h3><p>La iniciativa significa, de manera sencilla:</p><blockquote class="big">SER TÚ QUIEN OBLIGA AL RIVAL A RESPONDER.</blockquote><p>Observa la secuencia: 3...f6 → <b>4. Dh5+</b> (las negras deben responder) → 4...g6 → <b>5. Ac4</b> (las negras vuelven a decidir) → 5...gxh5 → <b>6. Af7#</b>. Las blancas llevan la iniciativa hasta el mate.</p></div>
+    <div class="card"><h3>⚡ El principio de las jugadas forzantes</h3><p>Cuando la posición es táctica, pregunta:</p><ol><li>¿Tengo un jaque?</li><li>¿Tengo una captura?</li><li>¿Tengo una amenaza?</li></ol><p>No significa «siempre debo dar jaque»: significa que estas posibilidades merecen ser examinadas primero.</p></div>
+    <div class="card"><h3>🚫 «No des jaques por dar jaques»</h3><p>Un error típico del principiante es: «¡Tengo un jaque!» y automáticamente lo juega. Pero un jaque puede ser malo: después de encontrar un jaque debes calcular «¿qué pasa después?».</p><p>En esta partida, 4. Dh5+ es bueno porque forma parte de una combinación concreta. La lección no es «dale jaque al rey»:</p><blockquote class="big green">BUSCA JAQUES Y CALCÚLALOS.</blockquote></div>
+  </div>
+  <h3 style="margin:26px 0 6px;font-size:19px">❌ Errores de las negras</h3>
+  <p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">Cinco errores concretos, cada uno con su lección.</p>
+  <div class="grid g2">${ERRORES_A.map(e=>`<div class="card" style="margin:0;border-color:rgba(239,68,68,.35)"><h3><span class="badge r">${e.n}</span> ${e.t}</h3>${e.h}</div>`).join("")}</div>
+  <div class="card" style="margin-top:16px"><h3>🤖 Errores de automatismo</h3><p>El automatismo aparece cuando hacemos algo porque «es lo normal». Ejemplo: «Me atacan el caballo → retiro el caballo.» Pero el ajedrez exige comprobar si existe una excepción.</p><div class="vs"><div class="p"><span class="lbl">AUTOMATISMO</span>«Me atacan la dama → retiro la dama.»</div><div class="f"><span class="lbl">PENSAMIENTO FUERTE</span>NO. Las blancas encuentran una amenaza más fuerte: 5. Ac4.</div></div></div>
+  <div class="card"><h3>🆚 Pensamiento del principiante vs. pensamiento fuerte</h3>
+    <div class="vs"><div class="p"><span class="lbl">SITUACIÓN: ME ATACAN UNA PIEZA</span>«Debo retirarla.»</div><div class="f"><span class="lbl">JUGADOR FUERTE</span>«¿Qué otras opciones tengo?»</div></div>
+    <div class="vs"><div class="p"><span class="lbl">SITUACIÓN: PUEDO GANAR LA DAMA</span>«¡La capturo!»</div><div class="f"><span class="lbl">JUGADOR FUERTE</span>«¿Qué ocurre después?»</div></div>
+    <div class="vs"><div class="p"><span class="lbl">SITUACIÓN: MI RIVAL MUEVE UN PEÓN</span>«Sólo ha movido un peón.»</div><div class="f"><span class="lbl">JUGADOR FUERTE</span>«¿Qué casillas ha abandonado? ¿Qué líneas ha abierto? ¿Qué defensas ha perdido?»</div></div>
+    <div class="vs"><div class="p"><span class="lbl">SITUACIÓN: TENGO UN JAQUE</span>«¡Jaque!»</div><div class="f"><span class="lbl">JUGADOR FUERTE</span>«¿Qué consigo después del jaque?»</div></div>
+    <div class="vs"><div class="p"><span class="lbl">SITUACIÓN: ESTOY GANANDO MATERIAL</span>«Voy ganando.»</div><div class="f"><span class="lbl">JUGADOR FUERTE</span>«¿Qué amenazas existen contra mi rey?»</div></div>
+  </div>`;
+  el.innerHTML=html;
+}
+function renderPreguntas(){
+  const g=document.getElementById("qGrid");
+  g.innerHTML=PREGUNTAS_AV.map(q=>`<div class="q-chip" role="button" tabindex="0"><span class="let">${q[0]}</span><span>${q[1]}</span></div>`).join("");
+  const cnt=document.getElementById("qCount");
+  g.querySelectorAll(".q-chip").forEach(ch=>{
+    const tog=()=>{ch.classList.toggle("on");cnt.textContent=g.querySelectorAll(".q-chip.on").length+" / 22";};
+    ch.addEventListener("click",tog);
+    ch.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tog();}});
+  });
+  document.getElementById("shortList").innerHTML=SHORT_LIST.map(q=>`<li><b>${q}</b></li>`).join("");
+}
+function renderEjercicios(){
+  document.getElementById("ejercicios-list").innerHTML=EJERCICIOS.map((e,i)=>`
+  <div class="acc" id="acc${i}">
+    <button class="acc-btn" aria-expanded="false"><span>🧩 ${e.t}</span><span class="chev">▼</span></button>
+    <div class="acc-body"><div class="acc-inner">${e.h}
+      <p style="margin-top:10px"><button class="btn" data-goto="${e.pos}">📌 Colocar el tablero de entrenamiento en esta posición</button></p>
+    </div></div>
+  </div>`).join("");
+  document.querySelectorAll("#ejercicios-list .acc-btn").forEach(b=>{
+    b.addEventListener("click",()=>{
+      const acc=b.parentElement, open=acc.classList.toggle("open");
+      b.setAttribute("aria-expanded",open?"true":"false");
+    });
+  });
+  document.querySelectorAll("#ejercicios-list [data-goto]").forEach(b=>{
+    b.addEventListener("click",()=>{
+      boards.b2.goTo(parseInt(b.dataset.goto,10));
+      document.getElementById("board2").scrollIntoView({behavior:REDUCED?"auto":"smooth",block:"center"});
+    });
+  });
+}
+function renderNotation(){
+  document.getElementById("notationGrid").innerHTML=NOTATIONS.map(n=>`<div class="n-card"><div class="sym">${n[0]}</div><div class="desc">${n[1]}</div></div>`).join("");
+  document.getElementById("symbolTable").innerHTML=`<tr><th>Símbolo</th><th>Significado</th></tr>`+SYMBOLS.map(s=>`<tr><td><b style="color:var(--accent);font-family:Consolas,monospace">${s[0]}</b></td><td>${s[1]}</td></tr>`).join("");
+}
+function renderTraining(){
+  const el=document.getElementById("train-content");
+  el.innerHTML=`
+  <div class="card"><h3>🧬 Lo que realmente debes aprender de esta partida</h3>
+    <p>NO memorices simplemente 1.e4 d5 2.Cf3 dxe4 3.Ce5 f6 4.Dh5+. Lo verdaderamente importante es reconocer el <b>patrón mental</b>:</p>
+    <div class="flow"><span class="node">EL RIVAL MUEVE UN PEÓN</span><span class="arr">↓</span><span class="node">CAMBIA LA ESTRUCTURA</span><span class="arr">↓</span><span class="node">SE CREA UNA DEBILIDAD</span><span class="arr">↓</span><span class="node">APARECE UNA JUGADA FORZANTE</span><span class="arr">↓</span><span class="node">EL RIVAL RESPONDE</span><span class="arr">↓</span><span class="node">APARECE OTRA DEBILIDAD</span><span class="arr">↓</span><span class="node">UNA PIEZA ENTRA EN ATAQUE</span><span class="arr">↓</span><span class="node">EL RIVAL SE DEJA LLEVAR POR EL MATERIAL</span><span class="arr">↓</span><span class="node hot">APARECE EL MATE</span></div>
+  </div>
+  <div class="card"><h3>🌐 El patrón general</h3>
+    <p>El patrón puede aparecer en otras posiciones completamente diferentes. No tiene que ser exactamente f7; no tiene que aparecer Dh5+ ni Ac4. Lo importante es reconocer:</p>
+    <ol><li>una debilidad alrededor del rey;</li><li>una pieza atacante;</li><li>piezas coordinadas;</li><li>una casilla de entrada;</li><li>amenazas forzantes;</li><li>un defensor;</li><li>casillas de escape limitadas.</li></ol>
+  </div>
+  <div class="card"><h3>❔ El método de las tres preguntas</h3>
+    <p>Cuando veas una posición complicada, empieza por:</p>
+    <div class="grid g3" style="margin:0">
+      <div class="n-card"><div class="sym">¿QUÉ AMENAZA?</div><div class="desc">¿Qué quiere el rival?</div></div>
+      <div class="n-card"><div class="sym">¿QUÉ TENGO?</div><div class="desc">¿Qué recursos tengo?</div></div>
+      <div class="n-card"><div class="sym">¿QUÉ PASA?</div><div class="desc">¿Qué sucede después de mi jugada?</div></div>
+    </div>
+    <p style="margin-top:10px">Estas tres preguntas son sencillas pero extraordinariamente poderosas.</p>
+  </div>
+  <div class="card"><h3>📅 Entrenamiento diario</h3><p>Puedes entrenar el pensamiento ajedrecístico con sesiones cortas:</p>
+    <div class="grid g2" style="margin:0">${TRAIN_MODULES.map(m=>`<div class="n-card"><div class="sym" style="font-size:15px">${m[0]}</div><div class="desc">${m[1]}</div></div>`).join("")}</div>
+  </div>
+  <div class="card"><h3>♟️ Entrenamiento con esta partida</h3>
+    <p>Puedes repetir esta partida sin mirar la solución:</p>
+    <ul>${TRAIN_STOPS.map(s=>`<li><b>${s[0]}:</b> ${s[1]}</li>`).join("")}</ul>
+    <div class="callout co-ok"><span class="ico">✅</span><div><span class="co-tag">EJEMPLO</span>Esto convierte una partida de seis jugadas en un ejercicio completo de pensamiento.</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>🧘 Visualización</h3>
+      <p>Un ejercicio excelente es cerrar los ojos después de cada jugada e intentar recordar: dónde está el rey, dónde está la dama, dónde están los caballos, dónde están los alfiles y dónde están los peones importantes.</p>
+      <p>En esta partida debes visualizar especialmente:</p>
+      <div class="chips"><span class="chip acc">Caballo e5</span><span class="chip acc">Dama h5</span><span class="chip acc">Alfil c4</span><span class="chip red">Alfil f7</span><span class="chip">Rey e8</span></div>
+      <p>Esto desarrolla la capacidad de calcular sin mover físicamente las piezas.</p>
+    </div>
+    <div class="card"><h3>🔄 Reconstrucción inversa</h3>
+      <p>Empieza desde <b>6. Af7#</b> y reconstruye hacia atrás:</p>
+      <div class="flow"><span class="node hot">Alfil en f7</span><span class="arr">←</span><span class="node">estaba en c4</span><span class="arr">←</span><span class="node">antes en f1</span></div>
+      <div class="flow"><span class="node hot">Caballo en e5</span><span class="arr">←</span><span class="node">estaba en f3</span><span class="arr">←</span><span class="node">antes en g1</span></div>
+      <p>Este ejercicio fortalece la visualización.</p>
+    </div>
+  </div>
+  <div class="card"><h3>🚨 El gran error que debes evitar</h3>
+    <p>Nunca juegues una jugada simplemente porque «parece buena». Antes pregunta:</p>
+    <blockquote class="big red">«¿CUÁL ES LA RESPUESTA MÁS FUERTE DEL RIVAL?»</blockquote>
+    <p>Esta pregunta debe convertirse en un reflejo.</p>
+  </div>
+  <div class="card"><h3>🧠 Tu nuevo proceso mental</h3>
+    <p>Cuando el rival mueva:</p>
+    <ol>
+      <li><b>PARO.</b> No respondo automáticamente.</li>
+      <li><b>MIRO.</b> ¿Qué cambió?</li>
+      <li><b>DETECTO.</b> ¿Qué amenaza?</li>
+      <li><b>BUSCO.</b> ¿Hay jaques, capturas o amenazas?</li>
+      <li><b>PROPONGO.</b> ¿Qué jugadas candidatas tengo?</li>
+      <li><b>CALCULO.</b> ¿Qué hará el rival?</li>
+      <li><b>COMPRUEBO.</b> ¿Existe una defensa mejor?</li>
+      <li><b>EVALÚO.</b> ¿Qué posición queda?</li>
+      <li><b>REVISO.</b> ¿Dejo algo sin defender?</li>
+      <li><b>JUEGO.</b></li>
+    </ol>
+  </div>
+  <div class="card"><h3>☑️ Checklist ultrarrápido antes de mover</h3>
+    <p style="color:var(--muted);font-size:13px">Marca cada comprobación: <b id="chkCount" style="color:var(--green)">0 / ${CHECKLIST.length}</b></p>
+    <div class="progress-mini"><div class="fill" id="chkFill"></div></div>
+    <div id="chkList">${CHECKLIST.map(c=>`<label class="chk-item"><input type="checkbox"><span>${c}</span></label>`).join("")}</div>
+    <div class="callout co-info"><span class="ico">ℹ️</span><div><span class="co-tag">INFO</span>Si haces esto de forma sistemática, tu forma de jugar comenzará a cambiar.</div></div>
+  </div>`;
+  const items=el.querySelectorAll("#chkList .chk-item");
+  const cnt=el.querySelector("#chkCount"), fill=el.querySelector("#chkFill");
+  items.forEach(it=>{
+    it.querySelector("input").addEventListener("change",e=>{
+      it.classList.toggle("done",e.target.checked);
+      const n=el.querySelectorAll("#chkList input:checked").length;
+      cnt.textContent=n+" / "+CHECKLIST.length;
+      fill.style.width=(n/CHECKLIST.length*100)+"%";
+    });
+  });
+}
+function renderReglas(){
+  const el=document.getElementById("reglas-content");
+  el.innerHTML=`
+  <div class="card"><h3>🧠 Reglas mentales para memorizar</h3>
+    <div class="grid g2" style="margin:0">${REGLAS.map((r,i)=>`<div class="rule-card"><div class="rn">${i+1}</div><div class="rt">${r}</div></div>`).join("")}</div>
+  </div>
+  <div class="card"><h3>🏁 Resumen maestro</h3>
+    <p>La partida 1.e4 d5 2.Cf3 dxe4 3.Ce5 f6 4.Dh5+ g6 5.Ac4 gxh5 6.Af7# puede enseñarnos una cantidad enorme de ajedrez.</p>
+    <p>La idea central no es memorizar una trampa. <b>La idea central es aprender a mirar.</b></p>
+    <div class="vs"><div class="p"><span class="lbl">LAS NEGRAS MIRARON</span>«Caballo.» Después: «Dama.»</div><div class="f"><span class="lbl">LAS BLANCAS MIRARON</span>«Rey.»</div></div>
+    <p>Esa diferencia resume toda la partida.</p>
+  </div>
+  <div class="card"><h3>👁️ Lo que debes ver en una posición</h3>
+    <p>Cuando mires un tablero, no veas solamente piezas. Ve:</p>
+    <div class="grid g3" style="margin:0">${SEE_POS.map(s=>`<div class="n-card"><div class="sym" style="font-size:16px">${s[0]}</div><div class="desc">${s[1]}</div></div>`).join("")}</div>
+  </div>
+  <div class="card"><h3>💬 El pensamiento ajedrecístico en una sola frase</h3>
+    <p>Si tuvieras que recordar una sola idea de todo este tutorial, recuerda esta:</p>
+    <blockquote class="big">NO JUEGUES LA JUGADA QUE PRIMERO TE VIENE A LA CABEZA. PRIMERO DESCUBRE QUÉ CAMBIÓ, QUÉ AMENAZA EL RIVAL, QUÉ RECURSOS TIENES Y QUÉ RESPONDERÁ EL RIVAL.</blockquote>
+  </div>
+  <div class="card"><h3>🏋️ La partida como entrenador mental</h3>
+    <p>Esta pequeña partida puede convertirse en un entrenamiento permanente. Cada vez que veas...</p>
+    <ul>${MENTOR.map(m=>`<li>...una <b>${m[0]}</b>: <em>«${m[1]}»</em></li>`).join("")}</ul>
+  </div>
+  <div class="card"><h3>🎓 La lección final</h3>
+    <p>El ajedrez no consiste simplemente en mover una pieza de una casilla a otra. Consiste en:</p>
+    <div class="flow"><span class="node">OBSERVAR</span><span class="arr">·</span><span class="node">COMPARAR</span><span class="arr">·</span><span class="node">PREGUNTAR</span><span class="arr">·</span><span class="node">CALCULAR</span><span class="arr">·</span><span class="node">EVALUAR</span><span class="arr">·</span><span class="node win">DECIDIR</span></div>
+    <p>Y volver a empezar después de cada jugada.</p>
+    <p>La partida demuestra perfectamente por qué: las negras vieron un caballo y después vieron una dama, pero no vieron el ataque contra su rey. Las blancas, en cambio, no se limitaron a reaccionar ante las piezas atacadas: buscaron una amenaza mayor y encontraron el mate.</p>
+    <blockquote class="big purple">EL OBJETIVO NO ES APRENDER A VER UNA JUGADA. EL OBJETIVO ES APRENDER A VER POR QUÉ UNA JUGADA EXISTE.</blockquote>
+  </div>`;
+}
+function renderMiniBoard(){
+  const wrap=document.getElementById("miniBoard");
+  wrap.innerHTML=`<div class="board-frame"><div class="coords-ranks">${[8,7,6,5,4,3,2,1].map(r=>`<div>${r}</div>`).join("")}</div><div class="board-grid"></div><div></div><div class="coords-files">${FILES.map(f=>`<div>${f}</div>`).join("")}</div></div>`;
+  const grid=wrap.querySelector(".board-grid");
+  buildGrid(grid);
+  renderBoard(grid,initPos(),null,null,null);
+  ["e4","h5","f7","e8"].forEach(s=>{const el=grid.querySelector(`[data-sq="${s}"]`);if(el)el.classList.add("hl");});
+}
+
+/* ============================================================
+   5. SPA, NAVBAR, PROGRESO, VOLVER ARRIBA
+   ============================================================ */
+const TABS=[
+ ["home","🏠 INICIO"],["pensamiento","🧠 PENSAMIENTO"],["partida","♟️ PARTIDA"],["metodo","🧮 MÉTODO"],
+ ["conceptos","💡 CONCEPTOS"],["errores","⚠️ ERRORES"],["preguntas","❓ PREGUNTAS"],["ejercicios","🏋️ EJERCICIOS"],
+ ["notacion","🔤 NOTACIÓN"],["entrenamiento","📈 ENTRENAMIENTO"],["reglas","📏 REGLAS"],["maestro","🏆 MAESTRO"],["creditos","🏅 CRÉDITOS"]
+];
+const boards={};
+function buildNav(){
+  const nav=document.getElementById("navScroll");
+  nav.innerHTML=TABS.map(t=>`<button class="nav-btn" data-target="${t[0]}">${t[1]}</button>`).join("");
+  nav.querySelectorAll(".nav-btn").forEach(b=>{
+    b.addEventListener("click",()=>activate(b.dataset.target));
+  });
+}
+function activate(id){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b=>{
+    const on=b.dataset.target===id;
+    b.classList.toggle("active",on);
+    if(on)b.scrollIntoView({behavior:REDUCED?"auto":"smooth",inline:"center",block:"nearest"});
+  });
+  if(id==="home")mountSvg("heroMount");
+  if(id==="creditos")mountSvg("creditsMount");
+  window.scrollTo({top:0,behavior:"auto"});
+  updateProgress();
+}
+function updateProgress(){
+  const h=document.documentElement;
+  const max=h.scrollHeight-h.clientHeight;
+  const pct=max>0?(h.scrollTop/max)*100:0;
+  document.getElementById("progressBar").style.width=pct+"%";
+}
+function init(){
+  buildNav();
+  mountSvg("heroMount");
+  renderTimeline();
+  renderCalcula();
+  renderPasos();
+  renderConceptos();
+  renderErrores();
+  renderPreguntas();
+  renderEjercicios();
+  renderNotation();
+  renderTraining();
+  renderReglas();
+  renderMiniBoard();
+  /* Tablero principal: la partida completa */
+  boards.b1=createBoard({mountId:"board1",steps:LINE_STEPS});
+  /* Tablero de entrenamiento independiente, con saltos por ejercicio */
+  boards.b2=createBoard({mountId:"board2",steps:LINE_STEPS,jumps:[
+    {label:"Ej.1 · tras 3.Ce5",step:5},
+    {label:"Ej.2 · tras 4...g6",step:8},
+    {label:"Ej.3 · tras 5...gxh5",step:10},
+    {label:"Ej.4/5 · mate final",step:11},
+    {label:"Ej.6 · tras 4.Dh5+",step:7},
+    {label:"Ej.7 · tras 5.Ac4",step:9}
+  ]});
+  const bt=document.getElementById("backTop");
+  window.addEventListener("scroll",()=>{
+    updateProgress();
+    bt.classList.toggle("show",window.scrollY>400);
+  },{passive:true});
+  bt.addEventListener("click",()=>window.scrollTo({top:0,behavior:REDUCED?"auto":"smooth"}));
+  updateProgress();
+}
+document.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>
