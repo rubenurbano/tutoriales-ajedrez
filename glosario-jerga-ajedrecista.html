@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glosario Completo de Jerga Ajedrecista — Tutorial Interactivo</title>
+<style>
+:root{
+ --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f; --accent:#00d4ff;
+ --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+ --text:#dbe4f5; --muted:#8fa3c8; --dark2:#0b1222;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.55}
+/* ---------- progress ---------- */
+#progressBar{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--accent),var(--purple));z-index:300;transition:width .1s linear}
+/* ---------- navbar ---------- */
+#navbar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,14,26,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:8px 12px}
+.nav-brand{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--accent);white-space:nowrap;font-size:.95rem}
+.nav-brand .nb-glyph{font-size:1.5rem;line-height:1}
+#navScroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;flex:1;padding:2px}
+#navScroll::-webkit-scrollbar{height:6px}
+#navScroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px}
+.nav-btn{background:transparent;border:1px solid transparent;color:var(--muted);padding:7px 13px;border-radius:8px;cursor:pointer;white-space:nowrap;font-size:.85rem;font-weight:600;font-family:inherit;transition:.2s}
+.nav-btn:hover{color:var(--accent);border-color:var(--border)}
+.nav-btn.active{color:var(--accent);background:rgba(0,212,255,.12);border-color:rgba(0,212,255,.45)}
+.nav-btn.credits{color:var(--purple);border-color:rgba(168,85,247,.5)}
+.nav-btn.credits.active{background:rgba(168,85,247,.15);color:#d8b4fe}
+/* ---------- layout ---------- */
+main{max-width:1200px;margin:0 auto;padding:84px 18px 40px}
+.view{display:none}
+.view.active{display:block;animation:fadeUp .35s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap}
+.sec-ico{width:52px;height:52px;min-width:52px;border-radius:12px;background:rgba(0,212,255,.1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+.sec-head h2{font-size:1.7rem;color:#f8fafc}
+.sec-head p{color:var(--muted);font-size:.95rem}
+.sec-head .rule{height:3px;width:120px;background:linear-gradient(90deg,var(--accent),transparent);border-radius:2px;margin-top:8px}
+h3.blk{color:var(--accent);font-size:1.15rem;margin:26px 0 12px;display:flex;align-items:center;gap:8px}
+h3.blk::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+/* ---------- cards & grids ---------- */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.term-card h3.term-title{color:var(--accent);font-size:1.05rem;margin-bottom:8px}
+.term-card p{font-size:.93rem;color:#c6d4ec;margin-bottom:6px}
+.term-card .quote-in{color:#fbbf24;font-style:italic}
+.ex{border-left:3px solid var(--green);background:rgba(34,197,94,.07);padding:9px 12px;border-radius:8px;margin-top:10px;font-size:.9rem}
+.ex-label{display:block;font-size:.72rem;font-weight:800;letter-spacing:1px;color:var(--green);text-transform:uppercase;margin-bottom:4px}
+.ex-line{color:#bbf7d0;margin-top:3px}
+.chip{display:inline-block;padding:3px 11px;border-radius:999px;border:1px solid var(--border);font-size:.76rem;font-weight:700;color:var(--muted);margin:2px 3px 2px 0}
+.chip.c-acc{color:var(--accent);border-color:rgba(0,212,255,.5);background:rgba(0,212,255,.08)}
+.chip.c-grn{color:#86efac;border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.08)}
+.chip.c-amb{color:#fcd34d;border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.08)}
+.chip.c-red{color:#fca5a5;border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.08)}
+.chip.c-pur{color:#d8b4fe;border-color:rgba(168,85,247,.5);background:rgba(168,85,247,.08)}
+/* ---------- callouts ---------- */
+.callout{border-radius:10px;padding:13px 16px;margin:14px 0;border-left:4px solid;font-size:.94rem}
+.callout .co-tag{display:block;font-size:.72rem;font-weight:800;letter-spacing:1.5px;margin-bottom:5px;text-transform:uppercase}
+.c-info{border-color:var(--accent);background:rgba(0,212,255,.07)}.c-info .co-tag{color:var(--accent)}
+.c-example{border-color:var(--green);background:rgba(34,197,94,.07)}.c-example .co-tag{color:var(--green)}
+.c-warn{border-color:var(--amber);background:rgba(245,158,11,.08)}.c-warn .co-tag{color:var(--amber)}
+.c-error{border-color:var(--red);background:rgba(239,68,68,.08)}.c-error .co-tag{color:var(--red)}
+/* ---------- misc ---------- */
+.quote{border-left:4px solid var(--accent);background:linear-gradient(90deg,rgba(0,212,255,.09),transparent);padding:16px 20px;border-radius:0 12px 12px 0;font-size:1.12rem;font-style:italic;color:#e2e8f0;margin:16px 0}
+table.tbl{width:100%;border-collapse:collapse;font-size:.93rem}
+.tbl th{color:var(--accent);text-align:left;padding:9px 10px;border-bottom:2px solid var(--border);font-size:.85rem;letter-spacing:.5px;text-transform:uppercase}
+.tbl td{padding:9px 10px;border-bottom:1px solid rgba(30,58,95,.55)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .big{font-size:1.15rem}
+kbd,.not{font-family:ui-monospace,Consolas,'Courier New',monospace;background:#0b1222;border:1px solid var(--border);border-radius:6px;padding:2px 8px;color:#7dd3fc;font-size:.88rem;white-space:nowrap}
+.metric{text-align:center;padding:16px 10px}
+.metric b{display:block;font-size:1.9rem;color:var(--accent);line-height:1.15}
+.metric span{color:var(--muted);font-size:.82rem;font-weight:600;text-transform:letter-spacing:.5px;text-transform:uppercase;letter-spacing:.6px}
+.flow{display:flex;flex-direction:column;gap:0;align-items:center;margin:14px 0}
+.flow-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 22px;font-weight:700;color:#e2e8f0;text-align:center;min-width:min(320px,86%)}
+.flow-item.acc{border-color:var(--accent);color:var(--accent);box-shadow:0 0 18px rgba(0,212,255,.15)}
+.flow-arrow{color:var(--accent);font-size:1.3rem;line-height:1;padding:4px 0}
+/* ---------- accordions ---------- */
+details.acc{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+details.acc summary{cursor:pointer;padding:14px 16px;font-weight:700;color:#e2e8f0;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"▾";color:var(--accent);transition:.2s}
+details.acc[open] summary::after{transform:rotate(180deg)}
+details.acc .acc-body{padding:0 16px 16px}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vs .side{border:1px solid var(--border);border-radius:10px;padding:12px}
+.vs .side h4{font-size:.95rem;margin-bottom:6px}
+.vs .side.a h4{color:var(--accent)}.vs .side.b h4{color:var(--amber)}
+.neq{color:var(--red);font-weight:900}
+/* ---------- HOME ---------- */
+.cover-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);margin-bottom:24px;background:#05080f}
+.cover-wrap svg{display:block;width:100%;height:auto}
+.home-badge{display:inline-block;border:1px solid rgba(0,212,255,.5);color:var(--accent);background:rgba(0,212,255,.08);border-radius:999px;padding:5px 16px;font-size:.8rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+h1.home-title{font-size:clamp(1.8rem,4.5vw,3.1rem);color:#f8fafc;line-height:1.15;margin-bottom:10px}
+h1.home-title em{color:var(--accent);font-style:normal}
+.home-sub{color:var(--accent);font-weight:700;font-size:1.05rem;margin-bottom:14px}
+.home-desc{color:#c6d4ec;max-width:900px;font-size:1rem}
+/* ---------- chess boards ---------- */
+.board-card{margin:18px 0;padding:20px}
+.board-card h3{color:#f8fafc;font-size:1.15rem;margin-bottom:4px}
+.board-card .bc-sub{color:var(--muted);font-size:.88rem;margin-bottom:14px}
+.board-frame{max-width:480px;margin:0 auto;background:#0b1222;border:1px solid var(--border);border-radius:12px;padding:12px}
+.board-area{display:grid;grid-template-columns:20px 1fr;gap:5px}
+.rank-coords{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;justify-items:center;color:#3f639b;font-size:.72rem;font-weight:700}
+.board-grid{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;border:2px solid var(--border);border-radius:6px;overflow:hidden}
+.sq{display:flex;align-items:center;justify-content:center;position:relative;font-size:clamp(18px,4.8vw,30px);line-height:1;user-select:none}
+.sq.l{background:#d9e2f0}.sq.d{background:#7d96c0}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--accent),inset 0 0 16px rgba(0,212,255,.6)}
+.pc-w{color:#f8fafc;text-shadow:0 1px 2px rgba(0,0,0,.75)}
+.pc-b{color:#111c33;text-shadow:0 1px 1px rgba(255,255,255,.25)}
+.file-coords{display:grid;grid-template-columns:repeat(8,1fr);margin-left:25px;margin-top:5px;text-align:center;color:#3f639b;font-size:.72rem;font-weight:700}
+.stepper{max-width:480px;margin:14px auto 0;display:flex;flex-direction:column;gap:10px}
+.stp-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:700;font-size:.88rem;font-family:inherit;transition:.2s}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.primary{background:rgba(0,212,255,.14);border-color:var(--accent);color:var(--accent)}
+.stepper input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+.stp-ind{text-align:center;color:var(--muted);font-size:.85rem;font-weight:700}
+.stp-ind b{color:var(--accent)}
+.move-panel{max-width:480px;margin:12px auto 0;border:1px dashed var(--border);border-radius:10px;background:#0b1222;padding:14px}
+.mp-tag{display:inline-block;padding:4px 12px;border-radius:999px;font-size:.76rem;font-weight:800;letter-spacing:1px;margin-bottom:9px}
+.mp-tag.w{background:#e2e8f0;color:#0f172a}
+.mp-tag.b{background:#1e293b;color:#e2e8f0;border:1px solid #475569}
+.mp-tag.init{background:rgba(0,212,255,.15);color:var(--accent);border:1px solid rgba(0,212,255,.4)}
+.mp-piece{font-weight:800;font-size:1.02rem;color:#f8fafc}
+.mp-badges{margin:7px 0}
+.mp-badges .chip{font-size:.7rem}
+.mp-lbl{display:block;color:var(--amber);font-weight:800;font-size:.74rem;text-transform:uppercase;letter-spacing:1px;margin-top:9px}
+.mp-txt{font-size:.9rem;color:#c6d4ec}
+.mp-not{margin-top:10px}
+/* ---------- mini zone boards ---------- */
+.zone-card{text-align:center}
+.mini-board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;max-width:170px;margin:0 auto 10px;border:2px solid var(--border);border-radius:8px;overflow:hidden}
+.msq.l{background:#d9e2f0}.msq.d{background:#7d96c0}
+.msq.hi-grn{background:var(--green)!important}
+.msq.hi-acc{background:var(--accent)!important}
+.msq.hi-pur{background:var(--purple)!important}
+.msq.hi-amb{background:var(--amber)!important}
+.zone-card p{font-size:.82rem;color:var(--muted)}
+.zone-card h4{color:#e2e8f0;font-size:.95rem;margin-bottom:8px}
+/* ---------- filtro supervivencia ---------- */
+.filter-box{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-box input{flex:1;min-width:220px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-family:inherit;font-size:.95rem;outline:none}
+.filter-box input:focus{border-color:var(--accent)}
+.sup-num{display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(0,212,255,.14);border:1px solid var(--accent);color:var(--accent);align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-bottom:8px}
+/* ---------- créditos ---------- */
+.credit-card{text-align:center;padding:28px 20px}
+.credit-card h3{color:#f8fafc;font-size:1.4rem;margin:16px 0 6px}
+.credit-name{color:var(--accent);font-size:1.15rem;font-weight:800;margin-bottom:12px}
+.fiat{font-style:italic;color:#d8b4fe;margin-top:14px;font-size:1.02rem}
+/* ---------- footer / toTop ---------- */
+footer{border-top:1px solid var(--border);margin-top:30px;padding:26px 18px;text-align:center;color:var(--muted);font-size:.88rem;background:#080c16}
+footer .f-line{margin:4px 0}
+footer .fiat{color:#d8b4fe}
+#toTop{position:fixed;right:18px;bottom:18px;width:48px;height:48px;border-radius:50%;background:rgba(0,212,255,.15);border:1px solid var(--accent);color:var(--accent);font-size:1.3rem;cursor:pointer;opacity:0;pointer-events:none;transition:.25s;z-index:250}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{background:rgba(0,212,255,.3)}
+/* ---------- responsive ---------- */
+@media(max-width:980px){.g3{grid-template-columns:repeat(2,1fr)}.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){
+ .g2,.g3,.g4{grid-template-columns:1fr}
+ .vs{grid-template-columns:1fr}
+ main{padding-top:76px}
+ .sec-head h2{font-size:1.35rem}
+ .nav-brand span.nb-txt{display:none}
+ .metric b{font-size:1.45rem}
+}
+@media(prefers-reduced-motion:reduce){
+ *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div id="progressBar"></div>
+
+<header id="navbar">
+ <div class="nav-brand"><span class="nb-glyph">♞</span><span class="nb-txt">Glosario Ajedrez</span></div>
+ <nav id="navScroll">
+  <button class="nav-btn" data-view="home">🏠 INICIO</button>
+  <button class="nav-btn" data-view="intro">Introducción</button>
+  <button class="nav-btn" data-view="tablero">El Tablero</button>
+  <button class="nav-btn" data-view="piezas">Las Piezas</button>
+  <button class="nav-btn" data-view="movimientos">Movimientos</button>
+  <button class="nav-btn" data-view="especiales">Jugadas Especiales</button>
+  <button class="nav-btn" data-view="apertura">La Apertura</button>
+  <button class="nav-btn" data-view="mediojuego">Medio Juego</button>
+  <button class="nav-btn" data-view="final">El Final</button>
+  <button class="nav-btn" data-view="tactica">Táctica</button>
+  <button class="nav-btn" data-view="material">Material</button>
+  <button class="nav-btn" data-view="peones">Peones</button>
+  <button class="nav-btn" data-view="casillas">Casillas</button>
+  <button class="nav-btn" data-view="activas">Piezas Activas</button>
+  <button class="nav-btn" data-view="defensa">Defensa</button>
+  <button class="nav-btn" data-view="rey">Rey y Seguridad</button>
+  <button class="nav-btn" data-view="mates">Jaques y Mates</button>
+  <button class="nav-btn" data-view="estrategia">Estrategia</button>
+  <button class="nav-btn" data-view="columnas">Columnas</button>
+  <button class="nav-btn" data-view="intercambios">Intercambios</button>
+  <button class="nav-btn" data-view="sacrificios">Sacrificios</button>
+  <button class="nav-btn" data-view="errores">Errores</button>
+  <button class="nav-btn" data-view="calculo">Cálculo</button>
+  <button class="nav-btn" data-view="aperturas">Aperturas Famosas ♟</button>
+  <button class="nav-btn" data-view="notacion">Notación</button>
+  <button class="nav-btn" data-view="evaluacion">Evaluación y Tablas</button>
+  <button class="nav-btn" data-view="reloj">El Reloj</button>
+  <button class="nav-btn" data-view="psicologia">Psicología</button>
+  <button class="nav-btn" data-view="motores">Motores y Elo</button>
+  <button class="nav-btn" data-view="jerga">Jerga de Club</button>
+  <button class="nav-btn" data-view="confusiones">No Confundir</button>
+  <button class="nav-btn" data-view="clave">Conceptos Clave</button>
+  <button class="nav-btn" data-view="supervivencia">Supervivencia</button>
+  <button class="nav-btn" data-view="metodo">Cómo Pensar</button>
+  <button class="nav-btn credits" data-view="creditos">★ CRÉDITOS</button>
+ </nav>
+</header>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section class="view" id="view-home">
+ <div class="cover-wrap" id="cover-home"></div>
+ <div style="text-align:center">
+  <span class="home-badge">♟ Manual Técnico Interactivo · Edición 2026</span>
+  <h1 class="home-title">GLOSARIO COMPLETO DE <em>JERGA AJEDRECISTA</em></h1>
+  <p class="home-sub">Diccionario práctico para aprender a hablar, entender y pensar en ajedrez</p>
+  <p class="home-desc" style="margin:0 auto 18px">El ajedrez tiene una especie de idioma propio. Este glosario no busca que memorices cientos de palabras: busca que aprendas a <b>reconocer situaciones del tablero</b>. Cada capítulo transforma la jerga en conceptos visuales, ejemplos y tableros interactivos paso a paso.</p>
+ </div>
+ <div class="quote">«Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.»</div>
+ <div class="quote" style="border-color:var(--amber)">Regla del glosario: «Primero entiende la situación. Después aprende cómo se llama.»</div>
+ <div class="grid g4" style="margin-top:18px">
+  <div class="card metric"><b>64</b><span>Casillas</span></div>
+  <div class="card metric"><b>6</b><span>Tipos de pieza</span></div>
+  <div class="card metric"><b>150+</b><span>Términos explicados</span></div>
+  <div class="card metric"><b>14</b><span>Tableros interactivos</span></div>
+ </div>
+ <div style="text-align:center;margin-top:16px">
+  <span class="chip c-acc">📅 Fecha: 06/09/2026</span>
+  <span class="chip c-pur">🕙 Hora: 10:24:08</span>
+  <span class="chip c-grn">🎓 Tutorial educativo</span>
+ </div>
+</section>
+
+<!-- ================= INTRODUCCIÓN ================= -->
+<section class="view" id="view-intro">
+ <div class="sec-head"><div class="sec-ico">📖</div><div><h2>1 · Introducción</h2><p>El idioma propio del ajedrez</p><div class="rule"></div></div></div>
+ <div class="card" style="margin-bottom:14px">
+  <p>El ajedrez tiene una especie de <b>idioma propio</b>. Cuando un jugador dice:</p>
+  <div class="quote">«He hecho una clavada, pero tengo que aprovechar la pieza sobrecargada porque si no me hacen una descubierta y pierdo la iniciativa».</div>
+  <p>Un principiante puede pensar:</p>
+  <div class="callout c-warn"><span class="co-tag">Reacción típica</span>«¿Pero qué demonios acaba de decir?»</div>
+ </div>
+ <div class="grid g2">
+  <div class="card"><h3 class="term-title">¿Para qué sirve este glosario?</h3><p>Este glosario sirve precisamente para eso: para que ese lenguaje deje de sonarte extraño y empieces a reconocer las situaciones que describe.</p></div>
+  <div class="card"><h3 class="term-title">La idea importante</h3><p>La idea <b>no es memorizar cientos de palabras</b>. Lo importante es aprender a <b>reconocer situaciones del tablero</b>.</p></div>
+ </div>
+ <div class="quote">«Primero entiende la situación. Después aprende cómo se llama.»</div>
+</section>
+
+<!-- ================= EL TABLERO ================= -->
+<section class="view" id="view-tablero">
+ <div class="sec-head"><div class="sec-ico">▦</div><div><h2>2 · El Tablero</h2><p>La superficie de juego y su geografía</p><div class="rule"></div></div></div>
+ <div class="grid g3" id="grid-tablero"></div>
+ <h3 class="blk">Mapa visual del tablero</h3>
+ <div class="grid g3">
+  <div class="card zone-card"><div class="mini-board" id="mini-cole"></div><h4>Columna e</h4><p>Contiene e1, e2, e3, e4, e5, e6, e7 y e8.</p></div>
+  <div class="card zone-card"><div class="mini-board" id="mini-fila4"></div><h4>Fila 4</h4><p>Una línea horizontal de ocho casillas.</p></div>
+  <div class="card zone-card"><div class="mini-board" id="mini-diag"></div><h4>Diagonal a1–h8</h4><p>Por ella se mueven los alfiles.</p></div>
+  <div class="card zone-card"><div class="mini-board" id="mini-centro"></div><h4>El Centro</h4><p>d4, e4, d5 y e5.</p></div>
+  <div class="card zone-card"><div class="mini-board" id="mini-frey"></div><h4>Flanco de rey</h4><p>Columnas e, f, g y h.</p></div>
+  <div class="card zone-card"><div class="mini-board" id="mini-fdama"></div><h4>Flanco de dama</h4><p>Columnas a, b, c y d.</p></div>
+ </div>
+</section>
+
+<!-- ================= LAS PIEZAS ================= -->
+<section class="view" id="view-piezas">
+ <div class="sec-head"><div class="sec-ico">♛</div><div><h2>3–4 · Las Piezas y su Valor</h2><p>Los seis ejércitos y su valor convencional</p><div class="rule"></div></div></div>
+ <div class="grid g3">
+  <div class="card term-card"><span class="chip c-red">Valor: ∞</span><h3 class="term-title"><span style="font-size:1.6rem">♔</span> Rey</h3><p>La pieza más importante. Puede moverse una casilla en cualquier dirección.</p><p>No puede colocarse en una casilla donde pueda ser capturado.</p></div>
+  <div class="card term-card"><span class="chip c-acc">Valor: 9 puntos</span><h3 class="term-title"><span style="font-size:1.6rem">♕</span> Dama</h3><p>La pieza más poderosa. Puede moverse:</p><p>• horizontalmente · • verticalmente · • diagonalmente.</p><p>Su valor convencional es aproximadamente 9 puntos.</p></div>
+  <div class="card term-card"><span class="chip c-acc">Valor: 5 puntos</span><h3 class="term-title"><span style="font-size:1.6rem">♖</span> Torre</h3><p>Se mueve horizontal o verticalmente. Valor aproximado: 5 puntos.</p></div>
+  <div class="card term-card"><span class="chip c-acc">Valor: 3 puntos</span><h3 class="term-title"><span style="font-size:1.6rem">♗</span> Alfil</h3><p>Se mueve por diagonales. Valor aproximado: 3 puntos.</p><p>Un alfil permanece siempre en casillas del mismo color.</p></div>
+  <div class="card term-card"><span class="chip c-acc">Valor: 3 puntos</span><h3 class="term-title"><span style="font-size:1.6rem">♘</span> Caballo</h3><p>Se mueve en forma de L: dos casillas en una dirección y una perpendicular. Valor aproximado: 3 puntos.</p><p>Es la <b>única pieza que puede saltar</b> por encima de otras piezas.</p></div>
+  <div class="card term-card"><span class="chip c-acc">Valor: 1 punto</span><h3 class="term-title"><span style="font-size:1.6rem">♙</span> Peón</h3><p>Avanza normalmente hacia adelante y captura en diagonal.</p><p>En la posición inicial puede avanzar dos casillas. Valor aproximado: 1 punto.</p></div>
+ </div>
+ <h3 class="blk">Tabla de valores habituales</h3>
+ <div class="card" style="overflow-x:auto">
+  <table class="tbl">
+   <tr><th>Pieza</th><th>Valor aproximado</th></tr>
+   <tr><td class="big">♙ Peón</td><td>1</td></tr>
+   <tr><td class="big">♘ Caballo</td><td>3</td></tr>
+   <tr><td class="big">♗ Alfil</td><td>3</td></tr>
+   <tr><td class="big">♖ Torre</td><td>5</td></tr>
+   <tr><td class="big">♕ Dama</td><td>9</td></tr>
+   <tr><td class="big">♔ Rey</td><td>∞</td></tr>
+  </table>
+ </div>
+ <div class="callout c-warn"><span class="co-tag">Advertencia</span>
+  Estos valores <b>no son precios reales</b>. Una torre puede valer más o menos que cinco puntos dependiendo de la posición. Por ejemplo: una torre atrapada puede ser prácticamente inútil. Un peón a punto de coronar puede valer muchísimo.
+ </div>
+ <div class="quote">«El valor de una pieza depende también de la posición.»</div>
+</section>
+
+<!-- ================= MOVIMIENTOS BÁSICOS ================= -->
+<section class="view" id="view-movimientos">
+ <div class="sec-head"><div class="sec-ico">➤</div><div><h2>5 · Movimientos Básicos</h2><p>Mover, capturar, dar jaque y dar mate</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-movimientos"></div>
+</section>
+
+<!-- ================= JUGADAS ESPECIALES ================= -->
+<section class="view" id="view-especiales">
+ <div class="sec-head"><div class="sec-ico">✦</div><div><h2>6 · Jugadas Especiales</h2><p>Enroque, captura al paso y promoción</p><div class="rule"></div></div></div>
+ <div class="grid g3" id="grid-especiales"></div>
+
+ <h3 class="blk">Demo interactiva · Captura al paso (en passant)</h3>
+ <div class="board-card card"><div class="board-host" data-board="ep"></div></div>
+
+ <h3 class="blk">Demo interactiva · Promoción del peón</h3>
+ <div class="board-card card"><div class="board-host" data-board="promo"></div></div>
+</section>
+
+<!-- ================= APERTURA ================= -->
+<section class="view" id="view-apertura">
+ <div class="sec-head"><div class="sec-ico">🚀</div><div><h2>7 · La Apertura</h2><p>La primera fase de la partida</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-apertura"></div>
+ <h3 class="blk">Conceptos de aperturas (cap. 26)</h3>
+ <div class="grid g2" id="grid-apertura-conc"></div>
+ <div class="callout c-info"><span class="co-tag">Info</span>En el capítulo <b>Aperturas Famosas</b> encontrarás tableros interactivos con las aperturas conocidas del glosario, movimiento a movimiento.</div>
+</section>
+
+<!-- ================= MEDIO JUEGO ================= -->
+<section class="view" id="view-mediojuego">
+ <div class="sec-head"><div class="sec-ico">⚔️</div><div><h2>8 · Medio Juego</h2><p>Tácticas, ataques, maniobras y planes</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-mediojuego"></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" id="view-final">
+ <div class="sec-head"><div class="sec-ico">🏁</div><div><h2>9 · El Final</h2><p>Cuando quedan menos piezas</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-final"></div>
+</section>
+
+<!-- ================= TÁCTICA ================= -->
+<section class="view" id="view-tactica">
+ <div class="sec-head"><div class="sec-ico">⚡</div><div><h2>10 · Táctica</h2><p>Secuencias concretas que obtienen ventaja</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-tactica"></div>
+
+ <h3 class="blk">Demo interactiva · La clavada absoluta</h3>
+ <div class="board-card card"><div class="board-host" data-board="clavada"></div></div>
+
+ <h3 class="blk">Demo interactiva · La horquilla de caballo</h3>
+ <div class="board-card card"><div class="board-host" data-board="horquilla"></div></div>
+
+ <h3 class="blk">Demo interactiva · El jaque descubierto</h3>
+ <div class="board-card card"><div class="board-host" data-board="descubierta"></div></div>
+</section>
+
+<!-- ================= MATERIAL ================= -->
+<section class="view" id="view-material">
+ <div class="sec-head"><div class="sec-ico">⚖️</div><div><h2>11 · Material</h2><p>Cantidad y calidad de las piezas</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-material"></div>
+</section>
+
+<!-- ================= PEONES ================= -->
+<section class="view" id="view-peones">
+ <div class="sec-head"><div class="sec-ico">♟</div><div><h2>12 · Estructura de Peones</h2><p>Una de las bases estratégicas de la posición</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-peones"></div>
+</section>
+
+<!-- ================= CASILLAS ================= -->
+<section class="view" id="view-casillas">
+ <div class="sec-head"><div class="sec-ico">🎯</div><div><h2>13 · Casillas Importantes</h2><p>Débiles, críticas, de invasión y puestos avanzados</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-casillas"></div>
+</section>
+
+<!-- ================= ACTIVAS Y PASIVAS ================= -->
+<section class="view" id="view-activas">
+ <div class="sec-head"><div class="sec-ico">🏃</div><div><h2>14 · Piezas Activas y Pasivas</h2><p>La actividad de las piezas</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-activas"></div>
+</section>
+
+<!-- ================= DEFENSA ================= -->
+<section class="view" id="view-defensa">
+ <div class="sec-head"><div class="sec-ico">🛡️</div><div><h2>15 · Defensa</h2><p>Defensores, coordinación y conexión de torres</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-defensa"></div>
+</section>
+
+<!-- ================= REY Y SEGURIDAD ================= -->
+<section class="view" id="view-rey">
+ <div class="sec-head"><div class="sec-ico">👑</div><div><h2>16 · Rey y Seguridad</h2><p>Proteger al rey… o atraparlo</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-rey"></div>
+</section>
+
+<!-- ================= JAQUES Y MATES ================= -->
+<section class="view" id="view-mates">
+ <div class="sec-head"><div class="sec-ico">#</div><div><h2>17 · Jaques y Mates</h2><p>Del jaque al mate del pasillo</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-mates"></div>
+ <h3 class="blk">Demo interactiva · Mate del pasillo</h3>
+ <div class="board-card card"><div class="board-host" data-board="pasillo"></div></div>
+</section>
+
+<!-- ================= ESTRATEGIA ================= -->
+<section class="view" id="view-estrategia">
+ <div class="sec-head"><div class="sec-ico">🧭</div><div><h2>18 · Estrategia</h2><p>Planificación a largo plazo</p><div class="rule"></div></div></div>
+ <div class="quote">La táctica responde: «¿Qué puedo ganar ahora?» · La estrategia pregunta: «¿Qué posición quiero conseguir?»</div>
+ <div class="grid g2" id="grid-estrategia"></div>
+</section>
+
+<!-- ================= COLUMNAS ================= -->
+<section class="view" id="view-columnas">
+ <div class="sec-head"><div class="sec-ico">📏</div><div><h2>19 · Columnas y Líneas</h2><p>Abiertas, semiabiertas y cerradas</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-columnas"></div>
+</section>
+
+<!-- ================= INTERCAMBIOS ================= -->
+<section class="view" id="view-intercambios">
+ <div class="sec-head"><div class="sec-ico">🔁</div><div><h2>20 · Intercambios</h2><p>Cambiar piezas con criterio</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-intercambios"></div>
+</section>
+
+<!-- ================= SACRIFICIOS ================= -->
+<section class="view" id="view-sacrificios">
+ <div class="sec-head"><div class="sec-ico">🎁</div><div><h2>21 · Sacrificios</h2><p>Entregar material buscando compensación</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-sacrificios"></div>
+</section>
+
+<!-- ================= ERRORES ================= -->
+<section class="view" id="view-errores">
+ <div class="sec-head"><div class="sec-ico">❌</div><div><h2>22 · Errores</h2><p>Blunders, inexactitudes y jugadas automáticas</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-errores"></div>
+</section>
+
+<!-- ================= CÁLCULO ================= -->
+<section class="view" id="view-calculo">
+ <div class="sec-head"><div class="sec-ico">🧮</div><div><h2>23–25 · Cálculo</h2><p>Variantes, candidatas y la regla de oro</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-calculo"></div>
+ <h3 class="blk">Regla de oro del cálculo (cap. 24)</h3>
+ <div class="card">
+  <div class="flow">
+   <div class="flow-item acc">MI JUGADA</div><div class="flow-arrow">↓</div>
+   <div class="flow-item">MEJOR RESPUESTA DEL RIVAL</div><div class="flow-arrow">↓</div>
+   <div class="flow-item">MI MEJOR RESPUESTA</div><div class="flow-arrow">↓</div>
+   <div class="flow-item">MEJOR RESPUESTA DEL RIVAL</div><div class="flow-arrow">↓</div>
+   <div class="flow-item acc">EVALUACIÓN</div>
+  </div>
+  <div class="callout c-warn"><span class="co-tag">Advertencia</span>No pienses únicamente: «¿Qué quiero hacer?» Piensa: «¿Qué puede hacer mi rival después de que yo haga esto?»</div>
+ </div>
+ <h3 class="blk">Las tres jugadas forzantes (cap. 25)</h3>
+ <div class="grid g3">
+  <div class="card term-card"><span class="chip c-red">1 · Checks</span><h3 class="term-title">Jaques</h3><p>¿Tengo algún jaque?</p></div>
+  <div class="card term-card"><span class="chip c-amb">2 · Captures</span><h3 class="term-title">Capturas</h3><p>¿Puedo capturar algo importante?</p></div>
+  <div class="card term-card"><span class="chip c-acc">3 · Threats</span><h3 class="term-title">Amenazas</h3><p>¿Puedo crear una amenaza seria?</p></div>
+ </div>
+ <div class="callout c-info"><span class="co-tag">Info</span>En inglés suele recordarse como: <b>Checks, Captures, Threats</b>.</div>
+</section>
+
+<!-- ================= APERTURAS FAMOSAS ================= -->
+<section class="view" id="view-aperturas">
+ <div class="sec-head"><div class="sec-ico">♟</div><div><h2>36 · Aperturas Conocidas</h2><p>Tableros interactivos movimiento a movimiento</p><div class="rule"></div></div></div>
+ <div class="callout c-info"><span class="co-tag">Cómo usar esta sección</span>Cada apertura tiene su propio tablero con controles paso a paso. Un paso del mando = <b>un movimiento de un solo bando</b>. Pulsa «Siguiente ▶» para avanzar, «◀ Anterior» para retroceder y usa el deslizador para saltar a cualquier posición.</div>
+
+ <h3 class="blk">Apertura Española / Ruy López · 1.e4 e5 2.Cf3 Cc6 3.Ab5</h3>
+ <div class="board-card card"><div class="board-host" data-board="espanola"></div></div>
+
+ <h3 class="blk">Defensa Siciliana · 1.e4 c5</h3>
+ <div class="board-card card"><div class="board-host" data-board="siciliana"></div></div>
+
+ <h3 class="blk">Defensa Francesa · 1.e4 e6</h3>
+ <div class="board-card card"><div class="board-host" data-board="francesa"></div></div>
+
+ <h3 class="blk">Defensa Caro-Kann · 1.e4 c6</h3>
+ <div class="board-card card"><div class="board-host" data-board="carokann"></div></div>
+
+ <h3 class="blk">Defensa Escandinava · 1.e4 d5</h3>
+ <div class="board-card card"><div class="board-host" data-board="escandinava"></div></div>
+
+ <h3 class="blk">Defensa India de Rey · esquema ...Cf6, ...g6 y ...Ag7</h3>
+ <div class="board-card card"><div class="board-host" data-board="indiarey"></div></div>
+
+ <h3 class="blk">Gambito de Rey · 1.e4 e5 2.f4</h3>
+ <div class="board-card card"><div class="board-host" data-board="gambitorey"></div></div>
+
+ <h3 class="blk">Gambito de Dama · 1.d4 d5 2.c4</h3>
+ <div class="board-card card"><div class="board-host" data-board="gambitodama"></div></div>
+</section>
+
+<!-- ================= NOTACIÓN ================= -->
+<section class="view" id="view-notacion">
+ <div class="sec-head"><div class="sec-ico">✍️</div><div><h2>27–29 · Notación Ajedrecística</h2><p>Cómo se escriben las jugadas</p><div class="rule"></div></div></div>
+ <div class="grid g2">
+  <div class="card">
+   <h3 class="term-title">Notación algebraica · Letras de las piezas (español)</h3>
+   <table class="tbl"><tr><th>Letra</th><th>Pieza</th></tr>
+    <tr><td><span class="not">R</span></td><td>Rey</td></tr>
+    <tr><td><span class="not">D</span></td><td>Dama</td></tr>
+    <tr><td><span class="not">T</span></td><td>Torre</td></tr>
+    <tr><td><span class="not">A</span></td><td>Alfil</td></tr>
+    <tr><td><span class="not">C</span></td><td>Caballo</td></tr>
+    <tr><td>—</td><td>El peón <b>no lleva letra</b></td></tr>
+   </table>
+  </div>
+  <div class="card">
+   <h3 class="term-title">Ejemplos fundamentales</h3>
+   <table class="tbl"><tr><th>Notación</th><th>Significado</th></tr>
+    <tr><td><span class="not">Cf3</span></td><td>Caballo → f3</td></tr>
+    <tr><td><span class="not">Cxe4</span></td><td>Caballo captura en e4 (captura = <b>x</b>)</td></tr>
+    <tr><td><span class="not">Dh5+</span></td><td>Dama a h5 dando jaque (<b>+</b>)</td></tr>
+    <tr><td><span class="not">Af7#</span></td><td>Alfil a f7 y jaque mate (<b>#</b>)</td></tr>
+    <tr><td><span class="not">O-O</span></td><td>Enroque corto</td></tr>
+    <tr><td><span class="not">O-O-O</span></td><td>Enroque largo</td></tr>
+    <tr><td><span class="not">e8=D</span></td><td>Promoción: el peón llega a e8 y se convierte en dama</td></tr>
+   </table>
+  </div>
+ </div>
+ <div class="grid g2" style="margin-top:14px">
+  <div class="card">
+   <h3 class="term-title">Notación de los peones (cap. 28)</h3>
+   <p>Los peones no llevan letra.</p>
+   <table class="tbl"><tr><th>Notación</th><th>Significado</th></tr>
+    <tr><td><span class="not">e4</span></td><td>Peón → e4</td></tr>
+    <tr><td><span class="not">exd5</span></td><td>El peón que estaba en la columna e captura en d5</td></tr>
+   </table>
+   <div class="callout c-info" style="margin-bottom:0"><span class="co-tag">Info · Captura al paso</span>Puede anotarse indicando la captura y, en algunas anotaciones, la indicación adicional correspondiente.</div>
+  </div>
+  <div class="card">
+   <h3 class="term-title">Símbolos de análisis (cap. 29)</h3>
+   <p>En libros y análisis puedes encontrar:</p>
+   <table class="tbl"><tr><th>Símbolo</th><th>Significado</th></tr>
+    <tr><td><span class="not">!</span></td><td>Buena jugada</td></tr>
+    <tr><td><span class="not">!!</span></td><td>Jugada excelente o brillante</td></tr>
+    <tr><td><span class="not">?</span></td><td>Error</td></tr>
+    <tr><td><span class="not">??</span></td><td>Error grave</td></tr>
+    <tr><td><span class="not">!?</span></td><td>Jugada interesante</td></tr>
+    <tr><td><span class="not">?!</span></td><td>Jugada dudosa</td></tr>
+   </table>
+   <div class="callout c-warn" style="margin-bottom:0"><span class="co-tag">Advertencia</span>Estos símbolos son comentarios humanos, no reglas oficiales del ajedrez.</div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= EVALUACIÓN Y TABLAS ================= -->
+<section class="view" id="view-evaluacion">
+ <div class="sec-head"><div class="sec-ico">🧾</div><div><h2>30–31 · Evaluación y Tablas</h2><p>Valorar la posición y las formas de empatar</p><div class="rule"></div></div></div>
+ <h3 class="blk">Evaluación</h3>
+ <div class="grid g2" id="grid-evaluacion"></div>
+ <h3 class="blk">Tablas</h3>
+ <div class="grid g2" id="grid-tablas"></div>
+</section>
+
+<!-- ================= RELOJ ================= -->
+<section class="view" id="view-reloj">
+ <div class="sec-head"><div class="sec-ico">⏱️</div><div><h2>32 · El Reloj</h2><p>Controles de tiempo y ritmos de juego</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-reloj"></div>
+</section>
+
+<!-- ================= PSICOLOGÍA ================= -->
+<section class="view" id="view-psicologia">
+ <div class="sec-head"><div class="sec-ico">🧠</div><div><h2>33 · Psicología Ajedrecística</h2><p>La mente del jugador</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-psicologia"></div>
+</section>
+
+<!-- ================= MOTORES Y ELO ================= -->
+<section class="view" id="view-motores">
+ <div class="sec-head"><div class="sec-ico">🤖</div><div><h2>34–35 · Motor, Rating y Elo</h2><p>Jugador humano frente a motor</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-motores"></div>
+</section>
+
+<!-- ================= JERGA ================= -->
+<section class="view" id="view-jerga">
+ <div class="sec-head"><div class="sec-ico">🗣️</div><div><h2>37–38 · Jerga y Frases Típicas</h2><p>Lo que escucharás en el club</p><div class="rule"></div></div></div>
+ <h3 class="blk">Jerga que escucharás mucho</h3>
+ <div class="grid g2" id="grid-jerga"></div>
+ <h3 class="blk">Frases típicas de un ajedrecista</h3>
+ <div class="grid g2" id="grid-frases"></div>
+</section>
+
+<!-- ================= CONFUSIONES ================= -->
+<section class="view" id="view-confusiones">
+ <div class="sec-head"><div class="sec-ico">⚠️</div><div><h2>39 · Conceptos que se Confunden Mucho</h2><p>Pulsa cada par para abrir la comparación</p><div class="rule"></div></div></div>
+ <div id="conf-list"></div>
+</section>
+
+<!-- ================= CONCEPTOS CLAVE ================= -->
+<section class="view" id="view-clave">
+ <div class="sec-head"><div class="sec-ico">🔑</div><div><h2>40–47 · Los Conceptos Más Importantes</h2><p>Las ideas que evitan la mayoría de los errores</p><div class="rule"></div></div></div>
+ <div class="grid g2" id="grid-clave"></div>
+</section>
+
+<!-- ================= SUPERVIVENCIA ================= -->
+<section class="view" id="view-supervivencia">
+ <div class="sec-head"><div class="sec-ico">🎒</div><div><h2>48 · Mini Diccionario de Supervivencia</h2><p>Las 20 palabras para empezar + las 10 definitivas</p><div class="rule"></div></div></div>
+ <div class="callout c-info"><span class="co-tag">Info</span>Si acabas de empezar, aprende primero estas 20 palabras. Con ellas ya podrás entender una enorme cantidad de explicaciones ajedrecísticas. Usa el buscador para filtrarlas.</div>
+ <div class="filter-box"><input type="text" id="supFilter" placeholder="🔍 Filtrar términos de supervivencia… (ej: clavada, zugzwang)"><span class="chip c-acc" id="supCount"></span></div>
+ <div class="grid g3" id="grid-supervivencia"></div>
+ <h3 class="blk">Las 10 palabras que más debes recordar como principiante</h3>
+ <div class="card" style="overflow-x:auto">
+  <table class="tbl"><tr><th>#</th><th>Palabra</th><th>Pregunta asociada</th></tr><tbody id="diez-body"></tbody></table>
+ </div>
+ <h3 class="blk">La pregunta definitiva</h3>
+ <div class="card">
+  <p>Cuando no sepas qué jugar, no preguntes inmediatamente: «¿Cuál es mi mejor jugada?»</p>
+  <div class="quote" style="font-size:1.35rem">«¿Qué está pasando?»</div>
+  <p>Primero pregunta eso. Esa pequeña diferencia es una de las puertas de entrada para aprender a pensar realmente como un jugador de ajedrez.</p>
+ </div>
+</section>
+
+<!-- ================= CÓMO PENSAR ================= -->
+<section class="view" id="view-metodo">
+ <div class="sec-head"><div class="sec-ico">🧩</div><div><h2>49–51 · Cómo Pensar Usando Esta Jerga</h2><p>El método completo en 9 pasos</p><div class="rule"></div></div></div>
+ <div class="callout c-warn"><span class="co-tag">Advertencia</span>No se trata de pensar: «Tengo que hacer una clavada porque hoy toca estudiar clavadas.» Se trata de observar la posición y hacerte las preguntas correctas.</div>
+ <div class="grid g3" id="grid-metodo"></div>
+ <h3 class="blk">La regla de oro (cap. 50)</h3>
+ <div class="card">
+  <p>La jerga ajedrecística puede parecer complicada. Pero casi todo termina reduciéndose a unas pocas preguntas:</p>
+  <div style="margin-top:10px">
+   <span class="chip c-acc">¿Qué ha cambiado?</span><span class="chip c-acc">¿Qué amenaza mi rival?</span><span class="chip c-acc">¿Qué está atacado?</span><span class="chip c-acc">¿Qué está defendido?</span><span class="chip c-amb">¿Tengo algún jaque?</span><span class="chip c-amb">¿Tengo alguna captura?</span><span class="chip c-amb">¿Tengo alguna amenaza?</span><span class="chip c-pur">¿Cuál es la mejor respuesta de mi rival?</span><span class="chip c-pur">¿Qué queda después?</span><span class="chip c-red">¿Estoy dejando algo colgado?</span>
+  </div>
+ </div>
+ <h3 class="blk">Frase para recordar (cap. 51)</h3>
+ <div class="quote" style="font-size:1.4rem">«NO JUEGUES LA JUGADA. JUEGA LA POSICIÓN.»</div>
+ <div class="card">
+  <p>Una jugada puede parecer fantástica. Pero el ajedrez no consiste en encontrar movimientos bonitos. Consiste en entender:</p>
+  <div class="flow">
+   <div class="flow-item">QUÉ HAY EN EL TABLERO</div><div class="flow-arrow">↓</div>
+   <div class="flow-item">QUÉ QUIERE HACER EL RIVAL</div><div class="flow-arrow">↓</div>
+   <div class="flow-item">QUÉ PUEDO HACER YO</div><div class="flow-arrow">↓</div>
+   <div class="flow-item">QUÉ PUEDE RESPONDER ÉL</div><div class="flow-arrow">↓</div>
+   <div class="flow-item acc">QUÉ QUEDA DESPUÉS</div>
+  </div>
+  <p style="text-align:center;margin-top:8px"><b>Eso es empezar a pensar como un ajedrecista.</b></p>
+ </div>
+</section>
+
+<!-- ================= CRÉDITOS ================= -->
+<section class="view" id="view-creditos">
+ <div class="cover-wrap" id="cover-credits"></div>
+ <div class="card credit-card">
+  <span class="home-badge">★ Créditos</span>
+  <h3>Glosario Completo de Jerga Ajedrecista</h3>
+  <p style="color:var(--muted)">Diccionario práctico para aprender a hablar, entender y pensar en ajedrez</p>
+  <div class="credit-name">👨‍💻 Rubén Sbarsky</div>
+  <div>
+   <span class="chip c-acc">📅 Fecha: 06/09/2026</span>
+   <span class="chip c-pur">🕙 Hora: 10:24:08</span>
+  </div>
+  <p style="margin-top:14px;color:#c6d4ec">🎓 Tutorial solo con fines educativos y de divulgación.</p>
+  <p class="fiat">Fiat iustitia, ruat caelum.</p>
+ </div>
+</section>
+
+</main>
+
+<footer>
+ <div class="f-line">📚 Tutorial solo con fines Educativos y Divulgación</div>
+ <div class="f-line">👨‍💻 Créditos: Rubén Sbarsky</div>
+ <div class="f-line">📅 FECHA: 06/09/2026 · Hora: 10:24:08</div>
+ <div class="f-line fiat">Fiat iustitia, ruat caelum.</div>
+</footer>
+
+<button id="toTop" title="Volver arriba">↑</button>
+
+<script>
+/* ============================================================
+   SVG DE PORTADA (HOME + CRÉDITOS) — animación temática:
+   un caballo realiza un recorrido b1→c3→d5→e7 y clava una
+   HORQUILLA sobre el rey (g8) y la dama (c8).
+   ============================================================ */
+const COVER_SVG = `
+<svg class="cover-svg" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Caballo realizando una horquilla sobre rey y dama en un tablero de ajedrez">
+ <defs>
+  <linearGradient id="cg-bg" x1="0" y1="0" x2="0" y2="1">
+   <stop offset="0" stop-color="#05080f"/><stop offset=".55" stop-color="#0a0e1a"/><stop offset="1" stop-color="#0d1526"/>
+  </linearGradient>
+  <radialGradient id="cg-red" cx="50%" cy="50%" r="50%">
+   <stop offset="0" stop-color="#ef4444" stop-opacity=".9"/><stop offset="1" stop-color="#ef4444" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="cg-amb" cx="50%" cy="50%" r="50%">
+   <stop offset="0" stop-color="#f59e0b" stop-opacity=".9"/><stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="cg-cy" cx="50%" cy="50%" r="50%">
+   <stop offset="0" stop-color="#00d4ff" stop-opacity=".8"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/>
+  </radialGradient>
+  <pattern id="cg-chess" width="128" height="128" patternUnits="userSpaceOnUse">
+   <rect x="0" y="0" width="64" height="64" fill="#22385f"/>
+   <rect x="64" y="0" width="64" height="64" fill="#131f3a"/>
+   <rect x="0" y="64" width="64" height="64" fill="#131f3a"/>
+   <rect x="64" y="64" width="64" height="64" fill="#22385f"/>
+  </pattern>
+  <filter id="cg-glow" x="-60%" y="-60%" width="220%" height="220%">
+   <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+ </defs>
+ <rect width="1600" height="900" fill="url(#cg-bg)"/>
+ <!-- piezas gigantes de fondo -->
+ <text x="240" y="780" font-size="400" fill="#00d4ff" opacity=".05" text-anchor="middle">♞
+  <animateTransform attributeName="transform" type="translate" values="0 0;0 -18;0 0" dur="12s" repeatCount="indefinite"/></text>
+ <text x="820" y="860" font-size="260" fill="#a855f7" opacity=".05" text-anchor="middle">♛
+  <animateTransform attributeName="transform" type="translate" values="0 0;0 14;0 0" dur="14s" repeatCount="indefinite"/></text>
+ <text x="80" y="300" font-size="220" fill="#22c55e" opacity=".05" text-anchor="middle">♜</text>
+ <!-- bloque de texto -->
+ <text x="80" y="200" fill="#00d4ff" font-size="22" letter-spacing="6" font-weight="700">MANUAL TÉCNICO · JERGA DE AJEDREZ</text>
+ <text x="80" y="278" fill="#f8fafc" font-size="64" font-weight="800">GLOSARIO DE JERGA</text>
+ <text x="80" y="350" fill="#00d4ff" font-size="64" font-weight="800" filter="url(#cg-glow)">AJEDRECISTA</text>
+ <text x="80" y="400" fill="#9fb3d9" font-size="26">Diccionario práctico para hablar, entender y pensar en ajedrez</text>
+ <g font-size="17" font-weight="700">
+  <rect x="80" y="428" width="120" height="36" rx="9" fill="none" stroke="#00d4ff"/><text x="140" y="452" fill="#00d4ff" text-anchor="middle">TÁCTICA</text>
+  <rect x="214" y="428" width="150" height="36" rx="9" fill="none" stroke="#a855f7"/><text x="289" y="452" fill="#a855f7" text-anchor="middle">ESTRATEGIA</text>
+  <rect x="378" y="428" width="120" height="36" rx="9" fill="none" stroke="#22c55e"/><text x="438" y="452" fill="#22c55e" text-anchor="middle">FINALES</text>
+ </g>
+ <text x="80" y="522" fill="#cbd5e1" font-size="25" font-style="italic">«Primero entiende la situación.</text>
+ <text x="80" y="556" fill="#cbd5e1" font-size="25" font-style="italic">Después aprende cómo se llama.»</text>
+ <g font-size="19" font-weight="700">
+  <text x="80" y="622" fill="#8fa3c8">OBSERVA</text><text x="185" y="622" fill="#00d4ff">→</text>
+  <text x="215" y="622" fill="#8fa3c8">AMENAZAS</text><text x="330" y="622" fill="#00d4ff">→</text>
+  <text x="360" y="622" fill="#8fa3c8">TÁCTICA</text><text x="455" y="622" fill="#00d4ff">→</text>
+  <text x="485" y="622" fill="#8fa3c8">EVALÚA</text>
+ </g>
+ <!-- TABLERO -->
+ <g transform="translate(980,170)">
+  <rect x="-8" y="-8" width="528" height="528" rx="10" fill="#0b1222" stroke="#1e3a5f" stroke-width="3"/>
+  <rect width="512" height="512" fill="url(#cg-chess)"/>
+  <!-- coordenadas -->
+  <g fill="#3f639b" font-size="16" font-weight="700" text-anchor="middle">
+   <text x="32" y="536">a</text><text x="96" y="536">b</text><text x="160" y="536">c</text><text x="224" y="536">d</text>
+   <text x="288" y="536">e</text><text x="352" y="536">f</text><text x="416" y="536">g</text><text x="480" y="536">h</text>
+   <text x="-20" y="38">8</text><text x="-20" y="102">7</text><text x="-20" y="166">6</text><text x="-20" y="230">5</text>
+   <text x="-20" y="294">4</text><text x="-20" y="358">3</text><text x="-20" y="422">2</text><text x="-20" y="486">1</text>
+  </g>
+  <!-- casillas de aterrizaje -->
+  <rect x="128" y="320" width="64" height="64" fill="#00d4ff" fill-opacity="0">
+   <animate attributeName="fill-opacity" values="0;0;.5;0;0" keyTimes="0;.14;.18;.4;1" dur="9s" repeatCount="indefinite"/></rect>
+  <rect x="192" y="192" width="64" height="64" fill="#00d4ff" fill-opacity="0">
+   <animate attributeName="fill-opacity" values="0;0;.5;0;0" keyTimes="0;.32;.36;.55;1" dur="9s" repeatCount="indefinite"/></rect>
+  <rect x="256" y="64" width="64" height="64" fill="#00d4ff" fill-opacity="0">
+   <animate attributeName="fill-opacity" values="0;0;.65;.35;0" keyTimes="0;.5;.55;.85;1" dur="9s" repeatCount="indefinite"/></rect>
+  <!-- recorrido fantasma -->
+  <polyline points="96,480 160,352 224,224 288,96" fill="none" stroke="#00d4ff" stroke-width="2" stroke-dasharray="6 7" opacity=".3"/>
+  <!-- resplandores de ataque -->
+  <circle cx="416" cy="32" r="30" fill="url(#cg-red)" opacity="0">
+   <animate attributeName="opacity" values="0;0;.95;.4;.95;0" keyTimes="0;.65;.72;.82;.92;1" dur="9s" repeatCount="indefinite"/></circle>
+  <circle cx="160" cy="32" r="30" fill="url(#cg-amb)" opacity="0">
+   <animate attributeName="opacity" values="0;0;.95;.4;.95;0" keyTimes="0;.65;.72;.82;.92;1" dur="9s" repeatCount="indefinite"/></circle>
+  <!-- piezas objetivo -->
+  <text x="416" y="52" font-size="52" fill="#cbd5e1" text-anchor="middle">♚</text>
+  <text x="160" y="52" font-size="52" fill="#cbd5e1" text-anchor="middle">♛</text>
+  <!-- líneas de ataque -->
+  <line x1="288" y1="96" x2="416" y2="32" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="144" stroke-dashoffset="144" filter="url(#cg-glow)">
+   <animate attributeName="stroke-dashoffset" values="144;144;0;0" keyTimes="0;.55;.65;1" dur="9s" repeatCount="indefinite"/>
+   <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;.55;.6;1" dur="9s" repeatCount="indefinite"/></line>
+  <line x1="288" y1="96" x2="160" y2="32" stroke="#f59e0b" stroke-width="3.5" stroke-dasharray="144" stroke-dashoffset="144" filter="url(#cg-glow)">
+   <animate attributeName="stroke-dashoffset" values="144;144;0;0" keyTimes="0;.55;.65;1" dur="9s" repeatCount="indefinite"/>
+   <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;.55;.6;1" dur="9s" repeatCount="indefinite"/></line>
+  <!-- CABALLO HÉROE -->
+  <g filter="url(#cg-glow)">
+   <circle cx="0" cy="8" r="30" fill="url(#cg-cy)" opacity=".55"/>
+   <text x="0" y="24" font-size="58" fill="#bae6fd" text-anchor="middle">♞</text>
+   <animateTransform attributeName="transform" type="translate"
+    values="96,480;96,480;160,352;160,352;224,224;224,224;288,96;288,96"
+    keyTimes="0;.10;.16;.28;.34;.46;.52;1" dur="9s" repeatCount="indefinite"/>
+  </g>
+  <!-- rótulo -->
+  <text x="256" y="-44" font-size="46" font-weight="800" fill="#00d4ff" text-anchor="middle" letter-spacing="4" filter="url(#cg-glow)" opacity="0">¡HORQUILLA!
+   <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;.66;.72;1" dur="9s" repeatCount="indefinite"/></text>
+  <text x="256" y="-14" font-size="20" fill="#9fb3d9" text-anchor="middle" opacity="0">El caballo ataca el rey y la dama a la vez
+   <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;.68;.74;1" dur="9s" repeatCount="indefinite"/></text>
+ </g>
+ <!-- marquesina inferior -->
+ <g transform="translate(0,868)">
+  <g>
+   <text x="0" y="0" font-size="22" letter-spacing="4" fill="#2b4d80" font-weight="700">CLAVADA · HORQUILLA · DESCUBIERTA · DOBLE ATAQUE · ZUGZWANG · OPOSICIÓN · ENROQUE · GAMBITO · INICIATIVA · CONTRAJUEGO · PIEZA COLGANDO · PUESTO AVANZADO · JAQUE MATE · CALIDAD · TEMPO · PROFILAXIS ·&#160;</text>
+   <text x="1600" y="0" font-size="22" letter-spacing="4" fill="#2b4d80" font-weight="700">CLAVADA · HORQUILLA · DESCUBIERTA · DOBLE ATAQUE · ZUGZWANG · OPOSICIÓN · ENROQUE · GAMBITO · INICIATIVA · CONTRAJUEGO · PIEZA COLGANDO · PUESTO AVANZADO · JAQUE MATE · CALIDAD · TEMPO · PROFILAXIS ·&#160;</text>
+   <animateTransform attributeName="transform" type="translate" values="0 0;-1600 0" dur="30s" repeatCount="indefinite"/>
+  </g>
+ </g>
+</svg>`;
+
+/* ============================================================
+   MOTOR DE TABLEROS (cap. 22 BIS) — HTML + CSS + JS vanilla
+   ============================================================ */
+const FILES="abcdefgh";
+const GLYPH={K:"♔",Q:"♕",R:"♖",B:"♗",N:"♘",P:"♙",k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟"};
+const NAMES={K:"Rey",Q:"Dama",R:"Torre",B:"Alfil",N:"Caballo",P:"Peón"};
+const LETRA={K:"R",Q:"D",R:"T",B:"A",N:"C"};
+
+function startPos(){
+ const p={},back=["R","N","B","Q","K","B","N","R"];
+ for(let i=0;i<8;i++){
+  p[FILES[i]+"1"]=back[i]; p[FILES[i]+"2"]="P";
+  p[FILES[i]+"7"]="p"; p[FILES[i]+"8"]=back[i].toLowerCase();
+ }
+ return p;
+}
+function applyStep(pos,st){
+ const np=Object.assign({},pos);
+ if(st.castle==="w"){delete np.e1;delete np.h1;np.g1="K";np.f1="R";}
+ else if(st.castle==="wQ"){delete np.e1;delete np.a1;np.c1="K";np.d1="R";}
+ else if(st.castle==="b"){delete np.e8;delete np.h8;np.g8="k";np.f8="r";}
+ else if(st.castle==="bQ"){delete np.e8;delete np.a8;np.c8="k";np.d8="r";}
+ else{
+  const pc=np[st.from]; delete np[st.from];
+  if(st.remove) delete np[st.remove];
+  np[st.to]=st.promo?st.promo:pc;
+ }
+ return np;
+}
+function autoNotation(st,pieceCode,isCap){
+ if(st.castle) return (st.castle.length>1)?"O-O-O":"O-O";
+ const L=(pieceCode&&pieceCode.toUpperCase()!=="P")?LETRA[pieceCode.toUpperCase()]:"";
+ let n=L;
+ if(isCap) n+=((pieceCode.toUpperCase()==="P")?st.from[0]:"")+"x";
+ n+=st.to;
+ if(st.promo) n+="+LETRA_PROMO";
+ return n;
+}
+function notationFor(st,pieceCode,isCap){
+ if(st.castle) return (st.castle.length>1)?"O-O-O":"O-O";
+ const up=pieceCode?pieceCode.toUpperCase():"P";
+ const L=up!=="P"?LETRA[up]:"";
+ let n=L+(isCap?((up==="P")?st.from[0]:"")+"x":"")+st.to;
+ if(st.promo) n+="="+LETRA[st.promo.toUpperCase()];
+ if(st.mate) n+="#"; else if(st.check) n+="+";
+ return n;
+}
+
+const BOARDS={
+ española:{title:"Apertura Española (Ruy López)",sub:"Comienza habitualmente: 1.e4 e5 2.Cf3 Cc6 3.Ab5",steps:[
+  {from:"e2",to:"e4",what:"El peón blanco avanza dos casillas y ocupa e4.",why:"Controla el centro del tablero y abre líneas para la dama y el alfil de f1."},
+  {from:"e7",to:"e5",what:"El peón negro responde ocupando e5.",why:"Disputa el centro e impide que las blancas lo dominen sin oposición."},
+  {from:"g1",to:"f3",what:"El caballo blanco sale de g1 a f3.",why:"Desarrolla una pieza, ataca el peón de e5 y prepara el enroque corto."},
+  {from:"b8",to:"c6",what:"El caballo negro sale de b8 a c6.",why:"Desarrolla el caballo y defiende el peón de e5 que estaba atacado."},
+  {from:"f1",to:"b5",what:"El alfil blanco se desplaza de f1 a b5.",why:"Presiona al caballo que defiende e5: así nace la Apertura Española o Ruy López."}
+ ]},
+ siciliana:{title:"Defensa Siciliana",sub:"Después de: 1.e4 c5",steps:[
+  {from:"e2",to:"e4",what:"El peón blanco avanza dos casillas y ocupa e4.",why:"Controla el centro, la zona más importante del tablero."},
+  {from:"c7",to:"c5",what:"El peón negro avanza a c5.",why:"Controla la casilla central d4 y crea una posición asimétrica. Es la idea central de la Defensa Siciliana."}
+ ]},
+ francesa:{title:"Defensa Francesa",sub:"Después de: 1.e4 e6",steps:[
+  {from:"e2",to:"e4",what:"El peón blanco avanza dos casillas y ocupa e4.",why:"Controla el centro y abre diagonales para sus piezas."},
+  {from:"e7",to:"e6",what:"El peón negro avanza una casilla a e6.",why:"Prepara el avance ...d5 para desafiar el centro blanco: esa estructura define la Defensa Francesa."}
+ ]},
+ carokann:{title:"Defensa Caro-Kann",sub:"Después de: 1.e4 c6",steps:[
+  {from:"e2",to:"e4",what:"El peón blanco avanza dos casillas y ocupa e4.",why:"Controla el centro del tablero."},
+  {from:"c7",to:"c6",what:"El peón negro avanza a c6.",why:"Apoya el futuro avance ...d5 para desafiar el centro de forma sólida: esa es la Defensa Caro-Kann."}
+ ]},
+ escandinava:{title:"Defensa Escandinava",sub:"Después de: 1.e4 d5",steps:[
+  {from:"e2",to:"e4",what:"El peón blanco avanza dos casillas y ocupa e4.",why:"Controla el centro y libera piezas."},
+  {from:"d7",to:"d5",what:"El peón negro avanza dos casillas y ataca directamente el peón de e4.",why:"Cuestiona el centro blanco de inmediato. Si las blancas capturan exd5, la dama negra suele recapturar en d5: así se caracteriza la Defensa Escandinava."}
+ ]},
+ indiarey:{title:"Defensa India de Rey",sub:"Ejemplo representativo del esquema caracterizado por ...Cf6, ...g6 y ...Ag7",intro:"La India de Rey es una familia de aperturas caracterizada por determinadas estructuras y el desarrollo de las negras con ...Cf6, ...g6 y ...Ag7. Aquí tienes un esquema representativo.",steps:[
+  {from:"d2",to:"d4",what:"El peón blanco avanza dos casillas y ocupa d4.",why:"Controla el centro desde la columna d."},
+  {from:"g8",to:"f6",what:"El caballo negro sale de g8 a f6 (...Cf6).",why:"Presiona el centro blanco y desarrolla una pieza: primer rasgo de la India de Rey."},
+  {from:"c2",to:"c4",what:"El peón blanco avanza a c4.",why:"Amplía la presencia central blanca."},
+  {from:"g7",to:"g6",what:"El peón negro avanza a g6 (...g6).",why:"Prepara el desarrollo del alfil de casillas negras por la gran diagonal: segundo rasgo característico."},
+  {from:"b1",to:"c3",what:"El caballo blanco sale a c3.",why:"Desarrolla una pieza y refuerza el control del centro."},
+  {from:"f8",to:"g7",what:"El alfil negro se instala en g7 (...Ag7).",why:"Completa el esquema característico ...Cf6, ...g6 y ...Ag7 de la Defensa India de Rey."}
+ ]},
+ gambitorey:{title:"Gambito de Rey",sub:"Después de: 1.e4 e5 2.f4 — las blancas ofrecen el peón de f",steps:[
+  {from:"e2",to:"e4",what:"El peón blanco avanza dos casillas y ocupa e4.",why:"Controla el centro del tablero."},
+  {from:"e7",to:"e5",what:"El peón negro responde ocupando e5.",why:"Disputa el centro simétricamente."},
+  {from:"f2",to:"f4",what:"El peón blanco avanza a f4 ofreciéndose al peón de e5.",why:"Las blancas ofrecen el peón de f buscando compensación: abrir la columna f, acelerar el desarrollo y lanzar un ataque. Eso es un gambito."}
+ ]},
+ gambitodama:{title:"Gambito de Dama",sub:"Después de: 1.d4 d5 2.c4 — presión sobre el peón de d5",steps:[
+  {from:"d2",to:"d4",what:"El peón blanco avanza dos casillas y ocupa d4.",why:"Controla el centro desde la columna d."},
+  {from:"d7",to:"d5",what:"El peón negro responde ocupando d5.",why:"Establece la lucha simétrica por el centro."},
+  {from:"c2",to:"c4",what:"El peón blanco avanza a c4.",why:"Las blancas ofrecen presión sobre el peón de d5 y estructuras derivadas: así se define el Gambito de Dama."}
+ ]},
+ ep:{title:"En passant / captura al paso",sub:"Movimiento especial de peón",intro:"Un peón negro avanza dos casillas y queda al lado de un peón blanco. El peón blanco puede capturarlo como si hubiera avanzado solamente una casilla.",initial:{e5:"P",d7:"p",g1:"K",g8:"k"},steps:[
+  {from:"d7",to:"d5",who:"b",what:"NEGRAS: el peón negro avanza dos casillas, de d7 a d5, y queda justo al lado del peón blanco de e5.",why:"Este avance doble es el que habilita la captura al paso."},
+  {from:"e5",to:"d6",who:"w",remove:"d5",ep:true,what:"BLANCAS: el peón blanco de e5 captura al paso y se coloca en d6, eliminando el peón negro de d5.",why:"Es una captura muy particular y solo puede hacerse inmediatamente después del avance de dos casillas."}
+ ]},
+ promo:{title:"Promoción del peón",sub:"Cuando un peón llega a la última fila",intro:"Cuando un peón llega a la última fila puede convertirse en dama, torre, alfil o caballo. Ejemplo del glosario: e8=D (aquí mostrado con a8=D+).",initial:{a7:"P",g1:"K",f8:"k"},steps:[
+  {from:"a7",to:"a8",who:"w",promo:"Q",check:true,what:"BLANCAS: el peón blanco llega a la última fila (a8) y se convierte en dama, dando jaque por toda la fila 8.",why:"La promoción convierte al peón en la pieza más poderosa. Suele elegirse la dama."},
+  {from:"f8",to:"g7",who:"b",what:"NEGRAS: el rey negro escapa del jaque moviéndose a g7.",why:"Recibir jaque obliga a solucionarlo inmediatamente."}
+ ]},
+ clavada:{title:"Clavada absoluta",sub:"Torre blanca → caballo negro → rey negro",intro:"Posición de ejemplo: la torre blanca, el caballo negro y el rey negro comparten la columna e.",initial:{a1:"R",g1:"K",e5:"n",e8:"k"},steps:[
+  {from:"a1",to:"e1",who:"w",what:"BLANCAS: la torre blanca se mueve de a1 a e1, colocándose en la misma columna que el caballo negro y el rey negro.",why:"El caballo negro queda clavado: si se mueve, la torre atacaría al rey. Como detrás está el rey, es una clavada absoluta y el caballo no puede moverse legalmente."}
+ ]},
+ horquilla:{title:"Horquilla de caballo",sub:"El caballo da jaque al rey y ataca la dama a la vez",intro:"Posición de ejemplo: el caballo blanco está en c6; el rey negro en g8 y la dama negra en d5.",initial:{c6:"N",g1:"K",g8:"k",d5:"q"},steps:[
+  {from:"c6",to:"e7",who:"w",check:true,what:"BLANCAS: el caballo salta de c6 a e7 dando jaque al rey de g8 y atacando simultáneamente la dama de d5.",why:"Esto es una horquilla: una pieza ataca dos objetivos importantes a la vez. Los caballos son especialmente buenos haciendo horquillas. El rey debe moverse y después el caballo podrá capturar la dama."}
+ ]},
+ descubierta:{title:"Jaque descubierto",sub:"Una pieza se mueve y descubre el ataque de otra",intro:"Posición de ejemplo: torre blanca en e1, caballo blanco en e4 y rey negro en e8, en la misma columna.",initial:{e1:"R",e4:"N",g1:"K",e8:"k"},steps:[
+  {from:"e4",to:"c5",who:"w",check:true,what:"BLANCAS: el caballo blanco se aparta de la columna e, saltando de e4 a c5.",why:"Al moverse, descubre el ataque de la torre sobre el rey negro: es un jaque descubierto. La pieza que se mueve puede, además, crear su propia amenaza."}
+ ]},
+ pasillo:{title:"Mate del pasillo",sub:"El rey está atrapado detrás de sus propios peones",intro:"Posición de ejemplo: el rey negro está en g8, encerrado detrás de sus peones f7, g7 y h7. La torre blanca está en d1.",initial:{d1:"R",g1:"K",g8:"k",f7:"p",g7:"p",h7:"p"},steps:[
+  {from:"d1",to:"d8",who:"w",mate:true,what:"BLANCAS: la torre entra en la octava fila, de d1 a d8, y da JAQUE MATE.",why:"El rey está en jaque por la torre y no puede escapar: f8 y h8 están atacadas por la propia torre, y f7, g7 y h7 están ocupadas por sus propios peones. Tampoco puede capturar a la torre ni bloquear el jaque. Es el típico mate del pasillo."}
+ ]}
+};
+
+function buildBoard(host){
+ const cfg=BOARDS[host.dataset.board]; if(!cfg) return;
+ const positions=[cfg.initial?Object.assign({},cfg.initial):startPos()];
+ cfg.steps.forEach(st=>positions.push(applyStep(positions[positions.length-1],st)));
+ host.innerHTML=
+  "<h3>"+cfg.title+"</h3><div class='bc-sub'>"+(cfg.sub||"")+"</div>"+
+  "<div class='board-frame'><div class='board-area'><div class='rank-coords'>"+[8,7,6,5,4,3,2,1].map(n=>"<div>"+n+"</div>").join("")+"</div><div class='board-grid'></div></div>"+
+  "<div class='file-coords'>"+FILES.split("").map(f=>"<div>"+f+"</div>").join("")+"</div></div>"+
+  "<div class='stepper'><div class='stp-btns'>"+
+  "<button class='btn' data-act='reset'>⟲ Inicio</button>"+
+  "<button class='btn' data-act='prev'>◀ Anterior</button>"+
+  "<button class='btn primary' data-act='next'>Siguiente ▶</button></div>"+
+  "<input type='range' min='0' max='"+cfg.steps.length+"' value='0' aria-label='Deslizador de movimientos'>"+
+  "<div class='stp-ind'></div></div><div class='move-panel'></div>";
+ const grid=host.querySelector(".board-grid");
+ const sqs=[];
+ for(let r=0;r<8;r++)for(let f=0;f<8;f++){
+  const name=FILES[f]+(8-r);
+  const d=document.createElement("div");
+  d.className="sq "+(((r+f)%2===0)?"l":"d");
+  d.dataset.sq=name; grid.appendChild(d); sqs.push(d);
+ }
+ const slider=host.querySelector("input[type=range]");
+ const panel=host.querySelector(".move-panel");
+ const ind=host.querySelector(".stp-ind");
+ const btnPrev=host.querySelector("[data-act=prev]");
+ const btnNext=host.querySelector("[data-act=next]");
+ const btnReset=host.querySelector("[data-act=reset]");
+ let idx=0;
+ function update(){
+  const pos=positions[idx];
+  sqs.forEach(d=>{
+   const code=pos[d.dataset.sq];
+   d.classList.toggle("hl",false);
+   d.innerHTML=code?"<span class='"+(code===code.toUpperCase()?"pc-w":"pc-b")+"'>"+GLYPH[code]+"</span>":"";
+  });
+  if(idx>0){
+   const st=cfg.steps[idx-1];
+   if(st.from&&sqs.find(d=>d.dataset.sq===st.from)) grid.querySelector("[data-sq='"+st.from+"']").classList.add("hl");
+   if(st.to) grid.querySelector("[data-sq='"+st.to+"']").classList.add("hl");
+  }
+  btnPrev.disabled=(idx===0); btnReset.disabled=(idx===0);
+  btnNext.disabled=(idx===cfg.steps.length);
+  slider.value=idx;
+  ind.innerHTML=(idx===0)?"Posición inicial · pulsa <b>Siguiente ▶</b>":"<b>Movimiento "+idx+" de "+cfg.steps.length+"</b>";
+  if(idx===0){
+   panel.innerHTML="<span class='mp-tag init'>POSICIÓN INICIAL</span><p class='mp-txt'>"+(cfg.intro||"Observa la posición inicial. Usa los controles situados bajo el tablero para avanzar movimiento a movimiento.")+"</p>";
+   return;
+  }
+  const st=cfg.steps[idx-1];
+  const prev=positions[idx-1];
+  const white=st.who?st.who==="w":((idx-1)%2===0);
+  const colorLabel=white?"BLANCAS":"NEGRAS";
+  const code=st.castle?null:prev[st.from];
+  const captured=!st.castle&&(prev[st.to]||st.remove);
+  const pieceName=st.castle?(st.castle.length>1?"Enroque largo":"Enroque corto"):(NAMES[code.toUpperCase()]+(white?" blanco":" negro"));
+  const route=st.castle?(st.castle==="w"?"Rey e1 → g1, Torre h1 → f1":st.castle==="b"?"Rey e8 → g8, Torre h8 → f8":st.castle==="wQ"?"Rey e1 → c1, Torre a1 → d1":"Rey e8 → c8, Torre a8 → d8"):(st.from+" → "+st.to);
+  const nota=st.castle?notationFor(st,null,false):notationFor(st,code,captured);
+  let badges="";
+  if(captured) badges+="<span class='chip c-red'>CAPTURA"+(st.ep?" AL PASO":"")+"</span>";
+  if(st.promo) badges+="<span class='chip c-pur'>PROMOCIÓN = "+LETRA[st.promo.toUpperCase()]+"</span>";
+  if(st.castle) badges+="<span class='chip c-grn'>ENROQUE</span>";
+  if(st.mate) badges+="<span class='chip c-red'>JAQUE MATE #</span>";
+  else if(st.check) badges+="<span class='chip c-amb'>JAQUE +</span>";
+  panel.innerHTML=
+   "<span class='mp-tag "+(white?"w":"b")+"'>MOVIMIENTO "+idx+" — "+colorLabel+"</span>"+
+   "<div class='mp-piece'>"+pieceName+": "+route+"</div>"+
+   (badges?"<div class='mp-badges'>"+badges+"</div>":"")+
+   "<span class='mp-lbl'>¿Qué ocurre?</span><p class='mp-txt'>"+st.what+"</p>"+
+   (st.why?"<span class='mp-lbl'>¿Por qué es importante?</span><p class='mp-txt'>"+st.why+"</p>":"")+
+   "<div class='mp-not'><span class='not'>Notación: "+nota+"</span></div>";
+ }
+ btnNext.addEventListener("click",()=>{if(idx<cfg.steps.length){idx++;update();}});
+ btnPrev.addEventListener("click",()=>{if(idx>0){idx--;update();}});
+ btnReset.addEventListener("click",()=>{idx=0;update();});
+ slider.addEventListener("input",()=>{idx=parseInt(slider.value,10);update();});
+ update();
+}
+
+/* ============================================================
+   CONTENIDO — términos del glosario (100 % del documento)
+   ============================================================ */
+function o(t,d,ex){return {t:t,d:d,ex:ex};}
+const G={};
+G.tablero=[
+ o("Tablero",["Es la superficie de 64 casillas donde se juega.","Tiene: 8 columnas · 8 filas · 64 casillas en total."]),
+ o("Casilla","Cada uno de los 64 espacios del tablero.",["e4","f7","h5","a1"]),
+ o("Columna",["Una línea vertical de ocho casillas. Las columnas se identifican con letras: a, b, c, d, e, f, g, h."],["La columna e contiene: e1, e2, e3, e4, e5, e6, e7 y e8."]),
+ o("Fila","Una línea horizontal de ocho casillas. Se identifican con números: 1, 2, 3, 4, 5, 6, 7, 8."),
+ o("Diagonal",["Una línea de casillas que avanza en diagonal. Los alfiles se mueven por diagonales."],["a1-b2-c3-d4-e5-f6-g7-h8"]),
+ o("Centro",["La zona central del tablero. Las cuatro casillas centrales son: d4, e4, d5 y e5.","El centro es importante porque desde él las piezas suelen controlar muchas casillas."]),
+ o("Flanco de rey",["La mitad del tablero correspondiente al rey."],["Para las blancas: e, f, g y h."]),
+ o("Flanco de dama",["La zona correspondiente a la dama."],["Para las blancas: a, b, c y d."])
+];
+G.movimientos=[
+ o("Movimiento","Desplazamiento legal de una pieza de una casilla a otra.",["Cf3 → significa: Caballo → f3."]),
+ o("Captura",["Cuando una pieza toma una pieza enemiga. En notación algebraica se utiliza «x»."],["Cxe4 → Caballo captura en e4."]),
+ o("Jaque",["El rey está siendo atacado. El jugador que recibe jaque debe solucionarlo inmediatamente."],["Dh5+ → La dama va a h5 y da jaque."]),
+ o("Jaque mate",["El rey está en jaque y no existe ninguna respuesta legal para salvarlo. Se representa normalmente con «#»."],["Af7# → significa: Alfil → f7 y jaque mate."]),
+ o("Ahogado","El jugador no está en jaque, pero no tiene ningún movimiento legal. Cuando ocurre en una posición legal, la partida termina en tablas.")
+];
+G.especiales=[
+ o("Enroque",["Movimiento especial que involucra al rey y una torre. Hay dos tipos: enroque corto (O-O) y enroque largo (O-O-O).","El enroque sirve principalmente para: poner el rey más seguro y activar la torre."]),
+ o("En passant / captura al paso",["Movimiento especial de peón. Un peón negro avanza dos casillas y queda al lado de un peón blanco. El peón blanco puede capturarlo como si hubiera avanzado solamente una casilla.","Es una captura muy particular y solo puede hacerse inmediatamente después del avance de dos casillas."]),
+ o("Promoción",["Cuando un peón llega a la última fila. Puede convertirse normalmente en: dama, torre, alfil o caballo."],["e8=D → El peón llega a e8 y se convierte en dama."])
+];
+G.apertura=[
+ o("Apertura",["Primera fase de la partida. Normalmente comprende las primeras jugadas.","Objetivos habituales: 1) controlar el centro; 2) desarrollar piezas; 3) poner el rey seguro; 4) conectar las torres; 5) preparar el medio juego."]),
+ o("Desarrollo",["Sacar las piezas de sus posiciones iniciales y colocarlas en casillas útiles."],["Cf3 → desarrolla un caballo."]),
+ o("Desarrollar una pieza","No significa simplemente moverla. Significa colocarla en una posición donde pueda participar activamente en la partida."),
+ o("Tiempo / tempo","Una unidad de tiempo ajedrecística equivalente aproximadamente a una jugada útil. Si obligas al rival a mover una pieza varias veces mientras tú desarrollas otras, puedes ganar tiempos."),
+ o("Pérdida de tiempos",["Realizar movimientos que no aportan suficiente valor mientras el rival mejora su posición."],["Dama: Dh5 → h3 → h5 → h3. La dama ha perdido varios tiempos."]),
+ o("Gambito","Apertura en la que un jugador ofrece material, normalmente un peón, buscando una compensación. La compensación puede ser: desarrollo, iniciativa, ataque, control del centro o tiempo."),
+ o("Gambito aceptado","El rival acepta el material ofrecido."),
+ o("Gambito rechazado","El rival no acepta el material ofrecido."),
+ o("Trampa de apertura",["Una variante que intenta inducir al rival a cometer un error temprano."],["Importante: «Una trampa no sustituye al buen juego.»"]),
+ o("Teoría de aperturas","Conjunto de variantes y conocimientos acumulados sobre las aperturas."),
+ o("Preparación","Estudio previo de determinadas variantes, posiciones o rivales.")
+];
+G.aperturaConc=[
+ o("Defensa",["Nombre que suele recibir una apertura comenzada por las negras."],["Defensa Escandinava."]),
+ o("Sistema","Conjunto de movimientos que puede utilizarse contra diferentes respuestas del rival."),
+ o("Variante","Línea específica dentro de una apertura."),
+ o("Gambito","Entrega voluntaria de material buscando compensación."),
+ o("Transposición","Cuando una secuencia de movimientos diferentes termina llevando a una posición conocida de otra apertura.")
+];
+G.mediojuego=[
+ o("Medio juego",["Fase que normalmente aparece después de la apertura. Aquí adquieren especial importancia: tácticas, ataques, maniobras, estructura de peones, coordinación y planes."]),
+ o("Plan",["Idea general de lo que quieres conseguir."],["«Quiero atacar el rey negro.»","El plan puede incluir: colocar la dama, llevar una torre, avanzar un peón, abrir una columna o eliminar un defensor."]),
+ o("Maniobra","Serie de movimientos destinados a mejorar una pieza o conseguir una determinada posición."),
+ o("Iniciativa",["Capacidad de obligar al rival a responder a tus amenazas."],["Cuando tienes la iniciativa: «Tú haces las preguntas y el rival tiene que contestarlas.»"]),
+ o("Ataque","Conjunto de acciones dirigidas contra una pieza, peón, zona o rey enemigo."),
+ o("Ataque al rey","Plan destinado a crear amenazas contra el rey enemigo."),
+ o("Ataque en el flanco","Ataque desarrollado principalmente en uno de los lados del tablero.")
+];
+G.final=[
+ o("Final",["Etapa de la partida en la que quedan menos piezas. La estrategia cambia considerablemente."],["En muchos finales: «El rey deja de ser solamente una pieza que hay que proteger y se convierte en una pieza activa.»"]),
+ o("Final de rey y peones","Solo quedan principalmente los reyes y peones. Es uno de los tipos de final más importantes para aprender."),
+ o("Oposición","Situación en la que los dos reyes están enfrentados con un número impar de casillas entre ellos. La oposición es fundamental en muchos finales de rey y peones."),
+ o("Zugzwang","Situación en la que tener que mover es una desventaja. El jugador preferiría poder pasar el turno, pero en ajedrez está obligado a mover.")
+];
+G.tactica=[
+ o("Táctica",["Secuencia concreta de movimientos que obtiene una ventaja."],["Ganar material · dar mate · ganar una pieza · conseguir una promoción."]),
+ o("Combinación",["Secuencia calculada de jugadas tácticas. Una combinación puede incluir: sacrificios, jaques, capturas y amenazas."]),
+ o("Jugada forzada",["Movimiento que limita muchísimo las respuestas del rival. Los ejemplos más claros son: 1) jaques; 2) capturas; 3) amenazas fuertes."]),
+ o("Jaque","Además de ser una regla del juego, el jaque es una herramienta táctica porque obliga al rival a responder."),
+ o("Captura","Puede ser táctica si permite ganar material o producir otra amenaza."),
+ o("Amenaza",["Algo que ocurrirá en la próxima jugada si el rival no responde."],["Amenazo Dxh7#."]),
+ o("Doble ataque",["Una pieza ataca simultáneamente dos objetivos."],["Un caballo ataca: la dama y una torre."]),
+ o("Ataque doble","Concepto más amplio: se generan simultáneamente dos amenazas o ataques. No necesariamente tienen que proceder de una única pieza."),
+ o("Horquilla",["Un tipo específico de doble ataque. Una pieza ataca simultáneamente dos o más piezas enemigas importantes. Los caballos son especialmente buenos haciendo horquillas."],["Un caballo da jaque al rey y simultáneamente ataca la dama."]),
+ o("Clavada",["Una pieza no puede moverse libremente porque detrás de ella hay una pieza más importante."],["Torre blanca → caballo negro → rey negro. Si el caballo se mueve, la torre atacaría al rey. Eso es una clavada absoluta."]),
+ o("Clavada absoluta","La pieza clavada no puede moverse legalmente porque detrás está el rey."),
+ o("Clavada relativa",["La pieza sí puede moverse legalmente, pero detrás hay algo muy valioso."],["Torre blanca → caballo negro → dama negra. El caballo puede moverse, pero al hacerlo probablemente perderá la dama."]),
+ o("Descubierta",["Una pieza se mueve y descubre el ataque de otra pieza que estaba detrás."],["Torre blanca ↓ Caballo blanco ↓ Rey negro. Si el caballo se mueve, la torre da jaque."]),
+ o("Jaque descubierto","Una descubierta en la que el ataque descubierto es contra el rey."),
+ o("Doble jaque","El rey recibe jaque simultáneamente de dos piezas. Es especialmente peligroso porque normalmente la respuesta debe consistir en mover el rey."),
+ o("Ataque a la descubierta","Situación en la que una pieza se mueve y libera el ataque de otra pieza."),
+ o("Desviación",["Obligar a una pieza enemiga a abandonar una función importante."],["Una torre defiende la dama. Realizas una combinación que obliga a la torre a abandonar esa defensa. Entonces capturas la dama."]),
+ o("Atracción","Obligar una pieza enemiga a ir a una casilla donde será vulnerable."),
+ o("Eliminación del defensor",["Eliminar una pieza que protege otra pieza o una casilla importante."],["Una torre defiende la dama. Capturas la torre. Ahora la dama queda sin defensa."]),
+ o("Sobrecarga",["Una pieza tiene demasiadas funciones defensivas."],["Una torre debe defender simultáneamente: una dama y un mate. No puede hacerlo todo."]),
+ o("Interferencia","Colocar una pieza de forma que bloquee la comunicación entre dos piezas enemigas."),
+ o("Bloqueo","Impedir que un peón o pieza avance o utilice determinadas casillas."),
+ o("Rayos X",["Ataque que atraviesa una pieza aparentemente protegida o bloqueadora y apunta a algo detrás."],["Torre → pieza → rey. La torre ejerce presión sobre el rey aunque exista una pieza entre ambos."]),
+ o("Ataque doble descubierto","Una pieza se mueve y aparecen simultáneamente varios ataques."),
+ o("Sacrificio",["Entregar voluntariamente material buscando una compensación."],["Entregar una dama para conseguir jaque mate.","«Que una pieza sea capturada no significa automáticamente que haya sido un sacrificio correcto.» Un sacrificio correcto debe tener una compensación suficiente."]),
+ o("Sacrificio especulativo","Sacrificio cuyo resultado no está completamente calculado, pero se considera que puede proporcionar suficiente compensación."),
+ o("Combinación forzada","Secuencia en la que el rival tiene respuestas muy limitadas.")
+];
+G.material=[
+ o("Material",["Cantidad y calidad de las piezas y peones que posee cada jugador."],["Si tienes dama, dos torres, dos alfiles y caballo, y el rival ha perdido una torre y un caballo, tienes ventaja material."]),
+ o("Ganar material","Conseguir piezas o peones del rival sin perder un valor equivalente."),
+ o("Perder material","Entregar piezas o peones sin recibir suficiente compensación."),
+ o("Ventaja material","Tener más material o material de mayor valor."),
+ o("Igualdad material","Ambos jugadores tienen aproximadamente el mismo material."),
+ o("Calidad",["Diferencia entre una torre y una pieza menor. Torre ≈ 5. Alfil/caballo ≈ 3.","Por eso ganar la calidad significa normalmente: ganar una torre a cambio de un alfil o caballo."]),
+ o("Ganar la calidad",["Tú pierdes un caballo y capturas una torre. Has ganado la calidad."]),
+ o("Peón de más","Tienes un peón adicional respecto al rival.")
+];
+G.peones=[
+ o("Estructura de peones","Forma en la que están colocados los peones. Es una de las bases estratégicas de la posición."),
+ o("Peón aislado","Peón que no tiene peones amigos en las columnas adyacentes."),
+ o("Peones doblados","Dos peones del mismo color situados en la misma columna."),
+ o("Peones triplicados","Tres peones del mismo color en una misma columna."),
+ o("Peón pasado","Peón que no tiene peones enemigos delante ni en las columnas adyacentes que puedan detener su avance. Es especialmente peligroso."),
+ o("Peón pasado protegido","Peón pasado protegido por otro peón."),
+ o("Peón retrasado","Peón que está atrasado respecto a los peones vecinos y puede resultar difícil de defender."),
+ o("Mayoría de peones","Tener más peones que el rival en una determinada zona del tablero.")
+];
+G.casillas=[
+ o("Casilla débil","Casilla que es difícil de defender o que no puede ser controlada fácilmente por peones. Puede convertirse en un excelente puesto para una pieza enemiga."),
+ o("Puesto avanzado / outpost","Casilla avanzada, normalmente protegida por un peón, donde una pieza puede instalarse con seguridad. Los caballos son excelentes ocupando puestos avanzados."),
+ o("Casilla crítica","Casilla cuyo control tiene una importancia especial para la posición."),
+ o("Casilla de invasión","Casilla desde la que una pieza enemiga puede penetrar profundamente en nuestra posición.")
+];
+G.activas=[
+ o("Pieza activa","Pieza que tiene muchas posibilidades de actuar. Controla casillas importantes, ataca objetivos o participa en un plan."),
+ o("Pieza pasiva","Pieza que tiene poca actividad. Puede estar bloqueada, mal colocada o dedicada únicamente a defender."),
+ o("Pieza mal colocada","Pieza que está en una casilla donde no puede desarrollar bien sus funciones."),
+ o("Pieza bien colocada","Pieza situada en una casilla donde controla zonas importantes y participa activamente."),
+ o("Pieza atrapada","Pieza que tiene muy pocas posibilidades de escapar y puede terminar siendo capturada."),
+ o("Pieza suelta",["Pieza que no está adecuadamente defendida. También se dice: pieza en prise."]),
+ o("En prise",["Significa que una pieza está expuesta a ser capturada."],["«La dama está en prise.» → Significa: «La dama puede ser capturada.»"])
+];
+G.defensa=[
+ o("Defensor","Pieza que protege otra pieza, peón o casilla."),
+ o("Defendido","Una pieza está defendida cuando otra pieza puede recapturar si es capturada."),
+ o("Defensor insuficiente","Una pieza intenta defender algo pero no puede hacerlo correctamente debido a una táctica."),
+ o("Sobrecarga defensiva","Una pieza debe defender demasiadas cosas."),
+ o("Coordinación","Capacidad de las piezas para trabajar juntas. Una posición con piezas coordinadas suele ser mucho más fuerte."),
+ o("Conexión de las torres","Cuando las torres pueden verse o comunicarse horizontalmente porque no hay piezas entre ellas. Es uno de los objetivos habituales de la apertura.")
+];
+G.rey=[
+ o("Seguridad del rey","Qué tan protegido está el rey."),
+ o("Refugio del rey","Zona de protección alrededor del rey."),
+ o("Debilidad del enroque","Situación en la que los peones que protegen al rey han sido debilitados o desplazados."),
+ o("Peones del enroque",["Los peones situados delante del rey después del enroque."],["Después del enroque corto suelen estar: f2, g2 y h2 para las blancas."]),
+ o("Ataque al rey","Concentración de piezas y amenazas contra el rey."),
+ o("Red de mate","Conjunto de casillas y piezas que limitan progresivamente las posibilidades de escape del rey."),
+ o("Casilla de escape","Casilla a la que el rey puede huir para evitar un jaque."),
+ o("Ahogado",["El rey no está en jaque, pero el jugador no tiene movimientos legales. Resultado: tablas."])
+];
+G.mates=[
+ o("Mate","Abreviatura de jaque mate."),
+ o("Mate en uno","Existe un movimiento que da jaque mate inmediatamente."),
+ o("Mate en dos","Existe una secuencia en la que el atacante puede forzar mate en dos movimientos propios."),
+ o("Mate en N","Problema en el que se busca forzar mate en un número determinado de jugadas."),
+ o("Mate del pasillo",["Mate producido porque el rey está atrapado detrás de sus propios peones."],["Torre entra en la primera o segunda fila y da mate al rey que no tiene casillas de escape."]),
+ o("Mate ahogado",["No es un término correcto para el resultado de ahogado. Ahogado y jaque mate son situaciones diferentes."])
+];
+G.estrategia=[
+ o("Estrategia",["Planificación a largo plazo."],["La táctica responde: «¿Qué puedo ganar ahora?»","La estrategia pregunta: «¿Qué posición quiero conseguir?»"]),
+ o("Debilidad",["Característica de una posición que puede ser explotada. Puede ser: un peón débil, una casilla débil, un rey expuesto o una pieza mal colocada."]),
+ o("Ventaja",["Superioridad en algún aspecto de la posición. Puede ser: material, espacio, desarrollo, actividad, estructura, seguridad del rey o iniciativa."]),
+ o("Espacio","Cantidad de territorio controlado. Tener más espacio suele proporcionar más libertad para maniobrar."),
+ o("Actividad","Grado en que las piezas participan en la partida."),
+ o("Movilidad","Cantidad y calidad de movimientos disponibles para una pieza o conjunto de piezas."),
+ o("Compensación",["Lo que recibes a cambio de una desventaja."],["Entregas un peón pero obtienes: desarrollo, iniciativa, ataque y actividad. Eso es compensación."]),
+ o("Contrajuego",["Actividad que consigue el jugador que está bajo presión."],["El rival está atacando tu rey. Tú creas una amenaza contra su rey. Eso es contrajuego."]),
+ o("Profilaxis",["Jugada destinada a impedir un plan o amenaza del rival antes de que ocurra."],["Pregunta típica: «¿Qué quiere hacer mi rival?» Y después: «¿Puedo impedirlo ahora?»"]),
+ o("Mejora de la peor pieza","Principio estratégico muy importante. Si una pieza tuya está haciendo poco, buscas una casilla mejor para ella."),
+ o("Centralización","Colocar las piezas hacia el centro cuando sea conveniente."),
+ o("Iniciativa","Ser quien obliga al rival a reaccionar.")
+];
+G.columnas=[
+ o("Columna abierta","Columna sin peones. Las torres suelen aprovechar muy bien las columnas abiertas."),
+ o("Columna semiabierta","Columna donde tienes un peón, pero el rival no tiene peón."),
+ o("Columna cerrada","Columna bloqueada por peones de ambos colores."),
+ o("Séptima fila",["Para las blancas, la séptima fila es especialmente importante porque es la fila donde inicialmente están los peones negros.","Una torre blanca en la séptima fila puede ser muy poderosa."]),
+ o("Invasión","Entrada de una pieza en territorio enemigo.")
+];
+G.intercambios=[
+ o("Cambio",["Intercambio de piezas."],["Tu alfil captura un caballo y el rival recaptura tu alfil."]),
+ o("Simplificación","Cambiar piezas para reducir la complejidad de la posición."),
+ o("Cambio favorable","Intercambio que beneficia tu posición."),
+ o("Cambio desfavorable","Intercambio que mejora la posición del rival."),
+ o("Cambiar damas","Intercambiar las dos damas. Puede ser bueno si tienes ventaja material y quieres simplificar."),
+ o("Final de damas","Final en el que las damas siguen presentes. Son finales muy tácticos y peligrosos.")
+];
+G.sacrificios=[
+ o("Sacrificio de peón","Entregar un peón buscando compensación."),
+ o("Sacrificio de calidad","Entregar una torre a cambio de una pieza menor."),
+ o("Sacrificio de pieza","Entregar un caballo o alfil."),
+ o("Sacrificio de dama","Entregar la dama. Normalmente requiere una compensación enorme, como mate o una ganancia material decisiva."),
+ o("Sacrificio posicional","Entregar material para obtener una ventaja estratégica duradera.")
+];
+G.errores=[
+ o("Error","Jugada que empeora significativamente la posición."),
+ o("Blunder / error grave",["Error muy serio que puede perder material, posición o partida."],["En español se suele decir: «He cometido un grave error.»"]),
+ o("Inexactitud","Jugada que no es la mejor, pero tampoco pierde inmediatamente."),
+ o("Error táctico","No detectar una combinación concreta."),
+ o("Error estratégico","Elegir un plan o estructura de posición inadecuados."),
+ o("Error de cálculo","No calcular correctamente las consecuencias de una variante."),
+ o("Error de visión","No ver una pieza atacada, una amenaza o una táctica evidente."),
+ o("Error de atención","La posición podía entenderse correctamente, pero el jugador simplemente no vio algo."),
+ o("Jugada automática","Mover sin comprobar suficientemente la posición. Una de las grandes causas de errores de principiantes.")
+];
+G.calculo=[
+ o("Cálculo","Imaginar mentalmente una secuencia de jugadas antes de realizarla."),
+ o("Variante",["Secuencia hipotética de movimientos."],["1. Yo juego A. 2. Él responde B. 3. Yo juego C. 4. Él responde D. Eso es una variante."]),
+ o("Candidatas","Movimientos que consideras como posibles jugadas antes de elegir."),
+ o("Movimiento forzado","Jugada que prácticamente obliga al rival a responder de una determinada manera."),
+ o("Mejor respuesta","La respuesta que más problemas plantea a tu jugada."),
+ o("Línea principal","La variante considerada más importante o crítica."),
+ o("Profundidad","Cantidad de jugadas que consigues calcular."),
+ o("Horizonte","Límite hasta el cual estás calculando."),
+ o("Error de horizonte","Evaluar una combinación como buena porque no has calculado suficientemente lejos.")
+];
+G.evaluacion=[
+ o("Evaluación",["Valoración de quién está mejor y por qué. No se trata solamente de contar piezas.","Se puede evaluar: material, seguridad del rey, actividad, estructura de peones, espacio, iniciativa, desarrollo y posibilidades tácticas."]),
+ o("Ventaja decisiva","Una posición donde un jugador tiene una ventaja que, con juego correcto, debería ser suficiente para ganar."),
+ o("Posición equilibrada","Ningún jugador tiene una ventaja significativa."),
+ o("Posición complicada","La posición contiene muchas posibilidades y resulta difícil determinar qué plan es mejor.")
+];
+G.tablas=[
+ o("Tablas","La partida termina sin ganador."),
+ o("Repetición de posición","Una misma posición puede repetirse y producir tablas bajo las reglas correspondientes."),
+ o("Regla de las 50 jugadas","En determinadas circunstancias, pueden reclamarse tablas si durante 50 movimientos de cada jugador no se produce captura ni movimiento de peón."),
+ o("Material insuficiente","Cuando no existe material suficiente para poder dar mate."),
+ o("Acuerdo de tablas","Ambos jugadores acuerdan terminar la partida en tablas.")
+];
+G.reloj=[
+ o("Reloj de ajedrez","Reloj con dos controles, uno para cada jugador."),
+ o("Control de tiempo",["Tiempo disponible para jugar."],["10 minutos · 5 minutos · 90 minutos + incremento."]),
+ o("Incremento",["Tiempo que se añade al reloj después de cada jugada."],["5+3 → significa: 5 minutos iniciales + 3 segundos por movimiento."]),
+ o("Blitz","Ajedrez rápido. Habitualmente partidas de muy pocos minutos."),
+ o("Bullet","Ajedrez extremadamente rápido."),
+ o("Rapid","Ajedrez rápido, pero normalmente más lento que blitz."),
+ o("Clásicas","Partidas con controles de tiempo largos."),
+ o("Bandera","Cuando el tiempo de un jugador llega a cero.")
+];
+G.psicologia=[
+ o("Tilt","Estado emocional en el que el jugador empieza a tomar malas decisiones por frustración, enfado o nervios."),
+ o("Sobrepensar","Analizar excesivamente una posición sencilla."),
+ o("Jugar por intuición","Elegir una jugada basándose en patrones y experiencia sin calcular una variante larga."),
+ o("Automatismo","Mover una pieza porque «parece natural» sin comprobar las consecuencias."),
+ o("Visión táctica","Capacidad para detectar rápidamente posibilidades tácticas."),
+ o("Sentido posicional","Capacidad para comprender qué posiciones son buenas o malas aunque no exista una táctica inmediata.")
+];
+G.motores=[
+ o("Motor",["Programa informático que analiza posiciones de ajedrez."],["Ejemplos conocidos: Stockfish · Leela Chess Zero."]),
+ o("Evaluación del motor","Valoración matemática aproximada de la posición."),
+ o("Centipeón",["Unidad utilizada frecuentemente por los motores.","100 centipeones ≈ 1 peón de ventaja en términos de evaluación, aunque no debe interpretarse literalmente como «un peón que ya has ganado»."]),
+ o("Profundidad del motor",["Número asociado al volumen/profundidad del cálculo del motor."],["No debe interpretarse simplemente como: «Más profundidad = exactamente X jugadas hacia delante.»"]),
+ o("Elo","Sistema utilizado para medir aproximadamente la fuerza relativa de los jugadores."),
+ o("Rating","Puntuación de fuerza ajedrecística."),
+ o("ELO","En conversaciones cotidianas se utiliza como sinónimo de rating, aunque técnicamente Elo es el nombre del sistema asociado a Arpad Elo.")
+];
+G.jerga=[
+ o("«Está en prise»","Una pieza puede ser capturada."),
+ o("«Está colgando»","Una pieza o peón está mal defendido o sin defensa."),
+ o("«Está clavado»","No puede moverse fácilmente porque detrás existe algo más importante."),
+ o("«Gano material»","Después de la combinación, obtendrás más material."),
+ o("«Pierdo la calidad»","Pierdes una torre a cambio de una pieza menor."),
+ o("«Tengo compensación»","He entregado material, pero tengo otras ventajas."),
+ o("«Tengo iniciativa»","Estoy creando amenazas y obligando al rival a responder."),
+ o("«Tengo contrajuego»","Aunque estoy peor, tengo posibilidades activas."),
+ o("«Simplifico»","Cambio piezas para hacer la posición más sencilla."),
+ o("«Abro la posición»","Realizo cambios de peones para crear líneas abiertas para las piezas."),
+ o("«Cierro la posición»","Mantengo estructuras de peones que bloquean las líneas."),
+ o("«Abrir una columna»","Eliminar los peones que bloquean una columna."),
+ o("«Abrir una diagonal»","Eliminar piezas o peones que bloquean un alfil."),
+ o("«Cambiar el defensor»","Intercambiar la pieza que protege un objetivo."),
+ o("«Tengo una pieza fuera de juego»","Una pieza está muy lejos de donde se desarrolla la acción."),
+ o("«El rey está expuesto»","El rey tiene poca protección y puede ser atacado."),
+ o("«La posición está abierta»","Hay pocas estructuras de peones bloqueando líneas."),
+ o("«La posición está cerrada»","Hay muchos peones bloqueando las líneas."),
+ o("«Hay juego»","Existen posibilidades activas para ambos jugadores."),
+ o("«No hay juego»","Una posición donde resulta difícil crear amenazas o progresar.")
+];
+G.frases=[
+ o("«¿Qué amenaza mi rival?»","Pregunta fundamental."),
+ o("«¿Qué piezas están atacadas?»","Sirve para evitar perder material por descuido."),
+ o("«¿Hay algún jaque?»","Primera pregunta táctica."),
+ o("«¿Hay alguna captura?»","Segunda pregunta."),
+ o("«¿Hay alguna amenaza?»","Tercera pregunta."),
+ o("«¿Cuál es la peor pieza?»","Pregunta estratégica."),
+ o("«¿Qué quiere hacer mi rival?»","Pregunta profiláctica."),
+ o("«¿Qué pasa si mueve esa pieza?»","Sirve para detectar clavadas, descubiertas y defensores."),
+ o("«¿Qué queda después del cambio?»","Sirve para no cambiar piezas automáticamente."),
+ o("«¿Y cuál es su mejor respuesta?»","Una de las preguntas más importantes del ajedrez.")
+];
+G.clave=[
+ o("40 · Pieza defendida",["Antes de capturar algo, pregunta: «¿Quién defiende esa pieza?» Y después: «¿Quién defiende al defensor?» Esto evita muchísimos errores."],["Tú ves: «¡Puedo capturar esa torre!» Pero antes de capturar: 1) ¿Está protegida? 2) ¿Por quién? 3) ¿Qué ocurre después de mi captura? 4) ¿Puede recapturar? 5) ¿Qué material queda después?"]),
+ o("41 · Pieza colgando",["Una pieza colgando es una pieza que puede perderse porque no está adecuadamente protegida."],["Antes de mover: «¿Tengo alguna pieza colgando?» Después: «¿Tiene el rival alguna pieza colgando?»"]),
+ o("42 · Amenaza",["Una amenaza es algo que el rival puede hacer si tú no reaccionas."],["Mi dama ataca h7. Si en la siguiente jugada puedo dar mate en h7, entonces existe una amenaza."]),
+ o("43 · Defensor",["Cuando quieras atacar algo, no preguntes únicamente: «¿Qué estoy atacando?» Pregunta también: «¿Cuántas veces está defendido?» Y: «¿Cuántas veces puedo atacarlo?»","Esto introduce una idea fundamental: ATACANTES VS DEFENSORES."]),
+ o("44 · Coordinación",["Una pieza sola puede ser fuerte. Pero varias piezas trabajando juntas pueden ser muchísimo más peligrosas."],["Una dama ataca. Una torre controla una columna. Un alfil controla una diagonal. Un caballo controla las casillas de escape. Juntas pueden crear una amenaza que ninguna podría crear por sí sola."]),
+ o("45 · Casillas de escape",["Cuando ataques al rey, no pienses solamente: «¿Puedo darle jaque?» Piensa: «¿A dónde puede escapar?»","Un mate normalmente aparece cuando: 1) das jaque; 2) controlas las casillas de escape; 3) impides capturar al atacante; 4) bloqueas las posibles defensas."]),
+ o("46 · Jugada intermedia",["A veces parece que debes recapturar inmediatamente. Pero existe una jugada mejor antes de recapturar. Puede ser: un jaque, una captura o una amenaza."],["Rival captura tu torre. Tú podrías recapturar. Pero antes puedes dar jaque y ganar la dama. Eso es una jugada intermedia."]),
+ o("47 · Descubrir el tablero",["Antes de mover, haz una fotografía mental:"],["REY → ¿Está seguro? · DAMA → ¿Está atacada? · TORRES → ¿Están activas? · ALFILES → ¿Tienen diagonales? · CABALLOS → ¿Tienen buenos puestos? · PEONES → ¿Hay alguno débil o pasado? · RIVAL → ¿Qué amenaza?"])
+];
+G.supervivencia=[
+ o("Jaque","El rey está siendo atacado y hay que solucionarlo inmediatamente."),
+ o("Jaque mate","El rey está atacado y no existe ninguna defensa legal."),
+ o("Captura","Una pieza toma una pieza enemiga (se anota con «x»)."),
+ o("Amenaza","Lo que ocurrirá en la próxima jugada si el rival no responde."),
+ o("Defensa","Pieza o acción que protege otra pieza, peón o casilla."),
+ o("Atacante","Pieza que ataca un objetivo: contar atacantes y defensores es clave."),
+ o("Clavada","Una pieza no puede moverse libremente porque detrás hay algo más importante."),
+ o("Horquilla","Una pieza ataca simultáneamente dos o más piezas importantes."),
+ o("Descubierta","Una pieza se mueve y descubre el ataque de otra."),
+ o("Doble ataque","Una pieza (o varias) ataca dos objetivos a la vez."),
+ o("Sacrificio","Entregar material voluntariamente buscando compensación."),
+ o("Gambito","Apertura en la que se ofrece material, normalmente un peón."),
+ o("Desarrollo","Sacar las piezas de sus posiciones iniciales a casillas útiles."),
+ o("Iniciativa","Capacidad de obligar al rival a responder a tus amenazas."),
+ o("Contrajuego","Actividad que consigue quien está bajo presión."),
+ o("Material","Cantidad y calidad de piezas y peones de cada jugador."),
+ o("Pieza colgando","Pieza que puede perderse porque no está adecuadamente protegida."),
+ o("Puesto avanzado","Casilla avanzada y segura donde una pieza se instala (outpost)."),
+ o("Zugzwang","Tener que mover es una desventaja."),
+ o("Oposición","Los dos reyes enfrentados con un número impar de casillas entre ellos.")
+];
+const DIEZ=[["Amenaza","¿Qué quiere hacer el rival?"],["Defensa","¿Quién protege esa pieza?"],["Clavada","¿Qué hay detrás de esa pieza?"],["Horquilla","¿Una pieza está atacando dos objetivos?"],["Descubierta","¿Qué ataque aparece cuando una pieza se mueve?"],["Sacrificio","¿Qué recibo a cambio del material?"],["Iniciativa","¿Quién está obligando al otro a responder?"],["Material","¿Quién tiene más piezas o peones?"],["Actividad","¿Quién tiene las piezas mejor colocadas?"],["Cálculo","¿Qué pasa después de mi jugada?"]];
+const CONF=[
+ {t:"Clavada <span class='neq'>≠</span> ataque doble",a:"Clavada",da:"«Una pieza no puede moverse libremente porque detrás hay algo importante.»",b:"Ataque doble",db:"«Se atacan dos objetivos simultáneamente.»"},
+ {t:"Jaque <span class='neq'>≠</span> jaque mate",a:"Jaque",da:"«El rey está atacado, pero puede existir una defensa.»",b:"Mate",db:"«El rey está atacado y no existe ninguna defensa legal.»"},
+ {t:"Sacrificio <span class='neq'>≠</span> error",a:"Sacrificio",da:"«Entregas material buscando compensación.»",b:"Error",db:"«Pierdes material sin obtener compensación suficiente.»"},
+ {t:"Desarrollo <span class='neq'>≠</span> mover una pieza sin más",a:"Desarrollo",da:"Desarrollar significa colocarla en una posición útil.",b:"Mover por mover",db:"Desplazar la pieza sin mejorar su participación en la partida."},
+ {t:"Ataque <span class='neq'>≠</span> amenaza",a:"Ataque",da:"«Una pieza está atacando algo.»",b:"Amenaza",db:"«Existe una acción futura que el rival debe impedir.»"},
+ {t:"Estrategia <span class='neq'>≠</span> táctica",a:"Táctica",da:"«¿Qué puedo conseguir ahora mediante una secuencia concreta?»",b:"Estrategia",db:"«¿Cómo quiero mejorar mi posición?»"}
+];
+const METODO=[
+ ["PASO 1 — OBSERVA","¿Qué ha cambiado desde la última jugada?"],
+ ["PASO 2 — AMENAZAS","¿Qué amenaza mi rival?"],
+ ["PASO 3 — PIEZAS","¿Qué piezas están atacadas?"],
+ ["PASO 4 — REY","¿Hay jaques?"],
+ ["PASO 5 — TÁCTICA","Busca: jaques, capturas, amenazas, clavadas, horquillas, descubiertas y piezas colgando."],
+ ["PASO 6 — CANDIDATAS","Elige unas pocas jugadas posibles."],
+ ["PASO 7 — RESPUESTA DEL RIVAL","Pregunta: «¿Cuál sería la respuesta más fuerte de mi rival?»"],
+ ["PASO 8 — EVALUACIÓN","Después de la secuencia: ¿quién tiene más material? ¿quién tiene mejor rey? ¿quién tiene piezas más activas? ¿quién tiene la iniciativa? ¿qué amenazas quedan?"],
+ ["PASO 9 — ÚLTIMA COMPROBACIÓN","Antes de tocar la pieza: «¿Estoy dejando algo sin defender?» Y entonces juegas."]
+];
+
+/* ---------- renderizadores ---------- */
+function renderGrid(elId,items){
+ const el=document.getElementById(elId); if(!el) return;
+ el.innerHTML=items.map(function(it){
+  const d=Array.isArray(it.d)?it.d.map(p=>"<p>"+p+"</p>").join(""):"<p>"+it.d+"</p>";
+  const ex=it.ex?"<div class='ex'><span class='ex-label'>Ejemplo</span>"+it.ex.map(e=>"<div class='ex-line'>▸ "+e+"</div>").join("")+"</div>":"";
+  return "<article class='card term-card'><h3 class='term-title'>"+it.t+"</h3>"+d+ex+"</article>";
+ }).join("");
+}
+function renderAll(){
+ renderGrid("grid-tablero",G.tablero);
+ renderGrid("grid-movimientos",G.movimientos);
+ renderGrid("grid-especiales",G.especiales);
+ renderGrid("grid-apertura",G.apertura);
+ renderGrid("grid-apertura-conc",G.aperturaConc);
+ renderGrid("grid-mediojuego",G.mediojuego);
+ renderGrid("grid-final",G.final);
+ renderGrid("grid-tactica",G.tactica);
+ renderGrid("grid-material",G.material);
+ renderGrid("grid-peones",G.peones);
+ renderGrid("grid-casillas",G.casillas);
+ renderGrid("grid-activas",G.activas);
+ renderGrid("grid-defensa",G.defensa);
+ renderGrid("grid-rey",G.rey);
+ renderGrid("grid-mates",G.mates);
+ renderGrid("grid-estrategia",G.estrategia);
+ renderGrid("grid-columnas",G.columnas);
+ renderGrid("grid-intercambios",G.intercambios);
+ renderGrid("grid-sacrificios",G.sacrificios);
+ renderGrid("grid-errores",G.errores);
+ renderGrid("grid-calculo",G.calculo);
+ renderGrid("grid-evaluacion",G.evaluacion);
+ renderGrid("grid-tablas",G.tablas);
+ renderGrid("grid-reloj",G.reloj);
+ renderGrid("grid-psicologia",G.psicologia);
+ renderGrid("grid-motores",G.motores);
+ renderGrid("grid-jerga",G.jerga);
+ renderGrid("grid-frases",G.frases);
+ renderGrid("grid-clave",G.clave);
+ /* supervivencia con numeración */
+ const sup=document.getElementById("grid-supervivencia");
+ sup.innerHTML=G.supervivencia.map(function(it,i){
+  return "<article class='card term-card sup-item' data-term='"+(it.t+" "+it.d).toLowerCase()+"'><span class='sup-num'>"+(i+1)+"</span><h3 class='term-title'>"+it.t+"</h3><p>"+it.d+"</p></article>";
+ }).join("");
+ document.getElementById("supCount").textContent=G.supervivencia.length+" términos";
+ document.getElementById("diez-body").innerHTML=DIEZ.map(function(r,i){
+  return "<tr><td><span class='chip c-acc'>"+(i+1)+"</span></td><td><b>"+r[0]+"</b></td><td>"+r[1]+"</td></tr>";
+ }).join("");
+ /* confusiones */
+ document.getElementById("conf-list").innerHTML=CONF.map(function(c){
+  return "<details class='acc'><summary>"+c.t+"</summary><div class='acc-body'><div class='vs'>"+
+   "<div class='side a'><h4>"+c.a+"</h4><p>"+c.da+"</p></div>"+
+   "<div class='side b'><h4>"+c.b+"</h4><p>"+c.db+"</p></div></div></div></details>";
+ }).join("");
+ /* método */
+ document.getElementById("grid-metodo").innerHTML=METODO.map(function(m){
+  return "<div class='card term-card'><h3 class='term-title'>"+m[0]+"</h3><p>"+m[1]+"</p></div>";
+ }).join("");
+}
+/* mini tableros de zonas */
+function renderMini(elId,set,cls){
+ const el=document.getElementById(elId); if(!el) return;
+ let h="";
+ for(let r=0;r<8;r++)for(let f=0;f<8;f++){
+  const name=FILES[f]+(8-r);
+  const base=((r+f)%2===0)?"l":"d";
+  h+="<div class='msq "+base+(set.indexOf(name)>-1?" "+cls:"")+"'></div>";
+ }
+ el.innerHTML=h;
+}
+function renderZones(){
+ const fileSet=function(fl){const a=[];for(let i=1;i<=8;i++)a.push(fl+i);return a;};
+ const rankSet=function(r){const a=[];for(let i=0;i<8;i++)a.push(FILES[i]+r);return a;};
+ const diag=["a1","b2","c3","d4","e5","f6","g7","h8"];
+ renderMini("mini-cole",fileSet("e"),"hi-acc");
+ renderMini("mini-fila4",rankSet("4"),"hi-amb");
+ renderMini("mini-diag",diag,"hi-pur");
+ renderMini("mini-centro",["d4","e4","d5","e5"],"hi-grn");
+ const fr=[];["e","f","g","h"].forEach(fl=>fr.push.apply(fr,fileSet(fl)));
+ const fd=[];["a","b","c","d"].forEach(fl=>fd.push.apply(fd,fileSet(fl)));
+ renderMini("mini-frey",fr,"hi-acc");
+ renderMini("mini-fdama",fd,"hi-pur");
+}
+/* ---------- SPA ---------- */
+const views=document.querySelectorAll(".view");
+const navBtns=document.querySelectorAll(".nav-btn");
+function show(id){
+ views.forEach(v=>v.classList.toggle("active",v.id==="view-"+id));
+ navBtns.forEach(b=>{
+  const on=b.dataset.view===id;
+  b.classList.toggle("active",on);
+  if(on){try{b.scrollIntoView({inline:"center",block:"nearest"});}catch(e){}}
+ });
+ window.scrollTo({top:0,behavior:"auto"});
+}
+navBtns.forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
+/* ---------- progreso / volver arriba ---------- */
+const bar=document.getElementById("progressBar");
+const toTop=document.getElementById("toTop");
+window.addEventListener("scroll",function(){
+ const h=document.documentElement;
+ const max=h.scrollHeight-h.clientHeight;
+ bar.style.width=(max>0?(h.scrollTop/max)*100:0)+"%";
+ toTop.classList.toggle("show",h.scrollTop>320);
+},{passive:true});
+toTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+/* ---------- filtro supervivencia ---------- */
+document.getElementById("supFilter").addEventListener("input",function(){
+ const q=this.value.trim().toLowerCase();
+ let n=0;
+ document.querySelectorAll(".sup-item").forEach(function(c){
+  const show=q===""||c.dataset.term.indexOf(q)>-1;
+  c.style.display=show?"":"none";
+  if(show)n++;
+ });
+ document.getElementById("supCount").textContent=n+" términos";
+});
+/* ---------- init ---------- */
+document.getElementById("cover-home").innerHTML=COVER_SVG;
+document.getElementById("cover-credits").innerHTML=COVER_SVG;
+if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches){
+ document.querySelectorAll("svg.cover-svg").forEach(function(s){try{s.pauseAnimations();}catch(e){}});
+}
+renderAll();
+renderZones();
+document.querySelectorAll(".board-host").forEach(buildBoard);
+show("home");
+</script>
+</body>
+</html>
