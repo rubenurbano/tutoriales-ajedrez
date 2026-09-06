@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aprende a pensar como un jugador de ajedrez — Gambito Alien · Caro-Kann</title>
+<style>
+/* ============ BASE ============ */
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f; --accent:#00d4ff;
+  --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+  --txt:#e2e8f0; --muted:#94a3b8; --dim:#64748b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+  line-height:1.6; overflow-x:hidden;
+  background-image:radial-gradient(ellipse 900px 400px at 50% -80px, rgba(0,212,255,.07), transparent),
+                   radial-gradient(ellipse 700px 500px at 100% 100%, rgba(168,85,247,.05), transparent);
+}
+.mono{font-family:ui-monospace,'Cascadia Mono',Consolas,'Courier New',monospace}
+::selection{background:rgba(0,212,255,.35)}
+::-webkit-scrollbar{width:10px;height:8px}
+::-webkit-scrollbar-track{background:#0b1220}
+::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#2c5a8f}
+
+/* ============ PROGRESS BAR ============ */
+#progressBar{position:fixed;top:0;left:0;height:4px;width:0;z-index:1000;
+  background:linear-gradient(90deg,var(--accent),var(--purple));
+  box-shadow:0 0 10px rgba(0,212,255,.8);transition:width .1s linear}
+
+/* ============ NAVBAR ============ */
+.navbar{position:fixed;top:4px;left:0;right:0;z-index:900;height:58px;
+  background:rgba(10,14,26,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 16px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:1px;
+  color:#fff;white-space:nowrap;cursor:pointer;user-select:none;font-size:15px}
+.brand .kn{font-size:26px;color:var(--accent);text-shadow:0 0 12px rgba(0,212,255,.7)}
+.brand small{display:block;font-size:9px;color:var(--muted);letter-spacing:2px;font-weight:600}
+.nav-scroll{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;flex:1;
+  scrollbar-width:none;padding:4px 2px}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-btn{flex:0 0 auto;background:transparent;border:1px solid transparent;color:var(--muted);
+  padding:7px 13px;border-radius:8px;font-size:12.5px;font-weight:600;letter-spacing:.4px;
+  cursor:pointer;transition:all .2s;font-family:inherit;white-space:nowrap}
+.nav-btn:hover{color:var(--txt);border-color:var(--border);background:rgba(30,58,95,.35)}
+.nav-btn.active{color:#04121c;background:var(--accent);border-color:var(--accent);
+  box-shadow:0 0 14px rgba(0,212,255,.5)}
+.nav-btn.credits-btn{border-color:var(--purple);color:var(--purple)}
+.nav-btn.credits-btn:hover{background:rgba(168,85,247,.15)}
+.nav-btn.credits-btn.active{background:var(--purple);color:#fff}
+
+/* ============ LAYOUT ============ */
+main{padding-top:62px;min-height:80vh}
+.page{display:none;padding:34px 0 60px}
+.page.active{display:block;animation:fadeIn .45s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+.sec-head{margin-bottom:26px}
+.eyebrow{display:inline-block;font-size:11px;letter-spacing:3px;color:var(--accent);
+  font-weight:700;text-transform:uppercase;border:1px solid rgba(0,212,255,.4);
+  padding:4px 12px;border-radius:20px;background:rgba(0,212,255,.07);margin-bottom:12px}
+.sec-head h2{font-size:clamp(24px,4vw,36px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px}
+.sec-head h2 span{color:var(--accent)}
+.lead{color:var(--muted);font-size:16px;max-width:900px}
+
+/* ============ CARDS / GRIDS ============ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:22px;margin-bottom:18px;position:relative}
+.card.glow{border-color:rgba(0,212,255,.45);box-shadow:0 0 24px rgba(0,212,255,.07)}
+.card h3{font-size:18px;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.card h4{font-size:15px;color:var(--accent);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.6px}
+.card p{color:var(--txt);font-size:15px;margin-bottom:8px}
+.card .muted{color:var(--muted)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.icon-box{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:19px;flex:0 0 auto;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.4)}
+.icon-box.gr{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.45)}
+.icon-box.am{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.45)}
+.icon-box.rd{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.45)}
+.icon-box.pu{background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.45)}
+
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.2px;padding:4px 12px;
+  border-radius:20px;text-transform:uppercase}
+.b-accent{background:rgba(0,212,255,.12);color:var(--accent);border:1px solid rgba(0,212,255,.5)}
+.b-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.5)}
+.b-amber{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.5)}
+.b-red{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.5)}
+.b-purple{background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.5)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:#0b1220;border:1px solid var(--border);border-radius:8px;padding:6px 12px;
+  font-size:13px;color:var(--txt)}
+.chip.acc{border-color:rgba(0,212,255,.5);color:var(--accent)}
+
+/* ============ CALLOUTS ============ */
+.callout{border-radius:10px;padding:16px 18px;margin:14px 0;border:1px solid;display:flex;gap:12px;align-items:flex-start}
+.callout .co-ic{font-size:20px;line-height:1.3}
+.callout .co-tt{font-weight:800;letter-spacing:1.5px;font-size:12px;text-transform:uppercase;display:block;margin-bottom:4px}
+.callout p{margin:0;font-size:14.5px}
+.c-info{background:rgba(0,212,255,.06);border-color:rgba(0,212,255,.4)}
+.c-info .co-tt{color:var(--accent)}
+.c-ok{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.4)}
+.c-ok .co-tt{color:var(--green)}
+.c-warn{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.45)}
+.c-warn .co-tt{color:var(--amber)}
+.c-bad{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.45)}
+.c-bad .co-tt{color:var(--red)}
+
+/* ============ STEPS / LISTS ============ */
+.step{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start}
+.step-num{width:34px;height:34px;border-radius:50%;background:rgba(0,212,255,.12);
+  border:1px solid var(--accent);color:var(--accent);display:flex;align-items:center;
+  justify-content:center;font-weight:800;flex:0 0 auto;font-size:15px}
+.step-num.gr{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.1)}
+.step-num.am{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.1)}
+.step-num.rd{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.1)}
+.step-num.pu{border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,.1)}
+.step-body strong{color:#fff}
+ul.dash{list-style:none}
+ul.dash li{padding-left:22px;position:relative;margin-bottom:6px;font-size:14.5px}
+ul.dash li::before{content:"▸";position:absolute;left:2px;color:var(--accent)}
+.quote{border-left:4px solid var(--accent);background:rgba(0,212,255,.05);
+  padding:16px 20px;border-radius:0 10px 10px 0;font-size:16.5px;font-style:italic;color:#dbeafe;margin:14px 0}
+.quote small{display:block;margin-top:8px;font-style:normal;color:var(--muted);font-size:12.5px}
+.nota{font-size:13px;color:var(--dim)}
+hr.sep{border:none;border-top:1px dashed var(--border);margin:22px 0}
+
+/* ============ TABLES ============ */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+table.tbl{width:100%;border-collapse:collapse;min-width:420px}
+.tbl th{background:#0b1220;color:var(--accent);text-align:left;padding:10px 14px;font-size:12.5px;
+  letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.tbl td{padding:10px 14px;font-size:14px;border-bottom:1px solid rgba(30,58,95,.5)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(0,212,255,.03)}
+
+/* ============ FLOW / DIAGRAMS ============ */
+.flow{display:flex;flex-direction:column;align-items:flex-start;gap:0}
+.flow-box{background:#0b1220;border:1px solid var(--border);border-radius:9px;
+  padding:10px 18px;font-weight:700;font-size:14px;color:#fff;letter-spacing:.5px}
+.flow-box.acc{border-color:rgba(0,212,255,.55);color:var(--accent);box-shadow:0 0 12px rgba(0,212,255,.12)}
+.flow-box.gr{border-color:rgba(34,197,94,.55);color:var(--green)}
+.flow-arr{color:var(--accent);font-size:18px;padding:2px 0 2px 14px;line-height:1.2}
+.formula{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
+.formula .f-chip{background:var(--card);border:1px solid var(--accent);color:var(--accent);
+  padding:9px 16px;border-radius:9px;font-weight:800;letter-spacing:1px;font-size:13.5px}
+.formula .f-arr{color:var(--purple);font-weight:900;font-size:18px}
+
+/* ============ HOME ============ */
+.home-badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:3px;
+  color:var(--accent);border:1px solid rgba(0,212,255,.5);padding:6px 16px;border-radius:24px;
+  background:rgba(0,212,255,.07);font-weight:700;margin-bottom:18px;text-transform:uppercase}
+.cover-holder{width:100%;border-radius:14px;overflow:hidden;border:1px solid var(--border);
+  box-shadow:0 10px 44px rgba(0,0,0,.55),0 0 34px rgba(0,212,255,.08);margin-bottom:26px;background:#0b1220}
+.cover-holder svg{display:block;width:100%;height:auto}
+.home-title{font-size:clamp(30px,5.4vw,54px);font-weight:900;color:#fff;line-height:1.12;letter-spacing:-.5px}
+.home-title em{font-style:normal;color:var(--accent);text-shadow:0 0 22px rgba(0,212,255,.4)}
+.home-sub{font-size:clamp(16px,2.4vw,22px);color:var(--purple);font-weight:700;margin:12px 0 14px}
+.home-desc{color:var(--muted);font-size:16.5px;max-width:940px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+@media(max-width:900px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.metric .m-num{font-size:26px;font-weight:900;color:var(--accent)}
+.metric .m-lbl{font-size:12px;color:var(--muted);letter-spacing:.6px;margin-top:2px}
+.dt-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.dt-chip{background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:14px}
+.dt-chip b{color:var(--accent)}
+
+/* ============ CREDITS ============ */
+.credit-hero{text-align:center;padding:10px 0 22px}
+.credit-hero h2{font-size:clamp(24px,4vw,38px);color:#fff;font-weight:900}
+.credit-name{font-size:clamp(22px,3.4vw,30px);color:var(--accent);font-weight:900;margin:10px 0 2px}
+.credit-sub{color:var(--muted)}
+.fiat{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:clamp(17px,2.6vw,22px);
+  color:var(--amber);letter-spacing:1px;margin-top:16px}
+
+/* ============ CHESS BOARD ============ */
+.board-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px;margin:22px 0;box-shadow:0 6px 30px rgba(0,0,0,.35)}
+.bc-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.bc-head h3{font-size:19px;color:#fff;margin:0}
+.bc-line{width:100%;font-size:13px;color:var(--muted);margin-top:6px;word-break:break-word}
+.board-zone{display:grid;grid-template-columns:minmax(300px,540px) minmax(280px,1fr);gap:22px;align-items:start}
+@media(max-width:920px){.board-zone{grid-template-columns:1fr}}
+.board-area{display:flex;gap:8px}
+.rank-col{display:flex;flex-direction:column;justify-content:space-around;padding:2px 0;font-size:12px;
+  color:var(--dim);width:16px;text-align:right}
+.board-main{flex:1;min-width:0}
+.board-grid{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;
+  border:2px solid var(--border);border-radius:8px;overflow:hidden;background:#0b1220}
+.sq{display:flex;align-items:center;justify-content:center;position:relative;
+  font-size:clamp(20px,5.4vw,40px);line-height:1;transition:box-shadow .25s}
+@media(min-width:921px){.sq{font-size:clamp(26px,3.4vw,42px)}}
+.sq.light{background:#1d2c49}
+.sq.dark{background:#101a30}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--accent),inset 0 0 16px rgba(0,212,255,.65);z-index:2}
+.pc{user-select:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.55))}
+.pc.w{color:#f8fafc;text-shadow:0 0 2px #0a0e1a}
+.pc.b{color:#0d1117;text-shadow:0 0 3px rgba(226,232,240,.95),0 0 2px rgba(226,232,240,.75)}
+.file-col{display:flex;justify-content:space-around;font-size:12px;color:var(--dim);padding-top:5px}
+
+/* stepper: SIEMPRE debajo del tablero */
+.stepper{margin-top:14px;background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:14px}
+.st-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.st-btn{background:var(--card);border:1px solid var(--border);color:var(--txt);padding:10px 16px;
+  border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .18s;min-width:104px}
+.st-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+.st-btn:disabled{opacity:.35;cursor:not-allowed}
+.st-btn.accent{background:rgba(0,212,255,.14);border-color:var(--accent);color:var(--accent)}
+.st-btn.accent:hover:not(:disabled){background:rgba(0,212,255,.28)}
+.st-slider{width:100%;appearance:none;-webkit-appearance:none;height:8px;border-radius:6px;
+  background:linear-gradient(90deg,var(--accent) 0%,#1e3a5f 0%);outline:none;cursor:pointer;margin:6px 0 10px}
+.st-slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--accent);border:3px solid #04121c;box-shadow:0 0 10px rgba(0,212,255,.8);cursor:pointer}
+.st-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);
+  border:3px solid #04121c;cursor:pointer}
+.st-ind{text-align:center;font-size:13.5px;color:var(--muted)}
+.st-ind b{color:var(--accent)}
+
+/* move panel */
+.move-panel{background:#0b1220;border:1px solid var(--border);border-radius:12px;padding:18px;min-height:280px}
+.mp-id{font-size:12px;letter-spacing:2.5px;font-weight:800;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+.mp-id .col-w{color:#f8fafc}.mp-id .col-b{color:var(--purple)}
+.mp-piece{font-size:20px;font-weight:900;color:#fff;margin-bottom:4px}
+.mp-route{font-family:ui-monospace,Consolas,monospace;font-size:15px;color:var(--green);margin-bottom:10px}
+.mp-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.mp-block{margin-bottom:12px}
+.mp-block .mp-lbl{font-size:11px;letter-spacing:1.6px;font-weight:800;text-transform:uppercase;margin-bottom:4px}
+.mp-block.what .mp-lbl{color:var(--green)}
+.mp-block.why .mp-lbl{color:var(--amber)}
+.mp-block p{font-size:14px;color:var(--txt)}
+.mp-note{font-size:12.5px;color:var(--dim);border-top:1px dashed var(--border);padding-top:10px;margin-top:10px}
+
+/* ============ ACCORDIONS ============ */
+details.acc{background:#0b1220;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+details.acc summary{cursor:pointer;padding:13px 16px;font-weight:700;color:#fff;font-size:14.5px;
+  list-style:none;display:flex;align-items:center;gap:10px;user-select:none}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"＋";margin-left:auto;color:var(--accent);font-weight:900}
+details.acc[open] summary::after{content:"－"}
+details.acc[open] summary{border-bottom:1px solid var(--border);background:rgba(0,212,255,.04)}
+.acc-body{padding:14px 16px;font-size:14.5px;color:var(--txt)}
+
+/* ============ CHECKLIST ============ */
+.check-item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);
+  border-radius:9px;margin-bottom:8px;cursor:pointer;background:#0b1220;transition:all .2s}
+.check-item:hover{border-color:rgba(0,212,255,.5)}
+.check-item input{width:18px;height:18px;accent-color:var(--accent);margin-top:2px;cursor:pointer}
+.check-item span{font-size:14px}
+.check-item.done{border-color:rgba(34,197,94,.55);background:rgba(34,197,94,.05)}
+.check-item.done span{text-decoration:line-through;color:var(--muted)}
+
+/* ============ POCKET CARD ============ */
+.pocket{background:linear-gradient(145deg,#0b1220,#0f172a);border:2px solid var(--amber);
+  border-radius:14px;padding:22px;max-width:620px;box-shadow:0 0 30px rgba(245,158,11,.12)}
+.pocket h3{color:var(--amber);text-align:center;letter-spacing:2px;border-bottom:2px solid rgba(245,158,11,.4);
+  padding-bottom:10px;justify-content:center}
+.pocket ol{list-style:none;counter-reset:pk}
+.pocket ol li{counter-increment:pk;padding:7px 0 7px 40px;position:relative;font-size:14.5px;border-bottom:1px dashed rgba(245,158,11,.18)}
+.pocket ol li:last-child{border-bottom:none}
+.pocket ol li::before{content:counter(pk);position:absolute;left:4px;top:8px;width:24px;height:24px;
+  border-radius:50%;border:1px solid var(--amber);color:var(--amber);display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:800}
+
+/* ============ TO TOP / FOOTER ============ */
+#toTop{position:fixed;bottom:22px;right:22px;width:48px;height:48px;border-radius:50%;
+  background:var(--accent);color:#04121c;border:none;font-size:20px;font-weight:900;cursor:pointer;
+  display:none;align-items:center;justify-content:center;z-index:950;box-shadow:0 4px 18px rgba(0,212,255,.5);
+  transition:transform .2s}
+#toTop:hover{transform:translateY(-3px)}
+footer{border-top:1px solid var(--border);background:#0b1220;padding:30px 20px;text-align:center;margin-top:30px}
+footer p{font-size:13.5px;color:var(--muted);margin:4px 0}
+footer .f-latin{font-family:Georgia,serif;font-style:italic;color:var(--amber);margin-top:10px;font-size:14.5px}
+footer .f-acc{color:var(--accent)}
+
+/* ============ MOTION PREF ============ */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001s !important;transition-duration:.001s !important}
+  html{scroll-behavior:auto}
+}
+body.rm *{animation-duration:.001s !important}
+@media(max-width:640px){
+  .navbar{padding:0 10px;gap:8px}
+  .brand small{display:none}
+  .card{padding:16px}
+  .st-btn{flex:1;min-width:88px;padding:10px 8px;font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<div id="progressBar"></div>
+
+<!-- ================= NAVBAR ================= -->
+<header class="navbar">
+  <div class="brand" data-goto="page-home" role="button" aria-label="Ir al inicio">
+    <span class="kn">♞</span>
+    <span>PENSAJE·AJEDREZ<small>GAMBITO ALIEN · CARO-KANN</small></span>
+  </div>
+  <nav class="nav-scroll" aria-label="Navegación del tutorial">
+    <button class="nav-btn active" data-target="page-home">INICIO</button>
+    <button class="nav-btn" data-target="page-1">JUGAR vs PENSAR</button>
+    <button class="nav-btn" data-target="page-2">5 PREGUNTAS</button>
+    <button class="nav-btn" data-target="page-3">LÍNEA PRINCIPAL</button>
+    <button class="nav-btn" data-target="page-4">EL SACRIFICIO</button>
+    <button class="nav-btn" data-target="page-5">CLAVADAS Y MATE</button>
+    <button class="nav-btn" data-target="page-6">SACRIFICIOS EN CADENA</button>
+    <button class="nav-btn" data-target="page-7">DEFENSOR Y HORQUILLA</button>
+    <button class="nav-btn" data-target="page-8">EL CÁLCULO</button>
+    <button class="nav-btn" data-target="page-9">VISIÓN TÁCTICA</button>
+    <button class="nav-btn" data-target="page-10">MATERIAL E INICIATIVA</button>
+    <button class="nav-btn" data-target="page-11">PROCESO MENTAL</button>
+    <button class="nav-btn" data-target="page-12">NOTACIÓN</button>
+    <button class="nav-btn" data-target="page-13">ESTUDIO Y EJERCICIOS</button>
+    <button class="nav-btn" data-target="page-14">ENTRENAMIENTO</button>
+    <button class="nav-btn" data-target="page-15">REGLAS MENTALES</button>
+    <button class="nav-btn" data-target="page-16">ALGORITMO Y MANTRA</button>
+    <button class="nav-btn" data-target="page-17">FASES DE LA PARTIDA</button>
+    <button class="nav-btn" data-target="page-18">CONCLUSIÓN</button>
+    <button class="nav-btn" data-target="page-anexo">APÉNDICE</button>
+    <button class="nav-btn credits-btn" data-target="page-creditos">★ CRÉDITOS</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section class="page active" id="page-home">
+  <div class="wrap">
+    <div style="text-align:center"><span class="home-badge">♟ TUTORIAL INTERACTIVO · MÓDULO DE PENSAMIENTO AJEDRECÍSTICO</span></div>
+
+    <!-- SVG ANIMADO: bien arriba, visible apenas se abre -->
+    <div class="cover-holder" data-cover aria-label="Portada animada del tutorial"></div>
+
+    <div style="text-align:center">
+      <h1 class="home-title">Aprende a <em>pensar</em> como un jugador de ajedrez</h1>
+      <p class="home-sub">A partir del Gambito Alien contra la Defensa Caro-Kann</p>
+      <p class="home-desc" style="margin:0 auto">
+        <strong style="color:#fff">Objetivo:</strong> no aprender una secuencia de memoria, sino aprender un
+        <strong style="color:var(--accent)">método mental</strong> que puedas aplicar en cualquier posición.
+        Un jugador de ajedrez no piensa únicamente «¿qué jugada hago?». Piensa:
+        <em>¿qué cambió?, ¿qué amenaza mi rival?, ¿qué piezas están activas?, ¿qué candidatos tengo?, ¿qué ocurre después de mi jugada?</em>
+      </p>
+    </div>
+
+    <div class="quote" style="max-width:860px;margin:24px auto">
+      «Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.»
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><div class="m-num">4</div><div class="m-lbl">TABLEROS INTERACTIVOS PASO A PASO</div></div>
+      <div class="metric"><div class="m-num">80</div><div class="m-lbl">LECCIONES DEL DOCUMENTO ORIGINAL</div></div>
+      <div class="metric"><div class="m-num">10</div><div class="m-lbl">PATRONES TÁCTICOS · 15 REGLAS MENTALES</div></div>
+      <div class="metric"><div class="m-num">1</div><div class="m-lbl">MÉTODO: C.A.L.C.U.L.A. + 5 PREGUNTAS</div></div>
+    </div>
+
+    <div class="dt-row" style="justify-content:center">
+      <div class="dt-chip mono">📅 FECHA: <b>06/09/2026</b></div>
+      <div class="dt-chip mono">🕒 HORA: <b>03:37:08</b></div>
+      <div class="dt-chip mono">♞ LABORATORIO: <b>GAMBITO ALIEN</b></div>
+    </div>
+
+    <div class="callout c-info" style="margin-top:22px">
+      <span class="co-ic">🧭</span>
+      <div><span class="co-tt">Cómo usar este tutorial</span>
+      <p>Navega con la barra superior. En las secciones de laboratorio encontrarás tableros con controles
+      justo debajo: avanza <strong>movimiento por movimiento</strong> (un paso = jugada de un solo bando),
+      lee el panel de explicación y retrocede cuando quieras. Cada movimiento indica COLOR, PIEZA, ORIGEN → DESTINO.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 1. JUGAR vs PENSAR ================= -->
+<section class="page" id="page-1">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 01 · La gran diferencia</span>
+      <h2>Jugar movimientos <span>vs.</span> pensar</h2>
+      <p class="lead">El punto de partida del método: la diferencia entre mover piezas y tomar decisiones.</p>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box rd">🔰</span> Un principiante suele pensar…</h3>
+        <p class="quote" style="margin:0">«Quiero mover esta pieza porque parece buena.»</p>
+      </div>
+      <div class="card glow">
+        <h3><span class="icon-box">🎓</span> Un jugador más fuerte piensa…</h3>
+        <p class="quote" style="margin:0">«¿Qué amenaza mi rival? ¿Qué piezas están mal colocadas? ¿Qué oportunidades tácticas existen? ¿Qué jugadas candidatas tengo? ¿Cuál cambia más favorablemente la posición?»</p>
+      </div>
+    </div>
+
+    <div class="callout c-warn">
+      <span class="co-ic">⚠️</span>
+      <div><span class="co-tt">Advertencia</span>
+      <p>Esta diferencia es enorme. El ajedrez <strong>no consiste en encontrar una jugada bonita</strong>.
+      Consiste en <strong>tomar buenas decisiones repetidamente</strong>.</p></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">🧪</span> El Gambito Alien como laboratorio</h3>
+      <p>El Gambito Alien es especialmente útil para aprender esto porque contiene:</p>
+      <div class="chips">
+        <span class="chip acc">Desarrollo</span><span class="chip acc">Control del centro</span>
+        <span class="chip acc">Sacrificio</span><span class="chip acc">Rey expuesto</span>
+        <span class="chip acc">Clavadas</span><span class="chip acc">Ataques dobles</span>
+        <span class="chip acc">Desviación</span><span class="chip acc">Eliminación de defensores</span>
+        <span class="chip acc">Cálculo de variantes</span><span class="chip acc">Iniciativa</span>
+        <span class="chip acc">Seguridad del rey</span><span class="chip acc">Errores por codicia</span>
+        <span class="chip acc">Errores por jugar automáticamente</span>
+      </div>
+      <div class="callout c-info" style="margin-bottom:0">
+        <span class="co-ic">🔬</span>
+        <div><span class="co-tt">Info</span>
+        <p>Por tanto, utilizaremos las posiciones del Gambito Alien como un <strong>laboratorio para aprender a pensar</strong>.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. LAS 5 PREGUNTAS ================= -->
+<section class="page" id="page-2">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 02 · El núcleo del método</span>
+      <h2>Las cinco preguntas <span>+ método C.A.L.C.U.L.A.</span></h2>
+      <p class="lead">Antes de mover una pieza, acostúmbrate a recorrer mentalmente estas cinco preguntas.</p>
+    </div>
+
+    <div class="card">
+      <div class="step"><div class="step-num">1</div><div class="step-body">
+        <strong>¿QUÉ CAMBIÓ?</strong>
+        <p class="muted" style="margin:6px 0">Mira la última jugada del rival. Pregúntate:</p>
+        <ul class="dash">
+          <li>¿Qué pieza movió?</li><li>¿Qué casillas dejó de controlar?</li>
+          <li>¿Qué casillas empezó a controlar?</li><li>¿Qué pieza quedó atacada?</li>
+          <li>¿Abrió o cerró alguna línea?</li><li>¿Quitó un defensor?</li><li>¿Creó una amenaza?</li>
+        </ul>
+        <div class="callout c-warn" style="margin-bottom:0"><span class="co-ic">⚠️</span><div><span class="co-tt">Advertencia</span>
+        <p>Nunca respondas automáticamente. La última jugada del rival contiene información.</p></div></div>
+      </div></div>
+      <hr class="sep">
+      <div class="step"><div class="step-num">2</div><div class="step-body">
+        <strong>¿QUÉ QUIERE HACER MI RIVAL?</strong>
+        <p class="muted" style="margin:6px 0">Busca su intención. Por ejemplo:</p>
+        <div class="chips"><span class="chip">capturar una pieza</span><span class="chip">dar jaque</span><span class="chip">ganar material</span><span class="chip">desarrollar una pieza</span><span class="chip">enrocar</span><span class="chip">atacar al rey</span><span class="chip">cambiar una pieza defensora</span><span class="chip">ocupar una casilla fuerte</span></div>
+        <div class="quote">Antes de buscar tu ataque, descubre el ataque del rival.</div>
+      </div></div>
+      <hr class="sep">
+      <div class="step"><div class="step-num">3</div><div class="step-body">
+        <strong>¿HAY ALGUNA TÁCTICA INMEDIATA?</strong>
+        <p class="muted" style="margin:6px 0">Primero busca:</p>
+        <div class="grid g3">
+          <div class="card" style="margin:0;padding:14px"><span class="badge b-green">J — JAQUES</span><p style="margin-top:8px;font-size:14px">¿Puedes dar jaque?</p></div>
+          <div class="card" style="margin:0;padding:14px"><span class="badge b-amber">C — CAPTURAS</span><p style="margin-top:8px;font-size:14px">¿Puedes capturar algo importante?</p></div>
+          <div class="card" style="margin:0;padding:14px"><span class="badge b-red">A — ATAQUES</span><p style="margin-top:8px;font-size:14px">¿Puedes atacar una pieza, dama, torre o rey?</p></div>
+        </div>
+        <div class="callout c-warn" style="margin-bottom:0"><span class="co-ic">⚠️</span><div><span class="co-tt">Pero cuidado</span>
+        <p>No significa que debas jugar el primer jaque, captura o ataque que encuentres. Significa que debes <strong>examinar primero las posibilidades forzantes</strong>.</p></div></div>
+      </div></div>
+      <hr class="sep">
+      <div class="step"><div class="step-num">4</div><div class="step-body">
+        <strong>¿CUÁLES SON MIS JUGADAS CANDIDATAS?</strong>
+        <p>No juegues inmediatamente. Elige normalmente entre <strong>2 y 4 candidatos</strong>. Por ejemplo:</p>
+        <div class="chips"><span class="chip acc">desarrollar</span><span class="chip acc">capturar</span><span class="chip acc">atacar</span><span class="chip acc">defender</span><span class="chip acc">enrocar</span><span class="chip acc">crear una amenaza</span></div>
+        <p style="margin-top:8px">Después compáralos.</p>
+      </div></div>
+      <hr class="sep">
+      <div class="step"><div class="step-num">5</div><div class="step-body">
+        <strong>¿QUÉ PASA DESPUÉS?</strong>
+        <p>Aquí comienza realmente el cálculo. Para cada candidato pregunta:</p>
+        <p class="quote" style="font-size:15px">«Si hago esto, ¿cuál es la respuesta más fuerte de mi rival?»</p>
+        <p>Después: <em>«¿Y qué hago yo entonces?»</em></p>
+        <div class="callout c-bad" style="margin-bottom:0"><span class="co-ic">⛔</span><div><span class="co-tt">Error</span>
+        <p>No calcules únicamente tu propia idea. Calcula <strong>la mejor defensa del contrario</strong>.</p></div></div>
+      </div></div>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box pu">🔤</span> EL MÉTODO COMPLETO: C.A.L.C.U.L.A.</h3>
+      <p class="muted">Puedes utilizar esta palabra como ayuda mental.</p>
+      <div class="grid g2">
+        <div class="card" style="margin:0"><span class="badge b-accent">C — CAMBIOS</span><p style="margin-top:8px">¿Qué cambió después de la última jugada?</p></div>
+        <div class="card" style="margin:0"><span class="badge b-accent">A — AMENAZAS</span><p style="margin-top:8px">¿Qué amenaza mi rival?</p></div>
+        <div class="card" style="margin:0"><span class="badge b-accent">L — LÍNEAS</span><p style="margin-top:8px">¿Qué columnas, filas y diagonales están abiertas?</p></div>
+        <div class="card" style="margin:0"><span class="badge b-accent">C — CANDIDATAS</span><p style="margin-top:8px">¿Qué 2–4 jugadas razonables puedo considerar?</p></div>
+        <div class="card" style="margin:0"><span class="badge b-accent">U — ÚLTIMA RESPUESTA</span><p style="margin-top:8px">¿Qué respondería mi rival si encuentra su mejor defensa?</p></div>
+        <div class="card" style="margin:0"><span class="badge b-accent">L — LECTURA</span><p style="margin-top:8px">Después de la variante, ¿quién está mejor y por qué?</p></div>
+      </div>
+      <div class="callout c-ok" style="margin-bottom:0"><span class="co-ic">🔁</span><div><span class="co-tt">A — AJUSTE</span>
+      <p>Si mi candidato falla, descártalo y prueba el siguiente.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. LÍNEA PRINCIPAL ================= -->
+<section class="page" id="page-3">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 03 · Laboratorio I</span>
+      <h2>Línea principal del <span>Gambito Alien</span></h2>
+      <p class="lead">Del primer movimiento al sacrificio en f7. Avanza el tablero movimiento a movimiento y lee cada escena.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">🛑</span> EL PRIMER PRINCIPIO: NO JUEGUES EN AUTOMÁTICO</h3>
+      <p>La partida comienza: <strong class="mono" style="color:var(--accent)">1. e4</strong> — Peón: e2 → e4. ¿Por qué?</p>
+      <div class="chips"><span class="chip acc">ocupa el centro</span><span class="chip acc">controla d5</span><span class="chip acc">controla f5</span><span class="chip acc">libera la diagonal de la dama</span><span class="chip acc">libera la diagonal del alfil de f1</span></div>
+      <p style="margin-top:10px">Pero lo importante no es memorizar esas razones. Lo importante es aprender a preguntar:</p>
+      <div class="quote">«¿Qué consigue esta jugada?» — Ese pensamiento sirve para todas las jugadas.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box gr">🛡️</span> LA DEFENSA CARO-KANN COMO EJEMPLO DE PENSAMIENTO</h3>
+      <p>Después de <strong class="mono" style="color:var(--accent)">1. e4 c6&nbsp;&nbsp;2. d4 d5</strong> las negras han jugado la Defensa Caro-Kann. La posición enseña una lección fundamental: <strong>el rival también tiene un plan</strong>.</p>
+      <ul class="dash">
+        <li>Las negras preparan ...d5 y atacan el centro blanco.</li>
+        <li>Las blancas no deben pensar solamente: «¿Qué quiero hacer yo?»</li>
+        <li>Deben pensar: «¿Qué quiere conseguir el negro con ...d5?»</li>
+      </ul>
+      <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">🔁</span><div><span class="co-tt">Transferible</span>
+      <p>Esta forma de pensar es transferible a cualquier apertura.</p></div></div>
+    </div>
+
+    <!-- TABLERO 1 -->
+    <div class="board-card" id="board-1">
+      <div class="bc-head">
+        <span class="badge b-accent">TABLERO INTERACTIVO 1 · LÍNEA PRINCIPAL</span>
+        <h3 style="width:100%">Gambito Alien — sacrificio en f7</h3>
+        <p class="bc-line mono">1.e4 c6 2.d4 d5 3.Cc3 dxe4 4.Cxe4 Cf6 5.Cg5 h6 6.Cxf7 Rxf7 7.Cf3 Cbd7 8.Ac4+ Re8 9.O-O</p>
+      </div>
+      <div class="board-zone">
+        <div class="board-col">
+          <div class="board-area">
+            <div class="rank-col" data-coords="ranks"></div>
+            <div class="board-main"><div class="board-grid"></div><div class="file-col" data-coords="files"></div></div>
+          </div>
+          <div class="stepper">
+            <div class="st-row">
+              <button class="st-btn st-prev" aria-label="Movimiento anterior">◀ Anterior</button>
+              <button class="st-btn st-reset" aria-label="Volver a la posición inicial">⟲ Reset</button>
+              <button class="st-btn accent st-next" aria-label="Movimiento siguiente">Siguiente ▶</button>
+            </div>
+            <input type="range" class="st-slider" min="0" value="0" step="1" aria-label="Deslizador de movimientos">
+            <div class="st-ind"></div>
+          </div>
+        </div>
+        <aside class="move-panel" aria-live="polite"></aside>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box gr">♞</span> DESARROLLO VS. CAPTURA AUTOMÁTICA <span class="badge b-green">ESCENA · 3.Cc3 / 3...dxe4 / 4.Cxe4</span></h3>
+      <p>Después de 1.e4 c6 2.d4 d5, <strong>3. Cc3</strong>: el caballo va Cb1 → c3. El caballo desarrolla y ayuda a sostener el centro. Ahora las negras juegan <strong>3... dxe4</strong>: el peón negro captura e4. Las blancas responden <strong>4. Cxe4</strong> (Caballo Cc3 → e4).</p>
+      <div class="callout c-ok" style="margin-bottom:0"><span class="co-ic">💡</span><div><span class="co-tt">Lección</span>
+      <p>No necesitas capturar inmediatamente en todas las posiciones. A veces desarrollar una pieza primero permite que el propio rival cree las condiciones para una recaptura más favorable.</p></div></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">🎯</span> LA PIEZA CENTRAL: ¿POR QUÉ EL CABALLO VA A e4?</h3>
+      <p>Después de 4. Cxe4, el caballo blanco está centralizado. Un jugador principiante puede pensar: «Mi caballo está en el centro. Perfecto.» Un jugador fuerte pregunta: <strong>«¿Qué controla este caballo?»</strong></p>
+      <p class="muted">Desde e4 controla:</p>
+      <div class="chips mono"><span class="chip acc">c3</span><span class="chip acc">c5</span><span class="chip acc">d2</span><span class="chip acc">d6</span><span class="chip acc">f2</span><span class="chip acc">f6</span><span class="chip acc">g3</span><span class="chip acc">g5</span></div>
+      <p style="margin-top:10px">Además, está atacando y condicionando la posición negra. Esto introduce una idea fundamental:</p>
+      <div class="quote" style="border-color:var(--green)">ACTIVIDAD — Una pieza no es buena simplemente por estar desarrollada. Es buena si:</div>
+      <ul class="dash">
+        <li>controla casillas útiles;</li><li>participa en amenazas;</li><li>ayuda a otras piezas;</li>
+        <li>limita al enemigo;</li><li>puede entrar en la posición rival.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box am">⚡</span> LA JUGADA QUE CAMBIA EL CARÁCTER DE LA POSICIÓN <span class="badge b-amber">ESCENA · 4...Cf6 / 5.Cg5</span></h3>
+      <p>Después de <strong>4... Cf6</strong> las negras atacan el caballo de e4. Las blancas podrían retirar el caballo. Pero juegan <strong>5. Cg5</strong> (Caballo Ce4 → g5). Aquí aparece la filosofía del Gambito Alien.</p>
+      <div class="grid g2">
+        <div class="card" style="margin:0;border-color:rgba(239,68,68,.4)"><span class="badge b-red">Pregunta incorrecta</span><p style="margin-top:8px">«¿Por qué mover el caballo a g5?»</p></div>
+        <div class="card" style="margin:0;border-color:rgba(34,197,94,.4)"><span class="badge b-green">Pregunta correcta</span><p style="margin-top:8px">«¿Qué amenazas aparecen después de Cg5?»</p></div>
+      </div>
+      <p style="margin-top:10px">El caballo en g5 mira especialmente <strong class="mono" style="color:var(--amber)">f7</strong> y <strong class="mono" style="color:var(--amber)">e6</strong>. Y f7 es una casilla crítica porque está delante del rey negro.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box rd">🔥</span> APRENDER A DETECTAR CASILLAS CRÍTICAS</h3>
+      <p>Una <strong>casilla crítica</strong> es una casilla cuyo control puede cambiar radicalmente la posición. En esta apertura, <strong class="mono" style="color:var(--red)">f7</strong> es extraordinariamente importante. ¿Por qué?</p>
+      <ul class="dash">
+        <li>está junto al rey negro;</li><li>inicialmente está protegida por el rey;</li>
+        <li>puede ser objetivo de piezas menores;</li><li>un caballo puede entrar con jaque o crear amenazas;</li>
+        <li>puede producir ataques dobles.</li>
+      </ul>
+      <div class="quote">Acostúmbrate a preguntar: «¿Cuál es el punto más débil de la posición enemiga?»</div>
+      <p class="muted">No siempre será f7. Puede ser:</p>
+      <div class="chips mono"><span class="chip">f2</span><span class="chip">h7</span><span class="chip">c7</span><span class="chip">e6</span><span class="chip">d6</span><span class="chip">una pieza clavada</span><span class="chip">una columna abierta</span><span class="chip">una casilla alrededor del rey</span></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box pu">💥</span> EL RIVAL JUEGA ...h6: AQUÍ COMIENZA EL CÁLCULO <span class="badge b-purple">ESCENA · 5...h6 / 6.Cxf7!</span></h3>
+      <p>Después de <strong>5... h6</strong> el negro intenta expulsar el caballo. Un principiante puede pensar: «Me atacaron. Tengo que retirar el caballo.» Pero el jugador de ajedrez pregunta: <strong>«¿Tengo una respuesta más fuerte que simplemente retirarme?»</strong></p>
+      <p>Las blancas encuentran: <strong class="mono" style="color:var(--accent)">6. Cxf7!</strong> — Caballo: Cg5 → f7, capturando el peón. Esto es un sacrificio.</p>
+      <div class="callout c-warn" style="margin-bottom:0"><span class="co-ic">⚠️</span><div><span class="co-tt">Advertencia</span>
+      <p>Un sacrificio no se justifica porque sea bonito. Se justifica si existe una <strong>compensación suficiente</strong>. Continúa en la sección «El sacrificio y el ataque».</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. EL SACRIFICIO Y EL ATAQUE ================= -->
+<section class="page" id="page-4">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 04 · Laboratorio I (continuación)</span>
+      <h2>El sacrificio y <span>el ataque</span></h2>
+      <p class="lead">Qué se gana con el sacrificio, el concepto de desviación y las reglas del ataque con piezas. (Repásalo con el Tablero 1 de la sección Línea principal.)</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box rd">🧲</span> EL CONCEPTO DE DESVIACIÓN <span class="badge b-red">6...Rxf7</span></h3>
+      <p>Después de 6. Cxf7 el caballo ataca puntos importantes. El rey captura: <strong>6... Rxf7</strong>. El caballo desaparece. Pero la pregunta importante es: <strong>«¿Qué conseguí a cambio del caballo?»</strong></p>
+      <p>El rey negro ha abandonado e8. Ahora está en f7. Eso cambia radicalmente la posición. La pieza sacrificada ha conseguido:</p>
+      <ul class="dash">
+        <li>sacar al rey de su refugio;</li><li>impedir el enroque;</li>
+        <li>dejar al rey expuesto;</li><li>permitir que las piezas blancas se desarrollen con amenazas.</li>
+      </ul>
+      <div class="quote" style="border-color:var(--red)">DESVIACIÓN — Una pieza enemiga puede ser obligada a abandonar una casilla importante. En este caso, el rey abandona su posición original.</div>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box">📋</span> CÓMO ANALIZAR UN SACRIFICIO</h3>
+      <p>Cada vez que pienses en sacrificar una pieza, utiliza este interrogatorio:</p>
+      <div class="grid g2">
+        <div class="step"><div class="step-num">1</div><div class="step-body">¿Qué gano inmediatamente? Material, jaque, ataque, desarrollo, posición, iniciativa.</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">¿Qué pieza enemiga estoy obligando a mover?</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">¿Dónde quedará el rey?</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">¿Qué líneas se abrirán?</div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body">¿Qué defensores desaparecerán?</div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-body">¿Cuántos tiempos ganaré?</div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-body">¿Puedo continuar el ataque?</div></div>
+        <div class="step"><div class="step-num">8</div><div class="step-body">¿Qué pasa si el rival acepta el sacrificio?</div></div>
+        <div class="step"><div class="step-num">9</div><div class="step-body">¿Qué pasa si lo rechaza?</div></div>
+        <div class="step"><div class="step-num">10</div><div class="step-body">¿Cuál es la mejor defensa?</div></div>
+      </div>
+      <div class="callout c-bad" style="margin-bottom:0"><span class="co-ic">⛔</span><div><span class="co-tt">Error</span>
+      <p>Si no puedes responder razonablemente estas preguntas, probablemente todavía no has calculado suficiente.</p></div></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box am">🐢</span> NO CORRAS A DAR JAQUES <span class="badge b-amber">7.Cf3</span></h3>
+        <p>Después de 6...Rxf7, las blancas juegan <strong>7. Cf3</strong> (Caballo Cg1 → f3). Esto es una lección extraordinaria. El jugador principiante puede pensar: «¡El rey está expuesto! Tengo que darle jaques inmediatamente.» Pero las blancas desarrollan.</p>
+        <p>¿Por qué? Porque <strong>un ataque necesita piezas</strong>. Una buena pregunta es: «¿Tengo suficientes piezas participando en el ataque?» Si la respuesta es no: <strong style="color:var(--amber)">Desarrolla primero.</strong></p>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box gr">🪖</span> LA REGLA DEL ATAQUE: TRAE MÁS PIEZAS</h3>
+        <ul class="dash">
+          <li>Una sola pieza difícilmente puede dar mate a un rey bien defendido.</li>
+          <li>Dos piezas pueden crear amenazas.</li>
+          <li>Tres o cuatro piezas coordinadas pueden producir un ataque devastador.</li>
+        </ul>
+        <div class="callout c-warn" style="margin-bottom:0"><span class="co-ic">⚠️</span><div><span class="co-tt">Advertencia</span>
+        <p>No confundas rey expuesto con mate inmediato. Un rey vulnerable no significa que exista una combinación ganadora ahora mismo. Primero hay que comprobarlo.</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">⏱️</span> EL DESARROLLO CON GANANCIA DE TIEMPO <span class="badge b-accent">7...Cbd7 / 8.Ac4+</span></h3>
+      <p>Después <strong>7... Cbd7</strong> las negras intentan organizarse. Las blancas juegan <strong>8. Ac4+</strong> (Alfil Af1 → c4). Y ahora sí aparece el jaque. ¿Por qué ahora? Porque el desarrollo anterior permitió que el alfil entrara con fuerza.</p>
+      <div class="grid g2">
+        <div class="card" style="margin:0;border-color:rgba(34,197,94,.5)"><span class="badge b-green">Secuencia correcta</span>
+          <p class="mono" style="margin-top:8px;font-size:13.5px">sacrificio → rey expuesto → desarrollo → ataque</p></div>
+        <div class="card" style="margin:0;border-color:rgba(239,68,68,.5)"><span class="badge b-red">Secuencia incorrecta</span>
+          <p class="mono" style="margin-top:8px;font-size:13.5px">sacrificio → jaque desesperado → improvisación</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box pu">🏰</span> SEGURIDAD DEL REY <span class="badge b-purple">8...Re8 / 9.O-O</span></h3>
+      <p>Después de <strong>8... Re8</strong> el rey negro vuelve a e8. Las blancas juegan <strong>9. O-O</strong> — Enroque corto: Rey e1 → g1, Torre h1 → f1. Esta jugada enseña otro principio:</p>
+      <div class="quote" style="border-color:var(--purple)">Mientras atacas al rey rival, no olvides proteger el tuyo. Un ataque no sirve de mucho si tu propio rey queda expuesto.</div>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box rd">🥇</span> LAS TRES PRIORIDADES DEL PENSAMIENTO TÁCTICO</h3>
+      <p>Cuando exista una posición complicada, busca en este orden:</p>
+      <div class="step"><div class="step-num gr">1</div><div class="step-body"><strong>JAQUES</strong> — Porque obligan al rival a responder.</div></div>
+      <div class="step"><div class="step-num am">2</div><div class="step-body"><strong>CAPTURAS</strong> — Especialmente capturas que ganen material o destruyan defensores.</div></div>
+      <div class="step"><div class="step-num rd">3</div><div class="step-body"><strong>AMENAZAS</strong> — Ataques que obliguen al rival a reaccionar.</div></div>
+      <p>Esto se conoce habitualmente como búsqueda de <strong>jugadas forzantes</strong>.</p>
+      <div class="callout c-warn" style="margin-bottom:0"><span class="co-ic">⚠️</span><div><span class="co-tt">Pero recuerda</span>
+      <p>El orden sirve para buscar candidatos, <strong>no para jugar automáticamente</strong>.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. CLAVADAS Y MATE EN d6 ================= -->
+<section class="page" id="page-5">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 05 · Laboratorio II</span>
+      <h2>Las clavadas y la celada del <span>mate en d6</span></h2>
+      <p class="lead">La variante 4...Cd7 5.De2, las clavadas absolutas y relativas, y un mate por jugar en automático.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">📌</span> LAS CLAVADAS: UNA PIEZA QUE NO PUEDE MOVERSE</h3>
+      <p>Veamos la variante: <strong class="mono" style="color:var(--accent)">1. e4 c6&nbsp; 2. d4 d5&nbsp; 3. Cc3 dxe4&nbsp; 4. Cxe4 Cd7&nbsp; 5. De2</strong></p>
+      <p>Las blancas juegan Dama d1 → e2. La idea táctica gira alrededor del peón e7 y el rey e8. Si una pieza no puede moverse porque detrás de ella queda expuesto algo más valioso, existe una <strong>clavada</strong>.</p>
+      <div class="grid g2">
+        <div class="card" style="margin:0;border-color:rgba(239,68,68,.5)"><span class="badge b-red">CLAVADA ABSOLUTA</span>
+          <p style="margin-top:8px">Una pieza está delante del rey. Moverla dejaría al rey en jaque. Por eso <strong>no puede legalmente moverse</strong>.</p></div>
+        <div class="card" style="margin:0;border-color:rgba(245,158,11,.5)"><span class="badge b-amber">CLAVADA RELATIVA</span>
+          <p style="margin-top:8px">La pieza puede moverse legalmente, pero al hacerlo <strong>pierde material importante</strong>.</p></div>
+      </div>
+    </div>
+
+    <!-- TABLERO 2 -->
+    <div class="board-card" id="board-2">
+      <div class="bc-head">
+        <span class="badge b-red">TABLERO INTERACTIVO 2 · CELADA DE MATE</span>
+        <h3 style="width:100%">Variante 4...Cd7 — mate en d6</h3>
+        <p class="bc-line mono">1.e4 c6 2.d4 d5 3.Cc3 dxe4 4.Nxe4 Cd7 5.De2 Cgf6?? 6.Cd6#</p>
+      </div>
+      <div class="board-zone">
+        <div class="board-col">
+          <div class="board-area">
+            <div class="rank-col" data-coords="ranks"></div>
+            <div class="board-main"><div class="board-grid"></div><div class="file-col" data-coords="files"></div></div>
+          </div>
+          <div class="stepper">
+            <div class="st-row">
+              <button class="st-btn st-prev" aria-label="Movimiento anterior">◀ Anterior</button>
+              <button class="st-btn st-reset" aria-label="Volver a la posición inicial">⟲ Reset</button>
+              <button class="st-btn accent st-next" aria-label="Movimiento siguiente">Siguiente ▶</button>
+            </div>
+            <input type="range" class="st-slider" min="0" value="0" step="1" aria-label="Deslizador de movimientos">
+            <div class="st-ind"></div>
+          </div>
+        </div>
+        <aside class="move-panel" aria-live="polite"></aside>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box rd">💀</span> LA CELADA DEL MATE EN d6 <span class="badge b-red">5...Cgf6?? → 6.Cd6#</span></h3>
+      <p>La variante muestra: <strong>5... Cgf6??</strong> y entonces <strong>6. Cd6#</strong> — Caballo: Ce4 → d6. <strong style="color:var(--red)">Jaque mate.</strong></p>
+      <div class="callout c-bad"><span class="co-ic">⛔</span><div><span class="co-tt">Regla clave</span>
+      <p>Aquí debemos aprender una de las reglas más importantes del ajedrez: <strong>Nunca hagas una jugada automática sin comprobar las amenazas del rival.</strong> Las negras han jugado un desarrollo aparentemente natural. Pero la naturalidad no garantiza seguridad.</p></div></div>
+      <div class="callout c-info"><span class="co-ic">🔍</span><div><span class="co-tt">¿Por qué es mate? (comprobación completa)</span>
+      <p>El rey negro está en jaque por el caballo de d6. No puede capturarlo (no está a su alcance), un jaque de caballo no puede bloquearse, y todas sus casillas de escape están ocupadas por piezas propias: dama en d8, alfil en f8, caballo en d7 y peones en e7 y f7. Además, el peón de e7 no puede capturar al caballo porque está clavado por la dama blanca de e2 contra el rey.</p></div></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box am">🪤</span> EL CONCEPTO DE «PIEZA NATURAL, JUGADA MALA»</h3>
+      <p>Un error frecuente del principiante: <em>«Esta pieza debe ir aquí porque normalmente se desarrolla aquí.»</em> Eso es peligroso. En ajedrez: <strong>una jugada buena en una posición puede ser mala en otra.</strong></p>
+      <p class="muted">Antes de desarrollar pregunta:</p>
+      <ul class="dash">
+        <li>¿La casilla es segura?</li><li>¿Estoy entrando en una clavada?</li><li>¿Estoy bloqueando una pieza?</li>
+        <li>¿Dejo una casilla crítica sin defensa?</li><li>¿Permito un jaque?</li><li>¿Abro una línea contra mi rey?</li>
+      </ul>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box gr">✅</span> EL MATE: CÓMO COMPROBARLO</h3>
+      <p>Cuando el rival da jaque, piensa:</p>
+      <div class="step"><div class="step-num gr">1</div><div class="step-body">¿Puedo <strong>capturar</strong> la pieza que da jaque? Si no…</div></div>
+      <div class="step"><div class="step-num am">2</div><div class="step-body">¿Puedo <strong>mover el rey</strong>? Si no…</div></div>
+      <div class="step"><div class="step-num rd">3</div><div class="step-body">¿Puedo <strong>interponer una pieza</strong>?</div></div>
+      <p>Si ninguna de las tres funciona: <strong style="color:var(--red)">es jaque mate.</strong></p>
+      <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">🛡️</span><div><span class="co-tt">Doble uso</span>
+      <p>Este procedimiento también sirve para detectar amenazas de mate antes de que ocurran.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. SACRIFICIOS EN CADENA ================= -->
+<section class="page" id="page-6">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 06 · Laboratorio III</span>
+      <h2>El Gambito Alien con 4...Cd7: <span>sacrificios en cadena</span></h2>
+      <p class="lead">La segunda idea importante: 6.Ce6! entrega el caballo para abrir la ruta de la dama hasta el mate.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">🐴</span> LA SEGUNDA IDEA IMPORTANTE <span class="badge b-accent">5.Cg5 h6 6.Ce6!</span></h3>
+      <p>La segunda idea importante aparece tras: <strong class="mono" style="color:var(--accent)">1. e4 c6&nbsp; 2. d4 d5&nbsp; 3. Cc3 dxe4&nbsp; 4. Cxe4 Cd7&nbsp; 5. Cg5</strong></p>
+      <p>Las blancas vuelven a utilizar el caballo como pieza agresiva. Las negras juegan <strong>5... h6</strong>. Y ahora aparece: <strong class="mono" style="color:var(--accent)">6. Ce6!</strong> — Caballo: Cg5 → e6.</p>
+      <div class="quote">La pregunta que debes aprender a hacer es: «¿Qué amenaza contiene esta jugada?» — El caballo ataca la dama negra de d8 y además crea problemas para el rey.</div>
+    </div>
+
+    <!-- TABLERO 3 -->
+    <div class="board-card" id="board-3">
+      <div class="bc-head">
+        <span class="badge b-red">TABLERO INTERACTIVO 3 · MATE EN 8 MOVIMIENTOS INDIVIDUALES</span>
+        <h3 style="width:100%">Variante 4...Cd7 — ruta Alien</h3>
+        <p class="bc-line mono">1.e4 c6 2.d4 d5 3.Cc3 dxe4 4.Cxe4 Cd7 5.Cg5 h6 6.Ce6! fxe6?? 7.Dh5+ g6 8.Dxg6#</p>
+      </div>
+      <div class="board-zone">
+        <div class="board-col">
+          <div class="board-area">
+            <div class="rank-col" data-coords="ranks"></div>
+            <div class="board-main"><div class="board-grid"></div><div class="file-col" data-coords="files"></div></div>
+          </div>
+          <div class="stepper">
+            <div class="st-row">
+              <button class="st-btn st-prev" aria-label="Movimiento anterior">◀ Anterior</button>
+              <button class="st-btn st-reset" aria-label="Volver a la posición inicial">⟲ Reset</button>
+              <button class="st-btn accent st-next" aria-label="Movimiento siguiente">Siguiente ▶</button>
+            </div>
+            <input type="range" class="st-slider" min="0" value="0" step="1" aria-label="Deslizador de movimientos">
+            <div class="st-ind"></div>
+          </div>
+        </div>
+        <aside class="move-panel" aria-live="polite"></aside>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box rd">⛓️</span> SACRIFICIOS EN CADENA <span class="badge b-red">6...fxe6?? 7.Dh5+ g6 8.Dxg6#</span></h3>
+      <p>La continuación mostrada es: <strong>6... fxe6??&nbsp; 7. Dh5+</strong> — La dama: Dd1 → h5. Ahora las negras tienen que responder al jaque. Después: <strong>7... g6</strong>. Y: <strong>8. Dxg6#</strong> — La dama captura: Dh5 → g6. <strong style="color:var(--red)">Jaque mate.</strong></p>
+      <div class="callout c-ok"><span class="co-ic">🎓</span><div><span class="co-tt">La enseñanza</span>
+      <p>No es «memoriza Cg5–e6–Dh5–Dxg6». La enseñanza es: <strong>cuando sacrificas una pieza, debes comprobar si el sacrificio abre una ruta para otra pieza.</strong> El caballo no actúa solo: su sacrificio prepara el camino para la dama.</p></div></div>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box am">🎯</span> LA ELIMINACIÓN DEL DEFENSOR</h3>
+      <p>Una de las armas tácticas más importantes es: <strong style="color:var(--amber)">ELIMINAR AL DEFENSOR</strong>. Si una pieza protege una casilla crítica, puedes:</p>
+      <div class="chips"><span class="chip acc">capturarla</span><span class="chip acc">desviarla</span><span class="chip acc">obligarla a moverse</span><span class="chip acc">sacrificar material para destruirla</span></div>
+      <p style="margin-top:10px">En la variante anterior, el ataque funciona porque la estructura defensiva negra se deteriora.</p>
+      <div class="quote" style="border-color:var(--amber)">Pregúntate siempre: «¿Quién defiende esta casilla?» Y después: «¿Puedo eliminar a ese defensor?»</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. DEFENSOR, SOBRECARGA Y HORQUILLA ================= -->
+<section class="page" id="page-7">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 07 · Laboratorio IV</span>
+      <h2>El defensor, la sobrecarga <span>y la horquilla</span></h2>
+      <p class="lead">Cuando el rival no juega ...h6: la variante 5...Af5, el error codicioso 8...Dxd4?! y la combinación de cuatro etapas que recupera la dama.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">👁️</span> CUANDO EL RIVAL NO JUEGA ...h6 <span class="badge b-accent">5...Af5 6.Cf3 e6 7.Ce5</span></h3>
+      <p>La tercera variante comienza: <strong class="mono" style="color:var(--accent)">1. e4 c6&nbsp; 2. d4 d5&nbsp; 3. Cc3 dxe4&nbsp; 4. Cxe4 Cf6&nbsp; 5. Cg5 Af5</strong></p>
+      <p>Aquí las negras no expulsan el caballo. Esto produce una lección importantísima:</p>
+      <div class="quote">Una amenaza que no se responde no desaparece necesariamente.</div>
+      <p>Las blancas continúan: <strong>6. Cf3</strong>, y las negras: <strong>6... e6</strong>. Las blancas juegan <strong>7. Ce5</strong>. Ahora los caballos blancos colaboran sobre f7.</p>
+      <h4>ATAQUE CON DOS PIEZAS</h4>
+      <p>Los caballos blancos apuntan hacia f7. Esto enseña: <strong>una debilidad se vuelve mucho más peligrosa cuando varias piezas pueden atacarla.</strong></p>
+      <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">⚖️</span><div><span class="co-tt">Relación ataque/defensa</span>
+      <p>No cuentes solamente: «Tengo dos piezas atacando.» Pregúntate: «¿Cuántas piezas puede utilizar el rival para defender?» La relación ataque/defensa es fundamental.</p></div></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box pu">🏋️</span> EL CONCEPTO DE SOBRECARGA <span class="badge b-purple">7...Ag6 8.Ad3</span></h3>
+      <p>Las negras juegan <strong>7... Ag6</strong>: el alfil intenta defender la zona crítica. Las blancas: <strong>8. Ad3</strong> (Alfil Af1 → d3). El alfil blanco desafía al defensor. Esto nos lleva al concepto de:</p>
+      <div class="quote" style="border-color:var(--purple)">SOBRECARGA — Una pieza está sobrecargada cuando tiene demasiadas tareas defensivas.</div>
+      <p class="muted">Por ejemplo:</p>
+      <div class="chips"><span class="chip">defender una pieza</span><span class="chip">defender un mate</span><span class="chip">proteger una casilla</span><span class="chip">impedir una entrada</span></div>
+      <p style="margin-top:8px">Si una pieza tiene demasiadas responsabilidades, puede ser tácticamente explotada.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box rd">💰</span> EL ERROR CODICIOSO <span class="badge b-red">8...Dxd4?!</span></h3>
+      <p>Las negras juegan <strong>8... Dxd4?!</strong> — La dama captura un peón. A primera vista: «¡He ganado un peón!» Pero un jugador fuerte pregunta: <strong>«¿Qué estoy dejando sin defensa?»</strong></p>
+      <div class="callout c-warn" style="margin-bottom:0"><span class="co-ic">🥇</span><div><span class="co-tt">Regla de oro contra la codicia</span>
+      <p>Antes de capturar material, pregunta: <strong>«¿Qué quiere hacer mi rival después de que yo capture?»</strong> Una captura nunca debe evaluarse solamente por el material ganado.</p></div></div>
+    </div>
+
+    <!-- TABLERO 4 -->
+    <div class="board-card" id="board-4">
+      <div class="bc-head">
+        <span class="badge b-purple">TABLERO INTERACTIVO 4 · COMBINACIÓN EN 4 ETAPAS</span>
+        <h3 style="width:100%">Variante 5...Af5 — eliminación del defensor y horquilla</h3>
+        <p class="bc-line mono">1.e4 c6 2.d4 d5 3.Cc3 dxe4 4.Cxe4 Cf6 5.Cg5 Af5 6.Cf3 e6 7.Ce5 Ag6 8.Ad3 Dxd4?! 9.Axg6 fxg6 10.Cxf7 Rxf7 11.Ag5+ Re8 12.Dxd4</p>
+      </div>
+      <div class="board-zone">
+        <div class="board-col">
+          <div class="board-area">
+            <div class="rank-col" data-coords="ranks"></div>
+            <div class="board-main"><div class="board-grid"></div><div class="file-col" data-coords="files"></div></div>
+          </div>
+          <div class="stepper">
+            <div class="st-row">
+              <button class="st-btn st-prev" aria-label="Movimiento anterior">◀ Anterior</button>
+              <button class="st-btn st-reset" aria-label="Volver a la posición inicial">⟲ Reset</button>
+              <button class="st-btn accent st-next" aria-label="Movimiento siguiente">Siguiente ▶</button>
+            </div>
+            <input type="range" class="st-slider" min="0" value="0" step="1" aria-label="Deslizador de movimientos">
+            <div class="st-ind"></div>
+          </div>
+        </div>
+        <aside class="move-panel" aria-live="polite"></aside>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box am">🧨</span> ELIMINACIÓN DEL DEFENSOR <span class="badge b-amber">9.Axg6 fxg6</span></h3>
+        <p>Las blancas juegan <strong>9. Axg6</strong> (Alfil Ad3 → g6) y captura el alfil negro. Las negras responden <strong>9... fxg6</strong> (peón f7 → g6). Ahora el defensor ha desaparecido. Entonces aparece: <strong>10. Cxf7</strong> — el caballo llega a f7. Y vuelve a producirse la idea de la horquilla.</p>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box gr">🍴</span> LA HORQUILLA</h3>
+        <p>Una <strong>horquilla</strong> es una táctica en la que una pieza ataca simultáneamente dos o más objetivos. En la variante, con 10. Cxf7 el caballo amenaza simultáneamente objetivos importantes, entre ellos la dama y la torre.</p>
+        <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">📏</span><div><span class="co-tt">Regla</span>
+        <p>Cuando una pieza entra en una casilla, mira inmediatamente qué piezas puede atacar desde allí. Especialmente: dama; torres; rey; dos piezas simultáneamente.</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box rd">👑</span> EL REY CAPTURA EL CABALLO <span class="badge b-red">10...Rxf7 11.Ag5+</span></h3>
+      <p>Las negras responden <strong>10... Rxf7</strong>: el rey captura el caballo. Otra vez: «¿Entonces para qué sacrificamos el caballo?» Porque <strong>la combinación todavía no ha terminado</strong>. Las blancas continúan <strong>11. Ag5+</strong> (Alfil Ac1 → g5). Jaque.</p>
+      <div class="quote" style="border-color:var(--red)">Aquí aparece una idea muy profunda: una combinación puede tener varias etapas. No evalúes una jugada aislada. Evalúa la secuencia completa.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">🎯</span> DESVIACIÓN DEL REY Y ATAQUE A LA DAMA <span class="badge b-accent">11...Re8 12.Dxd4</span></h3>
+      <p>El jaque obliga al rey a reaccionar. Después de la secuencia, las blancas pueden llegar a <strong>12. Dxd4</strong>, capturando la dama negra. La idea táctica es especialmente instructiva:</p>
+      <div class="formula">
+        <span class="f-chip">sacrificio</span><span class="f-arr">→</span>
+        <span class="f-chip">rey desplazado</span><span class="f-arr">→</span>
+        <span class="f-chip">línea liberada</span><span class="f-arr">→</span>
+        <span class="f-chip">recuperación de la dama</span>
+      </div>
+      <p>Esto es ajedrez táctico. La jugada inicial puede parecer materialmente mala. La combinación completa puede ser favorable.</p>
+      <div class="callout c-ok" style="margin-bottom:0"><span class="co-ic">🥇</span><div><span class="co-tt">La regla más importante del cálculo</span>
+      <p>Nunca evalúes una combinación por la primera captura. <strong>Evalúala por su punto final.</strong> Ejemplo: «Sacrifico un caballo» no significa necesariamente que pierdas un caballo. Puede significar: «Sacrifico un caballo para desplazar al rey, eliminar un defensor, abrir una línea y finalmente ganar la dama.» Por eso los jugadores fuertes calculan secuencias, no movimientos aislados.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 8. EL CÁLCULO ================= -->
+<section class="page" id="page-8">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 08 · Técnica de cálculo</span>
+      <h2>Cómo calcular <span>sin perderte</span></h2>
+      <p class="lead">El método paso a paso, la mejor defensa del rival y el error del «rival cooperativo».</p>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box">🧮</span> CÓMO CALCULAR UNA VARIANTE SIN PERDERTE</h3>
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>PASO 1</strong> — Elige una jugada candidata.</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>PASO 2</strong> — Imagina la posición después de ejecutarla.</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>PASO 3</strong> — Busca la mejor respuesta del rival.</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>PASO 4</strong> — Busca tu respuesta.</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><strong>PASO 5</strong> — Repite mientras la posición siga siendo forzada.</div></div>
+      <div class="step"><div class="step-num am">6</div><div class="step-body"><strong>PASO 6</strong> — Detente cuando desaparezca la secuencia táctica.</div></div>
+      <div class="step"><div class="step-num gr">7</div><div class="step-body"><strong>PASO 7</strong> — Evalúa la posición final.</div></div>
+      <p class="muted" style="margin-top:10px">Pregunta:</p>
+      <div class="chips"><span class="chip acc">¿Quién tiene más material?</span><span class="chip acc">¿Quién tiene mejor rey?</span><span class="chip acc">¿Quién tiene mejores piezas?</span><span class="chip acc">¿Quién tiene iniciativa?</span><span class="chip acc">¿Quién tiene mejor estructura?</span><span class="chip acc">¿Quién amenaza algo?</span></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box am">✂️</span> NO CALCULES DIEZ JUGADAS SI NO HACE FALTA</h3>
+        <p>El cálculo no consiste en mirar diez movimientos obligatoriamente. Una combinación puede resolverse en 2–4 jugadas. Otra puede necesitar más. La clave es:</p>
+        <div class="quote" style="border-color:var(--amber);margin-bottom:0">Calcula hasta que la posición se estabilice. Si después de tres movimientos ya no existen amenazas forzantes, probablemente no necesitas seguir imaginando veinte movimientos.</div>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box rd">🛡️</span> EL PRINCIPIO DE LA MEJOR DEFENSA</h3>
+        <p>Este es uno de los mayores saltos de nivel. No pienses: <em>«Mi rival seguramente hará esto.»</em> Piensa:</p>
+        <div class="quote" style="border-color:var(--red)">«¿Cuál sería la respuesta más molesta que podría encontrar mi rival?»</div>
+        <p style="margin-bottom:0">Cuando calcules: Tu jugada → respuesta rival → tu respuesta — la respuesta rival debe ser <strong>la mejor posible, no la más cómoda</strong>.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box pu">🤝</span> EL ERROR DEL «RIVAL COOPERATIVO»</h3>
+      <p>Los principiantes calculan así: <em>«Yo hago esto, él hace esto, entonces gano.»</em> El problema es que han supuesto que el rival colaborará. El jugador fuerte piensa: <strong>«¿Cómo puede destruir mi idea?»</strong></p>
+      <div class="callout c-ok" style="margin-bottom:0"><span class="co-ic">🔄</span><div><span class="co-tt">Paradoja útil</span>
+      <p>Esto es pensamiento defensivo. Y paradójicamente, pensar mejor en la defensa hace que encuentres mejores ataques.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 9. VISIÓN TÁCTICA ================= -->
+<section class="page" id="page-9">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 09 · Visión del tablero</span>
+      <h2>Visión táctica: <span>patrones y relaciones</span></h2>
+      <p class="lead">El tablero invisible, las relaciones entre piezas, los 10 patrones fundamentales y el radar de seguridad del rey.</p>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box pu">🌫️</span> EL TABLERO INVISIBLE</h3>
+        <p>Una habilidad esencial es aprender a imaginar la posición después de una jugada.</p>
+        <details class="acc"><summary>🧠 Ejercicio de visualización (5.Cg5)</summary>
+          <div class="acc-body">
+            <p>Mira <strong>5. Cg5</strong>. Ahora cierra mentalmente el tablero. Pregunta:</p>
+            <ul class="dash">
+              <li>¿Dónde está el rey negro? ¿Dónde está la dama? ¿Dónde están los caballos?</li>
+              <li>¿Qué piezas atacan f7? ¿Qué piezas defienden f7?</li>
+              <li>¿Qué piezas están clavadas? ¿Qué líneas están abiertas?</li>
+            </ul>
+            <p>Después imagina: <strong>5...h6</strong>. Y vuelve a reconstruir mentalmente. Esta habilidad mejora muchísimo con práctica.</p>
+          </div>
+        </details>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box">🕸️</span> NO MIRES LAS PIEZAS: MIRA LAS RELACIONES</h3>
+        <p>Un tablero de ajedrez no es simplemente: rey aquí, dama allí, caballo allá. Es una <strong>red de relaciones</strong>. Pregúntate:</p>
+        <ul class="dash">
+          <li>¿Quién ataca a quién? ¿Quién defiende a quién?</li>
+          <li>¿Qué pieza está clavada? ¿Qué pieza está sobrecargada?</li>
+          <li>¿Qué pieza no tiene casillas?</li>
+          <li>¿Qué línea está abierta? ¿Qué casilla puede invadirse?</li>
+        </ul>
+        <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">👁️</span><div><span class="co-tt">Info</span><p>Eso es empezar a ver ajedrez.</p></div></div>
+      </div>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box">🧩</span> LA VISIÓN TÁCTICA: 10 PATRONES QUE DEBES APRENDER</h3>
+      <p class="muted">Los ejemplos del Gambito Alien permiten estudiar varios patrones fundamentales.</p>
+      <div class="grid g2">
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">1 · CLAVADA</span><p style="margin-top:8px;font-size:14px">Una pieza no puede moverse porque detrás está el rey.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-green">2 · HORQUILLA</span><p style="margin-top:8px;font-size:14px">Una pieza ataca simultáneamente varios objetivos.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-amber">3 · DESVIACIÓN</span><p style="margin-top:8px;font-size:14px">Obligas a una pieza a abandonar una casilla.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-red">4 · ELIMINACIÓN DEL DEFENSOR</span><p style="margin-top:8px;font-size:14px">Destruyes la pieza que protege un punto importante.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-purple">5 · ATAQUE DESCUBIERTO</span><p style="margin-top:8px;font-size:14px">Una pieza se mueve y deja abierta la línea de otra.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">6 · ATAQUE DOBLE</span><p style="margin-top:8px;font-size:14px">Una sola jugada crea dos amenazas.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-amber">7 · SOBRECARGA</span><p style="margin-top:8px;font-size:14px">Una pieza tiene demasiadas funciones defensivas.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-green">8 · ATRACCIÓN</span><p style="margin-top:8px;font-size:14px">Induces una pieza enemiga a ocupar una casilla desfavorable.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-red">9 · INTERFERENCIA</span><p style="margin-top:8px;font-size:14px">Bloqueas una línea de comunicación entre piezas enemigas.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-purple">10 · DESPEJE</span><p style="margin-top:8px;font-size:14px">Una pieza abandona una casilla para permitir que otra actúe.</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box rd">📡</span> LA SEGURIDAD DEL REY: TU RADAR PRINCIPAL</h3>
+      <p>Antes de cualquier ataque pregunta:</p>
+      <div class="grid g2">
+        <div class="card" style="margin:0">
+          <h4 style="color:var(--red)">Rey enemigo</h4>
+          <ul class="dash">
+            <li>¿Está enrocado?</li><li>¿Tiene peones delante?</li><li>¿Tiene piezas defensoras?</li>
+            <li>¿Hay líneas abiertas hacia él?</li><li>¿Puede escapar?</li>
+          </ul>
+        </div>
+        <div class="card" style="margin:0">
+          <h4 style="color:var(--green)">Mi rey</h4>
+          <ul class="dash">
+            <li>¿Está seguro?</li><li>¿Puedo enrocar?</li><li>¿Tengo piezas defendiendo las casillas cercanas?</li>
+            <li>¿Hay jaques tácticos contra mí?</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout c-warn" style="margin-bottom:0"><span class="co-ic">⚠️</span><div><span class="co-tt">Regla práctica</span>
+      <p>El rey es un objetivo táctico, pero también una pieza que debes proteger constantemente.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 10. MATERIAL E INICIATIVA ================= -->
+<section class="page" id="page-10">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 10 · Evaluación</span>
+      <h2>Material no es todo: <span>iniciativa y tempo</span></h2>
+      <p class="lead">Los factores que compensan un sacrificio y la regla de oro de cada jugada.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box am">⚖️</span> MATERIAL NO ES TODO</h3>
+      <p>En el Gambito Alien las blancas entregan un caballo. Un principiante puede pensar: «Estoy perdiendo material, por tanto la jugada es mala.» <strong style="color:var(--amber)">Eso es falso.</strong> El valor de una posición depende de más factores:</p>
+      <div class="grid g3">
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">MATERIAL</span><p style="margin-top:8px;font-size:14px">Quién tiene más piezas y peones.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-green">ACTIVIDAD</span><p style="margin-top:8px;font-size:14px">Qué tan activas están las piezas.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-red">SEGURIDAD DEL REY</span><p style="margin-top:8px;font-size:14px">Qué rey está más expuesto.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-purple">INICIATIVA</span><p style="margin-top:8px;font-size:14px">Quién obliga al otro a responder.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-amber">ESTRUCTURA</span><p style="margin-top:8px;font-size:14px">Cómo están colocados los peones.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">ESPACIO</span><p style="margin-top:8px;font-size:14px">Quién controla más territorio útil.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-green">TIEMPO</span><p style="margin-top:8px;font-size:14px">Quién ha ganado tiempos de desarrollo o ataque.</p></div>
+      </div>
+      <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">💡</span><div><span class="co-tt">Conclusión</span>
+      <p>Un sacrificio puede compensar material mediante varios de estos factores.</p></div></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box pu">🚀</span> INICIATIVA: OBLIGAR AL RIVAL A RESPONDER</h3>
+        <p>Una posición es especialmente poderosa cuando: <strong>tus jugadas obligan al rival a responder</strong>. Por ejemplo: <span class="mono" style="color:var(--accent)">Ac4+</span> — el rival debe responder al jaque.</p>
+        <p>Esto significa que durante ese momento no puede ejecutar libremente su propio plan. La iniciativa es, en cierto sentido: <strong>tener el control del ritmo de la partida</strong>.</p>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box">⏱️</span> EL CONCEPTO DE TEMPO</h3>
+        <p>Un <strong>tempo</strong> es, simplificando, un tiempo útil de juego. Si atacas una pieza y el rival tiene que moverla, has ganado un tiempo relativo para desarrollar o mejorar otra pieza.</p>
+        <div class="callout c-ok" style="margin-bottom:0"><span class="co-ic">💡</span><div><span class="co-tt">Por eso</span>
+        <p>Una jugada puede ser buena no solamente por dónde termina la pieza, sino por <strong>qué obliga al rival a hacer</strong>.</p></div></div>
+      </div>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box gr">🥇</span> LA REGLA DE ORO: CADA JUGADA DEBE TENER UNA RAZÓN</h3>
+      <p>No necesitas una razón espectacular. Puede ser:</p>
+      <div class="chips"><span class="chip acc">desarrollar</span><span class="chip acc">defender</span><span class="chip acc">atacar</span><span class="chip acc">mejorar una pieza</span><span class="chip acc">controlar una casilla</span><span class="chip acc">preparar el enroque</span><span class="chip acc">abrir una línea</span><span class="chip acc">impedir el plan rival</span></div>
+      <p style="margin-top:12px">Pero debes poder completar: <strong class="quote" style="display:inline-block;padding:6px 14px;font-size:15px;margin:0">«Juego esta pieza aquí porque...»</strong></p>
+      <div class="callout c-bad" style="margin-bottom:0"><span class="co-ic">✋</span><div><span class="co-tt">Detente</span><p>Si no puedes terminar la frase, detente.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 11. PROCESO MENTAL ================= -->
+<section class="page" id="page-11">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 11 · El turno completo</span>
+      <h2>El proceso mental <span>de un jugador fuerte</span></h2>
+      <p class="lead">Los 10 pasos de cada turno, la comprobación final C.A.T. y el aprendizaje del «¿por qué?».</p>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box">🔟</span> EN CADA TURNO…</h3>
+        <div class="flow">
+          <div class="flow-box">1 · MIRO LA ÚLTIMA JUGADA</div><div class="flow-arr">↓</div>
+          <div class="flow-box">2 · ¿QUÉ CAMBIÓ?</div><div class="flow-arr">↓</div>
+          <div class="flow-box">3 · ¿QUÉ AMENAZA EL RIVAL?</div><div class="flow-arr">↓</div>
+          <div class="flow-box">4 · ¿HAY JAQUES?</div><div class="flow-arr">↓</div>
+          <div class="flow-box">5 · ¿HAY CAPTURAS?</div><div class="flow-arr">↓</div>
+          <div class="flow-box">6 · ¿HAY ATAQUES?</div><div class="flow-arr">↓</div>
+          <div class="flow-box acc">7 · CREO 2–4 CANDIDATAS</div><div class="flow-arr">↓</div>
+          <div class="flow-box acc">8 · CALCULO LA MEJOR DEFENSA</div><div class="flow-arr">↓</div>
+          <div class="flow-box gr">9 · COMPARO LAS POSICIONES FINALES</div><div class="flow-arr">↓</div>
+          <div class="flow-box gr">10 · HAGO UNA COMPROBACIÓN FINAL</div>
+        </div>
+      </div>
+      <div>
+        <div class="card glow">
+          <h3><span class="icon-box rd">🐱</span> LA COMPROBACIÓN FINAL: «C.A.T.»</h3>
+          <p>Antes de ejecutar una jugada, haz una última comprobación. Marca las casillas mentalmente:</p>
+          <div class="check-item"><input type="checkbox" id="catC"><span><strong>C — CAPTURAS:</strong> ¿Mi rival puede capturar gratuitamente algo después de mi jugada?</span></div>
+          <div class="check-item"><input type="checkbox" id="catA"><span><strong>A — ATAQUES:</strong> ¿Mi rival obtiene un ataque táctico contra alguna pieza?</span></div>
+          <div class="check-item"><input type="checkbox" id="catT"><span><strong>T — TÁCTICAS:</strong> ¿Existe un jaque, horquilla, clavada, mate o combinación contra mí?</span></div>
+          <div class="callout c-ok" style="margin-bottom:0"><span class="co-ic">⏱️</span><div><span class="co-tt">Solo 5–10 segundos</span><p>Esta comprobación puede evitar una enorme cantidad de errores.</p></div></div>
+        </div>
+        <div class="card">
+          <h3><span class="icon-box am">💸</span> EL ERROR MÁS CARO</h3>
+          <p><em>«No vi que podía capturarme.»</em></p>
+          <ul class="dash">
+            <li><strong>Antes</strong> de mover una pieza: mira todas las piezas enemigas que pueden atacarla.</li>
+            <li><strong>Después</strong> de moverla: mira todas las piezas enemigas que ahora puede atacar.</li>
+          </ul>
+          <p class="nota">Este pequeño hábito evita muchísimos errores de principiante.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box gr">❓</span> APRENDE A PREGUNTAR «¿POR QUÉ?»</h3>
+      <div class="grid g3">
+        <div class="card" style="margin:0">
+          <span class="badge b-red">No memorices: 5. Cg5</span>
+          <p style="margin-top:8px;font-size:14px"><strong style="color:var(--green)">Entiende:</strong> «El caballo se desplaza a g5 porque desde allí crea amenazas sobre puntos sensibles, especialmente f7 y e6.»</p>
+        </div>
+        <div class="card" style="margin:0">
+          <span class="badge b-red">No memorices: 6. Cxf7</span>
+          <p style="margin-top:8px;font-size:14px"><strong style="color:var(--green)">Entiende:</strong> «El sacrificio busca sacar al rey de su refugio y explotar su exposición.»</p>
+        </div>
+        <div class="card" style="margin:0">
+          <span class="badge b-red">No memorices: 7. Cf3</span>
+          <p style="margin-top:8px;font-size:14px"><strong style="color:var(--green)">Entiende:</strong> «Desarrollo una pieza antes de precipitarme porque necesito más fuerzas para atacar.»</p>
+        </div>
+      </div>
+      <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">🔄</span><div><span class="co-tt">Resultado</span><p>Esto transforma memoria en comprensión.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 12. NOTACIÓN ================= -->
+<section class="page" id="page-12">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 12 · El lenguaje</span>
+      <h2>La notación algebraica <span>como lenguaje del pensamiento</span></h2>
+      <p class="lead">La notación permite registrar exactamente una partida. Es complemento de la explicación humana, nunca su sustituto.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">🔤</span> LAS PIEZAS Y SUS LETRAS</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Pieza</th><th>Letra</th><th>Ejemplo</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td>Peones</td><td class="mono">—</td><td class="mono">e4</td><td>Normalmente se escribe solamente la casilla: Peón e2 → e4</td></tr>
+            <tr><td>Caballos ♘</td><td class="mono">C</td><td class="mono">Cf3</td><td>Caballo → f3</td></tr>
+            <tr><td>Alfiles ♗</td><td class="mono">A</td><td class="mono">Ac4</td><td>Alfil → c4</td></tr>
+            <tr><td>Torres ♖</td><td class="mono">T</td><td class="mono">Tf1</td><td>Torre → f1</td></tr>
+            <tr><td>Damas ♕</td><td class="mono">D</td><td class="mono">Dh5</td><td>Dama → h5</td></tr>
+            <tr><td>Reyes ♔</td><td class="mono">R</td><td class="mono">Rf7</td><td>Rey → f7</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid g3">
+      <div class="card">
+        <h3><span class="icon-box am">✖️</span> CAPTURAS</h3>
+        <p>Una captura se indica con <strong class="mono" style="color:var(--amber);font-size:20px">x</strong></p>
+        <p>Ejemplo: <span class="mono" style="color:var(--accent)">Cxf7</span> significa: <em>Caballo captura en f7.</em></p>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box rd">⚡ JAQUE Y MATE</span></h3>
+        <p><strong class="mono" style="color:var(--green);font-size:20px">+</strong> significa jaque. Ejemplo: <span class="mono">Ac4+</span></p>
+        <p><strong class="mono" style="color:var(--red);font-size:20px">#</strong> significa jaque mate. Ejemplo: <span class="mono">Cd6#</span></p>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box pu">🏰</span> ENROQUE</h3>
+        <p>Enroque corto: <strong class="mono" style="color:var(--accent)">O-O</strong></p>
+        <p>Enroque largo: <strong class="mono" style="color:var(--accent)">O-O-O</strong></p>
+        <p class="nota">En la partida estudiada: 9. O-O</p>
+      </div>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box gr">📖</span> CÓMO LEER UNA PARTIDA SIN TABLERO</h3>
+      <p>Por ejemplo:</p>
+      <pre class="mono" style="background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;font-size:14px;color:var(--accent)">1. e4 c6
+2. d4 d5
+3. Cc3 dxe4
+4. Cxe4 Cf6
+5. Cg5 h6
+6. Cxf7 Rxf7
+7. Cf3 Cbd7
+8. Ac4+ Re8
+9. O-O</pre>
+      <p>Puedes leerla como una historia:</p>
+      <ul class="dash">
+        <li>Las blancas ocupan el centro.</li>
+        <li>Las negras plantean la Caro-Kann.</li>
+        <li>Se intercambia tensión central.</li>
+        <li>Las blancas centralizan un caballo.</li>
+        <li>Las negras lo atacan.</li>
+        <li>El caballo se desplaza agresivamente.</li>
+        <li>Las negras intentan expulsarlo.</li>
+        <li>Las blancas sacrifican el caballo.</li>
+        <li>El rey negro queda expuesto.</li>
+        <li>Las blancas desarrollan.</li>
+        <li>Aparece el jaque.</li>
+        <li>Las blancas finalmente enrocan.</li>
+      </ul>
+      <div class="callout c-ok" style="margin-bottom:0"><span class="co-ic">✨</span><div><span class="co-tt">Resultado</span><p>La notación deja de ser un código extraño y se convierte en una narración.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 13. ESTUDIO Y EJERCICIOS ================= -->
+<section class="page" id="page-13">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 13 · Método de estudio</span>
+      <h2>Estudiar sin memorizar <span>y 5 ejercicios</span></h2>
+      <p class="lead">Cómo estudiar esta apertura por capas y los ejercicios fundamentales del documento.</p>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box">🧱</span> CÓMO ESTUDIAR ESTA APERTURA SIN CONVERTIRTE EN UN MEMORIZADOR</h3>
+      <p>No intentes memorizar inmediatamente las 12 jugadas. Hazlo en capas.</p>
+      <div class="grid g4">
+        <div class="card" style="margin:0"><span class="badge b-accent">NIVEL 1 — RECONOCIMIENTO</span>
+          <p style="margin-top:8px;font-size:13.5px">Aprende: <span class="mono">1.e4 c6 2.d4 d5 3.Cc3 dxe4 4.Cxe4</span>. Reconoce la posición.</p></div>
+        <div class="card" style="margin:0"><span class="badge b-green">NIVEL 2 — IDEA</span>
+          <p style="margin-top:8px;font-size:13.5px">Aprende: <span class="mono">4...Cf6 5.Cg5</span>. Y comprende: «El caballo busca actividad y presión sobre puntos sensibles.»</p></div>
+        <div class="card" style="margin:0"><span class="badge b-amber">NIVEL 3 — TÁCTICA</span>
+          <p style="margin-top:8px;font-size:13.5px">Aprende: <span class="mono">5...h6 6.Cxf7!</span> Pero comprende por qué.</p></div>
+        <div class="card" style="margin:0"><span class="badge b-purple">NIVEL 4 — PLAN</span>
+          <p style="margin-top:8px;font-size:13.5px">Comprende: <span class="mono">6...Rxf7 7.Cf3 8.Ac4+ 9.O-O</span>. La idea es: sacrificio → rey expuesto → desarrollo → ataque → seguridad propia.</p></div>
+      </div>
+    </div>
+
+    <details class="acc"><summary>🧠 EJERCICIO FUNDAMENTAL — Detente antes de cada jugada</summary>
+      <div class="acc-body">
+        <p>Toma la secuencia: <span class="mono">1.e4 c6 2.d4 d5 3.Cc3 dxe4 4.Cxe4 Cf6</span>. Ahora <strong>detente</strong>. No mires la siguiente jugada. Pregúntate:</p>
+        <ul class="dash">
+          <li>¿Qué amenaza el negro?</li><li>¿Qué piezas tengo desarrolladas?</li><li>¿Qué piezas negras están desarrolladas?</li>
+          <li>¿Dónde está el rey negro?</li><li>¿Cuál es mi pieza más activa?</li><li>¿Puedo crear una amenaza?</li><li>¿Qué candidatos tengo?</li>
+        </ul>
+        <p>Después intenta encontrar <strong class="mono" style="color:var(--accent)">5. Cg5</strong> — no porque lo hayas memorizado, sino porque has descubierto la lógica.</p>
+      </div>
+    </details>
+
+    <details class="acc"><summary>💥 SEGUNDO EJERCICIO — El caballo está atacado</summary>
+      <div class="acc-body">
+        <p>Después: <span class="mono">5.Cg5 h6</span>. Detente. Pregúntate: «El caballo está atacado. ¿Tengo que retirarlo?» Busca:</p>
+        <div class="chips"><span class="chip">retiradas</span><span class="chip">capturas</span><span class="chip">sacrificios</span><span class="chip">amenazas</span></div>
+        <p style="margin-top:8px">Después intenta descubrir <strong class="mono" style="color:var(--accent)">6. Cxf7!</strong> La finalidad del ejercicio es aprender a <strong>buscar, no recordar</strong>.</p>
+      </div>
+    </details>
+
+    <details class="acc"><summary>🛡️ TERCER EJERCICIO — Encuentra al defensor</summary>
+      <div class="acc-body">
+        <p>En una posición táctica, elige una casilla importante. Por ejemplo: <strong class="mono">f7</strong>. Pregunta:</p>
+        <ul class="dash">
+          <li>«¿Qué piezas negras la defienden?»</li>
+          <li>Después: «¿Puedo eliminar alguna?»</li>
+          <li>Después: «¿Qué sucede si desaparece ese defensor?»</li>
+        </ul>
+        <p>Este ejercicio desarrolla visión táctica.</p>
+      </div>
+    </details>
+
+    <details class="acc"><summary>🔄 CUARTO EJERCICIO — Juega contra ti mismo</summary>
+      <div class="acc-body">
+        <p>Cuando encuentres una combinación, cambia de perspectiva. No pienses como las blancas. Piensa como las negras. Pregunta: <strong>«¿Cómo puedo refutar este ataque?»</strong> Busca:</p>
+        <div class="chips"><span class="chip">una captura</span><span class="chip">una defensa</span><span class="chip">una pieza adicional</span><span class="chip">una retirada</span><span class="chip">un contraataque</span><span class="chip">un cambio de damas</span><span class="chip">una escapatoria del rey</span></div>
+        <p style="margin-top:8px">Esto desarrolla muchísimo tu fuerza de cálculo.</p>
+      </div>
+    </details>
+
+    <details class="acc"><summary>💰 QUINTO EJERCICIO — El test de la codicia</summary>
+      <div class="acc-body">
+        <p>Cuando puedas capturar un peón o una pieza, <strong>no captures inmediatamente</strong>. Primero pregunta: «Si capturo, ¿qué puede hacer mi rival?» Después busca: <strong>jaques → capturas → ataques</strong>.</p>
+        <p>Este ejercicio es especialmente importante porque la variante <span class="mono">8...Dxd4?!</span> muestra precisamente el peligro de capturar material sin comprobar las consecuencias.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 14. ENTRENAMIENTO ================= -->
+<section class="page" id="page-14">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 14 · Mejora continua</span>
+      <h2>Analizar, entrenar <span>y corregir errores</span></h2>
+      <p class="lead">El método de análisis de partidas, el ciclo de mejora, el entrenamiento diario de 20 minutos y el entrenamiento específico con el Gambito Alien.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">🔬</span> EL MÉTODO PARA ANALIZAR CUALQUIER PARTIDA</h3>
+      <p>Después de una partida, no preguntes únicamente «¿Dónde perdí?». Haz esto:</p>
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>FASE 1 — PRIMER ERROR:</strong> ¿En qué momento dejé de entender la posición?</div></div>
+      <div class="step"><div class="step-num am">2</div><div class="step-body"><strong>FASE 2 — ERROR TÁCTICO:</strong> ¿Dejé una pieza sin defensa?</div></div>
+      <div class="step"><div class="step-num pu">3</div><div class="step-body"><strong>FASE 3 — ERROR ESTRATÉGICO:</strong> ¿Mi plan era malo?</div></div>
+      <div class="step"><div class="step-num rd">4</div><div class="step-body"><strong>FASE 4 — ERROR DE CÁLCULO:</strong> ¿No vi la respuesta del rival?</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><strong>FASE 5 — ERROR DE EVALUACIÓN:</strong> ¿Pensé que una posición era buena cuando realmente era mala?</div></div>
+      <div class="step"><div class="step-num gr">6</div><div class="step-body"><strong>FASE 6 — LECCIÓN:</strong> Escribe una sola frase: «La próxima vez debo...»</div></div>
+      <div class="callout c-ok" style="margin-bottom:0"><span class="co-ic">🔄</span><div><span class="co-tt">Resultado</span><p>Así conviertes una derrota en entrenamiento.</p></div></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box rd">🗣️</span> NO DIGAS «SOY MALO CALCULANDO»</h3>
+        <p>Eso es demasiado general. Di exactamente:</p>
+        <ul class="dash">
+          <li>«No comprobé la respuesta del rival después de mi captura.»</li>
+          <li>«No vi que el caballo estaba clavado.»</li>
+          <li>«No conté los defensores de f7.»</li>
+          <li>«Me lancé a dar jaques sin desarrollar las piezas.»</li>
+        </ul>
+        <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">🎯</span><div><span class="co-tt">Clave</span><p>Un error específico puede corregirse.</p></div></div>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box gr">♻️</span> EL CICLO DE MEJORA</h3>
+        <div class="flow">
+          <div class="flow-box">JUGAR</div><div class="flow-arr">↓</div>
+          <div class="flow-box">ANALIZAR</div><div class="flow-arr">↓</div>
+          <div class="flow-box">ENCONTRAR EL ERROR</div><div class="flow-arr">↓</div>
+          <div class="flow-box">ENTENDER POR QUÉ</div><div class="flow-arr">↓</div>
+          <div class="flow-box acc">CREAR UNA REGLA</div><div class="flow-arr">↓</div>
+          <div class="flow-box">VOLVER A JUGAR</div><div class="flow-arr">↓</div>
+          <div class="flow-box gr">COMPROBAR SI EL ERROR SE REPITE</div>
+        </div>
+        <p class="nota" style="margin-top:10px">Ese ciclo es mucho más valioso que memorizar cien aperturas.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box pu">🛡️</span> EL PRINCIPIO «PRIMERO NO PERDER»</h3>
+      <p>Especialmente como principiante, tu objetivo no debe ser encontrar combinaciones brillantes constantemente.</p>
+      <div class="flow">
+        <div class="flow-box gr">Primero: No cuelgues piezas</div><div class="flow-arr">↓</div>
+        <div class="flow-box gr">Después: No permitas tácticas sencillas</div><div class="flow-arr">↓</div>
+        <div class="flow-box acc">Después: Mejora tus piezas</div><div class="flow-arr">↓</div>
+        <div class="flow-box acc">Después: Crea amenazas</div><div class="flow-arr">↓</div>
+        <div class="flow-box">Y finalmente: Calcula combinaciones</div>
+      </div>
+      <div class="quote">La fuerza aparece de la suma de muchas decisiones correctas.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box">⏰</span> ENTRENAMIENTO DIARIO DE 20 MINUTOS</h3>
+      <div class="grid g4">
+        <div class="card" style="margin:0"><span class="badge b-green">5 MIN — TÁCTICA</span><p style="margin-top:8px;font-size:13.5px">Resuelve posiciones sencillas. Antes de mover: jaques → capturas → ataques.</p></div>
+        <div class="card" style="margin:0"><span class="badge b-purple">5 MIN — VISUALIZACIÓN</span><p style="margin-top:8px;font-size:13.5px">Reproduce una secuencia sin mover las piezas.</p></div>
+        <div class="card" style="margin:0"><span class="badge b-accent">5 MIN — PARTIDA</span><p style="margin-top:8px;font-size:13.5px">Juega lentamente. En cada turno aplica el algoritmo.</p></div>
+        <div class="card" style="margin:0"><span class="badge b-amber">5 MIN — ANÁLISIS</span><p style="margin-top:8px;font-size:13.5px">Busca: primer error; táctica que no viste; amenaza que ignoraste; regla que incumpliste.</p></div>
+      </div>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box am">🧪</span> ENTRENAMIENTO ESPECIAL CON EL GAMBITO ALIEN</h3>
+      <p>Utiliza las tres posiciones principales (puedes reproducirlas en los tableros interactivos de este tutorial):</p>
+      <div class="grid g3">
+        <div class="card" style="margin:0">
+          <span class="badge b-accent">POSICIÓN A</span>
+          <pre class="mono" style="font-size:12.5px;margin-top:8px;color:var(--muted)">1.e4 c6 2.d4 d5
+3.Cc3 dxe4 4.Cxe4 Cf6
+5.Cg5 h6</pre>
+          <p style="font-size:13.5px">Pregunta: «¿Qué jugaría yo?» Busca <strong class="mono" style="color:var(--green)">6.Cxf7!</strong></p>
+        </div>
+        <div class="card" style="margin:0">
+          <span class="badge b-red">POSICIÓN B</span>
+          <pre class="mono" style="font-size:12.5px;margin-top:8px;color:var(--muted)">1.e4 c6 2.d4 d5
+3.Cc3 dxe4 4.Cxe4 Cd7
+5.De2 Cgf6??</pre>
+          <p style="font-size:13.5px">Pregunta: «¿Existe una táctica inmediata?» Busca: <strong class="mono" style="color:var(--red)">6.Cd6#</strong></p>
+        </div>
+        <div class="card" style="margin:0">
+          <span class="badge b-purple">POSICIÓN C</span>
+          <pre class="mono" style="font-size:12.5px;margin-top:8px;color:var(--muted)">1.e4 c6 2.d4 d5 3.Cc3 dxe4
+4.Cxe4 Cf6 5.Cg5 Af5
+6.Cf3 e6 7.Ce5 Ag6
+8.Ad3 Dxd4?!</pre>
+          <p style="font-size:13.5px">Pregunta: «¿Qué defensor puedo eliminar?» Estudia <strong class="mono">9.Axg6 fxg6 10.Cxf7 Rxf7 11.Ag5+</strong> y entiende cómo la combinación termina permitiendo <strong class="mono" style="color:var(--green)">12.Dxd4</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 15. REGLAS MENTALES ================= -->
+<section class="page" id="page-15">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 15 · El código del jugador</span>
+      <h2>Las reglas mentales, la voz interior <span>y la transferencia</span></h2>
+      <p class="lead">Las 15 reglas del jugador que queremos construir y cómo debe sonar tu pensamiento.</p>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box">📜</span> LAS REGLAS MENTALES DEL JUGADOR QUE QUEREMOS CONSTRUIR</h3>
+      <p class="muted">Memoriza estas reglas:</p>
+      <div class="grid g3">
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">REGLA 1</span><p style="margin-top:8px;font-size:14px">Antes de mi plan, miro el plan rival.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">REGLA 2</span><p style="margin-top:8px;font-size:14px">Después de cada jugada, pregunto qué cambió.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">REGLA 3</span><p style="margin-top:8px;font-size:14px">Busco primero jaques, capturas y amenazas.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">REGLA 4</span><p style="margin-top:8px;font-size:14px">No juego automáticamente una jugada «natural».</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">REGLA 5</span><p style="margin-top:8px;font-size:14px">Antes de capturar, miro la respuesta rival.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-accent">REGLA 6</span><p style="margin-top:8px;font-size:14px">Antes de sacrificar, calculo la compensación.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-green">REGLA 7</span><p style="margin-top:8px;font-size:14px">Si ataco, necesito piezas.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-green">REGLA 8</span><p style="margin-top:8px;font-size:14px">Si el rey rival está expuesto, busco líneas y piezas activas.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-green">REGLA 9</span><p style="margin-top:8px;font-size:14px">Si una pieza defiende demasiado, busco sobrecarga.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-amber">REGLA 10</span><p style="margin-top:8px;font-size:14px">Si una pieza está clavada, compruebo tácticas contra ella.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-amber">REGLA 11</span><p style="margin-top:8px;font-size:14px">Una captura de peón no es automáticamente buena.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-amber">REGLA 12</span><p style="margin-top:8px;font-size:14px">Una combinación se evalúa al final, no en el primer movimiento.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-red">REGLA 13</span><p style="margin-top:8px;font-size:14px">La mejor defensa del rival es mi prueba de calidad.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-red">REGLA 14</span><p style="margin-top:8px;font-size:14px">No necesito encontrar la jugada más bonita; necesito encontrar una jugada buena.</p></div>
+        <div class="card" style="margin:0;padding:14px"><span class="badge b-purple">REGLA 15</span><p style="margin-top:8px;font-size:14px">Antes de tocar una pieza, compruebo qué puede capturarme.</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box gr">🗨️</span> LA «VOZ INTERIOR» DEL JUGADOR DE AJEDREZ</h3>
+      <p>Con práctica, tu pensamiento debería empezar a parecerse a esto:</p>
+      <pre class="mono" style="background:#0b1220;border:1px solid rgba(34,197,94,.4);border-radius:10px;padding:16px;white-space:pre-wrap;font-size:13.5px;color:#a7f3d0">«Acaba de jugar ...h6.
+Mi caballo está atacado.
+Antes de retirarlo, busco jaques, capturas y amenazas.
+Tengo Cxf7.
+¿Qué pasa si acepta?
+Rxf7.
+Entonces mi caballo desaparece, pero el rey queda en f7.
+¿Tengo continuación?
+Cf3 desarrolla.
+Después Ac4+ puede obligar al rey a retroceder.
+Mi rey todavía está en el centro.
+Entonces puedo enrocar.
+La combinación tiene sentido porque obtengo iniciativa
+y desarrollo a cambio del material.»</pre>
+      <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">💡</span><div><span class="co-tt">Importante</span>
+      <p>Esto es mucho más importante que memorizar: <span class="mono">5.Cg5 h6 6.Cxf7 Rxf7 7.Cf3</span>.</p></div></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box">👓</span> LA DIFERENCIA ENTRE «VER» Y «ENTENDER»</h3>
+        <p>Puedes <strong>ver</strong> <span class="mono">Cxf7</span> sin entenderla. O puedes <strong>entender</strong>:</p>
+        <div class="quote" style="font-size:14.5px">«El caballo entra en f7, obliga al rey a capturarlo y modifica la seguridad del rey negro. El sacrificio tiene sentido solamente porque las blancas disponen de continuación activa.»</div>
+        <p>La segunda forma de conocimiento es mucho más poderosa. ¿Por qué? Porque <strong>puede transferirse a otra posición</strong>.</p>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box pu">🔁</span> EL PRINCIPIO DE TRANSFERENCIA</h3>
+        <p>No necesitas que la siguiente posición sea una Caro-Kann. Puedes aplicar exactamente las mismas preguntas en:</p>
+        <div class="chips"><span class="chip acc">una Siciliana</span><span class="chip acc">una Española</span><span class="chip acc">una Francesa</span><span class="chip acc">una partida de peones</span><span class="chip acc">un final de torres</span></div>
+        <ul class="dash" style="margin-top:10px">
+          <li>¿Qué cambió? ¿Qué amenaza?</li><li>¿Qué piezas están activas?</li>
+          <li>¿Cuál es el punto débil? ¿Qué candidatos tengo?</li><li>¿Cuál es la mejor defensa?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 16. ALGORITMO Y MANTRA ================= -->
+<section class="page" id="page-16">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 16 · Herramientas de bolsillo</span>
+      <h2>El algoritmo, el mantra <span>y la ficha de bolsillo</span></h2>
+      <p class="lead">Todo lo que necesitas ejecutar durante la partida, resumido en tres herramientas.</p>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box">🤖</span> TU ALGORITMO DE PENSAMIENTO DURANTE UNA PARTIDA</h3>
+      <p>Puedes utilizar este algoritmo literalmente:</p>
+      <div class="flow">
+        <div class="flow-box acc" style="align-self:stretch;text-align:center">ES MI TURNO</div><div class="flow-arr">↓</div>
+        <div class="flow-box">¿QUÉ JUGÓ EL RIVAL?</div><div class="flow-arr">↓</div>
+        <div class="flow-box">¿QUÉ CAMBIÓ?</div><div class="flow-arr">↓</div>
+        <div class="flow-box">¿QUÉ ESTÁ AMENAZANDO?</div><div class="flow-arr">↓</div>
+        <div class="flow-box" style="border-color:rgba(239,68,68,.5);color:var(--red)">¿HAY PELIGRO INMEDIATO?</div><div class="flow-arr">↓</div>
+        <div class="flow-box acc">JAQUES / CAPTURAS / ATAQUES</div><div class="flow-arr">↓</div>
+        <div class="flow-box">CREAR CANDIDATAS</div><div class="flow-arr">↓</div>
+        <div class="flow-box">CALCULAR CADA UNA</div><div class="flow-arr">↓</div>
+        <div class="flow-box">MEJOR RESPUESTA DEL RIVAL</div><div class="flow-arr">↓</div>
+        <div class="flow-box">MI MEJOR CONTINUACIÓN</div><div class="flow-arr">↓</div>
+        <div class="flow-box gr">EVALUAR POSICIÓN FINAL</div><div class="flow-arr">↓</div>
+        <div class="flow-box gr">COMPROBACIÓN C.A.T.</div><div class="flow-arr">↓</div>
+        <div class="flow-box acc" style="align-self:stretch;text-align:center">JUGAR</div>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3><span class="icon-box am">🧘</span> TU MANTRA DURANTE LA PARTIDA</h3>
+        <div class="step"><div class="step-num">1</div><div class="step-body">Antes de mover: <strong>¿Qué cambió?</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body">Después: <strong>¿Qué amenaza?</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body">Luego: <strong>Jaques, capturas, ataques.</strong></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body">Después: <strong>Candidatas.</strong></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body">Luego: <strong>¿Cuál es la mejor defensa?</strong></div></div>
+        <div class="step"><div class="step-num gr">6</div><div class="step-body">Finalmente: <strong>¿Puedo jugar mi movimiento sin dejar una táctica?</strong></div></div>
+        <p class="nota">Ese pequeño ritual es el comienzo de pensar como un jugador de ajedrez.</p>
+      </div>
+      <div class="pocket">
+        <h3>╔ PIENSA ANTES DE MOVER ╗</h3>
+        <ol>
+          <li>¿Qué cambió?</li>
+          <li>¿Qué amenaza el rival?</li>
+          <li>¿Tengo jaques?</li>
+          <li>¿Tengo capturas?</li>
+          <li>¿Tengo ataques?</li>
+          <li>¿Qué candidatos tengo?</li>
+          <li>¿Cuál es la mejor defensa rival?</li>
+          <li>¿Qué ocurre al final de la variante?</li>
+          <li>¿Estoy dejando una pieza?</li>
+          <li>¿Mi jugada tiene una razón?</li>
+        </ol>
+        <p class="nota" style="text-align:center;margin-top:12px">FICHA DE BOLSILLO — cuando estés jugando una partida, recuerda estos 10 puntos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 17. FASES DE LA PARTIDA ================= -->
+<section class="page" id="page-17">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 17 · Apertura · Medio juego · Final</span>
+      <h2>Cada fase de la partida <span>pide un pensamiento distinto</span></h2>
+      <p class="lead">Una advertencia sobre las aperturas y qué preguntar en cada etapa del juego.</p>
+    </div>
+
+    <div class="callout c-warn">
+      <span class="co-ic">⚠️</span>
+      <div><span class="co-tt">Una advertencia importante sobre las aperturas</span>
+      <p>El Gambito Alien puede ser divertido y tácticamente instructivo. Pero no debes sacar de aquí una conclusión equivocada: <em>«Siempre que juegue Cg5 debo sacrificar en f7.»</em> Eso sería volver al pensamiento automático. La verdadera lección es: <strong>Reconoce patrones, pero verifica la posición concreta.</strong> El mismo movimiento puede ser excelente en una posición y terrible en otra.</p>
+    </div>
+
+    <div class="grid g3">
+      <div class="card">
+        <h3><span class="icon-box">🌅</span> APERTURA: QUÉ DEBES PENSAR</h3>
+        <p class="muted">Durante los primeros movimientos, normalmente debes considerar:</p>
+        <div class="chips"><span class="chip acc">centro</span><span class="chip acc">desarrollo</span><span class="chip acc">seguridad del rey</span><span class="chip acc">actividad</span><span class="chip acc">estructura</span><span class="chip acc">amenazas tácticas</span></div>
+        <p style="margin-top:10px">No necesitas obsesionarte con memorizar veinte jugadas. Pregúntate:</p>
+        <div class="quote" style="font-size:14px;margin-bottom:0">«¿Estoy desarrollando mis piezas y creando una posición sana mientras impido el plan rival?»</div>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box am">⚔️</span> MEDIO JUEGO: QUÉ DEBES PENSAR</h3>
+        <p class="muted">Ahora cambia el tipo de preguntas:</p>
+        <ul class="dash">
+          <li>¿Cuál es mi mejor pieza? ¿Cuál es mi peor pieza?</li>
+          <li>¿Dónde está la debilidad enemiga?</li>
+          <li>¿Qué columna puedo ocupar?</li>
+          <li>¿Qué casilla puedo dominar?</li>
+          <li>¿Puedo crear una amenaza? ¿Hay táctica?</li>
+        </ul>
+        <p style="margin-bottom:0">El objetivo pasa de <strong>desarrollar</strong> a: <strong style="color:var(--amber)">mejorar la posición y crear problemas</strong>.</p>
+      </div>
+      <div class="card">
+        <h3><span class="icon-box pu">🌙</span> FINAL: CAMBIA TU CEREBRO</h3>
+        <p class="muted">En el final debes valorar:</p>
+        <ul class="dash">
+          <li>actividad del rey;</li><li>peones pasados;</li><li>estructura;</li>
+          <li>oposición;</li><li>actividad de torres;</li><li>casillas de entrada.</li>
+        </ul>
+        <p>No sigas pensando como si estuvieras en la apertura. La posición cambió. Por tanto: <strong style="color:var(--purple)">tu pensamiento también debe cambiar.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 18. CONCLUSIÓN ================= -->
+<section class="page" id="page-18">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sección 18 · Síntesis final</span>
+      <h2>El principio universal <span>y la conclusión</span></h2>
+      <p class="lead">Todo el tutorial reducido a una sola idea, y el hábito que queremos construir.</p>
+    </div>
+
+    <div class="card glow">
+      <h3><span class="icon-box">🌌</span> EL PRINCIPIO UNIVERSAL</h3>
+      <p>Todo el tutorial puede reducirse a una sola idea:</p>
+      <div class="quote" style="font-size:18px;text-align:center">Cada jugada cambia las relaciones del tablero.</div>
+      <p>Una pieza se mueve. Entonces:</p>
+      <div class="chips"><span class="chip acc">una casilla queda libre</span><span class="chip acc">otra queda ocupada</span><span class="chip acc">cambia una defensa</span><span class="chip acc">cambia un ataque</span><span class="chip acc">puede abrirse una línea</span><span class="chip acc">puede cerrarse otra</span><span class="chip acc">puede aparecer una amenaza</span><span class="chip acc">puede desaparecer otra</span></div>
+      <div class="callout c-info" style="margin-bottom:0"><span class="co-ic">🔄</span><div><span class="co-tt">Por eso</span>
+      <p>Después de cada movimiento, vuelve a mirar la posición <strong>como si fuera nueva</strong>.</p></div></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box gr">🧠</span> RESUMEN FINAL: PENSAR COMO JUGADOR</h3>
+      <p>No intentes convertirte en alguien que recuerda miles de jugadas. Intenta convertirte en alguien que:</p>
+      <div class="grid g2">
+        <div><ul class="dash"><li>Observa.</li><li>Pregunta.</li><li>Detecta amenazas.</li><li>Encuentra candidatos.</li><li>Calcula.</li></ul></div>
+        <div><ul class="dash"><li>Busca la mejor defensa rival.</li><li>Evalúa la posición final.</li><li>Comprueba tácticas.</li><li>Juega.</li><li>Aprende del resultado.</li></ul></div>
+      </div>
+      <div class="quote" style="text-align:center;border-color:var(--green)">El Gambito Alien es solamente el escenario. La verdadera enseñanza es el método.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon-box rd">🎬</span> CONCLUSIÓN</h3>
+      <p>El verdadero salto de nivel no ocurre cuando aprendes una apertura. Ocurre cuando empiezas a mirar el tablero y, antes de tocar una pieza, tu cerebro hace automáticamente:</p>
+      <div class="quote" style="text-align:center;font-size:19px">«Espera... ¿qué está pasando aquí?»</div>
+      <p>Ese instante de pausa es el <strong>nacimiento del pensamiento ajedrecístico</strong>. El Gambito Alien enseña sacrificios, ataques y tácticas. Pero su lección más importante es otra:</p>
+      <div class="grid g3">
+        <div class="card" style="margin:0;border-color:rgba(239,68,68,.45)"><p style="margin:0;text-align:center">❌ No juegues lo que parece bonito.</p></div>
+        <div class="card" style="margin:0;border-color:rgba(239,68,68,.45)"><p style="margin:0;text-align:center">❌ No juegues lo que recuerdas.</p></div>
+        <div class="card" style="margin:0;border-color:rgba(239,68,68,.45)"><p style="margin:0;text-align:center">❌ No juegues lo que siempre haces.</p></div>
+      </div>
+      <p style="margin-top:14px;text-align:center"><strong>Mira la posición. Entiende lo que cambió. Encuentra las amenazas. Calcula. Y solamente entonces mueve.</strong></p>
+      <hr class="sep">
+      <h4 style="text-align:center">Fórmula final</h4>
+      <div class="formula" style="justify-content:center">
+        <span class="f-chip">OBSERVAR</span><span class="f-arr">→</span>
+        <span class="f-chip">PREGUNTAR</span><span class="f-arr">→</span>
+        <span class="f-chip">CALCULAR</span><span class="f-arr">→</span>
+        <span class="f-chip">COMPROBAR</span><span class="f-arr">→</span>
+        <span class="f-chip">JUGAR</span><span class="f-arr">→</span>
+        <span class="f-chip">APRENDER</span>
+      </div>
+      <p style="text-align:center;color:var(--muted)">Ese es el hábito que queremos construir.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= APÉNDICE ================= -->
+<section class="page" id="page-anexo">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Anexo</span>
+      <h2>Partidas y variantes <span>estudiadas</span></h2>
+      <p class="lead">Las cuatro secuencias del documento. Cada una puede reproducirse movimiento a movimiento en su tablero interactivo correspondiente.</p>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <span class="badge b-accent">LÍNEA PRINCIPAL</span>
+        <p class="nota" style="margin-top:6px">→ Tablero interactivo 1 (sección «Línea principal»)</p>
+        <pre class="mono" style="background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13.5px;color:var(--accent);overflow-x:auto">1. e4 c6
+2. d4 d5
+3. Cc3 dxe4
+4. Cxe4 Cf6
+5. Cg5 h6
+6. Cxf7 Rxf7
+7. Cf3 Cbd7
+8. Ac4+ Re8
+9. O-O</pre>
+      </div>
+      <div class="card">
+        <span class="badge b-red">VARIANTE 4...Cd7 — MATE</span>
+        <p class="nota" style="margin-top:6px">→ Tablero interactivo 2 (sección «Clavadas y mate»)</p>
+        <pre class="mono" style="background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13.5px;color:var(--red);overflow-x:auto">1. e4 c6
+2. d4 d5
+3. Cc3 dxe4
+4. Cxe4 Cd7
+5. De2 Cgf6??
+6. Cd6#</pre>
+      </div>
+      <div class="card">
+        <span class="badge b-amber">VARIANTE 4...Cd7 — RUTA ALIEN</span>
+        <p class="nota" style="margin-top:6px">→ Tablero interactivo 3 (sección «Sacrificios en cadena»)</p>
+        <pre class="mono" style="background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13.5px;color:var(--amber);overflow-x:auto">1. e4 c6
+2. d4 d5
+3. Cc3 dxe4
+4. Cxe4 Cd7
+5. Cg5 h6
+6. Ce6! fxe6??
+7. Dh5+ g6
+8. Dxg6#</pre>
+      </div>
+      <div class="card">
+        <span class="badge b-purple">VARIANTE 5...Af5</span>
+        <p class="nota" style="margin-top:6px">→ Tablero interactivo 4 (sección «Defensor y horquilla»)</p>
+        <pre class="mono" style="background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13.5px;color:var(--purple);overflow-x:auto">1. e4 c6
+2. d4 d5
+3. Cc3 dxe4
+4. Cxe4 Cf6
+5. Cg5 Af5
+6. Cf3 e6
+7. Ce5 Ag6
+8. Ad3 Dxd4?!
+9. Axg6 fxg6
+10. Cxf7 Rxf7
+11. Ag5+ Re8
+12. Dxd4</pre>
+      </div>
+    </div>
+
+    <div class="callout c-info">
+      <span class="co-ic">📌</span>
+      <div><span class="co-tt">Recordatorio</span>
+      <p><strong>Movimiento</strong>: acción realizada por un único bando. <strong>Jugada completa</strong>: movimiento de BLANCAS + movimiento de NEGRAS. Los tableros avanzan movimiento por movimiento.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CRÉDITOS ================= -->
+<section class="page" id="page-creditos">
+  <div class="wrap">
+    <div class="credit-hero">
+      <span class="eyebrow">★ Créditos ★</span>
+      <h2>Aprende a pensar como un jugador de ajedrez</h2>
+      <p class="credit-sub">A partir del Gambito Alien contra la Defensa Caro-Kann</p>
+    </div>
+
+    <!-- MISMO SVG ANIMADO QUE EN HOME -->
+    <div class="cover-holder" data-cover aria-label="Portada animada del tutorial"></div>
+
+    <div class="card glow" style="text-align:center;max-width:760px;margin:26px auto">
+      <p class="nota" style="letter-spacing:3px;margin-bottom:6px">AUTORÍA Y REALIZACIÓN</p>
+      <p class="credit-name">♞ Rubén Sbarsky</p>
+      <div class="dt-row" style="justify-content:center">
+        <div class="dt-chip mono">📅 FECHA: <b>06/09/2026</b></div>
+        <div class="dt-chip mono">🕒 HORA: <b>03:37:08</b></div>
+      </div>
+      <hr class="sep">
+      <p style="color:var(--muted)">📚 Este tutorial tiene fines exclusivamente <strong style="color:var(--accent)">educativos y de divulgación</strong>.
+      Contenido basado en el documento «Aprende a pensar como un jugador de ajedrez — Gambito Alien contra la Defensa Caro-Kann».</p>
+      <p class="fiat">«Fiat iustitia, ruat caelum.»</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<button id="toTop" aria-label="Volver arriba">↑</button>
+
+<footer>
+  <p>📚 Tutorial solo con fines Educativos y Divulgación</p>
+  <p>👨‍💻 Créditos: <span class="f-acc">Rubén Sbarsky</span></p>
+  <p class="mono">📅 FECHA: 06/09/2026 · Hora: 03:37:08</p>
+  <p class="f-latin">Fiat iustitia, ruat caelum.</p>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var FECHA='06/09/2026', HORA='03:37:08';
+
+/* ================= MOTOR DE AJEDREZ ================= */
+var FILES=['a','b','c','d','e','f','g','h'];
+var GLYPH={K:'\u2654',Q:'\u2655',R:'\u2656',B:'\u2657',N:'\u2658',P:'\u2659',
+           k:'\u265A',q:'\u265B',r:'\u265C',b:'\u265D',n:'\u265E',p:'\u265F'};
+var PNAME={K:'Rey',Q:'Dama',R:'Torre',B:'Alfil',N:'Caballo',P:'Peón'};
+
+function startPos(){
+  var p={},back=['r','n','b','q','k','b','n','r'],wback=['R','N','B','Q','K','B','N','R'];
+  for(var i=0;i<8;i++){
+    p[FILES[i]+'8']=back[i]; p[FILES[i]+'7']='p';
+    p[FILES[i]+'2']='P'; p[FILES[i]+'1']=wback[i];
+  }
+  return p;
+}
+function applyStep(pos,st){
+  var n={},k;
+  for(k in pos) n[k]=pos[k];
+  if(st.castle){
+    if(st.castle==='w'){delete n.e1;delete n.h1;n.g1='K';n.f1='R';}
+    else{delete n.e8;delete n.h8;n.g8='k';n.f8='r';}
+  }else{
+    var pc=n[st.from]; delete n[st.from]; n[st.to]=pc;
+  }
+  return n;
+}
+function buildPositions(steps){
+  var arr=[startPos()];
+  steps.forEach(function(s){arr.push(applyStep(arr[arr.length-1],s));});
+  return arr;
+}
+function $(s,r){return (r||document).querySelector(s);}
+function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+
+/* ================= DATOS DE LOS TABLEROS ================= */
+/* Cada paso = UN movimiento individual. BLANCAS en índices pares (0,2,4...), NEGRAS en impares. */
+var BOARDS=[
+{
+ root:'board-1',
+ steps:[
+  {from:'e2',to:'e4',notation:'e4',what:'El peón blanco avanza dos casillas y ocupa e4.',why:'Ocupa el centro, controla d5 y f5, libera la diagonal de la dama y la del alfil de f1. Más que memorizar razones, la pregunta que deja esta jugada es: «¿Qué consigue esta jugada?». Ese pensamiento sirve para todas las jugadas.'},
+  {from:'c7',to:'c6',notation:'c6',what:'El peón negro avanza de c7 a c6: anuncia la Defensa Caro-Kann.',why:'Las negras preparan ...d5 para atacar el centro blanco. Lección: el rival también tiene un plan.'},
+  {from:'d2',to:'d4',notation:'d4',what:'El peón de d2 avanza a d4.',why:'Las blancas ocupan el centro con dos peones y amplían su control de casillas, apoyando el desarrollo.'},
+  {from:'d7',to:'d5',notation:'d5',what:'El peón negro rompe en el centro: d7 → d5.',why:'La Caro-Kann ataca de inmediato el centro blanco. Las blancas no deben pensar solo «¿qué quiero hacer yo?», sino «¿qué quiere conseguir el negro con ...d5?».'},
+  {from:'b1',to:'c3',notation:'Cc3',what:'El caballo de b1 se desarrolla a c3.',why:'El caballo desarrolla y ayuda a sostener el centro. Desarrollo con propósito.'},
+  {from:'d5',to:'e4',notation:'dxe4',what:'El peón negro de d5 captura al peón blanco de e4.',why:'Se resuelve la tensión central: el negro elimina el peón e4 y obliga a las blancas a decidir cómo recuperar la casilla.'},
+  {from:'c3',to:'e4',notation:'Cxe4',what:'El caballo de c3 recaptura en e4 y queda centralizado.',why:'No necesitas capturar automáticamente en todas las posiciones: a veces desarrollar primero permite que el propio rival cree las condiciones para una recaptura más favorable.'},
+  {from:'g8',to:'f6',notation:'Cf6',what:'El caballo negro de g8 sale a f6 y ataca al caballo blanco de e4.',why:'Las negras desarrollan y ganan tiempo atacando la pieza centralizada blanca.'},
+  {from:'e4',to:'g5',notation:'Cg5',what:'En lugar de retirar el caballo, las blancas lo llevan de e4 a g5.',why:'La pregunta correcta no es «¿por qué mover el caballo a g5?», sino «¿qué amenazas aparecen después de Cg5?». Desde g5 el caballo mira f7 y e6; f7 es la casilla crítica situada delante del rey negro.'},
+  {from:'h7',to:'h6',notation:'h6',what:'Las negras juegan ...h6 intentando expulsar al caballo.',why:'El jugador de ajedrez no responde «me atacaron, me retiro»: pregunta «¿tengo una respuesta más fuerte que simplemente retirarme?».'},
+  {from:'g5',to:'f7',notation:'Cxf7!',tags:['SACRIFICIO','CAPTURA'],what:'¡Sacrificio! El caballo captura el peón de f7.',why:'Un sacrificio no se justifica por ser bonito, sino por la compensación suficiente: aquí obliga al rey a salir de su refugio e impide el enroque negro.'},
+  {from:'e8',to:'f7',notation:'Rxf7',tags:['CAPTURA'],what:'El rey negro captura el caballo en f7.',why:'DESVIACIÓN: el rey abandona e8 y queda expuesto. A cambio del caballo, las blancas logran sacar al rey de su refugio, impedir el enroque y desarrollar con amenazas.'},
+  {from:'g1',to:'f3',notation:'Cf3',what:'Las blancas no corren a dar jaques: desarrollan el caballo de g1 a f3.',why:'Un ataque necesita piezas. «¿Tengo suficientes piezas participando en el ataque?» Si la respuesta es no: desarrolla primero.'},
+  {from:'b8',to:'d7',notation:'Cbd7',what:'El caballo negro de b8 sale a d7: las negras intentan organizarse.',why:'El negro busca coordinar sus piezas y dar aire a su rey expuesto.'},
+  {from:'f1',to:'c4',notation:'Ac4+',tags:['JAQUE'],what:'El alfil de f1 entra en c4 dando jaque al rey de f7.',why:'Ahora sí aparece el jaque: el desarrollo previo permite que el alfil entre con fuerza. Secuencia mental: sacrificio → rey expuesto → desarrollo → ataque (no jaque desesperado → improvisación).'},
+  {from:'f7',to:'e8',notation:'Re8',what:'El rey negro vuelve a e8 huyendo del jaque.',why:'El rey regresa, pero ya perdió el enroque y las blancas ganaron tiempos de desarrollo e iniciativa.'},
+  {castle:'w',notation:'O-O',tags:['ENROQUE'],what:'Enroque corto: rey e1 → g1 y torre h1 → f1.',why:'Mientras atacas al rey rival, no olvides proteger el tuyo. Un ataque no sirve de mucho si tu propio rey queda expuesto.'}
+ ]
+},
+{
+ root:'board-2',
+ steps:[
+  {from:'e2',to:'e4',notation:'e4',what:'El peón blanco avanza dos casillas y ocupa e4.',why:'Ocupa el centro, controla d5 y f5 y libera las diagonales de la dama y del alfil de f1.'},
+  {from:'c7',to:'c6',notation:'c6',what:'El peón negro avanza de c7 a c6: Defensa Caro-Kann.',why:'Las negras preparan ...d5 para atacar el centro blanco.'},
+  {from:'d2',to:'d4',notation:'d4',what:'El peón de d2 avanza a d4.',why:'Las blancas ocupan el centro con dos peones.'},
+  {from:'d7',to:'d5',notation:'d5',what:'El peón negro rompe en el centro.',why:'La Caro-Kann ataca de inmediato el centro blanco.'},
+  {from:'b1',to:'c3',notation:'Cc3',what:'El caballo de b1 se desarrolla a c3.',why:'Desarrolla y ayuda a sostener el centro.'},
+  {from:'d5',to:'e4',notation:'dxe4',what:'El peón negro de d5 captura al peón blanco de e4.',why:'Se intercambia la tensión central.'},
+  {from:'c3',to:'e4',notation:'Cxe4',what:'El caballo de c3 recaptura en e4.',why:'El caballo queda centralizado y activo.'},
+  {from:'b8',to:'d7',notation:'Cd7',what:'El caballo negro de b8 va a d7: desarrollo sólido de la Caro-Kann.',why:'Desarrollo aparentemente natural... pero la naturalidad no garantiza seguridad: hay que comprobar las amenazas rivales.'},
+  {from:'d1',to:'e2',notation:'De2',what:'La dama blanca se desarrolla a e2.',why:'La idea táctica gira alrededor del peón e7 y el rey e8, en la columna e: se prepara una clavada potencial sobre el peón de e7.'},
+  {from:'g8',to:'f6',notation:'Cgf6??',tags:['ERROR'],what:'5...Cgf6??: el caballo negro de g8 sale a f6.',why:'Desarrollo aparentemente natural pero automático: el negro no comprueba las amenazas blancas. «Nunca hagas una jugada automática sin comprobar las amenazas del rival».'},
+  {from:'e4',to:'d6',notation:'Cd6#',tags:['JAQUE MATE'],what:'El caballo salta de e4 a d6: ¡JAQUE MATE!',why:'El rey está en jaque por el caballo y no puede escapar: no puede capturar al atacante (no llega), un jaque de caballo no puede bloquearse, y todas sus casillas están ocupadas por piezas propias (dama en d8, alfil en f8, caballo en d7, peones en e7 y f7). Además, el peón de e7 no puede capturar al caballo porque está clavado por la dama de e2 contra el rey. ¡Mate ahogado!'}
+ ]
+},
+{
+ root:'board-3',
+ steps:[
+  {from:'e2',to:'e4',notation:'e4',what:'El peón blanco avanza dos casillas y ocupa e4.',why:'Ocupa el centro y libera las diagonales de la dama y del alfil de f1.'},
+  {from:'c7',to:'c6',notation:'c6',what:'El peón negro avanza de c7 a c6: Defensa Caro-Kann.',why:'Las negras preparan ...d5.'},
+  {from:'d2',to:'d4',notation:'d4',what:'El peón de d2 avanza a d4.',why:'Las blancas ocupan el centro con dos peones.'},
+  {from:'d7',to:'d5',notation:'d5',what:'El peón negro rompe en el centro.',why:'La Caro-Kann ataca el centro blanco.'},
+  {from:'b1',to:'c3',notation:'Cc3',what:'El caballo de b1 se desarrolla a c3.',why:'Desarrolla y sostiene el centro.'},
+  {from:'d5',to:'e4',notation:'dxe4',what:'El peón negro captura en e4.',why:'Se intercambia la tensión central.'},
+  {from:'c3',to:'e4',notation:'Cxe4',what:'El caballo de c3 recaptura en e4.',why:'El caballo queda centralizado.'},
+  {from:'b8',to:'d7',notation:'Cd7',what:'El caballo negro de b8 va a d7.',why:'Desarrollo sólido de la Caro-Kann.'},
+  {from:'e4',to:'g5',notation:'Cg5',what:'El caballo blanco vuelve a la casilla agresiva g5.',why:'Las blancas vuelven a utilizar el caballo como pieza agresiva: presión sobre f7 y e6.'},
+  {from:'h7',to:'h6',notation:'h6',what:'Las negras intentan expulsar el caballo con ...h6.',why:'Y aquí llega la sorpresa: la amenaza blanca no desaparece porque el rival la ataque.'},
+  {from:'g5',to:'e6',notation:'Ce6!',tags:['SACRIFICIO'],what:'¡Ce6! El caballo se entrega en e6.',why:'Pregunta clave: «¿Qué amenaza contiene esta jugada?». El caballo ataca la dama negra de d8 y crea problemas para el rey: si el peón f7 lo captura, se abre la ruta de la dama blanca hacia e8.'},
+  {from:'f7',to:'e6',notation:'fxe6??',tags:['CAPTURA','ERROR'],what:'Las negras aceptan el sacrificio: el peón de f7 captura el caballo en e6.',why:'Error codicioso: capturan sin calcular la respuesta blanca. Antes de capturar material: «¿qué quiere hacer mi rival después?».'},
+  {from:'d1',to:'h5',notation:'Dh5+',tags:['JAQUE'],what:'La dama entra en h5 dando jaque al rey de e8 (la diagonal h5–e8 quedó abierta tras fxe6).',why:'El sacrificio del caballo abrió la ruta de la dama: sacrificios en cadena. Ahora las negras están obligadas a responder al jaque.'},
+  {from:'g7',to:'g6',notation:'g6',what:'Las negras bloquean el jaque con el peón g6.',why:'El peón se interpone en g6 para tapar la diagonal.'},
+  {from:'h5',to:'g6',notation:'Dxg6#',tags:['JAQUE MATE','CAPTURA'],what:'La dama captura en g6: ¡JAQUE MATE!',why:'El rey no puede capturar a la dama, no puede ir a f7 (casilla atacada por la dama) y sus casillas d8, f8, d7 y e7 están ocupadas por piezas propias; nada captura a la dama ni bloquea el jaque. El caballo no actuó solo: su sacrificio preparó el camino de la dama.'}
+ ]
+},
+{
+ root:'board-4',
+ steps:[
+  {from:'e2',to:'e4',notation:'e4',what:'El peón blanco avanza dos casillas y ocupa e4.',why:'Ocupa el centro y libera diagonales.'},
+  {from:'c7',to:'c6',notation:'c6',what:'El peón negro avanza de c7 a c6: Defensa Caro-Kann.',why:'Las negras preparan ...d5.'},
+  {from:'d2',to:'d4',notation:'d4',what:'El peón de d2 avanza a d4.',why:'Las blancas ocupan el centro con dos peones.'},
+  {from:'d7',to:'d5',notation:'d5',what:'El peón negro rompe en el centro.',why:'La Caro-Kann ataca el centro blanco.'},
+  {from:'b1',to:'c3',notation:'Cc3',what:'El caballo de b1 se desarrolla a c3.',why:'Desarrolla y sostiene el centro.'},
+  {from:'d5',to:'e4',notation:'dxe4',what:'El peón negro captura en e4.',why:'Se intercambia la tensión central.'},
+  {from:'c3',to:'e4',notation:'Cxe4',what:'El caballo de c3 recaptura en e4.',why:'El caballo queda centralizado.'},
+  {from:'g8',to:'f6',notation:'Cf6',what:'El caballo negro de g8 sale a f6 y ataca al caballo de e4.',why:'Las negras desarrollan ganando tiempo.'},
+  {from:'e4',to:'g5',notation:'Cg5',what:'El caballo blanco se desplaza a g5.',why:'Desde g5 el caballo mira f7 y e6: presión sobre la casilla crítica.'},
+  {from:'c8',to:'f5',notation:'Af5',what:'Las negras desarrollan el alfil a f5 y NO expulsan el caballo.',why:'Cuando el rival no responde a la amenaza: «una amenaza que no se responde no desaparece necesariamente».'},
+  {from:'g5',to:'f3',notation:'Cf3',what:'Las blancas reubican el caballo en f3.',why:'Maniobra de recolocación: el caballo prepara el salto a e5 para presionar f7.'},
+  {from:'e7',to:'e6',notation:'e6',what:'Las negras juegan ...e6.',why:'Consolidan el centro y dan casillas a sus piezas, cerrando diagonales peligrosas.'},
+  {from:'f3',to:'e5',notation:'Ce5',what:'El caballo blanco salta a e5.',why:'Ahora las piezas blancas colaboran sobre f7: una debilidad se vuelve mucho más peligrosa cuando varias piezas pueden atacarla. Y pregunta: «¿cuántas piezas puede utilizar el rival para defender?».'},
+  {from:'f5',to:'g6',notation:'Ag6',what:'El alfil negro se retira a g6 para defender la zona crítica.',why:'El alfil intenta proteger el punto débil; cada pieza defensora cuenta.'},
+  {from:'f1',to:'d3',notation:'Ad3',what:'El alfil blanco sale a d3 y desafía al defensor.',why:'Introduce la SOBRECARGA: una pieza con demasiadas tareas defensivas (defender una pieza, defender un mate, proteger una casilla, impedir una entrada) puede ser explotada tácticamente.'},
+  {from:'d8',to:'d4',notation:'Dxd4?!',tags:['CAPTURA','CODICIA'],what:'8...Dxd4?!: la dama negra captura el peón de d4.',why:'El error codicioso: «¡He ganado un peón!». Pero el jugador fuerte pregunta: «¿Qué estoy dejando sin defensa?». Regla de oro contra la codicia: antes de capturar material, pregunta qué quiere hacer tu rival después.'},
+  {from:'d3',to:'g6',notation:'Axg6',tags:['CAPTURA'],what:'El alfil blanco captura al alfil negro de g6.',why:'ELIMINACIÓN DEL DEFENSOR: si una pieza protege una casilla crítica puedes capturarla, desviarla, obligarla a moverse o sacrificar material para destruirla.'},
+  {from:'f7',to:'g6',notation:'fxg6',tags:['CAPTURA'],what:'El peón de f7 recaptura en g6.',why:'El defensor desaparece... y la casilla f7 queda debilitada: «¿quién defiende ahora esta casilla?».'},
+  {from:'e5',to:'f7',notation:'Cxf7',tags:['SACRIFICIO','HORQUILLA'],what:'El caballo blanco llega a f7: la horquilla.',why:'Una horquilla ataca simultáneamente dos o más objetivos (entre ellos la dama y la torre). Regla: cuando una pieza entra en una casilla, mira qué puede atacar desde allí: dama, torres, rey o dos piezas a la vez.'},
+  {from:'e8',to:'f7',notation:'Rxf7',tags:['CAPTURA'],what:'El rey negro captura el caballo.',why:'¿Para qué sacrificar el caballo? Porque la combinación todavía no ha terminado: nunca evalúes una jugada aislada, evalúa la secuencia completa.'},
+  {from:'c1',to:'g5',notation:'Ag5+',tags:['JAQUE'],what:'El alfil de c1 entra en g5: la continuación anotada en el documento.',why:'El jaque obliga al rey a reaccionar. Idea profunda: una combinación puede tener varias etapas.'},
+  {from:'f7',to:'e8',notation:'Re8',what:'El rey negro se repliega a e8.',why:'Desviación del rey: el sacrificio desplazó al rey y liberó líneas para las piezas blancas.'},
+  {from:'d1',to:'d4',notation:'Dxd4',tags:['CAPTURA'],what:'La dama blanca captura a la dama negra en d4.',why:'Sacrificio → rey desplazado → línea liberada → recuperación de la dama. La jugada inicial parecía materialmente mala; la combinación completa es favorable. REGLA: nunca evalúes una combinación por la primera captura; evalúala por su punto final.'}
+ ]
+}
+];
+
+/* ================= CONSTRUCCIÓN DEL TABLERO ================= */
+function buildGrid(gridEl){
+  gridEl.innerHTML='';
+  for(var r=8;r>=1;r--){
+    for(var f=0;f<8;f++){
+      var sq=FILES[f]+r;
+      var d=document.createElement('div');
+      d.className='sq '+(((f+r)%2===0)?'light':'dark');
+      d.setAttribute('data-sq',sq);
+      gridEl.appendChild(d);
+    }
+  }
+}
+function fillCoords(root){
+  var rc=$('[data-coords="ranks"]',root), fc=$('[data-coords="files"]',root);
+  if(rc){rc.innerHTML='';for(var r=8;r>=1;r--){var s=document.createElement('span');s.textContent=r;rc.appendChild(s);}}
+  if(fc){fc.innerHTML='';FILES.forEach(function(fl){var s=document.createElement('span');s.textContent=fl;fc.appendChild(s);});}
+}
+function highlightSquares(st){
+  if(!st) return [];
+  if(st.castle==='w') return ['e1','g1','h1','f1'];
+  if(st.castle==='b') return ['e8','g8','h8','f8'];
+  return [st.from,st.to];
+}
+function renderBoard(cfg){
+  var pos=cfg.positions[cfg.idx];
+  var st=cfg.idx>0?cfg.steps[cfg.idx-1]:null;
+  var hl=highlightSquares(st);
+  cfg.squares.forEach(function(el){
+    var code=pos[el.getAttribute('data-sq')];
+    el.innerHTML='';
+    if(code){
+      var sp=document.createElement('span');
+      sp.className='pc '+(code===code.toUpperCase()?'w':'b');
+      sp.textContent=GLYPH[code];
+      el.appendChild(sp);
+    }
+    var sqn=el.getAttribute('data-sq');
+    var on=false; hl.forEach(function(h){if(h===sqn)on=true;});
+    if(on) el.classList.add('hl'); else el.classList.remove('hl');
+  });
+  renderPanel(cfg);
+}
+function renderPanel(cfg){
+  var el=cfg.panelEl, i=cfg.idx, n=cfg.steps.length;
+  if(i===0){
+    el.innerHTML='<div class="mp-id">◈ POSICIÓN INICIAL</div>'+
+      '<div class="mp-piece">Todas las piezas en su lugar</div>'+
+      '<div class="mp-route">Tablero listo · 32 piezas</div>'+
+      '<div class="mp-block what"><div class="mp-lbl">¿Qué ocurre?</div><p>Ambos bandos esperan. Las BLANCAS moverán primero.</p></div>'+
+      '<div class="mp-block why"><div class="mp-lbl">Cómo usar este tablero</div><p>Pulsa «Siguiente» o mueve el deslizador para avanzar <strong>movimiento por movimiento</strong>: cada paso es la jugada de un solo bando (BLANCAS o NEGRAS). El panel te indicará COLOR, PIEZA, ORIGEN → DESTINO y la explicación completa.</p></div>'+
+      '<div class="mp-note">Jugada completa = movimiento de BLANCAS + movimiento de NEGRAS.</div>';
+    return;
+  }
+  var st=cfg.steps[i-1];
+  var color=(i%2===1)?'BLANCAS':'NEGRAS';
+  var colorCls=(i%2===1)?'col-w':'col-b';
+  var fullMove=Math.ceil(i/2);
+  var pieceName,route;
+  if(st.castle){
+    pieceName=(color==='BLANCAS'?'Rey y torre blancos':'Rey y torre negros');
+    route=st.castle==='w'?'Rey: e1 → g1 · Torre: h1 → f1':'Rey: e8 → g8 · Torre: h8 → f8';
+  }else{
+    var code=cfg.positions[i-1][st.from];
+    var base=PNAME[code.toUpperCase()];
+    pieceName=base+' '+(color==='BLANCAS'?'blanco':'negro');
+    var isCap=!!cfg.positions[i-1][st.to];
+    route=base+' '+(color==='BLANCAS'?'blanco':'negro')+': '+st.from+' → '+st.to+(isCap?' (captura)':'');
+  }
+  var tags=st.tags?st.tags.slice():[];
+  if(!st.castle && cfg.positions[i-1][st.to] && tags.indexOf('CAPTURA')<0) tags.unshift('CAPTURA');
+  var tagHtml=tags.map(function(t){
+    var cls='b-accent';
+    if(t==='JAQUE MATE')cls='b-red'; else if(t==='JAQUE')cls='b-green';
+    else if(t==='SACRIFICIO')cls='b-purple'; else if(t==='ERROR'||t==='CODICIA')cls='b-red';
+    else if(t==='CAPTURA')cls='b-amber'; else if(t==='ENROQUE')cls='b-accent';
+    else if(t==='HORQUILLA')cls='b-amber';
+    return '<span class="badge '+cls+'">'+t+'</span>';
+  }).join('');
+  el.innerHTML=
+    '<div class="mp-id">MOVIMIENTO '+i+' — <span class="'+colorCls+'">'+color+'</span></div>'+
+    '<div class="mp-piece">'+pieceName+'</div>'+
+    '<div class="mp-route">'+route+' &nbsp;·&nbsp; <span style="color:var(--accent)">Notación: '+st.notation+'</span></div>'+
+    (tagHtml?'<div class="mp-tags">'+tagHtml+'</div>':'')+
+    '<div class="mp-block what"><div class="mp-lbl">¿Qué ocurre?</div><p>'+st.what+'</p></div>'+
+    '<div class="mp-block why"><div class="mp-lbl">¿Por qué es importante?</div><p>'+st.why+'</p></div>'+
+    '<div class="mp-note">Jugada completa '+fullMove+' · paso '+i+' de '+n+'</div>';
+}
+
+/* ================= STEPPER ================= */
+function updateSliderFill(sl){
+  var max=parseInt(sl.max,10)||1, v=parseInt(sl.value,10)||0;
+  var pct=(v/max)*100;
+  sl.style.background='linear-gradient(90deg, var(--accent) '+pct+'%, #1e3a5f '+pct+'%)';
+}
+function initBoard(cfg){
+  var root=document.getElementById(cfg.root);
+  if(!root) return;
+  cfg.gridEl=$('.board-grid',root);
+  cfg.panelEl=$('.move-panel',root);
+  cfg.slider=$('.st-slider',root);
+  cfg.ind=$('.st-ind',root);
+  cfg.prevB=$('.st-prev',root); cfg.nextB=$('.st-next',root); cfg.resetB=$('.st-reset',root);
+  buildGrid(cfg.gridEl);
+  fillCoords(root);
+  cfg.squares=$all('.sq',cfg.gridEl);
+  cfg.positions=buildPositions(cfg.steps);
+  cfg.idx=0;
+  cfg.slider.max=String(cfg.steps.length);
+  function setIdx(i){
+    if(i<0)i=0; if(i>cfg.steps.length)i=cfg.steps.length;
+    cfg.idx=i; cfg.slider.value=String(i);
+    renderBoard(cfg);
+    cfg.prevB.disabled=(i===0);
+    cfg.nextB.disabled=(i===cfg.steps.length);
+    if(i===0){
+      cfg.ind.innerHTML='◈ <b>Posición inicial</b> — avanza movimiento a movimiento';
+    }else{
+      var color=(i%2===1)?'BLANCAS':'NEGRAS';
+      var ccol=(i%2===1)?'var(--accent)':'var(--purple)';
+      cfg.ind.innerHTML='Movimiento <b>'+i+'</b> de '+cfg.steps.length+' · <span style="color:'+ccol+';font-weight:800">'+color+'</span>';
+    }
+    updateSliderFill(cfg.slider);
+  }
+  cfg.prevB.addEventListener('click',function(){setIdx(cfg.idx-1);});
+  cfg.nextB.addEventListener('click',function(){setIdx(cfg.idx+1);});
+  cfg.resetB.addEventListener('click',function(){setIdx(0);});
+  cfg.slider.addEventListener('input',function(){setIdx(parseInt(cfg.slider.value,10));});
+  setIdx(0);
+}
+
+/* ================= PORTADA SVG ANIMADA (misma en HOME y CRÉDITOS) ================= */
+function coverSVG(){
+  var squares='';
+  for(var r=8;r>=1;r--){
+    for(var f=0;f<8;f++){
+      var light=((f+r)%2===0);
+      squares+='<rect x="'+(f*80)+'" y="'+((8-r)*80)+'" width="80" height="80" fill="'+(light?'#223354':'#0f1a33')+'" stroke="#1e3a5f" stroke-width="1"/>';
+    }
+  }
+  var coords='';
+  for(var f2=0;f2<8;f2++){coords+='<text x="'+(f2*80+40)+'" y="666" text-anchor="middle" font-size="16" fill="#475e80" font-family="ui-monospace,Consolas,monospace">'+FILES[f2]+'</text>';}
+  for(var r2=8;r2>=1;r2--){coords+='<text x="-14" y="'+((8-r2)*80+47)+'" text-anchor="middle" font-size="16" fill="#475e80" font-family="ui-monospace,Consolas,monospace">'+r2+'</text>';}
+  var chips=['OBSERVAR','PREGUNTAR','CALCULAR','COMPROBAR','JUGAR','APRENDER'];
+  var chipsSvg='';
+  chips.forEach(function(c,ix){
+    var col=ix%3,row=Math.floor(ix/3);
+    var x=830+col*240,y=222+row*92;
+    var on=0.06+ix*0.11;
+    chipsSvg+='<g>'+
+      '<rect x="'+x+'" y="'+y+'" width="206" height="56" rx="11" fill="#0f172a" stroke="#1e3a5f" stroke-width="1.5">'+
+      '<animate attributeName="stroke" values="#1e3a5f;#00d4ff;#1e3a5f" keyTimes="0;0.5;1" dur="1.2s" begin="'+(ix*0.9)+'s;cycle'+ix+'" repeatCount="indefinite"/></rect>'+
+      '<circle cx="'+(x+24)+'" cy="'+(y+28)+'" r="6" fill="#00d4ff"><animate attributeName="opacity" values="0.35;1;0.35" dur="2.4s" begin="'+(ix*0.35)+'s" repeatCount="indefinite"/></circle>'+
+      '<text x="'+(x+122)+'" y="'+(y+35)+'" text-anchor="middle" font-size="19" font-weight="700" fill="#e2e8f0" letter-spacing="2" font-family="ui-monospace,Consolas,monospace">'+c+'</text>'+
+      '</g>';
+    if(col<2){chipsSvg+='<path d="M '+(x+206)+' '+(y+28)+' h 28" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="5 5"><animate attributeName="stroke-dashoffset" values="20;0" dur="1.4s" repeatCount="indefinite"/></path>';}
+  });
+  chipsSvg+='<path d="M 1516 278 q 34 40 -60 84" stroke="#a855f7" stroke-width="2" fill="none" stroke-dasharray="5 5" opacity="0.7"><animate attributeName="stroke-dashoffset" values="20;0" dur="1.4s" repeatCount="indefinite"/></path>';
+  var pills=[['¿QUÉ CAMBIÓ?',830,428,4.2],['¿QUÉ AMENAZA?',1085,428,5.1],['¿MEJOR DEFENSA?',1340,428,6.0]];
+  var pillsSvg='';
+  pills.forEach(function(p){
+    pillsSvg+='<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="'+p[2]+'s" repeatCount="indefinite"/>'+
+      '<rect x="'+p[1]+'" y="'+p[2]+'" width="232" height="44" rx="22" fill="#0b1220" stroke="#a855f7" stroke-opacity="0.7"/>'+
+      '<text x="'+(p[1]+116)+'" y="'+(p[2]+29)+'" text-anchor="middle" font-size="15" fill="#c4b5fd" letter-spacing="1" font-family="ui-monospace,Consolas,monospace">'+p[0]+'</text></g>';
+  });
+  var jca=[['J','JAQUES','#22c55e',905],['C','CAPTURAS','#f59e0b',1140],['A','ATAQUES','#a855f7',1375]];
+  var jcaSvg='';
+  jca.forEach(function(o,ix){
+    jcaSvg+='<circle cx="'+o[3]+'" cy="560" r="34" fill="none" stroke="'+o[2]+'" stroke-width="2.5">'+
+      '<animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.1s" begin="'+(ix*0.55)+'s" repeatCount="indefinite"/></circle>'+
+      '<text x="'+o[3]+'" y="572" text-anchor="middle" font-size="34" font-weight="800" fill="'+o[2]+'">'+o[0]+'</text>'+
+      '<text x="'+o[3]+'" y="622" text-anchor="middle" font-size="13" fill="#94a3b8" letter-spacing="2" font-family="ui-monospace,Consolas,monospace">'+o[1]+'</text>';
+  });
+  var blips=[[1110,700,'#22c55e',0],[1235,760,'#f59e0b',1.1],[1160,800,'#ef4444',2.0]];
+  var blipsSvg='';
+  blips.forEach(function(b){
+    blipsSvg+='<circle cx="'+b[0]+'" cy="'+b[1]+'" r="5" fill="'+b[2]+'"><animate attributeName="opacity" values="0;1;0" dur="3s" begin="'+b[2]+'s" repeatCount="indefinite"/></circle>';
+  });
+  var svg='<svg class="cover-svg" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Portada animada: el sacrificio del caballo en f7 y el método de pensamiento">'+
+  '<defs>'+
+   '<linearGradient id="cvBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1526"/><stop offset="1" stop-color="#0a0e1a"/></linearGradient>'+
+   '<radialGradient id="cvGlow" cx="28%" cy="38%" r="75%"><stop offset="0" stop-color="#00d4ff" stop-opacity="0.13"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>'+
+   '<pattern id="cvGrid" width="46" height="46" patternUnits="userSpaceOnUse"><path d="M46 0H0V46" fill="none" stroke="#1e3a5f" stroke-opacity="0.33" stroke-width="1"/></pattern>'+
+  '</defs>'+
+  '<rect width="1600" height="900" fill="url(#cvBg)"/>'+
+  '<rect width="1600" height="900" fill="url(#cvGlow)"/>'+
+  '<rect width="1600" height="900" fill="url(#cvGrid)" opacity="0.55"/>'+
+  '<rect x="0" y="0" width="1600" height="3" fill="#00d4ff" opacity="0.14"><animate attributeName="y" values="0;897;0" dur="9s" repeatCount="indefinite"/></rect>'+
+  '<path d="M 26 60 V 26 H 60" fill="none" stroke="#00d4ff" stroke-width="2.5" opacity="0.7"/>'+
+  '<path d="M 1574 60 V 26 H 1540" fill="none" stroke="#00d4ff" stroke-width="2.5" opacity="0.7"/>'+
+  '<path d="M 26 840 V 874 H 60" fill="none" stroke="#00d4ff" stroke-width="2.5" opacity="0.7"/>'+
+  '<path d="M 1574 840 V 874 H 1540" fill="none" stroke="#00d4ff" stroke-width="2.5" opacity="0.7"/>'+
+  '<text x="30" y="52" font-size="15" fill="#64748b" letter-spacing="3" font-family="ui-monospace,Consolas,monospace">LABORATORIO DE PENSAMIENTO // MÓDULO 01</text>'+
+  '<text x="1570" y="52" text-anchor="end" font-size="15" fill="#64748b" letter-spacing="2" font-family="ui-monospace,Consolas,monospace">AJEDREZ · GAMBITO ALIEN vs CARO-KANN</text>'+
+  '<g transform="translate(90,120)">'+
+    '<rect x="-12" y="-12" width="664" height="664" rx="12" fill="#0b1220" stroke="#1e3a5f" stroke-width="2"/>'+
+    squares+
+    '<rect x="480" y="240" width="80" height="80" fill="#00d4ff"><animate attributeName="opacity" values="0.05;0.22;0.05" dur="2s" repeatCount="indefinite"/></rect>'+
+    '<rect x="400" y="80" width="80" height="80" fill="#ef4444"><animate attributeName="opacity" values="0.10;0.34;0.10" dur="1.6s" repeatCount="indefinite"/></rect>'+
+    '<circle cx="440" cy="120" r="12" fill="none" stroke="#f59e0b" stroke-width="2"><animate attributeName="r" values="10;46" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.9;0" dur="2.2s" repeatCount="indefinite"/></circle>'+
+    '<circle cx="440" cy="120" r="12" fill="none" stroke="#ef4444" stroke-width="2"><animate attributeName="r" values="10;46" dur="2.2s" begin="1.1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.9;0" dur="2.2s" begin="1.1s" repeatCount="indefinite"/></circle>'+
+    '<circle cx="440" cy="120" r="36" fill="none" stroke="#f59e0b" stroke-width="1.6" stroke-dasharray="7 7"><animateTransform attributeName="transform" type="rotate" values="0 440 120;360 440 120" dur="8s" repeatCount="indefinite"/></circle>'+
+    '<text x="400" y="60" font-size="15" fill="#f59e0b" letter-spacing="2" font-family="ui-monospace,Consolas,monospace">OBJETIVO: f7<animate attributeName="opacity" values="1;0.35;1" dur="1.6s" repeatCount="indefinite"/></text>'+
+    coords+
+    '<text x="200" y="216" text-anchor="middle" font-size="44" fill="#94a3b8">\u265F</text>'+
+    '<text x="280" y="296" text-anchor="middle" font-size="44" fill="#94a3b8">\u265F</text>'+
+    '<text x="280" y="376" text-anchor="middle" font-size="44" fill="#f1f5f9">\u2659</text>'+
+    '<text x="440" y="136" text-anchor="middle" font-size="46" fill="#94a3b8"><animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.60;0.66;0.94;1" dur="9s" repeatCount="indefinite"/>\u265F</text>'+
+    '<g><text x="0" y="22" text-anchor="middle" font-size="66" fill="#f8fafc" stroke="#0a0e1a" stroke-width="1">\u2658</text>'+
+      '<animateMotion dur="9s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;0.5;0.5;1;1" keyTimes="0;0.20;0.35;0.50;0.65;1" path="M 360 360 L 520 280 L 440 120"/>'+
+      '<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.04;0.70;0.80;1" dur="9s" repeatCount="indefinite"/>'+
+    '</g>'+
+    '<circle cx="440" cy="120" r="8" fill="none" stroke="#00d4ff" stroke-width="3"><animate attributeName="r" values="8;70" keyTimes="0;1" dur="1.4s" begin="0s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;0.95;0" keyTimes="0;0.63;0.68;0.85" dur="9s" repeatCount="indefinite"/></circle>'+
+    '<g><text x="0" y="20" text-anchor="middle" font-size="56" fill="#334155" stroke="#94a3b8" stroke-width="0.8">\u265A</text>'+
+      '<animateTransform attributeName="transform" type="translate" values="360 40;360 40;440 120;440 120" keyTimes="0;0.66;0.80;1" dur="9s" repeatCount="indefinite"/>'+
+    '</g>'+
+    '<circle cx="440" cy="120" r="30" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4 6"><animate attributeName="opacity" values="0;0;0.9;0.9;0" keyTimes="0;0.80;0.85;0.97;1" dur="9s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="rotate" values="0 440 120;360 440 120" dur="4s" repeatCount="indefinite"/></circle>'+
+    '<text x="0" y="706" font-size="21" fill="#00d4ff" font-family="ui-monospace,Consolas,monospace" letter-spacing="1">Cg5 \u2192 Cxf7! \u2014 el sacrificio que expone al rey</text>'+
+    '<text x="0" y="732" font-size="14" fill="#94a3b8" font-family="ui-monospace,Consolas,monospace">1.e4 c6 2.d4 d5 3.Cc3 dxe4 4.Cxe4 Cf6 5.Cg5 h6 6.Cxf7!</text>'+
+  '</g>'+
+  '<text x="830" y="150" font-size="24" fill="#e2e8f0" letter-spacing="5" font-weight="700" font-family="ui-monospace,Consolas,monospace">MÉTODO DE PENSAMIENTO</text>'+
+  '<rect x="830" y="164" width="150" height="3" fill="#00d4ff"><animate attributeName="width" values="80;420;80" dur="7s" repeatCount="indefinite"/></rect>'+
+  chipsSvg+pillsSvg+
+  '<text x="830" y="520" font-size="14" fill="#64748b" letter-spacing="3" font-family="ui-monospace,Consolas,monospace">PRIORIDADES FORZANTES \u2014 J \u00B7 C \u00B7 A</text>'+
+  jcaSvg+
+  '<path d="M 760 420 C 880 480 960 600 1060 680" fill="none" stroke="#00d4ff" stroke-width="1.6" stroke-dasharray="6 8" opacity="0.5"><animate attributeName="stroke-dashoffset" values="56;0" dur="2s" repeatCount="indefinite"/></path>'+
+  '<circle r="6" fill="#00d4ff"><animateMotion dur="3.6s" repeatCount="indefinite" path="M 760 420 C 880 480 960 600 1060 680"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="3.6s" repeatCount="indefinite"/></circle>'+
+  '<circle r="4.5" fill="#a855f7"><animateMotion dur="3.6s" begin="1.8s" repeatCount="indefinite" path="M 760 420 C 880 480 960 600 1060 680"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="3.6s" begin="1.8s" repeatCount="indefinite"/></circle>'+
+  '<g>'+
+    '<circle cx="1180" cy="745" r="115" fill="none" stroke="#1e3a5f" stroke-width="1.5"/>'+
+    '<circle cx="1180" cy="745" r="80" fill="none" stroke="#1e3a5f" stroke-width="1"/>'+
+    '<circle cx="1180" cy="745" r="45" fill="none" stroke="#1e3a5f" stroke-width="1"/>'+
+    '<line x1="1065" y1="745" x2="1295" y2="745" stroke="#1e3a5f" stroke-width="1"/>'+
+    '<line x1="1180" y1="630" x2="1180" y2="860" stroke="#1e3a5f" stroke-width="1"/>'+
+    '<g><path d="M 1180 745 L 1180 632 A 113 113 0 0 1 1258 668 Z" fill="#00d4ff" opacity="0.18"/>'+
+    '<line x1="1180" y1="745" x2="1180" y2="632" stroke="#00d4ff" stroke-width="2.5"/>'+
+    '<animateTransform attributeName="transform" type="rotate" values="0 1180 745;360 1180 745" dur="5s" repeatCount="indefinite"/></g>'+
+    blipsSvg+
+  '</g>'+
+  '<text x="1180" y="884" text-anchor="middle" font-size="13" fill="#64748b" letter-spacing="3" font-family="ui-monospace,Consolas,monospace">RADAR DE AMENAZAS \u2014 antes de tu ataque, descubre el ataque del rival</text>'+
+  '<rect x="0" y="852" width="1600" height="48" fill="#0b1220" opacity="0.85"/>'+
+  '<line x1="0" y1="852" x2="1600" y2="852" stroke="#1e3a5f" stroke-width="1.5"/>'+
+  '<text x="800" y="883" text-anchor="middle" font-size="19" fill="#cbd5e1" letter-spacing="4" font-family="ui-monospace,Consolas,monospace">APRENDE A PENSAR COMO UN JUGADOR DE AJEDREZ \u2014 GAMBITO ALIEN \u00B7 DEFENSA CARO-KANN</text>'+
+  '<rect x="1470" y="868" width="12" height="18" fill="#00d4ff"><animate attributeName="opacity" values="1;0;1" dur="1.2s" repeatCount="indefinite"/></rect>'+
+  '</svg>';
+  return svg;
+}
+function mountCovers(){
+  $all('[data-cover]').forEach(function(h){h.innerHTML=coverSVG();});
+  applyMotionPref();
+}
+
+/* ================= SPA ================= */
+var navBtns=$all('.nav-btn');
+function restartCoverSvgs(){
+  $all('svg.cover-svg').forEach(function(s){try{s.setCurrentTime(0);}catch(e){}});
+}
+function show(id){
+  $all('.page').forEach(function(p){p.classList.toggle('active',p.id===id);});
+  navBtns.forEach(function(b){b.classList.toggle('active',b.getAttribute('data-target')===id);});
+  window.scrollTo(0,0);
+  if(id==='page-home'||id==='page-creditos'){restartCoverSvgs();applyMotionPref();}
+  var act=document.querySelector('.nav-btn.active');
+  if(act && act.scrollIntoView){act.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});}
+}
+navBtns.forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-target'));});});
+var brand=document.querySelector('.brand');
+if(brand) brand.addEventListener('click',function(){show('page-home');});
+
+/* ================= BARRA DE PROGRESO + VOLVER ARRIBA ================= */
+var bar=document.getElementById('progressBar');
+var toTop=document.getElementById('toTop');
+function onScroll(){
+  var h=document.documentElement;
+  var max=h.scrollHeight-window.innerHeight;
+  bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';
+  toTop.style.display=h.scrollTop>420?'flex':'none';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+
+/* ================= ACCESIBILIDAD: REDUCIR MOVIMIENTO ================= */
+var mq=window.matchMedia?window.matchMedia('(prefers-reduced-motion: reduce)'):null;
+function applyMotionPref(){
+  var reduce=mq&&mq.matches;
+  document.body.classList.toggle('rm',!!reduce);
+  $all('svg.cover-svg').forEach(function(s){
+    try{ if(reduce){s.pauseAnimations();} else {s.unpauseAnimations();} }catch(e){}
+  });
+}
+if(mq&&mq.addEventListener){mq.addEventListener('change',applyMotionPref);}
+
+/* ================= CHECKLIST C.A.T. ================= */
+$all('.check-item input').forEach(function(cb){
+  cb.addEventListener('change',function(){
+    cb.closest('.check-item').classList.toggle('done',cb.checked);
+  });
+});
+
+/* ================= INICIO ================= */
+document.addEventListener('DOMContentLoaded',function(){
+  mountCovers();
+  BOARDS.forEach(initBoard);
+  onScroll();
+});
+if(document.readyState!=='loading'){
+  mountCovers();
+  BOARDS.forEach(initBoard);
+  onScroll();
+}
+})();
+</script>
+</body>
+</html>
