@@ -1,0 +1,2761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El Gambito Blackmar-Diemer y la Trampa de Desviación · Cómo aprender a pensar como un ajedrecista</title>
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --card2:#0d1526; --border:#1e3a5f;
+  --accent:#00d4ff; --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+  --text:#e2e8f0; --muted:#94a8c4; --dim:#6b82a3;
+  --r:12px; --r-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+  line-height:1.65; font-size:16px; overflow-x:hidden;
+  background-image:
+    radial-gradient(900px 500px at 12% -8%, rgba(0,212,255,.10), transparent 60%),
+    radial-gradient(800px 480px at 92% 4%, rgba(168,85,247,.09), transparent 60%),
+    linear-gradient(rgba(30,58,95,.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,58,95,.16) 1px, transparent 1px);
+  background-size:auto,auto,44px 44px,44px 44px;
+}
+/* ---------- progress ---------- */
+#progressWrap{position:fixed;top:0;left:0;right:0;height:4px;background:rgba(30,58,95,.55);z-index:1200}
+#progressBar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--purple),var(--green));box-shadow:0 0 12px rgba(0,212,255,.7);transition:width .12s linear}
+/* ---------- topbar ---------- */
+.topbar{position:fixed;top:4px;left:0;right:0;z-index:1100;background:rgba(10,14,26,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.topbar-in{max-width:1280px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-ico{width:36px;height:36px;flex:0 0 36px;border-radius:9px;display:grid;place-items:center;font-size:20px;background:linear-gradient(135deg,#12324f,#0b1a2e);border:1px solid var(--border);box-shadow:0 0 14px rgba(0,212,255,.25)}
+.brand-txt{min-width:0}
+.brand-txt b{display:block;font-size:14px;letter-spacing:.6px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-txt span{display:block;font-size:11px;color:var(--dim);letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap}
+.tb-meta{margin-left:auto;display:flex;gap:8px;flex:0 0 auto}
+.tb-chip{font-size:11px;padding:5px 10px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tb-chip b{color:var(--accent)}
+/* ---------- navbar ---------- */
+#navbar{position:fixed;top:60px;left:0;right:0;z-index:1090;background:rgba(13,21,38,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.nav-scroll{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;padding:8px 12px;scrollbar-width:thin;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.nav-scroll::-webkit-scrollbar{height:5px}
+.nav-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.nav-scroll::-webkit-scrollbar-track{background:transparent}
+.nav-btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.2s;min-height:40px}
+.nav-btn:hover{border-color:var(--accent);color:#fff;transform:translateY(-1px)}
+.nav-btn .n{font-size:10px;opacity:.6;font-variant-numeric:tabular-nums}
+.nav-btn.active{background:linear-gradient(135deg,rgba(0,212,255,.22),rgba(168,85,247,.18));border-color:var(--accent);color:#fff;box-shadow:0 0 16px rgba(0,212,255,.35)}
+.nav-btn.credits{border-color:var(--purple);color:#d8b4fe}
+.nav-btn.credits.active{background:linear-gradient(135deg,rgba(168,85,247,.3),rgba(0,212,255,.18));border-color:var(--purple);color:#fff}
+/* ---------- layout ---------- */
+main{max-width:1280px;margin:0 auto;padding:126px 16px 40px}
+.page{display:none;animation:fadeIn .45s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:flex-start;gap:14px;margin:6px 0 22px;padding-bottom:16px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.sec-ico{width:52px;height:52px;flex:0 0 52px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,#14304d,#0c1830);border:1px solid var(--border);box-shadow:0 0 20px rgba(0,212,255,.2)}
+.sec-head h2{font-size:clamp(22px,4.2vw,32px);color:#fff;letter-spacing:-.4px;line-height:1.2}
+.sec-head p{color:var(--muted);font-size:14px;margin-top:4px;max-width:900px}
+.sec-tag{display:inline-block;margin-top:8px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);border:1px solid rgba(0,212,255,.4);background:rgba(0,212,255,.08);padding:3px 10px;border-radius:999px}
+h3{font-size:clamp(18px,3vw,22px);color:#fff;margin:30px 0 12px;display:flex;align-items:center;gap:10px;line-height:1.3}
+h3 .hx{font-size:11px;font-weight:800;color:var(--accent);border:1px solid var(--border);background:var(--card);padding:3px 8px;border-radius:6px;letter-spacing:1px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+h4{font-size:16px;color:#dbeafe;margin:20px 0 8px}
+p{margin:0 0 12px;color:var(--text)}
+.lead{font-size:17px;color:#cbd5e1}
+ul,ol{margin:0 0 14px 22px}
+li{margin-bottom:7px}
+li::marker{color:var(--accent)}
+strong{color:#fff}
+em{color:var(--amber);font-style:normal;font-weight:600}
+code,.nota{font-family:'Consolas','Courier New',monospace;background:#0b1526;border:1px solid var(--border);border-radius:5px;padding:1px 7px;color:var(--accent);font-size:.92em}
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:18px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.55}
+.card.plain::before{display:none}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.mini{background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:15px}
+.mini h5{font-size:14px;color:#fff;margin-bottom:7px;display:flex;align-items:center;gap:8px}
+.mini p{font-size:14px;color:var(--muted);margin:0}
+.mini .big{font-size:26px;font-weight:800;color:var(--accent);display:block;line-height:1.1;margin-bottom:4px}
+/* ---------- callouts ---------- */
+.co{border-radius:var(--r-sm);padding:15px 17px;margin:16px 0;border-left:4px solid;font-size:15px}
+.co .co-t{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:1.2px;font-size:12px;text-transform:uppercase;margin-bottom:7px}
+.co p:last-child{margin-bottom:0}
+.co-info{background:rgba(0,212,255,.08);border-color:var(--accent);color:#cdeeff}
+.co-info .co-t{color:var(--accent)}
+.co-ok{background:rgba(34,197,94,.08);border-color:var(--green);color:#d1fadf}
+.co-ok .co-t{color:var(--green)}
+.co-warn{background:rgba(245,158,11,.09);border-color:var(--amber);color:#fde9c8}
+.co-warn .co-t{color:var(--amber)}
+.co-err{background:rgba(239,68,68,.09);border-color:var(--red);color:#ffd9d9}
+.co-err .co-t{color:var(--red)}
+.co-purple{background:rgba(168,85,247,.09);border-color:var(--purple);color:#ecd9ff}
+.co-purple .co-t{color:var(--purple)}
+/* ---------- quote ---------- */
+.quote{background:linear-gradient(135deg,rgba(0,212,255,.10),rgba(168,85,247,.10));border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--r-sm);padding:20px 22px;margin:20px 0;font-size:clamp(16px,2.6vw,20px);font-style:italic;color:#eaf6ff;position:relative}
+.quote::before{content:"“";position:absolute;top:-6px;left:12px;font-size:64px;color:rgba(0,212,255,.28);font-family:Georgia,serif;line-height:1}
+.quote span{display:block;margin-top:10px;font-size:13px;font-style:normal;color:var(--muted);letter-spacing:1px}
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r-sm);margin:14px 0;background:var(--card2)}
+table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:460px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid rgba(30,58,95,.65);vertical-align:top}
+th{background:rgba(0,212,255,.09);color:#fff;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(0,212,255,.05)}
+td b{color:#fff}
+/* ---------- chips / badges ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{font-size:12.5px;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-weight:600}
+.chip.a{border-color:rgba(0,212,255,.5);color:#a5e9ff;background:rgba(0,212,255,.09)}
+.chip.g{border-color:rgba(34,197,94,.5);color:#bbf7d0;background:rgba(34,197,94,.09)}
+.chip.w{border-color:rgba(245,158,11,.5);color:#fde68a;background:rgba(245,158,11,.09)}
+.chip.r{border-color:rgba(239,68,68,.5);color:#fecaca;background:rgba(239,68,68,.09)}
+.chip.p{border-color:rgba(168,85,247,.5);color:#e9d5ff;background:rgba(168,85,247,.09)}
+/* ---------- steps ---------- */
+.steps{counter-reset:st;margin:14px 0}
+.step{position:relative;padding:14px 16px 14px 58px;background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:10px}
+.step::before{counter-increment:st;content:counter(st);position:absolute;left:14px;top:14px;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:14px;background:linear-gradient(135deg,rgba(0,212,255,.28),rgba(168,85,247,.22));border:1px solid var(--accent);color:#fff}
+.step b{display:block;color:#fff;margin-bottom:3px}
+.step p{font-size:14.5px;color:var(--muted);margin:0}
+/* ---------- formula ---------- */
+.formula{background:#070d18;border:1px solid var(--border);border-radius:var(--r-sm);padding:20px;margin:16px 0;text-align:center;font-size:clamp(15px,3vw,20px);color:var(--accent);letter-spacing:.5px;overflow-x:auto;white-space:nowrap;font-weight:600;box-shadow:inset 0 0 30px rgba(0,212,255,.07)}
+.formula small{display:block;margin-top:10px;color:var(--dim);font-size:12px;letter-spacing:1.4px;text-transform:uppercase;white-space:normal}
+/* ---------- flow ---------- */
+.flow{display:flex;flex-direction:column;gap:0;margin:16px 0}
+.flow-i{background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 16px;text-align:center;font-weight:700;color:#dbeafe;font-size:15px;letter-spacing:.6px}
+.flow-a{text-align:center;color:var(--accent);font-size:20px;line-height:1.2;padding:3px 0}
+.flow-h{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:16px 0}
+.flow-h .flow-i{flex:1 1 130px}
+.flow-h .flow-a{display:grid;place-items:center;padding:0 2px}
+/* ---------- accordion ---------- */
+details{background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:10px;overflow:hidden}
+details[open]{border-color:rgba(0,212,255,.45)}
+summary{cursor:pointer;padding:14px 16px;font-weight:700;color:#dbeafe;list-style:none;display:flex;align-items:center;gap:10px;min-height:48px;font-size:15px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";color:var(--accent);transition:.25s;font-size:14px}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:rgba(0,212,255,.06)}
+.d-body{padding:0 16px 16px;border-top:1px solid rgba(30,58,95,.6);padding-top:14px}
+/* ---------- HOME ---------- */
+.cover-wrap{margin:-6px 0 26px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(0,212,255,.12);background:#070d18}
+.cover-wrap svg{display:block;width:100%;height:auto}
+.home-badge{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:16px}
+.bb{font-size:11.5px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:999px;border:1px solid var(--accent);color:#a5e9ff;background:rgba(0,212,255,.10);font-weight:700}
+.bb.p{border-color:var(--purple);color:#e9d5ff;background:rgba(168,85,247,.10)}
+.bb.g{border-color:var(--green);color:#bbf7d0;background:rgba(34,197,94,.10)}
+.home-title{text-align:center;font-size:clamp(28px,6.2vw,58px);line-height:1.08;color:#fff;letter-spacing:-1.4px;margin-bottom:12px;text-shadow:0 0 40px rgba(0,212,255,.28)}
+.home-title .grad{background:linear-gradient(90deg,var(--accent),#7dd3fc,var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.home-sub{text-align:center;font-size:clamp(15px,2.8vw,21px);color:var(--amber);font-weight:600;margin-bottom:18px;letter-spacing:.3px}
+.home-desc{max-width:900px;margin:0 auto 22px;text-align:center;color:var(--muted);font-size:16px}
+.home-by{text-align:center;font-size:13px;letter-spacing:2.4px;text-transform:uppercase;color:var(--dim);margin-bottom:24px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:24px 0}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:16px;text-align:center;transition:.25s}
+.metric:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,212,255,.16)}
+.metric .v{display:block;font-size:28px;font-weight:800;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.metric .k{display:block;margin-top:7px;font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim)}
+.dt-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:20px 0}
+.dt-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 22px;text-align:center;min-width:170px}
+.dt-box .k{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.dt-box .v{font-size:19px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;margin-top:3px}
+/* ---------- CHESS BOARD ---------- */
+.board-frame{background:linear-gradient(180deg,#0f172a,#0b1222);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin:18px 0;box-shadow:0 14px 40px rgba(0,0,0,.45)}
+.board-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.board-title h4{margin:0;font-size:17px;color:#fff}
+.board-stage{max-width:560px;margin:0 auto}
+.board-area{display:flex;gap:6px;align-items:stretch}
+.row-coords{display:flex;flex-direction:column;width:16px;flex:0 0 16px}
+.row-coords span{flex:1;display:grid;place-items:center;font-size:11px;color:var(--dim);font-weight:700;font-variant-numeric:tabular-nums}
+.board-grid{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);aspect-ratio:1/1;flex:1 1 auto;border-radius:6px;overflow:hidden;border:1px solid var(--border);box-shadow:0 0 22px rgba(0,212,255,.14)}
+.col-coords{display:flex;margin-top:4px;padding-left:22px}
+.col-coords span{flex:1;text-align:center;font-size:11px;color:var(--dim);font-weight:700}
+.sq{position:relative;display:flex;align-items:center;justify-content:center;font-size:clamp(19px,5.4vw,36px);line-height:1;transition:background .2s}
+.sq.light{background:#2b4a72}
+.sq.dark{background:#16233c}
+.sq .pw{color:#f8fafc;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 5px rgba(255,255,255,.22)}
+.sq .pb{color:#05080f;text-shadow:0 0 2px rgba(200,225,255,.6),0 0 5px rgba(160,200,240,.35)}
+.sq.hl{box-shadow:inset 0 0 0 3px var(--accent),inset 0 0 20px rgba(0,212,255,.6);z-index:2}
+.sq.hl-from{box-shadow:inset 0 0 0 3px rgba(0,212,255,.55),inset 0 0 14px rgba(0,212,255,.35);z-index:2}
+.sq.hl-mate{box-shadow:inset 0 0 0 3px var(--red),inset 0 0 22px rgba(239,68,68,.65);z-index:2}
+.sq.hl-check{box-shadow:inset 0 0 0 3px var(--amber),inset 0 0 22px rgba(245,158,11,.6);z-index:2}
+.sq .tag{position:absolute;top:1px;left:2px;font-size:8px;font-weight:800;color:var(--accent);letter-spacing:.5px;font-family:'Segoe UI',sans-serif}
+/* controls */
+.board-ctrl{margin-top:14px;background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px}
+.ctrl-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center}
+.cbtn{flex:1 1 auto;min-width:96px;min-height:44px;padding:10px 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:linear-gradient(180deg,#16243d,#0e1a2c);color:#dbeafe;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.cbtn:hover:not(:disabled){border-color:var(--accent);color:#fff;box-shadow:0 0 16px rgba(0,212,255,.28);transform:translateY(-1px)}
+.cbtn:active:not(:disabled){transform:translateY(0)}
+.cbtn:disabled{opacity:.35;cursor:not-allowed}
+.cbtn.primary{border-color:rgba(0,212,255,.6);background:linear-gradient(180deg,rgba(0,212,255,.22),rgba(0,212,255,.07));color:#e6fbff}
+.cbtn.warn{border-color:rgba(245,158,11,.5);color:#fde68a}
+.slider-row{display:flex;align-items:center;gap:12px;margin-top:12px}
+.slider-row label{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);flex:0 0 auto;font-weight:700}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1 1 auto;height:8px;border-radius:99px;background:linear-gradient(90deg,var(--accent) var(--pct,0%),#1a2c47 var(--pct,0%));outline:none;min-width:80px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;border-radius:50%;background:#00d4ff;border:3px solid #061020;cursor:pointer;box-shadow:0 0 12px rgba(0,212,255,.8)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#00d4ff;border:3px solid #061020;cursor:pointer;box-shadow:0 0 12px rgba(0,212,255,.8)}
+.ind-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.ind{font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:#0b1526;color:var(--muted);letter-spacing:.6px}
+.ind.on{border-color:var(--accent);color:#a5e9ff;background:rgba(0,212,255,.1)}
+/* move panel */
+.move-panel{margin-top:14px;background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--r-sm);padding:16px}
+.move-panel.mate{border-left-color:var(--red)}
+.move-panel.check{border-left-color:var(--amber)}
+.mp-id{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.mp-badge{font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;padding:5px 12px;border-radius:6px;background:rgba(0,212,255,.15);border:1px solid var(--accent);color:#a5e9ff}
+.mp-badge.black{background:rgba(168,85,247,.15);border-color:var(--purple);color:#e9d5ff}
+.mp-flag{font-size:11px;font-weight:800;letter-spacing:1.2px;padding:5px 11px;border-radius:6px;text-transform:uppercase}
+.f-cap{background:rgba(245,158,11,.15);border:1px solid var(--amber);color:#fde68a}
+.f-chk{background:rgba(239,68,68,.13);border:1px solid var(--red);color:#fecaca}
+.f-mate{background:#ef4444;border:1px solid #fff;color:#fff;animation:pulseMate 1.1s infinite}
+.f-cas{background:rgba(34,197,94,.14);border:1px solid var(--green);color:#bbf7d0}
+@keyframes pulseMate{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.6)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+.mp-move{font-size:clamp(17px,3.4vw,22px);font-weight:800;color:#fff;margin-bottom:6px;line-height:1.3}
+.mp-move .ar{color:var(--accent);margin:0 6px}
+.mp-nota{font-size:12.5px;color:var(--dim);margin-bottom:12px;font-family:'Consolas',monospace}
+.mp-q{margin-top:12px}
+.mp-q b{display:block;font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:4px}
+.mp-q.why b{color:var(--amber)}
+.mp-q p{font-size:14.5px;color:#c7d5e8;margin:0}
+.mp-empty{text-align:center;color:var(--dim);padding:8px 0;font-size:14px}
+/* ---------- to top ---------- */
+#toTop{position:fixed;right:16px;bottom:18px;width:52px;height:52px;border-radius:50%;border:1px solid var(--accent);background:rgba(15,23,42,.95);color:var(--accent);font-size:22px;cursor:pointer;z-index:1150;opacity:0;pointer-events:none;transition:.3s;box-shadow:0 6px 22px rgba(0,0,0,.6)}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{background:var(--accent);color:#06121f;transform:translateY(-3px)}
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--border);background:rgba(8,12,22,.9);margin-top:40px;padding:30px 16px 40px;text-align:center}
+footer .fl{font-size:14px;color:var(--muted);margin-bottom:7px}
+footer .lat{margin-top:16px;font-style:italic;color:var(--accent);letter-spacing:1.4px;font-size:15px}
+footer .fsep{width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:18px auto}
+/* ---------- glossary ---------- */
+.gloss-search{width:100%;min-height:48px;padding:13px 16px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card2);color:#fff;font-family:inherit;font-size:15px;margin-bottom:16px}
+.gloss-search:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.15)}
+.gterm{background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:10px}
+.gterm b{color:var(--accent);font-size:15px;letter-spacing:.4px}
+.gterm p{font-size:14.5px;color:var(--muted);margin:5px 0 0}
+/* ---------- exercise checklist ---------- */
+.chk{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:14px 0}
+.chk-i{display:flex;gap:11px;align-items:flex-start;background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;cursor:pointer;transition:.2s;min-height:52px}
+.chk-i:hover{border-color:var(--accent)}
+.chk-i.done{border-color:var(--green);background:rgba(34,197,94,.08)}
+.chk-i .box{width:22px;height:22px;flex:0 0 22px;border-radius:6px;border:2px solid var(--border);display:grid;place-items:center;font-size:13px;color:transparent;font-weight:900;margin-top:1px;transition:.2s}
+.chk-i.done .box{background:var(--green);border-color:var(--green);color:#052e16}
+.chk-i .lt{font-weight:800;color:var(--amber);margin-right:5px}
+.chk-i span.tx{font-size:14.5px;color:#c7d5e8}
+/* timeline */
+.tl{position:relative;margin:16px 0 16px 8px;padding-left:26px;border-left:2px solid var(--border)}
+.tl-i{position:relative;margin-bottom:16px}
+.tl-i::before{content:"";position:absolute;left:-34px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(0,212,255,.8)}
+.tl-i b{color:#fff;display:block;font-size:15px}
+.tl-i .tm{font-size:11.5px;letter-spacing:1.4px;color:var(--amber);text-transform:uppercase;font-weight:700}
+.tl-i p{font-size:14.5px;color:var(--muted);margin:4px 0 0}
+/* hierarchy */
+.hier{display:flex;flex-direction:column;align-items:center;gap:6px;margin:16px 0}
+.hier-i{padding:11px 18px;border-radius:var(--r-sm);text-align:center;font-weight:700;border:1px solid var(--border);background:var(--card2);color:#dbeafe;font-size:14.5px}
+.hier-i.top{background:linear-gradient(135deg,#ef4444,#b91c1c);border-color:#fff;color:#fff;font-size:17px;box-shadow:0 0 24px rgba(239,68,68,.5)}
+.hier-i.hi{border-color:var(--amber);color:#fde68a;background:rgba(245,158,11,.1)}
+.hier-d{color:var(--dim);font-size:12px;letter-spacing:1.4px;text-transform:uppercase}
+/* ---------- SVG cover animations ---------- */
+.cvb{transform-box:fill-box}
+@keyframes knightMove{0%,14%{transform:translate(0,0)}22%,100%{transform:translate(78px,-156px)}}
+@keyframes pawnC7{0%,15%{opacity:1}19%,100%{opacity:0}}
+@keyframes checkFlash{0%,15%{opacity:0}17%,24%{opacity:.85}27%,100%{opacity:0}}
+@keyframes kingMove{0%,25%{transform:translate(0,0)}32%,100%{transform:translate(0,78px)}}
+@keyframes queenW{0%,34%{transform:translate(0,0)}48%,100%{transform:translate(-312px,-312px)}}
+@keyframes pawnB7{0%,44%{opacity:1}48%,100%{opacity:0}}
+@keyframes queenB{0%,52%{transform:translate(0,0)}64%,100%{transform:translate(0,-234px)}}
+@keyframes bishopM{0%,66%{transform:translate(0,0)}76%,100%{transform:translate(-156px,-156px)}}
+@keyframes trail{0%,33%{opacity:0;stroke-dashoffset:600}36%,47%{opacity:.95;stroke-dashoffset:0}52%,100%{opacity:0}}
+@keyframes defLine{0%,8%{opacity:0}12%,50%{opacity:.9}56%{opacity:.15}60%,100%{opacity:0}}
+@keyframes defX{0%,56%{opacity:0;transform:scale(.3)}60%,72%{opacity:1;transform:scale(1)}78%,100%{opacity:0}}
+@keyframes mateBeam{0%,74%{opacity:0;stroke-dashoffset:260}78%,94%{opacity:1;stroke-dashoffset:0}100%{opacity:0}}
+@keyframes shock{0%,76%{opacity:0;transform:scale(.15)}80%{opacity:.9}92%{opacity:0;transform:scale(3.4)}100%{opacity:0;transform:scale(3.4)}}
+@keyframes mateTxt{0%,76%{opacity:0;transform:scale(.4)}82%,94%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.05)}}
+@keyframes c5pulse{0%,100%{opacity:.18}50%{opacity:.62}}
+@keyframes c5mate{0%,74%{fill:#f59e0b}80%,96%{fill:#ef4444}100%{fill:#f59e0b}}
+@keyframes phase{0%,100%{opacity:.28}8%{opacity:1}}
+@keyframes ph1{0%,4%{opacity:.3;fill:#6b82a3}6%,20%{opacity:1;fill:#00d4ff}22%,100%{opacity:.3;fill:#6b82a3}}
+@keyframes ph2{0%,20%{opacity:.3;fill:#6b82a3}22%,33%{opacity:1;fill:#00d4ff}35%,100%{opacity:.3;fill:#6b82a3}}
+@keyframes ph3{0%,33%{opacity:.3;fill:#6b82a3}35%,49%{opacity:1;fill:#f59e0b}51%,100%{opacity:.3;fill:#6b82a3}}
+@keyframes ph4{0%,49%{opacity:.3;fill:#6b82a3}51%,64%{opacity:1;fill:#a855f7}66%,100%{opacity:.3;fill:#6b82a3}}
+@keyframes ph5{0%,64%{opacity:.3;fill:#6b82a3}66%,95%{opacity:1;fill:#ef4444}100%{opacity:.3;fill:#6b82a3}}
+@keyframes barGrow{0%{width:0}100%{width:var(--w)}}
+@keyframes barA{0%,6%{width:6px}16%,100%{width:150px}}
+@keyframes barB{0%,20%{width:6px}32%,100%{width:210px}}
+@keyframes barC{0%,34%{width:6px}46%,100%{width:236px}}
+@keyframes barD{0%,50%{width:6px}62%,100%{width:262px}}
+@keyframes scanY{0%{transform:translateY(-40px);opacity:0}10%{opacity:.55}90%{opacity:.55}100%{transform:translateY(900px);opacity:0}}
+@keyframes sweep{0%{transform:translateX(-500px)}100%{transform:translateX(1700px)}}
+@keyframes glowP{0%,100%{opacity:.35}50%{opacity:.9}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes ringRot{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes lblIn{0%,3%{opacity:0}8%,92%{opacity:1}100%{opacity:0}}
+@keyframes n1{0%,10%{opacity:0}14%,20%{opacity:1}24%,100%{opacity:0}}
+@keyframes n2{0%,20%{opacity:0}24%,32%{opacity:1}36%,100%{opacity:0}}
+@keyframes n3{0%,34%{opacity:0}38%,50%{opacity:1}54%,100%{opacity:0}}
+@keyframes n4{0%,52%{opacity:0}56%,64%{opacity:1}68%,100%{opacity:0}}
+@keyframes n5{0%,66%{opacity:0}70%,96%{opacity:1}100%{opacity:0}}
+@keyframes dashFlow{to{stroke-dashoffset:-200}}
+@keyframes knightHint{0%,100%{opacity:.15}50%{opacity:.6}}
+.cv-anim{animation-duration:22s;animation-iteration-count:infinite;animation-timing-function:linear}
+.a-knight{animation-name:knightMove}.a-pawnc7{animation-name:pawnC7}.a-check{animation-name:checkFlash}
+.a-king{animation-name:kingMove}.a-qw{animation-name:queenW}.a-pawnb7{animation-name:pawnB7}
+.a-qb{animation-name:queenB}.a-bish{animation-name:bishopM}.a-trail{animation-name:trail;animation-timing-function:ease-in-out}
+.a-def{animation-name:defLine}.a-defx{animation-name:defX;transform-box:fill-box;transform-origin:center}
+.a-beam{animation-name:mateBeam;animation-timing-function:ease-out}.a-shock{animation-name:shock;transform-box:fill-box;transform-origin:center;animation-timing-function:ease-out}
+.a-matetxt{animation-name:mateTxt;transform-box:fill-box;transform-origin:center;animation-timing-function:ease-out}
+.a-c5p{animation-name:c5pulse;animation-duration:2.6s}.a-c5m{animation-name:c5mate}
+.a-ph1{animation-name:ph1}.a-ph2{animation-name:ph2}.a-ph3{animation-name:ph3}.a-ph4{animation-name:ph4}.a-ph5{animation-name:ph5}
+.a-b1{animation-name:barA;animation-timing-function:ease-out}.a-b2{animation-name:barB;animation-timing-function:ease-out}
+.a-b3{animation-name:barC;animation-timing-function:ease-out}.a-b4{animation-name:barD;animation-timing-function:ease-out}
+.a-scan{animation-name:scanY;animation-duration:7s;animation-timing-function:linear}
+.a-sweep{animation-name:sweep;animation-duration:9s;animation-timing-function:linear}
+.a-glow{animation-name:glowP;animation-duration:3.4s;animation-timing-function:ease-in-out}
+.a-float{animation-name:floatY;animation-duration:5s;animation-timing-function:ease-in-out}
+.a-ring{animation-name:ringRot;animation-duration:34s;animation-timing-function:linear;transform-box:fill-box;transform-origin:center}
+.a-n1{animation-name:n1}.a-n2{animation-name:n2}.a-n3{animation-name:n3}.a-n4{animation-name:n4}.a-n5{animation-name:n5}
+.a-dash{animation-name:dashFlow;animation-duration:4s;animation-timing-function:linear}
+/* ---------- responsive ---------- */
+@media (max-width:760px){
+  main{padding:120px 11px 30px}
+  .topbar-in{padding:8px 11px}
+  .tb-meta{display:none}
+  .brand-txt b{font-size:12.5px}
+  .brand-txt span{font-size:9.5px;letter-spacing:1px}
+  #navbar{top:56px}
+  .card{padding:15px}
+  .sec-ico{width:44px;height:44px;flex:0 0 44px;font-size:22px}
+  .cbtn{flex:1 1 45%;min-width:0;font-size:13.5px;padding:10px 8px}
+  .sq{font-size:clamp(17px,7.6vw,30px)}
+  .row-coords,.col-coords span{font-size:10px}
+  .col-coords{padding-left:20px}
+  table{min-width:520px;font-size:13.5px}
+  th,td{padding:9px 10px}
+  #toTop{width:46px;height:46px;right:11px;bottom:12px;font-size:19px}
+}
+@media (max-width:380px){
+  .board-frame{padding:10px}
+  .cbtn{flex:1 1 100%}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .cv-anim,.a-scan,.a-sweep,.a-glow,.a-float,.a-ring,.a-dash,.a-c5p,.a-defx,.a-shock,.a-matetxt,.f-mate,.page.active{animation:none!important}
+  *{transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div id="progressWrap"><div id="progressBar"></div></div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <div class="brand-ico">♞</div>
+      <div class="brand-txt">
+        <b>El Gambito Blackmar-Diemer</b>
+        <span>Pensar como un ajedrecista</span>
+      </div>
+    </div>
+    <div class="tb-meta">
+      <div class="tb-chip">📅 <b>08/09/2026</b></div>
+      <div class="tb-chip">🕐 <b>16:29:08</b></div>
+    </div>
+  </div>
+</header>
+
+<nav id="navbar" aria-label="Navegación del tutorial">
+  <div class="nav-scroll" id="navScroll"></div>
+</nav>
+
+<main id="main">
+
+<!-- ===================== HOME ===================== -->
+<section class="page active" id="sec-inicio">
+  <div class="cover-wrap" id="coverHome" aria-label="Portada animada del tutorial"></div>
+
+  <div class="home-badge">
+    <span class="bb">Tutorial Interactivo</span>
+    <span class="bb p">Ajedrez · Aperturas · Táctica</span>
+    <span class="bb g">Nivel: principiante → intermedio</span>
+  </div>
+
+  <h1 class="home-title">El Gambito <span class="grad">Blackmar-Diemer</span><br>y la Trampa de Desviación</h1>
+  <div class="home-sub">Cómo aprender a pensar como un ajedrecista</div>
+  <div class="home-by">by Rubén Sbarsky</div>
+
+  <p class="home-desc"><strong>Objetivo de este tutorial:</strong> no memorizar una trampa, sino aprender a mirar el tablero como un jugador de ajedrez: identificar amenazas, contar tiempos, valorar la actividad de las piezas, detectar piezas defensoras y calcular variantes antes de mover.</p>
+
+  <div class="quote">
+    Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien.
+    <span>— Principio rector de este tutorial</span>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><span class="v">84</span><span class="k">Lecciones</span></div>
+    <div class="metric"><span class="v">3</span><span class="k">Tableros interactivos</span></div>
+    <div class="metric"><span class="v">21</span><span class="k">Movimientos individuales</span></div>
+    <div class="metric"><span class="v">15</span><span class="k">Términos del glosario</span></div>
+    <div class="metric"><span class="v">4+1</span><span class="k">Ejercicios mentales</span></div>
+    <div class="metric"><span class="v">10</span><span class="k">Ideas para recordar</span></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">La línea que vas a comprender, no a memorizar</h3>
+    <div class="formula">1.d4 d5 &nbsp;2.e4!? dxe4 &nbsp;3.Nc3 Nf6 &nbsp;4.f3 exf3 &nbsp;5.Qxf3 … Qxb7!! … Bc5#
+      <small>Gambito Blackmar-Diemer → desarrollo con tempo → desviación del defensor → jaque mate</small>
+    </div>
+    <div class="flow-h">
+      <div class="flow-i">Sacrificio</div><div class="flow-a">→</div>
+      <div class="flow-i">Tiempo</div><div class="flow-a">→</div>
+      <div class="flow-i">Desarrollo</div><div class="flow-a">→</div>
+      <div class="flow-i">Iniciativa</div><div class="flow-a">→</div>
+      <div class="flow-i">Defensor</div><div class="flow-a">→</div>
+      <div class="flow-i">Desviación</div><div class="flow-a">→</div>
+      <div class="flow-i" style="border-color:var(--red);color:#fecaca">Mate</div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Utiliza la barra de navegación superior para recorrer el tutorial. Cada capítulo conserva íntegramente el contenido del documento original, organizado para el estudio. Los tableros interactivos permiten reproducir <strong>cada movimiento por separado</strong>, indicando siempre COLOR, PIEZA, ORIGEN y DESTINO.</p></div>
+  </div>
+
+  <div class="dt-row">
+    <div class="dt-box"><div class="k">📅 Fecha</div><div class="v">08/09/2026</div></div>
+    <div class="dt-box"><div class="k">🕐 Hora</div><div class="v">16:29:08</div></div>
+    <div class="dt-box"><div class="k">👨‍💻 Autor</div><div class="v">Rubén Sbarsky</div></div>
+    <div class="dt-box"><div class="k">🎓 Uso</div><div class="v">Educativo</div></div>
+  </div>
+</section>
+
+<!-- ===================== 1. FUNDAMENTOS ===================== -->
+<section class="page" id="sec-fundamentos">
+  <div class="sec-head">
+    <div class="sec-ico">♟</div>
+    <div>
+      <span class="sec-tag">Capítulo 1 · Lecciones 1 – 5</span>
+      <h2>Fundamentos: qué es realmente un gambito</h2>
+      <p>Antes de mover una sola pieza hay que corregir varias ideas falsas muy extendidas sobre el Blackmar-Diemer y sobre el material.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§1</span> Antes de empezar: una corrección importante</h3>
+  <div class="card">
+    <p>La secuencia presentada en el material original contiene <strong>buenas ideas tácticas</strong>, pero también varias afirmaciones que necesitan corregirse para que el tutorial sea fiable.</p>
+    <p>El <strong>Gambito Blackmar-Diemer</strong> (Blackmar-Diemer Gambit, BDG) comienza normalmente:</p>
+    <div class="formula">1.d4 &nbsp; d5 &nbsp; 2.e4 &nbsp; dxe4 &nbsp; 3.Nc3<small>Las blancas entregan un peón para obtener desarrollo, actividad e iniciativa</small></div>
+    <div class="co co-err"><div class="co-t">✖ ERROR — creencia falsa</div><p>No debemos aprender que: <em>“las negras aceptan el gambito y automáticamente quedan perdidas”.</em> <strong>Eso es falso.</strong></p></div>
+    <p>El gambito es una apertura <strong>agresiva y arriesgada</strong>, no una victoria forzada. Las negras pueden defenderse. El valor educativo de la posición está precisamente en aprender a <strong>evaluar la compensación</strong> que reciben las blancas por el peón.</p>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA — idea fundamental a corregir</div><p><strong>Un gambito no significa que el material no importe.</strong> El material importa siempre. Lo que ocurre es que, temporalmente, un jugador puede aceptar perder material si obtiene algo suficientemente valioso a cambio: tiempo, desarrollo, espacio, iniciativa, líneas abiertas o ataque contra el rey.</p></div>
+    <div class="co co-ok"><div class="co-t">✔ EJEMPLO</div><p>Ésta será nuestra <strong>primera gran lección</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§2</span> La pregunta fundamental del ajedrecista</h3>
+  <div class="grid g2">
+    <div class="card">
+      <h4 style="color:var(--red)">El principiante</h4>
+      <p>Un principiante suele mirar una jugada y preguntarse:</p>
+      <div class="quote" style="font-size:19px;margin:12px 0">¿Qué pieza puedo comer?</div>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--green)">El jugador que aprende a pensar</h4>
+      <p>Un jugador que está aprendiendo a pensar ajedrecísticamente empieza a preguntar:</p>
+      <div class="chips">
+        <span class="chip a">¿Qué amenaza mi rival?</span>
+        <span class="chip a">¿Qué amenaza estoy creando yo?</span>
+        <span class="chip a">¿Qué piezas están activas?</span>
+        <span class="chip a">¿Qué piezas están mal colocadas?</span>
+        <span class="chip a">¿Quién controla el centro?</span>
+        <span class="chip a">¿Quién tiene ventaja de desarrollo?</span>
+        <span class="chip a">¿Dónde está el rey enemigo?</span>
+        <span class="chip a">¿Qué casillas son débiles?</span>
+        <span class="chip a">¿Qué piezas defienden esas casillas?</span>
+        <span class="chip a">¿Qué ocurre si mi rival responde con su mejor jugada?</span>
+      </div>
+    </div>
+  </div>
+  <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Estas preguntas son <strong>mucho más importantes que memorizar una secuencia de movimientos</strong>.</p></div>
+
+  <h3><span class="hx">§3</span> ¿Qué es un gambito?</h3>
+  <div class="card">
+    <p class="lead">Un <strong>gambito</strong> es una apertura en la que un jugador ofrece o entrega material, normalmente un peón, para obtener una <strong>compensación</strong>.</p>
+    <h4>La compensación puede ser:</h4>
+    <div class="grid g4">
+      <div class="mini"><h5>⚡ Desarrollo</h5><p>Desarrollo más rápido.</p></div>
+      <div class="mini"><h5>🎯 Iniciativa</h5><p>Obligar al rival a responder.</p></div>
+      <div class="mini"><h5>📏 Líneas abiertas</h5><p>Columnas y diagonales libres.</p></div>
+      <div class="mini"><h5>🔥 Actividad</h5><p>Mayor actividad de las piezas.</p></div>
+      <div class="mini"><h5>⬛ Centro</h5><p>Control del centro.</p></div>
+      <div class="mini"><h5>🗺 Espacio</h5><p>Ventaja de espacio.</p></div>
+      <div class="mini"><h5>👑 Ataque al rey</h5><p>Ataque contra el rey.</p></div>
+      <div class="mini"><h5>🚧 Bloqueo</h5><p>Dificultades para desarrollar al rival.</p></div>
+    </div>
+    <h4>Imaginemos:</h4>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>Jugador A pierde</h5><p>Un peón.</p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>Pero a cambio consigue</h5>
+        <ul style="margin:6px 0 0 18px;font-size:14.5px;color:var(--muted)">
+          <li>Desarrollar dos piezas rápidamente;</li>
+          <li>Abrir una columna;</li>
+          <li>Impedir el enroque;</li>
+          <li>Obligar a la dama enemiga a moverse varias veces.</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:14px">Entonces la posición <strong>no puede evaluarse simplemente diciendo</strong>: “A tiene un peón menos”. Hay que preguntar:</p>
+    <div class="quote">¿Qué ha recibido A a cambio de ese peón?<span>Una de las ideas más importantes de todo el tutorial</span></div>
+  </div>
+
+  <h3><span class="hx">§4</span> El Blackmar-Diemer: la idea estratégica</h3>
+  <div class="card">
+    <div class="formula">1.d4 &nbsp; d5 &nbsp; 2.e4!? &nbsp; dxe4 &nbsp; 3.Nc3<small>Las blancas han sacrificado el peón de e4</small></div>
+    <h4>¿Por qué? Porque después de 3.Nc3, el caballo:</h4>
+    <div class="steps">
+      <div class="step"><b>Desarrolla una pieza</b><p>Saca material de la primera fila hacia el juego.</p></div>
+      <div class="step"><b>Ataca el peón de e4</b><p>Presiona inmediatamente la ganancia material negra.</p></div>
+      <div class="step"><b>Ayuda a controlar el centro</b><p>Refuerza la influencia sobre las casillas centrales.</p></div>
+      <div class="step"><b>Prepara un rápido desarrollo</b><p>Abre camino al alfil de c1 y al enroque.</p></div>
+      <div class="step"><b>Puede contribuir a un ataque sobre el rey</b><p>Se suma a la futura ofensiva.</p></div>
+    </div>
+    <div class="quote">Te doy un peón. Ahora intenta sobrevivir mientras desarrollo mis piezas.<span>Lo que las blancas están diciendo</span></div>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p><strong>Pero atención:</strong> esto es una <em>apuesta estratégica</em>, no magia. Si las negras consiguen desarrollar tranquilamente sus piezas y consolidar el peón extra, las blancas pueden simplemente haber sacrificado material <strong>sin compensación suficiente</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§5</span> La primera habilidad: distinguir material de actividad</h3>
+  <div class="card">
+    <p>Aquí aparece una diferencia esencial entre un principiante y un jugador más experimentado.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Mirada</th><th>Qué ve</th></tr></thead>
+      <tbody>
+        <tr><td><b style="color:var(--red)">Principiante</b></td><td>“Las negras tienen un peón más.”</td></tr>
+        <tr><td><b style="color:var(--green)">Jugador que está aprendiendo a pensar</b></td><td>“Las negras tienen un peón más, <strong>pero ¿quién tiene más piezas desarrolladas y activas?</strong>”</td></tr>
+      </tbody>
+    </table></div>
+    <h4>Por eso conviene separar dos conceptos:</h4>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--accent)"><h5>💰 MATERIAL</h5><p>Cuántos peones y piezas tiene cada bando.</p></div>
+      <div class="mini" style="border-left:3px solid var(--purple)"><h5>⚡ ACTIVIDAD</h5><p>Qué tan útiles y activas están esas piezas.</p></div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Una dama encerrada detrás de sus propios peones puede valer mucho menos, en términos prácticos, que una pieza menor perfectamente colocada. <strong>No significa que el valor material desaparezca.</strong> Significa que el valor de una posición <strong>no depende de una sola variable</strong>.</p></div>
+  </div>
+</section>
+
+<!-- ===================== 2. LA APERTURA ===================== -->
+<section class="page" id="sec-apertura">
+  <div class="sec-head">
+    <div class="sec-ico">♙</div>
+    <div>
+      <span class="sec-tag">Capítulo 2 · Lecciones 6 – 10</span>
+      <h2>La apertura, jugada a jugada</h2>
+      <p>1.d4 · 1...d5 · 2.e4!? · 2...dxe4 · 3.Nc3! — cada movimiento explicado por separado y reproducible en el tablero interactivo.</p>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0"><span class="hx">§6</span> Jugada 1: <code>1.d4</code></h3>
+      <h4>¿Por qué jugar d4? El peón:</h4>
+      <ul>
+        <li>ocupa una casilla central;</li>
+        <li>controla <strong>e5</strong> y <strong>c5</strong>;</li>
+        <li>ayuda a liberar el alfil de c1;</li>
+        <li>contribuye a construir una estructura central.</li>
+      </ul>
+      <div class="co co-info"><div class="co-t">🧠 Cómo pensar</div>
+        <p>No memorices: <em>“En el Blackmar-Diemer se juega d4.”</em></p>
+        <p>Piensa: <strong>“Quiero controlar el centro y liberar mis piezas.”</strong></p>
+        <p>Ésa es la diferencia entre <strong>memorizar</strong> una apertura y <strong>comprender</strong> una apertura.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0"><span class="hx">§7</span> Respuesta <code>1...d5</code></h3>
+      <p>Las negras responden <strong>ocupando el centro</strong>.</p>
+      <p>Ahora ambos jugadores tienen un peón central. La posición está <strong>equilibrada</strong> desde el punto de vista material y estratégico.</p>
+      <div class="co co-purple"><div class="co-t">◆ Idea</div><p>Las blancas buscan una forma de <strong>alterar inmediatamente ese equilibrio</strong>.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0"><span class="hx">§8</span> Jugada 2: <code>2.e4!?</code></h3>
+    <p>Aquí aparece <strong>el gambito</strong>. Las blancas colocan otro peón en el centro. La idea es provocar: <code>2...dxe4</code></p>
+    <p>Las negras capturan. <strong>Ahora debemos detenernos.</strong></p>
+    <h4>¿Qué ha ocurrido realmente?</h4>
+    <p>Las blancas han perdido un peón. Pero también han conseguido que el peón negro abandone d5 y se coloque en e4. Eso modifica:</p>
+    <div class="chips">
+      <span class="chip a">la estructura central</span>
+      <span class="chip a">las casillas disponibles</span>
+      <span class="chip a">las líneas de las piezas</span>
+      <span class="chip a">las posibilidades de desarrollo</span>
+    </div>
+    <div class="quote">¿Qué he ganado además de perder un peón?<span>Pregunta de ajedrecista — ésta es la pregunta correcta</span></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0"><span class="hx">§9</span> <code>2...dxe4</code>: ¿por qué las negras aceptan?</h3>
+      <p>Las negras <strong>ganan material</strong>. Perfectamente razonable.</p>
+      <p>Pero ahora deben responder a un problema:</p>
+      <div class="quote" style="font-size:17px">¿Cómo van a conservar ese peón sin perder tiempos de desarrollo?</div>
+      <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p><strong>Ese es el corazón del gambito.</strong></p></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0"><span class="hx">§10</span> Jugada 3: <code>3.Nc3!</code></h3>
+      <p>Las blancas desarrollan: el caballo de <strong>b1</strong> va a <strong>c3</strong>.</p>
+      <ul>
+        <li>Ataca inmediatamente el peón de e4.</li>
+        <li>Pero hay algo <strong>todavía más importante</strong>: las blancas han desarrollado una pieza <strong>con ganancia de tiempo</strong>.</li>
+      </ul>
+      <div class="co co-ok"><div class="co-t">✔ EJEMPLO</div><p>El caballo se desarrolla y, <strong>simultáneamente</strong>, ataca algo. Ésta es una de las mejores clases de jugada en la apertura.</p></div>
+    </div>
+  </div>
+
+  <h3>🎛 Tablero interactivo 1 · La apertura del gambito</h3>
+  <p style="color:var(--muted)">Reproduce <strong>movimiento por movimiento</strong> la secuencia <code>1.d4 d5 2.e4 dxe4 3.Nc3</code>. Cada paso del control corresponde a <strong>un movimiento de un solo bando</strong>.</p>
+  <div class="board-frame" id="board1"></div>
+
+  <div class="co co-info"><div class="co-t">ℹ INFO — Movimiento vs. jugada</div>
+    <p><strong>Movimiento:</strong> acción realizada por un único bando. <strong>Jugada completa:</strong> movimiento de BLANCAS + movimiento de NEGRAS. Los 5 movimientos de este tablero forman las jugadas completas 1 y 2, más el primer movimiento de la jugada 3.</p>
+  </div>
+</section>
+
+<!-- ===================== 3. TEMPO ===================== -->
+<section class="page" id="sec-tempo">
+  <div class="sec-head">
+    <div class="sec-ico">⏱</div>
+    <div>
+      <span class="sec-tag">Capítulo 3 · Lecciones 11 – 13, 20 – 22</span>
+      <h2>Tempo, desarrollo con amenaza y jugadas multifunción</h2>
+      <p>Un tiempo puede valer tanto como un peón durante la apertura. Aquí se aprende a detectarlo y a fabricarlo.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§11</span> La regla del “desarrollo con amenaza”</h3>
+  <div class="card">
+    <p>Cuando puedas <strong>desarrollar una pieza y crear una amenaza al mismo tiempo</strong>, normalmente debes considerarlo seriamente.</p>
+    <p>Por ejemplo: <code>Nc3</code> no significa solamente:</p>
+    <div class="grid g2">
+      <div class="mini"><h5>Función 1</h5><p>“Desarrollo el caballo.”</p></div>
+      <div class="mini" style="border-left:3px solid var(--amber)"><h5>Función 2</h5><p>“Desarrollo el caballo <strong>y te pregunto qué harás con tu peón de e4</strong>.”</p></div>
+    </div>
+    <div class="quote">Eso es tempo.</div>
+  </div>
+
+  <h3><span class="hx">§12</span> ¿Qué es un tempo?</h3>
+  <div class="card">
+    <p class="lead">Un <strong>tempo</strong> es, de forma sencilla, <strong>un tiempo útil de juego</strong>.</p>
+    <p>Si yo desarrollo una pieza y tú tienes que mover una pieza nuevamente para responderme, yo he obtenido una <strong>ventaja temporal</strong>.</p>
+    <div class="co co-ok"><div class="co-t">✔ EJEMPLO</div>
+      <p><strong>Blancas:</strong> desarrollan caballo y atacan un peón.</p>
+      <p><strong>Negras:</strong> tienen que mover ese peón.</p>
+      <p>Las blancas han utilizado un movimiento para <strong>mejorar su posición</strong> mientras obligan al rival a reaccionar.</p>
+    </div>
+    <h4>Pensamiento práctico</h4>
+    <p>Cuando mi rival hace una jugada, pregunto:</p>
+    <div class="quote">¿Su movimiento mejora su posición o solamente responde a mi amenaza?</div>
+    <p>Si está obligado a responder continuamente, <strong>puede perder la iniciativa</strong>.</p>
+  </div>
+
+  <h3><span class="hx">§13</span> La posición después de <code>3.Nc3</code></h3>
+  <div class="card">
+    <p>Tenemos: <code>1.d4 d5 &nbsp; 2.e4 dxe4 &nbsp; 3.Nc3</code></p>
+    <div class="co co-err"><div class="co-t">✖ ERROR</div><p>Ahora <strong>NO</strong> debemos decir: “Las blancas tienen ataque ganador.” <strong>Todavía no.</strong> Debemos hacer una <strong>evaluación objetiva</strong>.</p></div>
+    <div class="tw"><table>
+      <thead><tr><th>Factor</th><th>Evaluación</th></tr></thead>
+      <tbody>
+        <tr><td><b>Material</b></td><td>Las blancas tienen un peón menos.</td></tr>
+        <tr><td><b>Desarrollo</b></td><td>Las blancas empiezan a desarrollar rápidamente.</td></tr>
+        <tr><td><b>Centro</b></td><td>Las blancas han sacrificado su segundo peón central y buscan abrir líneas.</td></tr>
+        <tr><td><b>Rey</b></td><td>El rey negro todavía está en e8.</td></tr>
+        <tr><td><b>Plan blanco</b></td><td>Desarrollar piezas y crear amenazas.</td></tr>
+        <tr><td><b>Plan negro</b></td><td>Conservar el material y desarrollar.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Esta forma de describir una posición es <strong>muchísimo más útil</strong> que decir simplemente: “La apertura es buena.”</p></div>
+  </div>
+
+  <h3><span class="hx">§20</span> Principio de desarrollo: no muevas la misma pieza innecesariamente</h3>
+  <div class="card">
+    <p>Durante la apertura existe una regla práctica:</p>
+    <div class="quote">Intenta desarrollar tus piezas antes de mover repetidamente una pieza ya desarrollada.</div>
+    <p><strong>No es una ley absoluta.</strong> Hay posiciones donde mover la misma pieza varias veces es correcto.</p>
+    <h4>Pero si:</h4>
+    <div class="steps">
+      <div class="step"><b>Blancas: desarrollan caballo.</b><p>Pieza nueva al juego.</p></div>
+      <div class="step"><b>Negras: mueven dama.</b><p>Pieza ya desarrollada se mueve de nuevo.</p></div>
+      <div class="step"><b>Blancas: desarrollan alfil atacando la dama.</b><p>Desarrollo + amenaza = tempo.</p></div>
+      <div class="step"><b>Negras: vuelven a mover dama.</b><p>Segundo tiempo perdido.</p></div>
+    </div>
+    <div class="co co-ok"><div class="co-t">✔ CONCLUSIÓN</div><p>Las blancas pueden haber obtenido una <strong>ventaja de desarrollo</strong>. Eso es lo que debes aprender a detectar.</p></div>
+  </div>
+
+  <h3><span class="hx">§21</span> <code>6.Be3</code>: desarrollar atacando</h3>
+  <div class="card">
+    <p>Una idea muy instructiva es: <code>Be3</code>. El alfil de <strong>c1</strong> se desarrolla y <strong>ataca la dama negra</strong> si ésta está en d4.</p>
+    <p>Esto es excelente como ejercicio mental. Pregúntate: <em>“¿Qué gana esta jugada?”</em></p>
+    <h4>Respuesta:</h4>
+    <div class="grid g2">
+      <div class="mini"><h5>1 · Desarrolla</h5><p>Desarrolla una pieza.</p></div>
+      <div class="mini"><h5>2 · Gana tiempo</h5><p>Gana un tiempo atacando la dama.</p></div>
+      <div class="mini"><h5>3 · Controla</h5><p>Ayuda a controlar casillas centrales.</p></div>
+      <div class="mini"><h5>4 · Prepara</h5><p>Prepara el enroque largo en determinadas posiciones.</p></div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Esta es una <strong>jugada multifunción</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§22</span> La regla de oro: busca jugadas con varias funciones</h3>
+  <div class="card">
+    <p class="lead">Una jugada fuerte suele hacer <strong>más de una cosa</strong>.</p>
+    <p>Por ejemplo, <code>Be3</code> puede:</p>
+    <div class="chips">
+      <span class="chip g">desarrollar</span><span class="chip g">atacar</span><span class="chip g">controlar casillas</span>
+      <span class="chip g">preparar el enroque</span><span class="chip g">conectar futuras piezas</span>
+    </div>
+    <div class="co co-ok"><div class="co-t">✔ REGLA DE ORO</div><p>Cuantas más funciones útiles tenga una jugada, <strong>más merece nuestra atención</strong>.</p></div>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p>Esto <strong>no significa</strong> que una jugada con cinco funciones sea automáticamente buena. Pero es una <strong>excelente forma de encontrar candidatos</strong>.</p></div>
+  </div>
+</section>
+
+<!-- ===================== 4. SEGUNDO GOLPE ===================== -->
+<section class="page" id="sec-golpe">
+  <div class="sec-head">
+    <div class="sec-ico">♛</div>
+    <div>
+      <span class="sec-tag">Capítulo 4 · Lecciones 14 – 16, 19</span>
+      <h2>El segundo golpe: 3...Nf6, 4.f3 y la dama activa</h2>
+      <p>La continuación característica del gambito y la lección crítica sobre sacar la dama demasiado pronto.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§14</span> La siguiente idea: <code>3...Nf6</code></h3>
+  <div class="card">
+    <p>Supongamos: <code>3...Nf6</code>. Las negras desarrollan el caballo de <strong>g8</strong> a <strong>f6</strong>. Es una <strong>respuesta natural</strong>.</p>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p>Ahora las blancas deben volver a pensar. <strong>No debemos jugar automáticamente.</strong></p></div>
+    <h4>Preguntamos:</h4>
+    <div class="chips">
+      <span class="chip a">¿Qué amenaza el negro?</span>
+      <span class="chip a">¿Qué quiero conseguir?</span>
+      <span class="chip a">¿Dónde está mi rey?</span>
+      <span class="chip a">¿Qué piezas necesito desarrollar?</span>
+      <span class="chip a">¿Puedo atacar el peón de e4 otra vez?</span>
+      <span class="chip a">¿Qué sucede si abro la posición?</span>
+    </div>
+  </div>
+
+  <h3><span class="hx">§15</span> <code>4.f3</code>: la idea del segundo golpe</h3>
+  <div class="card">
+    <p>Una continuación característica del gambito es: <code>4.f3</code></p>
+    <p>Las blancas atacan el peón de e4. La idea es:</p>
+    <div class="formula">f3 + Nc3 → presión sobre e4</div>
+    <p>Si las negras capturan: <code>4...exf3</code>, las blancas pueden recuperar: <code>5.Qxf3</code> — <strong>la dama captura el peón</strong>.</p>
+  </div>
+
+  <h3><span class="hx">§16</span> Pero aquí aparece una lección crítica</h3>
+  <div class="card">
+    <p>La dama en f3 es <strong>activa</strong>, pero también puede convertirse en un <strong>objetivo</strong>.</p>
+    <div class="co co-err"><div class="co-t">✖ REGLA FUNDAMENTAL</div><p><strong>Una pieza activa no es necesariamente una pieza bien colocada.</strong></p></div>
+    <p>La dama es poderosa, pero sacarla demasiado pronto puede permitir al rival <strong>ganar tiempos atacándola</strong>.</p>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>❌ Frase a evitar</h5><p>“La dama en f3 es siempre buena.” <strong>No.</strong></p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>✅ Pregunta correcta</h5><p>“¿Qué puede hacer el rival contra mi dama en f3?”</p></div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§19</span> La dama negra demasiado activa</h3>
+  <div class="card">
+    <p>En algunas variantes del Blackmar-Diemer, las negras pueden llevar la dama a posiciones como <strong>d4</strong>. Por ejemplo: <code>...Qxd4</code> — la dama gana un peón.</p>
+    <p>A primera vista parece excelente. Pero aparece una pregunta mucho más interesante:</p>
+    <div class="quote">¿Cuántos movimientos ha hecho la dama y cuántos movimientos de desarrollo ha hecho el resto del ejército negro?</div>
+    <p>La dama puede ganar material, pero si después debe volver a moverse porque una pieza menor la ataca, <strong>las negras pueden perder tiempos</strong>.</p>
+  </div>
+
+  <h3>🎛 Tablero interactivo 2 · El segundo golpe</h3>
+  <p style="color:var(--muted)">Secuencia completa desde la posición inicial: <code>1.d4 d5 2.e4 dxe4 3.Nc3 Nf6 4.f3 exf3 5.Qxf3</code>. Nueve movimientos individuales.</p>
+  <div class="board-frame" id="board2"></div>
+</section>
+
+<!-- ===================== 5. CCT ===================== -->
+<section class="page" id="sec-cct">
+  <div class="sec-head">
+    <div class="sec-ico">🔎</div>
+    <div>
+      <span class="sec-tag">Capítulo 5 · Lecciones 17 – 18, 38 – 39, 75 – 77</span>
+      <h2>El método CCT y la trampa del pensamiento materialista</h2>
+      <p>Checks · Captures · Threats. Y por qué una captura puede ser mala aunque gane material.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§17</span> El método de pensamiento: CCT</h3>
+  <div class="card">
+    <p>A partir de ahora utilizaremos una herramienta sencilla: <strong>CCT</strong>. Antes de considerar una jugada, busca:</p>
+    <div class="grid g3">
+      <div class="mini" style="border-top:3px solid var(--red)"><span class="big">C</span><h5>Checks</h5><p><strong>Jaque.</strong> ¿Tengo algún jaque?</p></div>
+      <div class="mini" style="border-top:3px solid var(--amber)"><span class="big">C</span><h5>Captures</h5><p><strong>Capturas.</strong> ¿Tengo alguna captura importante?</p></div>
+      <div class="mini" style="border-top:3px solid var(--green)"><span class="big">T</span><h5>Threats</h5><p><strong>Amenazas.</strong> ¿Tengo alguna amenaza fuerte?</p></div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p><strong>No significa que siempre debas jugar una de esas tres cosas.</strong> Significa que debes buscar <em>primero</em> las posibilidades tácticas más forzadas.</p></div>
+    <h4>Cuando sea tu turno:</h4>
+    <div class="steps">
+      <div class="step"><b>¿Tengo algún jaque?</b><p>La jugada más forzada de todas.</p></div>
+      <div class="step"><b>¿Tengo alguna captura importante?</b><p>Modifica el material y las líneas.</p></div>
+      <div class="step"><b>¿Tengo alguna amenaza fuerte?</b><p>Obliga al rival a responder.</p></div>
+      <div class="step"><b>¿Qué tiene mi rival después?</b><p>La pregunta que cierra el cálculo.</p></div>
+    </div>
+    <div class="co co-ok"><div class="co-t">✔ RESULTADO</div><p>Este hábito evita <strong>una enorme cantidad de errores</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§18</span> La gran trampa del pensamiento materialista</h3>
+  <div class="card">
+    <p>Imaginemos que las negras pueden capturar otro peón.</p>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>El principiante piensa</h5><p>“¡Peón gratis!”</p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>El jugador de ajedrez piensa</h5><p>“¿Qué gano y qué cedo?”</p></div>
+    </div>
+    <p style="margin-top:14px">Esta pregunta es fundamental. <strong>Una captura puede ser mala aunque gane material.</strong> ¿Por qué? Porque puede:</p>
+    <div class="chips">
+      <span class="chip r">perder tiempos</span>
+      <span class="chip r">abrir líneas contra el rey</span>
+      <span class="chip r">abandonar una casilla defensiva</span>
+      <span class="chip r">desviar una pieza</span>
+      <span class="chip r">permitir una combinación</span>
+      <span class="chip r">impedir el desarrollo</span>
+    </div>
+    <div class="co co-err"><div class="co-t">✖ REGLA</div><p><strong>Nunca preguntes solamente qué ganas con una captura. Pregunta qué permite la captura.</strong></p></div>
+  </div>
+
+  <h3><span class="hx">§38</span> La trampa de “ganar material” · La prueba de la captura</h3>
+  <div class="card">
+    <p>Uno de los errores más comunes de las negras en gambitos es pensar: <em>“Si puedo capturar otro peón, debo hacerlo.”</em> <strong>No.</strong> Cada captura debe pasar por una prueba.</p>
+    <h4>Antes de capturar, pregunta:</h4>
+    <div class="steps">
+      <div class="step"><b>1. ¿Qué gano?</b><p>Material, espacio, líneas.</p></div>
+      <div class="step"><b>2. ¿Qué pierdo?</b><p>Tiempo, seguridad, casillas.</p></div>
+      <div class="step"><b>3. ¿Qué pieza queda mal colocada?</b><p>Actividad real, no aparente.</p></div>
+      <div class="step"><b>4. ¿Qué línea abro?</b><p>Columnas y diagonales que se activan.</p></div>
+      <div class="step"><b>5. ¿Qué línea cierro?</b><p>Comunicaciones que se pierden.</p></div>
+      <div class="step"><b>6. ¿Qué amenaza crea mi rival después?</b><p>La respuesta más fuerte del contrario.</p></div>
+      <div class="step"><b>7. ¿Estoy permitiendo un jaque, captura o amenaza?</b><p>El filtro CCT aplicado a mí mismo.</p></div>
+    </div>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p>Esta última pregunta es <strong>especialmente importante</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§39</span> La regla de la recaptura</h3>
+  <div class="card">
+    <p>Cuando el rival sacrifica material, <strong>no estás obligado a aceptar</strong>.</p>
+    <div class="co co-ok"><div class="co-t">✔ EJEMPLO</div><p>A veces la mejor defensa de un gambito es: <strong>no aceptar el gambito</strong>. O aceptar y después <strong>devolver material</strong> para completar el desarrollo.</p></div>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>Un jugador fuerte NO piensa</h5><p>“Me han regalado un peón.”</p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>Un jugador fuerte PIENSA</h5><p>“¿Aceptar este peón mejora realmente mi posición?”</p></div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§75</span> La pregunta de oro antes de una captura</h3>
+  <div class="card">
+    <div class="quote">¿Por qué me permite capturar esto?<span>Antes de comer — esta pregunta puede salvar partidas enteras</span></div>
+    <p>Si una pieza está aparentemente gratis, <strong>sospecha</strong>. Puede ser:</p>
+    <div class="chips">
+      <span class="chip w">un señuelo</span><span class="chip w">una desviación</span><span class="chip w">una combinación</span>
+      <span class="chip w">una sobrecarga</span><span class="chip w">un sacrificio</span>
+    </div>
+  </div>
+
+  <h3><span class="hx">§76</span> Señuelo</h3>
+  <div class="card">
+    <p>Un <strong>señuelo</strong> consiste en <strong>atraer una pieza a una casilla</strong> donde quedará expuesta a una táctica. Es parecido a una trampa.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Concepto</th><th>Diferencia conceptual</th></tr></thead>
+      <tbody>
+        <tr><td><b style="color:var(--purple)">Desviación</b></td><td>Obligo una pieza a <strong>abandonar</strong> una función.</td></tr>
+        <tr><td><b style="color:var(--amber)">Señuelo</b></td><td><strong>Atraigo</strong> una pieza hacia una casilla determinada.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Aprender la diferencia te ayudará muchísimo a <strong>reconocer combinaciones</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§77</span> Desviación vs. sacrificio</h3>
+  <div class="card">
+    <p><strong>No son lo mismo.</strong></p>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--accent)"><h5>SACRIFICIO</h5><p>Es una <strong>acción</strong>: entrego material.</p></div>
+      <div class="mini" style="border-left:3px solid var(--purple)"><h5>DESVIACIÓN</h5><p>Es el <strong>motivo táctico</strong>: obligo a una pieza a abandonar una función.</p></div>
+    </div>
+    <p style="margin-top:14px">Un sacrificio <strong>puede utilizar</strong> una desviación.</p>
+    <div class="co co-ok"><div class="co-t">✔ POR ESO</div><p><code>Qxb7!!</code> puede ser entendido como: <strong>sacrificio de dama con motivo de desviación</strong>.</p></div>
+  </div>
+</section>
+
+<!-- ===================== 6. ENROQUE Y COORDINACIÓN ===================== -->
+<section class="page" id="sec-enroque">
+  <div class="sec-head">
+    <div class="sec-ico">♜</div>
+    <div>
+      <span class="sec-tag">Capítulo 6 · Lecciones 23 – 25</span>
+      <h2>El enroque largo, la torre en d1 y la coordinación</h2>
+      <p>El enroque es una herramienta, no un botón automático. El ataque lo produce la coordinación, no una pieza aislada.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§23</span> El enroque largo</h3>
+  <div class="card">
+    <p>Cuando las blancas pueden jugar <code>O-O-O</code>: el rey pasa de <strong>e1 a c1</strong> y la torre de <strong>a1 a d1</strong>. La torre queda <strong>centralizada</strong>. Esto es muy importante.</p>
+    <div class="co co-err"><div class="co-t">✖ ERROR</div><p>Pero no debemos pensar: <em>“Enrocar largo siempre es bueno.”</em> Debemos pensar: <strong>“¿Es seguro el flanco de dama?”</strong></p></div>
+    <h4>Antes de enrocar largo, comprueba:</h4>
+    <div class="steps">
+      <div class="step"><b>¿Qué piezas negras apuntan al flanco de dama?</b><p>Inventario de atacantes enemigos.</p></div>
+      <div class="step"><b>¿Hay peones avanzados cerca de mi rey?</b><p>Los peones enemigos cercanos son peligrosos.</p></div>
+      <div class="step"><b>¿Está abierta alguna columna?</b><p>Columnas abiertas hacia el rey.</p></div>
+      <div class="step"><b>¿Qué casillas rodean a mi rey?</b><p>Refugio real y sus huecos.</p></div>
+      <div class="step"><b>¿Puede el rival abrir líneas rápidamente?</b><p>Rupturas y sacrificios de apertura.</p></div>
+    </div>
+    <div class="quote">El enroque es una herramienta, no un botón automático.</div>
+  </div>
+
+  <h3><span class="hx">§24</span> La torre en d1</h3>
+  <div class="card">
+    <p>Después del enroque largo <code>O-O-O</code>, la torre de a1 aparece en <strong>d1</strong>. Eso puede ser muy importante porque <strong>la columna d puede estar abierta o semiabierta</strong>.</p>
+    <h4>Ahora tenemos:</h4>
+    <div class="chips">
+      <span class="chip g">rey relativamente seguro</span>
+      <span class="chip g">torre activa</span>
+      <span class="chip g">dama en f3</span>
+      <span class="chip g">alfil desarrollado</span>
+      <span class="chip g">caballo desarrollado</span>
+    </div>
+    <p>La posición empieza a adquirir <strong>coordinación</strong>.</p>
+    <div class="co co-info"><div class="co-t">◆ GRAN IDEA</div><p><strong>El ataque no lo produce una pieza aislada. Lo produce la coordinación de varias piezas.</strong></p></div>
+  </div>
+
+  <h3><span class="hx">§25</span> Coordinación</h3>
+  <div class="card">
+    <h4>Supongamos:</h4>
+    <div class="grid g2">
+      <div class="mini"><h5>♕ Dama</h5><p>Controla una zona.</p></div>
+      <div class="mini"><h5>♗ Alfil</h5><p>Controla una diagonal.</p></div>
+      <div class="mini"><h5>♘ Caballo</h5><p>Controla varias casillas.</p></div>
+      <div class="mini"><h5>♖ Torre</h5><p>Domina una columna.</p></div>
+    </div>
+    <p style="margin-top:14px">Cada pieza individual puede parecer <strong>insuficiente</strong>. Juntas pueden crear <strong>una amenaza que el rival no puede detener</strong>. Esto es coordinación.</p>
+    <div class="quote">¿Qué piezas mías están trabajando juntas?<span>Un buen jugador pregunta constantemente</span></div>
+  </div>
+</section>
+
+<!-- ===================== 7. CLAVADA ===================== -->
+<section class="page" id="sec-clavada">
+  <div class="sec-head">
+    <div class="sec-ico">📌</div>
+    <div>
+      <span class="sec-tag">Capítulo 7 · Lecciones 26 – 27</span>
+      <h2>La clavada: qué es realmente</h2>
+      <p>Y por qué una pieza clavada puede seguir siendo útil.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§26</span> La clavada</h3>
+  <div class="card">
+    <p>En una posición posterior puede aparecer: <code>...Bg4</code>. El alfil negro se coloca en g4 y puede <strong>atacar la dama blanca en f3</strong>.</p>
+    <p>Dependiendo de la configuración exacta, puede producirse una relación de <strong>clavada o ataque</strong> sobre una pieza alineada con el rey o una pieza de mayor valor.</p>
+    <div class="co co-info"><div class="co-t">ℹ DEFINICIÓN SENCILLA</div><p>Una <strong>clavada</strong> ocurre cuando una pieza <strong>no puede moverse</strong> —o moverla sería muy peligroso— porque <strong>detrás de ella hay una pieza más importante</strong>.</p></div>
+    <h4>Ejemplo clásico:</h4>
+    <div class="formula">Rey &nbsp;—&nbsp; pieza &nbsp;—&nbsp; atacante<small>Si la pieza intermedia se mueve, el rey queda expuesto</small></div>
+    <div class="tw"><table>
+      <thead><tr><th>Tipo</th><th>Qué hay detrás</th><th>Consecuencia</th></tr></thead>
+      <tbody>
+        <tr><td><b style="color:var(--red)">Clavada absoluta</b></td><td>El rey</td><td>La pieza intermedia <strong>no puede moverse legalmente</strong>.</td></tr>
+        <tr><td><b style="color:var(--amber)">Clavada relativa</b></td><td>Una dama u otra pieza valiosa</td><td>Puede moverse, pero <strong>con gran pérdida</strong>.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <h3><span class="hx">§27</span> Pero una pieza clavada puede seguir siendo útil</h3>
+  <div class="card">
+    <p>Esta es una <strong>lección táctica importantísima</strong>.</p>
+    <div class="co co-err"><div class="co-t">✖ ERROR DEL PRINCIPIANTE</div><p>“Está clavada, por lo tanto no puede hacer nada.” <strong>Falso.</strong></p></div>
+    <h4>Una pieza clavada puede:</h4>
+    <div class="grid g2">
+      <div class="mini"><h5>🛡 Proteger</h5><p>Proteger casillas.</p></div>
+      <div class="mini"><h5>⚔ Atacar</h5><p>Atacar.</p></div>
+      <div class="mini"><h5>🔗 Participar</h5><p>Participar indirectamente en una combinación.</p></div>
+      <div class="mini"><h5>🔓 Permitir</h5><p>Permitir otra pieza que sí pueda moverse.</p></div>
+      <div class="mini"><h5>💥 Sacrificarse</h5><p>Sacrificarse si la compensación es suficiente.</p></div>
+    </div>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p>Por eso <strong>nunca debes valorar una pieza únicamente por si está clavada</strong>. Debes preguntar:</p></div>
+    <div class="quote">¿Qué está defendiendo y qué ocurriría si desaparece?</div>
+  </div>
+</section>
+
+<!-- ===================== 8. DEFENSOR ===================== -->
+<section class="page" id="sec-defensor">
+  <div class="sec-head">
+    <div class="sec-ico">🛡</div>
+    <div>
+      <span class="sec-tag">Capítulo 8 · Lecciones 28 – 31, 37, 44 – 47, 52</span>
+      <h2>El defensor único y la desviación</h2>
+      <p>El corazón de la trampa: encontrar la pieza que sostiene la posición y obligarla a abandonar su puesto.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§28</span> El concepto más importante: la pieza defensora</h3>
+  <div class="card">
+    <p>Ahora llegamos al <strong>corazón de la trampa</strong>.</p>
+    <p>Supongamos que una casilla crítica, por ejemplo <strong>c5</strong>, está protegida por <strong>una sola pieza</strong>. Eso significa que tenemos una <strong>pieza defensora única</strong>. Entonces podemos buscar una táctica.</p>
+    <div class="quote">¿Puedo eliminar, distraer o desviar al defensor?<span>Una de las ideas tácticas más poderosas del ajedrez</span></div>
+  </div>
+
+  <h3><span class="hx">§29</span> Desviación</h3>
+  <div class="card">
+    <p class="lead">Una <strong>desviación</strong> es una táctica que obliga a una pieza defensora a <strong>abandonar la casilla, columna, diagonal o función</strong> que estaba protegiendo.</p>
+    <h4>Ejemplo conceptual:</h4>
+    <div class="steps">
+      <div class="step"><b>Una dama negra defiende c5.</b><p>Existe un defensor único sobre la casilla crítica.</p></div>
+      <div class="step"><b>Yo no puedo jugar Bc5 porque la dama captura mi alfil.</b><p>El ataque directo fracasa.</p></div>
+      <div class="step"><b>Entonces creo una amenaza en otro lugar que obligue a la dama a abandonar la defensa de c5.</b><p>Cambio de objetivo: atacar al defensor, no a la casilla.</p></div>
+      <div class="step"><b>Una vez que se ha ido: Bc5# puede ser posible.</b><p>La casilla crítica queda indefensa.</p></div>
+    </div>
+    <div class="co co-ok"><div class="co-t">✔ CONCLUSIÓN</div><p>Eso es <strong>desviación</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§30</span> No memorices <code>Qxb7</code>: entiende por qué funciona</h3>
+  <div class="card">
+    <p>En la combinación propuesta aparece: <code>Qxb7!!</code></p>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>La jugada puede parecer absurda</h5><p>“¡Está entregando la dama!”</p></div>
+      <div class="mini" style="border-left:3px solid var(--amber)"><h5>Pregunta incorrecta</h5><p>“¿Por qué sacrifica la dama?”</p></div>
+    </div>
+    <div class="quote">¿Qué función estaba realizando la dama negra y qué ocurre cuando abandona esa función?<span>La pregunta correcta</span></div>
+    <div class="flow">
+      <div class="flow-i">La dama negra estaba defendiendo c5</div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i"><code>Qxb7</code> puede obligarla a capturar: <code>...Qxb7</code></div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i">Y abandonar la defensa de c5</div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i" style="border-color:var(--red);color:#fecaca">Entonces aparece <code>Bc5#</code></div>
+    </div>
+    <p>La dama blanca ha sido sacrificada, pero ha conseguido algo <strong>mucho más importante</strong>: ha eliminado la <strong>última defensa de una casilla de mate</strong>.</p>
+    <div class="co co-purple"><div class="co-t">◆ ESENCIA</div><p>Ésta es la esencia de la <strong>desviación</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§31</span> El valor de una pieza depende también de su función</h3>
+  <div class="card">
+    <p>Aquí tenemos una idea avanzada que <strong>un principiante puede aprender desde ahora</strong>.</p>
+    <p>Una dama <strong>no vale simplemente “9”</strong>. Una dama puede estar:</p>
+    <div class="chips">
+      <span class="chip p">atacando</span><span class="chip p">defendiendo</span><span class="chip p">bloqueando</span>
+      <span class="chip p">controlando una casilla de escape</span><span class="chip p">protegiendo al rey</span><span class="chip p">sosteniendo una pieza</span>
+    </div>
+    <p>Cuando una táctica obliga a la dama a abandonar una función crítica, su <strong>valor funcional puede ser enorme</strong>.</p>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Por eso algunas combinaciones sacrifican material aparentemente absurdo. <strong>No se está sacrificando “porque sí”. Se está comprando una consecuencia táctica.</strong></p></div>
+  </div>
+
+  <h3><span class="hx">§44</span> La geometría de las casillas</h3>
+  <div class="card">
+    <p>En la combinación del tutorial, una casilla como <strong>c5</strong> puede convertirse en el centro de toda la posición.</p>
+    <div class="quote">A veces toda una combinación gira alrededor de una sola casilla.</div>
+    <h4>Busca:</h4>
+    <div class="grid g2">
+      <div class="mini"><h5>Casillas de mate</h5><p>Donde una pieza daría jaque mate.</p></div>
+      <div class="mini"><h5>Casillas de entrada</h5><p>Puerta de entrada al campo enemigo.</p></div>
+      <div class="mini"><h5>Casillas débiles</h5><p>No defendidas por peones.</p></div>
+      <div class="mini"><h5>Casillas defendidas una sola vez</h5><p>El objetivo del defensor único.</p></div>
+      <div class="mini"><h5>Casillas que dos piezas pueden ocupar conjuntamente</h5><p>Coordinación sobre un punto.</p></div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§45</span> El concepto de “defensor único”</h3>
+  <div class="card">
+    <p>Si una casilla importante está defendida por <strong>una sola pieza</strong>, pregúntate:</p>
+    <div class="quote">¿Qué pasa si esa pieza desaparece?</div>
+    <h4>Hay varias posibilidades — las cinco ideas que aparecen constantemente en el ajedrez táctico:</h4>
+    <div class="tw"><table>
+      <thead><tr><th>Idea</th><th>Mecanismo</th></tr></thead>
+      <tbody>
+        <tr><td><b style="color:var(--red)">Captura</b></td><td>El defensor es eliminado.</td></tr>
+        <tr><td><b style="color:var(--purple)">Desviación</b></td><td>El defensor es obligado a abandonar su puesto.</td></tr>
+        <tr><td><b style="color:var(--amber)">Sobrecarga</b></td><td>El defensor tiene demasiadas tareas.</td></tr>
+        <tr><td><b style="color:var(--accent)">Clavada</b></td><td>El defensor no puede moverse libremente.</td></tr>
+        <tr><td><b style="color:var(--green)">Interferencia</b></td><td>Se corta la línea entre defensor y casilla.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0"><span class="hx">§46</span> Sobrecarga</h3>
+      <p>Una pieza está <strong>sobrecargada</strong> cuando tiene <strong>demasiadas funciones defensivas</strong>.</p>
+      <div class="co co-ok"><div class="co-t">✔ EJEMPLO</div><p>Una dama defiende: <strong>c5</strong>, <strong>un caballo</strong>, <strong>el rey</strong>. Si la obligamos a abandonar c5 para salvar otra cosa, <strong>c5 queda indefensa</strong>. Esto puede producir una combinación.</p></div>
+      <p>La <strong>desviación</strong> y la <strong>sobrecarga</strong> están muy relacionadas.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0"><span class="hx">§47</span> Interferencia</h3>
+      <p>Otra táctica muy importante. Una pieza defensora puede estar protegiendo una casilla <strong>mediante una línea</strong>.</p>
+      <div class="formula">Defensor → pieza → objetivo<small>Si colocamos una pieza entre ambas, cortamos la comunicación</small></div>
+      <p>Eso es <strong>interferencia</strong>. Aprender estos patrones te permite <strong>reconocer tácticas en posiciones completamente diferentes</strong>.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§52</span> La pregunta del “último defensor”</h3>
+  <div class="card">
+    <p>Cuando estés atacando al rey, busca siempre:</p>
+    <div class="quote">¿Cuál es la última pieza que impide el mate?</div>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>No preguntes solamente</h5><p>“¿Cómo doy jaque?”</p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>Pregunta</h5><p>“¿Qué impide que pueda dar mate?”</p></div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>A veces esa pregunta <strong>revela la combinación completa</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§37</span> La cadena de pensamiento</h3>
+  <div class="card">
+    <div class="co co-err"><div class="co-t">✖ NO HAGAS ESTO</div><p>Cuando veas una posición parecida, <strong>no memorices</strong>: <code>Nb5, Nc7+, Qxb7, Bc5#</code></p></div>
+    <h4>Hazte estas preguntas:</h4>
+    <div class="steps">
+      <div class="step"><b>Pregunta 1 — ¿Dónde está el rey?</b><p>Localización exacta del monarca enemigo.</p></div>
+      <div class="step"><b>Pregunta 2 — ¿Qué casillas tiene disponibles?</b><p>Inventario de escapes.</p></div>
+      <div class="step"><b>Pregunta 3 — ¿Qué casilla quiero utilizar para dar mate?</b><p>Definir la casilla objetivo.</p></div>
+      <div class="step"><b>Pregunta 4 — ¿Qué pieza defiende esa casilla?</b><p>Buscar el defensor.</p></div>
+      <div class="step"><b>Pregunta 5 — ¿Puedo eliminar al defensor?</b><p>Captura directa.</p></div>
+      <div class="step"><b>Pregunta 6 — ¿Puedo desviarlo?</b><p>Obligarlo a abandonar su función.</p></div>
+      <div class="step"><b>Pregunta 7 — ¿Existe un sacrificio que fuerce esa desviación?</b><p>El recurso extremo que compra el mate.</p></div>
+    </div>
+    <div class="co co-ok"><div class="co-t">✔ RESULTADO</div><p><strong>Esto es pensar tácticamente.</strong></p></div>
+  </div>
+</section>
+
+<!-- ===================== 9. JAQUE Y MATE ===================== -->
+<section class="page" id="sec-mate">
+  <div class="sec-head">
+    <div class="sec-ico">👑</div>
+    <div>
+      <span class="sec-tag">Capítulo 9 · Lecciones 32 – 37, 48 – 51, 78</span>
+      <h2>Jaque, casillas de escape y la geometría del mate</h2>
+      <p>Un jaque no es automáticamente bueno. Un mate es, en cierto sentido, una demostración geométrica.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§32</span> El caballo en c7+</h3>
+  <div class="card">
+    <p>El caballo puede llegar a <code>Nc7+</code> y dar jaque. Aquí aparece otra habilidad esencial: <strong>casillas de escape</strong>.</p>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p>Cuando damos jaque, <strong>no debemos mirar solamente al rey</strong>. Debemos preguntar: <em>“¿A dónde puede ir el rey?”</em></p></div>
+    <h4>Hay que contar:</h4>
+    <div class="chips">
+      <span class="chip a">casillas disponibles</span>
+      <span class="chip a">casillas controladas por nuestras piezas</span>
+      <span class="chip a">casillas controladas por las piezas enemigas</span>
+      <span class="chip a">posibles capturas del atacante</span>
+      <span class="chip a">bloqueos</span>
+    </div>
+  </div>
+
+  <h3><span class="hx">§33</span> Cómo calcular un jaque</h3>
+  <div class="card">
+    <p>Cuando yo doy jaque <code>Nc7+</code> sigo este procedimiento:</p>
+    <div class="steps">
+      <div class="step"><b>Paso 1 — ¿Puede el rey capturar mi pieza?</b><p>Primera defensa posible.</p></div>
+      <div class="step"><b>Paso 2 — ¿Puede moverse?</b><p>Casillas de escape disponibles.</p></div>
+      <div class="step"><b>Paso 3 — ¿Puede bloquear el jaque?</b><p>Sólo aplicable a ataques de largo alcance.</p></div>
+      <div class="step"><b>Paso 4 — ¿Puede capturar la pieza que da jaque con otra pieza?</b><p>Defensas indirectas.</p></div>
+    </div>
+    <div class="co co-err"><div class="co-t">✖ ILUSIÓN TÍPICA</div><p>“¡Jaque! ¡Estoy ganando!” — <strong>Un jaque no es automáticamente bueno.</strong></p></div>
+  </div>
+
+  <h3><span class="hx">§34</span> El ataque al rey es una geometría</h3>
+  <div class="card">
+    <p>Un ataque no consiste solamente en <em>“tirar piezas contra el rey”</em>. Hay que estudiar:</p>
+    <div class="grid g4">
+      <div class="mini"><h5>Líneas</h5><p>Recorridos de las piezas.</p></div>
+      <div class="mini"><h5>Diagonales</h5><p>Alfiles y dama.</p></div>
+      <div class="mini"><h5>Columnas</h5><p>Torres y dama.</p></div>
+      <div class="mini"><h5>Casillas de escape</h5><p>Salidas del rey.</p></div>
+      <div class="mini"><h5>Defensores</h5><p>Quién sostiene.</p></div>
+      <div class="mini"><h5>Bloqueadores</h5><p>Quién puede interponerse.</p></div>
+      <div class="mini"><h5>Piezas con tempo</h5><p>Las que pueden llegar atacando.</p></div>
+    </div>
+    <p style="margin-top:14px">El mate aparece cuando <strong>el rey está en jaque y no existe ninguna defensa legal</strong>.</p>
+    <div class="quote">Por eso un mate es, en cierto sentido, una demostración geométrica.</div>
+  </div>
+
+  <h3><span class="hx">§35</span> ¿Qué significa realmente <code>Bc5#</code>?</h3>
+  <div class="card">
+    <p>Cuando aparece <code>Bc5#</code> hay <strong>tres condiciones</strong>:</p>
+    <div class="steps">
+      <div class="step"><b>1. El rey está en jaque</b><p>El alfil controla la casilla del rey mediante su diagonal.</p></div>
+      <div class="step"><b>2. El rey no puede escapar</b><p>Todas las casillas legales están controladas o bloqueadas.</p></div>
+      <div class="step"><b>3. No puede eliminarse la amenaza</b><p>El rival no puede: capturar al alfil, bloquear la diagonal, ni mover el rey a una casilla segura.</p></div>
+    </div>
+    <div class="co co-err"><div class="co-t">👑 JAQUE MATE</div><p>Entonces es <strong>jaque mate</strong>. El símbolo <code>#</code> significa mate.</p></div>
+  </div>
+
+  <h3><span class="hx">§36</span> La idea completa de la combinación</h3>
+  <div class="card">
+    <p>La combinación debe entenderse como una <strong>cadena lógica</strong>:</p>
+    <div class="flow-h">
+      <div class="flow-i">Desarrollo</div><div class="flow-a">→</div>
+      <div class="flow-i">Presión</div><div class="flow-a">→</div>
+      <div class="flow-i">Jaque</div><div class="flow-a">→</div>
+      <div class="flow-i">Desviación</div><div class="flow-a">→</div>
+      <div class="flow-i">Eliminación del defensor</div><div class="flow-a">→</div>
+      <div class="flow-i" style="border-color:var(--red);color:#fecaca">Mate</div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p><strong>No es una colección de movimientos mágicos. Es una historia táctica.</strong></p></div>
+  </div>
+
+  <h3><span class="hx">§48</span> Sacrificio: cuándo tiene sentido</h3>
+  <div class="card">
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p>Un sacrificio <strong>no debe juzgarse por la primera captura</strong>. Debes mirar <strong>toda la secuencia</strong>.</p></div>
+    <h4>Un sacrificio puede ser bueno si produce:</h4>
+    <div class="grid g3">
+      <div class="mini"><h5>Mate</h5><p>Fin inmediato de la partida.</p></div>
+      <div class="mini"><h5>Ganancia de dama</h5><p>Compensación material superior.</p></div>
+      <div class="mini"><h5>Ganancia de material superior</h5><p>Balance final positivo.</p></div>
+      <div class="mini"><h5>Ataque decisivo</h5><p>Iniciativa irreversible.</p></div>
+      <div class="mini"><h5>Promoción</h5><p>Un peón que corona.</p></div>
+      <div class="mini"><h5>Ventaja posicional enorme</h5><p>Mejora permanente.</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>✅ La pregunta correcta</h5><p>“¿Qué obtengo <strong>después</strong> del sacrificio?”</p></div>
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>❌ La pregunta incorrecta</h5><p>“¿Cuánto material estoy entregando?”</p></div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§49</span> Sacrificio de dama: la máxima prueba</h3>
+  <div class="card">
+    <p>Una dama vale aproximadamente <strong>nueve puntos</strong>. Por eso <code>Qxb7!!</code> llama inmediatamente nuestra atención.</p>
+    <div class="flow">
+      <div class="flow-i"><code>Qxb7!!</code></div><div class="flow-a">↓</div>
+      <div class="flow-i"><code>...Qxb7</code></div><div class="flow-a">↓</div>
+      <div class="flow-i">permite <code>Bc5#</code></div><div class="flow-a">↓</div>
+      <div class="flow-i" style="border-color:var(--red);color:#fecaca">La evaluación cambia completamente</div>
+    </div>
+    <p>La dama ha sido intercambiada por: <strong>mate</strong>. Y mate significa que <strong>la partida termina</strong>.</p>
+    <div class="formula">Mate &nbsp;&gt;&nbsp; cualquier cantidad de material<small>Una de las primeras jerarquías que debes comprender</small></div>
+  </div>
+
+  <h3><span class="hx">§50</span> Jerarquía práctica de prioridades</h3>
+  <div class="card">
+    <p>De forma simplificada:</p>
+    <div class="hier">
+      <div class="hier-i top">MATE</div><div class="hier-d">es más importante que</div>
+      <div class="hier-i hi">ganar dama</div><div class="hier-d">que es más importante que</div>
+      <div class="hier-i">ganar torre</div><div class="hier-d">que es más importante que</div>
+      <div class="hier-i">ganar pieza</div><div class="hier-d">que es más importante que</div>
+      <div class="hier-i">ganar peón</div>
+    </div>
+    <div class="co co-warn"><div class="co-t">⚠ PERO CUIDADO</div><p>Esto <strong>no significa que siempre debas sacrificar material buscando mate</strong>. Significa que, <strong>cuando existe un mate forzado, el material deja de ser la prioridad</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§51</span> ¿Qué hizo realmente la dama blanca?</h3>
+  <div class="card">
+    <p>En la combinación <code>Qxb7!!</code> la dama blanca realiza <strong>varias funciones</strong>:</p>
+    <div class="steps">
+      <div class="step"><b>Ataca</b><p>Crea una amenaza inmediata.</p></div>
+      <div class="step"><b>Obliga a la dama negra a capturar</b><p>Fuerza la respuesta.</p></div>
+      <div class="step"><b>Desvía a la dama negra</b><p>La aparta de su función defensiva.</p></div>
+      <div class="step"><b>Elimina la defensa de c5</b><p>La casilla crítica queda indefensa.</p></div>
+      <div class="step"><b>Permite el mate</b><p>Habilita <code>Bc5#</code>.</p></div>
+    </div>
+    <div class="co co-purple"><div class="co-t">◆ CONCLUSIÓN</div><p>Ésta es una <strong>jugada táctica de múltiples funciones</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§78</span> Mate por coordinación</h3>
+  <div class="card">
+    <p>El mate final <strong>no depende de una sola pieza</strong>:</p>
+    <div class="tw"><table>
+      <thead><tr><th>Pieza</th><th>Función en la combinación</th></tr></thead>
+      <tbody>
+        <tr><td><b>♘ El caballo</b></td><td>Puede controlar casillas de escape.</td></tr>
+        <tr><td><b>♗ El alfil</b></td><td>Puede dar el jaque.</td></tr>
+        <tr><td><b>♖ La torre</b></td><td>Puede controlar una columna.</td></tr>
+        <tr><td><b>♕ La dama</b></td><td>Puede crear la desviación.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="co co-ok"><div class="co-t">✔ ESTO ES COORDINACIÓN</div><p>Por eso conviene preguntarse: <strong>“¿Qué hace cada pieza de mi combinación?”</strong></p></div>
+  </div>
+</section>
+
+<!-- ===================== 10. LA COMBINACIÓN ===================== -->
+<section class="page" id="sec-combinacion">
+  <div class="sec-head">
+    <div class="sec-ico">⚡</div>
+    <div>
+      <span class="sec-tag">Capítulo 10 · Lección 68</span>
+      <h2>La secuencia táctica completa en el tablero</h2>
+      <p>De 1.d4 hasta Bc5#: 21 movimientos individuales reproducibles paso a paso, con verificación de cada uno.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§68</span> Secuencia táctica estudiada</h3>
+  <div class="card">
+    <p>La secuencia proporcionada en el material puede estudiarse como <strong>ejercicio de reconocimiento de patrones</strong>:</p>
+    <div class="formula">1.d4 d5 &nbsp; 2.e4 dxe4 &nbsp; 3.Nc3 Nf6 &nbsp; 4.f3 exf3 &nbsp; 5.Qxf3<small>A partir de aquí, las posiciones concretas y las variantes deben verificarse antes de presentarlas como una línea forzada universal</small></div>
+    <p>Una secuencia posterior del tipo:</p>
+    <div class="formula" style="color:var(--purple)">...Qxd4 &nbsp; Be3 &nbsp; ...Qb4 &nbsp; O-O-O &nbsp; ...Bg4 &nbsp; Nb5 &nbsp; ...e5 &nbsp; Nc7+<small>Material didáctico</small></div>
+    <p>puede servir como material didáctico para estudiar:</p>
+    <div class="chips">
+      <span class="chip p">desarrollo con tempo</span>
+      <span class="chip p">actividad de la dama</span>
+      <span class="chip p">rey expuesto</span>
+      <span class="chip p">casillas de escape</span>
+      <span class="chip p">desviación</span>
+      <span class="chip p">sacrificio</span>
+      <span class="chip p">mate</span>
+    </div>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA DEL DOCUMENTO</div><p>Pero el estudiante debe <strong>comprobar la legalidad y corrección táctica de cada variante concreta en la posición exacta</strong>.</p></div>
+    <div class="co co-info"><div class="co-t">🎓 LA LECCIÓN</div><p>La lección <strong>no es memorizarla</strong>. La lección es <strong>entender el mecanismo</strong>.</p></div>
+  </div>
+
+  <h3>🎛 Tablero interactivo 3 · La secuencia táctica completa (21 movimientos)</h3>
+  <p style="color:var(--muted)">Desde la posición inicial estándar hasta el jaque mate. Cada paso = <strong>un movimiento de un solo bando</strong>, con COLOR, PIEZA, ORIGEN, DESTINO, explicación y motivo táctico.</p>
+  <div class="board-frame" id="board3"></div>
+
+  <div class="card">
+    <h3 style="margin-top:0">🔬 Verificación obligatoria de la posición crítica</h3>
+    <p>Aplicando el método de las <strong>casillas de escape</strong> (§32) y el procedimiento de cálculo del jaque (§33), comprueba el movimiento 17 (<code>Nxc7+</code>):</p>
+    <div class="tw"><table>
+      <thead><tr><th>Defensa posible del negro</th><th>Verificación</th><th>Resultado</th></tr></thead>
+      <tbody>
+        <tr><td><b>Capturar el caballo de c7</b></td><td>El rey en e8 no llega a c7. Ninguna pieza negra ataca c7 (dama b4, alfil g4, caballo f6, torre a8, alfil f8, peones). El jaque es de caballo: <strong>no se puede bloquear</strong>.</td><td style="color:var(--red)">✖ Imposible</td></tr>
+        <tr><td><b>Rey a d8</b></td><td>La columna d está completamente vacía (d2–d7): la <strong>torre blanca de d1</strong> controla d8.</td><td style="color:var(--red)">✖ Ilegal</td></tr>
+        <tr><td><b>Rey a d7</b></td><td>Misma columna d abierta: <strong>Td1</strong> controla d7.</td><td style="color:var(--red)">✖ Ilegal</td></tr>
+        <tr><td><b>Rey a f8</b></td><td>Ocupada por el <strong>alfil negro</strong>.</td><td style="color:var(--red)">✖ Ilegal</td></tr>
+        <tr><td><b>Rey a f7</b></td><td>Ocupada por el <strong>peón negro</strong>.</td><td style="color:var(--red)">✖ Ilegal</td></tr>
+        <tr><td><b>Rey a e7</b></td><td>Casilla vacía (el peón acaba de ir a e5). No atacada por Nc7, Qf3, Be3 ni Rd1.</td><td style="color:var(--green)">✔ ÚNICA LEGAL</td></tr>
+      </tbody>
+    </table></div>
+    <div class="co co-info"><div class="co-t">ℹ NOTA DIDÁCTICA</div><p>El documento original no especifica la respuesta negra al jaque; el tablero muestra la <strong>única respuesta legal</strong> obtenida aplicando el propio método del tutorial (contar casillas de escape, capturas y bloqueos). Éste es exactamente el ejercicio que propone la lección §32.</p></div>
+    <h4>Verificación del mate final <code>Bc5#</code> (rey negro en e7)</h4>
+    <div class="steps">
+      <div class="step"><b>1 · El rey está en jaque</b><p>El alfil blanco en c5 ataca e7 por la diagonal c5–d6–e7 (d6 vacía).</p></div>
+      <div class="step"><b>2 · No puede escapar</b><p>d8 y d7 → torre de d1; e8 y e6 → caballo de c7; f8 → alfil propio; f7 → peón propio; f6 → caballo propio; d6 → alfil y torre.</p></div>
+      <div class="step"><b>3 · No puede capturar al alfil</b><p>Ni la dama de b7, ni el alfil de g4, ni el caballo de f6, ni el alfil de f8 (bloqueado por su propio rey), ni las torres, ni ningún peón atacan c5.</p></div>
+      <div class="step"><b>4 · No puede bloquear en d6</b><p>Ninguna pieza negra puede alcanzar d6, y los peones no pueden interponerse.</p></div>
+    </div>
+    <div class="co co-err"><div class="co-t">👑 JAQUE MATE CONFIRMADO</div><p>Se cumplen las <strong>tres condiciones</strong> de la lección §35.</p></div>
+  </div>
+
+  <div class="co co-purple"><div class="co-t">◆ §30 APLICADO</div>
+    <p><strong>La dama negra en b4 es el defensor único y sobrecargado.</strong> Desde b4 defiende simultáneamente <strong>c5</strong> (diagonal b4–c5) y <strong>b7</strong> (columna b). <code>Qxb7!!</code> ataca a la propia dama: si captura, abandona c5; si no captura, pierde material. Ésa es la <strong>sobrecarga</strong> (§46) convertida en <strong>desviación</strong> (§29).</p>
+  </div>
+</section>
+
+<!-- ===================== 11. CÁLCULO ===================== -->
+<section class="page" id="sec-calculo">
+  <div class="sec-head">
+    <div class="sec-ico">🧮</div>
+    <div>
+      <span class="sec-tag">Capítulo 11 · Lecciones 40, 53, 63 – 66</span>
+      <h2>Cálculo, profilaxis y cómo estudiar una trampa</h2>
+      <p>No calcules qué harías tú si fueras el rival: calcula su respuesta más fuerte.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§40</span> Principio de profilaxis</h3>
+  <div class="card">
+    <p class="lead"><strong>Profilaxis</strong> significa <strong>anticiparse a lo que quiere hacer el rival</strong>.</p>
+    <div class="flow">
+      <div class="flow-i">Antes de jugar: “¿Qué quiero hacer yo?”</div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i">Pregunta también: “¿Qué quiere hacer él?”</div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i" style="border-color:var(--amber);color:#fde68a">Y una pregunta todavía mejor: “Si yo no hago nada, ¿cuál será su próxima amenaza?”</div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Esto <strong>cambia completamente la forma de jugar</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§53</span> Cómo estudiar una trampa correctamente</h3>
+  <div class="card">
+    <div class="co co-err"><div class="co-t">✖ NO ESTUDIES ASÍ</div><p><code>1.d4 d5 &nbsp; 2.e4 dxe4 &nbsp; 3.Nc3...</code> como <strong>una canción</strong>.</p></div>
+    <p><strong>Estudia cada posición.</strong> En cada movimiento escribe mentalmente:</p>
+    <div class="tw"><table>
+      <thead><tr><th>Elemento</th><th>Pregunta</th></tr></thead>
+      <tbody>
+        <tr><td><b>Mi objetivo</b></td><td>¿Qué quiero conseguir?</td></tr>
+        <tr><td><b>La amenaza</b></td><td>¿Qué amenaza mi jugada?</td></tr>
+        <tr><td><b>La respuesta</b></td><td>¿Qué puede hacer el rival?</td></tr>
+        <tr><td><b>La consecuencia</b></td><td>¿Qué cambia en el tablero?</td></tr>
+      </tbody>
+    </table></div>
+    <div class="co co-ok"><div class="co-t">✔ RESULTADO</div><p>Eso convierte una <strong>variante memorizada</strong> en <strong>conocimiento transferible</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§63</span> Cómo saber si una táctica funciona: el método FORZAR</h3>
+  <div class="card">
+    <div class="grid g3">
+      <div class="mini"><span class="big">F</span><h5>¿Hay jaques?</h5><p>Busca las jugadas más forzadas.</p></div>
+      <div class="mini"><span class="big">O</span><h5>¿Qué opciones tiene el rival?</h5><p>Enumera todas sus respuestas.</p></div>
+      <div class="mini"><span class="big">R</span><h5>¿Puedo restringirlas?</h5><p>Reduce las opciones del contrario.</p></div>
+      <div class="mini"><span class="big">Z</span><h5>¿Qué defensa concreta existe?</h5><p>Identifica el recurso defensivo real.</p></div>
+      <div class="mini"><span class="big">A</span><h5>¿Qué ocurre después?</h5><p>Continúa la variante.</p></div>
+      <div class="mini"><span class="big">R</span><h5>Recalcular la posición final</h5><p>Evalúa el resultado obtenido.</p></div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>No es una fórmula matemática; es una <strong>rutina para evitar jugar por intuición sin verificar</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§64</span> Cálculo: no pienses solamente en tu jugada</h3>
+  <div class="card">
+    <p>El cálculo ajedrecístico tiene una estructura:</p>
+    <div class="formula">Yo juego → él responde → yo respondo → él responde</div>
+    <p>Pero hay que <strong>elegir la respuesta del rival correctamente</strong>.</p>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>❌ No calcules</h5><p>“¿Qué haría yo si fuera negro?”</p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>✅ Calcula</h5><p>“¿Cuál es la respuesta <strong>más fuerte</strong> que tiene el negro?”</p></div>
+    </div>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p>Ésta es una <strong>diferencia enorme</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§65</span> La defensa más fuerte</h3>
+  <div class="card">
+    <p>Para entrenar el cálculo: cuando encuentres una jugada atractiva, <strong>intenta destruirla</strong>.</p>
+    <div class="quote">¿Cómo podría mi rival refutar esto?</div>
+    <div class="grid g2">
+      <div class="mini"><h5>Si no encuentras refutación</h5><p>Aumenta la confianza.</p></div>
+      <div class="mini"><h5>Si encuentras una</h5><p>Has aprendido algo valioso.</p></div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Ésta es la <strong>mentalidad de análisis</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§66</span> El principio del peor caso</h3>
+  <div class="card">
+    <p>Cuando estés calculando una combinación: <strong>supón que el rival encuentra la mejor defensa</strong>.</p>
+    <div class="co co-ok"><div class="co-t">✔ REGLA</div><p>Si la combinación <strong>sigue funcionando</strong>, es mucho más probable que sea correcta.</p></div>
+    <div class="co co-err"><div class="co-t">✖ PROHIBIDO</div><p>No construyas una variante basada en que <strong>el rival cometa exactamente el error que esperas</strong>.</p></div>
+  </div>
+</section>
+
+<!-- ===================== 12. MÉTODO RUBÉN ===================== -->
+<section class="page" id="sec-metodo">
+  <div class="sec-head">
+    <div class="sec-ico">🧠</div>
+    <div>
+      <span class="sec-tag">Capítulo 12 · Lecciones 41 – 43, 71</span>
+      <h2>El método Rubén: pensar antes de mover</h2>
+      <p>Siete pasos prácticos, el inventario de piezas colgadas, el recuento de atacantes y defensores, y el algoritmo completo.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§41</span> El método Rubén</h3>
+  <div class="card">
+    <p>Para practicar, utiliza este procedimiento:</p>
+    <div class="steps">
+      <div class="step"><b>PASO 1 — Seguridad</b><p>¿Estoy en jaque?</p></div>
+      <div class="step"><b>PASO 2 — Amenazas</b><p>¿Qué amenaza mi rival?</p></div>
+      <div class="step"><b>PASO 3 — CCT</b><p>¿Tengo: jaques, capturas, amenazas?</p></div>
+      <div class="step"><b>PASO 4 — Candidatos</b><p>Elige 2–3 jugadas posibles.</p></div>
+      <div class="step"><b>PASO 5 — Respuesta del rival</b><p>Para cada candidata: “¿Cuál sería la mejor respuesta del rival?”</p></div>
+      <div class="step"><b>PASO 6 — Comparación</b><p>¿Cuál de mis candidatas deja mi posición mejor?</p></div>
+      <div class="step"><b>PASO 7 — Error final</b><p>Antes de mover: “¿Estoy dejando alguna pieza colgada?”</p></div>
+    </div>
+    <div class="co co-ok"><div class="co-t">✔ VALOR</div><p>Este último paso <strong>salva innumerables partidas</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§42</span> ¿Qué significa “pieza colgada”?</h3>
+  <div class="card">
+    <p class="lead">Una <strong>pieza colgada</strong> es una pieza <strong>insuficientemente defendida</strong> o directamente <strong>sin defensa</strong> que puede ser capturada.</p>
+    <p>Antes de realizar cualquier movimiento, haz un <strong>inventario</strong>:</p>
+    <div class="chips">
+      <span class="chip a">♔ rey</span><span class="chip a">♕ dama</span><span class="chip a">♖ torres</span>
+      <span class="chip a">♗ alfiles</span><span class="chip a">♘ caballos</span><span class="chip a">♙ peones</span>
+    </div>
+    <div class="quote">¿Qué pieza puede capturar mi rival después de mi jugada?</div>
+  </div>
+
+  <h3><span class="hx">§43</span> Contar atacantes y defensores</h3>
+  <div class="card">
+    <p>Ésta es una <strong>habilidad fundamental</strong>. Si una pieza está atacada, <strong>no basta con decir</strong>: “Está atacada.” <strong>Hay que contar.</strong></p>
+    <div class="co co-ok"><div class="co-t">✔ EJEMPLO</div>
+      <p>Una pieza blanca está atacada por: <strong>caballo</strong> y <strong>alfil</strong> (2 atacantes).</p>
+      <p>Pero está defendida por: <strong>torre</strong>, <strong>dama</strong> y <strong>rey</strong> (3 defensores).</p>
+      <p>Entonces la situación es <strong>completamente distinta</strong>.</p>
+    </div>
+    <div class="quote">El ajedrez táctico consiste muchas veces en contar fuerzas alrededor de una casilla.</div>
+  </div>
+
+  <h3><span class="hx">§71</span> El algoritmo completo para pensar como ajedrecista</h3>
+  <div class="card">
+    <div class="co co-warn"><div class="co-t">📌 MEMORIZA ESTO</div></div>
+    <div class="flow-h">
+      <div class="flow-i">MIRAR</div><div class="flow-a">→</div>
+      <div class="flow-i">AMENAZAR</div><div class="flow-a">→</div>
+      <div class="flow-i">BUSCAR</div><div class="flow-a">→</div>
+      <div class="flow-i">EVALUAR</div><div class="flow-a">→</div>
+      <div class="flow-i">CALCULAR</div><div class="flow-a">→</div>
+      <div class="flow-i">COMPROBAR</div><div class="flow-a">→</div>
+      <div class="flow-i" style="border-color:var(--green);color:#bbf7d0">JUGAR</div>
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>Fase</th><th>Pregunta interna</th></tr></thead>
+      <tbody>
+        <tr><td><b>MIRAR</b></td><td>¿Qué está pasando?</td></tr>
+        <tr><td><b>AMENAZAR</b></td><td>¿Qué quiere hacer mi rival?</td></tr>
+        <tr><td><b>BUSCAR</b></td><td>Jaque, captura y amenaza.</td></tr>
+        <tr><td><b>EVALUAR</b></td><td>Material + desarrollo + rey + espacio + actividad + estructura.</td></tr>
+        <tr><td><b>CALCULAR</b></td><td>Mi jugada → mejor respuesta → mi continuación.</td></tr>
+        <tr><td><b>COMPROBAR</b></td><td>¿Dejo alguna pieza sin defensa?</td></tr>
+        <tr><td><b>JUGAR</b></td><td>Sólo entonces muevo.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ===================== 13. EL ATAQUE ===================== -->
+<section class="page" id="sec-ataque">
+  <div class="sec-head">
+    <div class="sec-ico">⚔</div>
+    <div>
+      <span class="sec-tag">Capítulo 13 · Lecciones 58 – 62, 73 – 74</span>
+      <h2>El ataque, la iniciativa y el peligro del automatismo</h2>
+      <p>Una partida no se gana solamente atacando: se gana atacando cuando la posición lo justifica.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§58</span> Una partida no se gana solamente atacando</h3>
+  <div class="card">
+    <p>Ésta es una <strong>corrección importante</strong> al espíritu excesivamente agresivo del tutorial original.</p>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>❌ No debemos aprender</h5><p>“Atacar siempre.”</p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>✅ Debemos aprender</h5><p>“Atacar <strong>cuando la posición lo justifica</strong>.”</p></div>
+    </div>
+    <p style="margin-top:14px">Un ataque necesita <strong>recursos</strong>. Normalmente necesita alguna combinación de:</p>
+    <div class="chips">
+      <span class="chip g">ventaja de desarrollo</span><span class="chip g">rey enemigo expuesto</span>
+      <span class="chip g">superioridad de piezas</span><span class="chip g">líneas abiertas</span>
+      <span class="chip g">debilidades</span><span class="chip g">piezas mal coordinadas del rival</span>
+    </div>
+    <div class="co co-err"><div class="co-t">✖ ADVERTENCIA</div><p>Si no existen esos factores, atacar puede ser simplemente <strong>regalar material</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§59</span> El ataque tiene una ecuación</h3>
+  <div class="card">
+    <p>Podemos utilizar una <strong>fórmula pedagógica</strong>:</p>
+    <div class="formula">Ataque = piezas activas + líneas abiertas + objetivos + tiempo<small>Si falta alguno de estos elementos, el ataque puede no funcionar</small></div>
+    <div class="tw"><table>
+      <thead><tr><th>Elemento</th><th>Pregunta de control</th></tr></thead>
+      <tbody>
+        <tr><td><b>Piezas activas</b></td><td>¿Tengo suficientes atacantes?</td></tr>
+        <tr><td><b>Líneas abiertas</b></td><td>¿Pueden llegar mis piezas?</td></tr>
+        <tr><td><b>Objetivos</b></td><td>¿Hay algo concreto que atacar?</td></tr>
+        <tr><td><b>Tiempo</b></td><td>¿Puede el rival organizarse antes?</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <h3><span class="hx">§60</span> Iniciativa</h3>
+  <div class="card">
+    <p class="lead">La iniciativa significa, simplificando: <strong>tener la capacidad de plantear amenazas que obligan al rival a responder</strong>.</p>
+    <p>Si yo hago amenazas y tú respondes: <strong>yo tengo la iniciativa</strong>.</p>
+    <div class="co co-warn"><div class="co-t">⚠ PERO</div><p>La iniciativa <strong>no dura para siempre</strong>. Si mi ataque no produce algo concreto, <strong>el rival puede reorganizarse</strong>.</p></div>
+    <div class="quote">La iniciativa debe convertirse en algo tangible.</div>
+    <h4>Por ejemplo:</h4>
+    <div class="chips">
+      <span class="chip g">recuperar material</span><span class="chip g">ganar una pieza</span><span class="chip g">abrir el rey</span>
+      <span class="chip g">ganar una ventaja permanente</span><span class="chip g">conseguir mate</span>
+    </div>
+  </div>
+
+  <h3><span class="hx">§61</span> La regla de conversión</h3>
+  <div class="card">
+    <p>Un jugador fuerte <strong>no se limita a crear amenazas</strong>. Busca <strong>convertirlas</strong>.</p>
+    <div class="formula">Amenaza → defensa → nueva amenaza → desviación → ganancia<small>Ésta es la lógica de una combinación</small></div>
+  </div>
+
+  <h3><span class="hx">§62</span> El error más peligroso: jugar automáticamente</h3>
+  <div class="card">
+    <p>Si has aprendido una trampa, existe un <strong>nuevo peligro</strong>: intentar jugarla <strong>aunque la posición no sea la misma</strong>. Eso es <strong>automatismo</strong>.</p>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>El ajedrez exige <strong>reconocer la posición</strong>. La misma apertura puede producir <strong>posiciones completamente diferentes</strong>.</p></div>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>❌ Nunca digas</h5><p>“Ahora toca Nb5.”</p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>✅ Di</h5><p>“¿Qué amenazas crea Nb5 en <strong>ESTA</strong> posición?”</p></div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§73</span> “¿Quién está haciendo las preguntas?”</h3>
+  <div class="card">
+    <p>Ésta puede convertirse en <strong>tu pregunta favorita</strong>.</p>
+    <div class="steps">
+      <div class="step"><b>Si yo ataco tu dama</b><p>Tienes que responder.</p></div>
+      <div class="step"><b>Si ataco una pieza</b><p>Tienes que responder.</p></div>
+      <div class="step"><b>Si doy jaque</b><p>Tienes que responder.</p></div>
+      <div class="step"><b>Si creo una amenaza de mate</b><p>Tienes que responder.</p></div>
+    </div>
+    <div class="co co-ok"><div class="co-t">✔ DEFINICIÓN</div><p>Cuando una sucesión de jugadas obliga al rival a responder, estamos hablando de <strong>iniciativa</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§74</span> Pero cuidado con la iniciativa falsa</h3>
+  <div class="card">
+    <p>A veces creemos estar atacando cuando <strong>simplemente estamos moviendo piezas</strong>.</p>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p>Por ejemplo: “Desarrollo mi alfil.” Eso puede ser bueno. Pero <strong>si no crea ninguna amenaza</strong> y el rival puede desarrollar tranquilamente, <strong>no necesariamente tenemos iniciativa</strong>.</p></div>
+    <div class="quote">La iniciativa requiere presión real.</div>
+  </div>
+</section>
+
+<!-- ===================== 14. EVALUACIÓN ===================== -->
+<section class="page" id="sec-evaluacion">
+  <div class="sec-head">
+    <div class="sec-ico">⚖</div>
+    <div>
+      <span class="sec-tag">Capítulo 14 · Lecciones 70, 72</span>
+      <h2>Evaluar una posición y elegir un plan</h2>
+      <p>Seis preguntas para no obsesionarte con el material y una pregunta que cambia todo: ¿cuál es mi plan?</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§70</span> La verdadera pregunta después de la apertura</h3>
+  <div class="card">
+    <p>Después de los primeros movimientos, pregunta:</p>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--red)"><h5>❌ No</h5><p>“¿Qué movimiento viene ahora?”</p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>✅ Sí</h5><p>“¿Cuál es mi plan?”</p></div>
+    </div>
+    <h4>Un plan puede ser:</h4>
+    <div class="chips">
+      <span class="chip a">terminar el desarrollo</span><span class="chip a">enrocar</span><span class="chip a">recuperar material</span>
+      <span class="chip a">abrir una columna</span><span class="chip a">atacar al rey</span><span class="chip a">cambiar una pieza defensora</span>
+      <span class="chip a">mejorar una pieza mal colocada</span>
+    </div>
+  </div>
+
+  <h3><span class="hx">§72</span> La evaluación de una posición</h3>
+  <div class="card">
+    <p>Para <strong>no obsesionarte con el material</strong>, utiliza estas seis preguntas:</p>
+    <div class="grid g3">
+      <div class="mini" style="border-top:3px solid var(--accent)"><span class="big">1</span><h5>Material</h5><p>¿Quién tiene más?</p></div>
+      <div class="mini" style="border-top:3px solid var(--green)"><span class="big">2</span><h5>Desarrollo</h5><p>¿Quién tiene más piezas desarrolladas?</p></div>
+      <div class="mini" style="border-top:3px solid var(--red)"><span class="big">3</span><h5>Seguridad del rey</h5><p>¿Quién está más expuesto?</p></div>
+      <div class="mini" style="border-top:3px solid var(--purple)"><span class="big">4</span><h5>Actividad</h5><p>¿Quién tiene piezas más activas?</p></div>
+      <div class="mini" style="border-top:3px solid var(--amber)"><span class="big">5</span><h5>Estructura</h5><p>¿Quién tiene mejores peones y menos debilidades?</p></div>
+      <div class="mini" style="border-top:3px solid var(--accent)"><span class="big">6</span><h5>Iniciativa</h5><p>¿Quién está haciendo las preguntas y quién está contestando?</p></div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Esta última pregunta es <strong>especialmente poderosa</strong>.</p></div>
+  </div>
+
+  <h3>🧪 Evaluador interactivo de posiciones</h3>
+  <div class="card">
+    <p style="color:var(--muted)">Marca quién está mejor en cada uno de los seis factores y pulsa <strong>Evaluar</strong>. Es una herramienta de entrenamiento del método §72: no sustituye tu análisis, lo ordena.</p>
+    <div id="evalTool"></div>
+  </div>
+</section>
+
+<!-- ===================== 15. EJERCICIOS ===================== -->
+<section class="page" id="sec-ejercicios">
+  <div class="sec-head">
+    <div class="sec-ico">🏋</div>
+    <div>
+      <span class="sec-tag">Capítulo 15 · Lecciones 54 – 57, 79 – 80</span>
+      <h2>Ejercicios mentales y entrenamiento diario</h2>
+      <p>Cuatro ejercicios mentales, una rutina de 15 minutos y el ejercicio definitivo de 12 preguntas.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§54</span> Ejercicio mental número 1</h3>
+  <div class="card">
+    <p>Después de <code>1.d4 d5 2.e4 dxe4 3.Nc3</code> <strong>no mires ninguna jugada más</strong>. Responde:</p>
+    <div class="steps">
+      <div class="step"><b>¿Quién tiene más material?</b><p>Cuenta peones y piezas.</p></div>
+      <div class="step"><b>¿Qué peón está atacado?</b><p>Identifica el objetivo.</p></div>
+      <div class="step"><b>¿Qué pieza acaba de desarrollarse?</b><p>Observa el cambio reciente.</p></div>
+      <div class="step"><b>¿Qué quiere conseguir cada bando?</b><p>Planes opuestos.</p></div>
+      <div class="step"><b>¿Quién tiene la iniciativa?</b><p>¿Quién hace las preguntas?</p></div>
+      <div class="step"><b>¿Qué debería hacer el negro para aprovechar su ventaja material?</b><p>Consolidar o devolver.</p></div>
+    </div>
+    <details>
+      <summary>👁 Mostrar respuesta orientativa</summary>
+      <div class="d-body">
+        <ul>
+          <li>Las <strong>negras</strong> tienen un peón de ventaja.</li>
+          <li>Las <strong>blancas</strong> tienen una ventaja de actividad e iniciativa.</li>
+          <li>Las blancas quieren <strong>recuperar el peón</strong> o utilizar la ventaja de desarrollo para <strong>atacar</strong>.</li>
+          <li>Las negras deben intentar <strong>completar su desarrollo y consolidar</strong>.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <h3><span class="hx">§55</span> Ejercicio mental número 2</h3>
+  <div class="card">
+    <p>Después de una posición en la que <strong>la dama negra está defendiendo c5</strong>, pregunta:</p>
+    <div class="quote">¿Qué ocurre si la dama abandona c5?</div>
+    <div class="flow">
+      <div class="flow-i">Si la respuesta es: “Hay mate.”</div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i">Entonces has encontrado el <strong>motivo táctico</strong></div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i">Ahora tu misión es encontrar una manera de <strong>obligar a la dama a abandonar c5</strong></div>
+    </div>
+    <div class="co co-ok"><div class="co-t">✔ CLAVE</div><p>Eso es <strong>mucho más útil que memorizar <code>Qxb7</code></strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§56</span> Ejercicio mental número 3: el método del borrado</h3>
+  <div class="card">
+    <p>Mira la posición y <strong>elimina mentalmente una pieza defensora</strong>.</p>
+    <div class="steps">
+      <div class="step"><b>“Imaginemos que la dama negra no estuviera.”</b><p>Borra mentalmente al defensor.</p></div>
+      <div class="step"><b>Pregunta: “¿Podría dar mate?”</b><p>Comprueba si aparece el mate.</p></div>
+      <div class="step"><b>Si la respuesta es sí: “Entonces la dama es el obstáculo.”</b><p>Has identificado la pieza clave.</p></div>
+      <div class="step"><b>Ahora busca una táctica contra ella.</b><p>Captura, desviación, sobrecarga, clavada o interferencia.</p></div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Este ejercicio desarrolla <strong>muchísimo la visión combinativa</strong>.</p></div>
+  </div>
+
+  <h3><span class="hx">§57</span> Ejercicio mental número 4: flechas invisibles</h3>
+  <div class="card">
+    <p>Cuando mires el tablero, intenta <strong>visualizar</strong>:</p>
+    <div class="chips">
+      <span class="chip p">diagonales de los alfiles</span>
+      <span class="chip p">líneas de las torres</span>
+      <span class="chip p">saltos de los caballos</span>
+      <span class="chip p">rayos de la dama</span>
+      <span class="chip p">casillas controladas por los peones</span>
+    </div>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p><strong>No necesitas calcular veinte jugadas.</strong> Necesitas saber: <strong>qué casillas controla cada pieza</strong>.</p></div>
+    <div class="quote">El ajedrez táctico es, en gran parte, geometría.</div>
+  </div>
+
+  <h3><span class="hx">§79</span> Entrenamiento diario de 15 minutos</h3>
+  <div class="card">
+    <p>Puedes entrenar esta forma de pensar <strong>sin jugar una partida completa</strong>.</p>
+    <div class="tl">
+      <div class="tl-i"><span class="tm">Minutos 1 – 3</span><b>Mira una posición. No muevas.</b><p>Identifica: reyes, damas, piezas activas, piezas mal colocadas.</p></div>
+      <div class="tl-i"><span class="tm">Minutos 4 – 7</span><b>Busca</b><p>Jaques, capturas y amenazas.</p></div>
+      <div class="tl-i"><span class="tm">Minutos 8 – 11</span><b>Calcula</b><p>Encuentra dos o tres jugadas candidatas. Calcula la mejor respuesta rival.</p></div>
+      <div class="tl-i"><span class="tm">Minutos 12 – 14</span><b>Busca los motivos</b><p>Defensores, casillas débiles, clavadas, desviaciones, sobrecargas.</p></div>
+      <div class="tl-i"><span class="tm">Minuto 15</span><b>Explica la posición en voz alta</b><p>Si puedes explicar por qué una jugada funciona, <strong>estás aprendiendo</strong>.</p></div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§80</span> El ejercicio definitivo</h3>
+  <div class="card">
+    <p>Toma cualquier posición y responde <strong>sin mover piezas</strong>. Marca cada punto a medida que lo completes:</p>
+    <div class="chk" id="exChk"></div>
+    <div class="co co-ok"><div class="co-t">✔ RESULTADO</div><p>Si puedes responder sistemáticamente estas preguntas, <strong>estás empezando a pensar como un ajedrecista</strong>.</p></div>
+    <div class="ctrl-row" style="margin-top:12px">
+      <button class="cbtn warn" id="exReset" type="button">↺ Reiniciar ejercicio</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 16. CONCLUSIONES ===================== -->
+<section class="page" id="sec-conclusiones">
+  <div class="sec-head">
+    <div class="sec-ico">🎓</div>
+    <div>
+      <span class="sec-tag">Capítulo 16 · Lecciones 67, 69, 81 – 84</span>
+      <h2>Conclusiones: lo que debes recordar</h2>
+      <p>Diez aprendizajes del gambito, la advertencia sobre las trampas de apertura, la gran lección y la filosofía final.</p>
+    </div>
+  </div>
+
+  <h3><span class="hx">§67</span> Qué debemos aprender realmente del Blackmar-Diemer</h3>
+  <div class="card">
+    <div class="co co-err"><div class="co-t">✖ ERROR</div><p>El valor educativo del gambito <strong>no está</strong> en decir: “Esta apertura gana.”</p></div>
+    <p>Está en enseñar:</p>
+    <div class="grid g2">
+      <div class="mini"><h5><span style="color:var(--accent)">1.</span> Sacrificio</h5><p>Material a cambio de actividad.</p></div>
+      <div class="mini"><h5><span style="color:var(--accent)">2.</span> Desarrollo</h5><p>Desarrollar piezas rápidamente.</p></div>
+      <div class="mini"><h5><span style="color:var(--accent)">3.</span> Tempo</h5><p>Desarrollar atacando.</p></div>
+      <div class="mini"><h5><span style="color:var(--accent)">4.</span> Iniciativa</h5><p>Obligar al rival a responder.</p></div>
+      <div class="mini"><h5><span style="color:var(--accent)">5.</span> Coordinación</h5><p>Varias piezas trabajando juntas.</p></div>
+      <div class="mini"><h5><span style="color:var(--accent)">6.</span> Casillas críticas</h5><p>Una sola casilla puede decidir una combinación.</p></div>
+      <div class="mini"><h5><span style="color:var(--accent)">7.</span> Defensores</h5><p>Encontrar la pieza que sostiene la posición.</p></div>
+      <div class="mini"><h5><span style="color:var(--accent)">8.</span> Desviación</h5><p>Obligar al defensor a abandonar su puesto.</p></div>
+      <div class="mini"><h5><span style="color:var(--accent)">9.</span> Sacrificio</h5><p>Entregar material para conseguir una consecuencia decisiva.</p></div>
+      <div class="mini"><h5><span style="color:var(--accent)">10.</span> Mate</h5><p>Comprender la geometría de las posiciones de mate.</p></div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§69</span> Una advertencia sobre las trampas de apertura</h3>
+  <div class="card">
+    <p>Las trampas funcionan <strong>porque el rival comete errores</strong>.</p>
+    <div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p><strong>Una trampa no es una estrategia completa.</strong> Si el rival conoce la idea, puede evitarla. Entonces <strong>debes saber jugar la posición resultante</strong>.</p></div>
+    <div class="grid g2">
+      <div class="mini" style="border-left:3px solid var(--amber)"><h5>Jugador que sólo conoce la trampa</h5><p>Es peligroso <strong>mientras el rival coopera</strong>.</p></div>
+      <div class="mini" style="border-left:3px solid var(--green)"><h5>Jugador que comprende la posición</h5><p>Puede <strong>seguir jugando cuando la trampa no funciona</strong>.</p></div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§81</span> Lo que debes recordar del Gambito Blackmar-Diemer</h3>
+  <div class="card">
+    <p><strong>No recuerdes veinte movimientos. Recuerda diez ideas:</strong></p>
+    <div class="steps">
+      <div class="step"><b>El centro importa.</b><p>Controlar las casillas centrales.</p></div>
+      <div class="step"><b>El desarrollo importa.</b><p>Sacar las piezas con rapidez.</p></div>
+      <div class="step"><b>Un gambito compra actividad con material.</b><p>Compensación, no regalo.</p></div>
+      <div class="step"><b>Un tiempo puede ser tan importante como un peón durante la apertura.</b><p>El tempo es un recurso.</p></div>
+      <div class="step"><b>Una dama demasiado activa puede perder tiempos.</b><p>Actividad ≠ buena colocación.</p></div>
+      <div class="step"><b>Las piezas deben coordinarse.</b><p>El ataque es colectivo.</p></div>
+      <div class="step"><b>Busca la pieza defensora.</b><p>¿Quién sostiene la posición?</p></div>
+      <div class="step"><b>Una defensa única puede ser explotada.</b><p>Captura, desviación, sobrecarga, clavada, interferencia.</p></div>
+      <div class="step"><b>Un sacrificio puede tener una función táctica precisa.</b><p>Se compra una consecuencia.</p></div>
+      <div class="step"><b>Antes de mover, calcula la mejor respuesta del rival.</b><p>Principio del peor caso.</p></div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§82</span> La gran lección</h3>
+  <div class="card">
+    <p>El Blackmar-Diemer puede enseñarte algo <strong>mucho más importante que una apertura</strong>. Puede enseñarte a <strong>cambiar tu pregunta</strong>.</p>
+    <div class="flow">
+      <div class="flow-i" style="border-color:var(--red)">El <strong>principiante</strong> pregunta: “¿Qué puedo comer?”</div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i" style="border-color:var(--amber)">El jugador que está <strong>aprendiendo</strong> pregunta: “¿Qué amenaza mi rival?”</div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i" style="border-color:var(--accent)">El jugador <strong>táctico</strong> pregunta: “¿Qué piezas defienden esa casilla?”</div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i" style="border-color:var(--purple)">El jugador <strong>combinativo</strong> pregunta: “¿Puedo eliminar o desviar al defensor?”</div>
+      <div class="flow-a">↓</div>
+      <div class="flow-i" style="border-color:var(--green)">El jugador <strong>fuerte</strong> pregunta: “¿Cuál es la mejor respuesta de mi rival y cómo la voy a refutar?”</div>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p><strong>Ahí comienza realmente el pensamiento ajedrecístico.</strong></p></div>
+  </div>
+
+  <h3><span class="hx">§83</span> Resumen visual de la idea táctica</h3>
+  <div class="card">
+    <p>Ésta es la historia que debes ver <strong>detrás de la combinación</strong>:</p>
+    <div class="flow">
+      <div class="flow-i">SACRIFICIO</div><div class="flow-a">↓</div>
+      <div class="flow-i">GANANCIA DE TIEMPO</div><div class="flow-a">↓</div>
+      <div class="flow-i">DESARROLLO</div><div class="flow-a">↓</div>
+      <div class="flow-i">INICIATIVA</div><div class="flow-a">↓</div>
+      <div class="flow-i">CREACIÓN DE AMENAZAS</div><div class="flow-a">↓</div>
+      <div class="flow-i">IDENTIFICACIÓN DEL DEFENSOR</div><div class="flow-a">↓</div>
+      <div class="flow-i">DESVIACIÓN / SOBRECARGA</div><div class="flow-a">↓</div>
+      <div class="flow-i">ELIMINACIÓN DE LA DEFENSA</div><div class="flow-a">↓</div>
+      <div class="flow-i" style="border-color:var(--amber);color:#fde68a">JAQUE</div><div class="flow-a">↓</div>
+      <div class="flow-i" style="border-color:var(--red);color:#fff;background:linear-gradient(135deg,rgba(239,68,68,.35),rgba(185,28,28,.2))">MATE</div>
+    </div>
+  </div>
+
+  <h3><span class="hx">§84</span> La filosofía final de Rubén</h3>
+  <div class="card">
+    <p>El ajedrez <strong>no consiste en mirar una pieza y preguntarse cuánto vale</strong>. Consiste en mirar <strong>el sistema completo</strong>.</p>
+    <div class="grid g2">
+      <div class="mini"><h5>♙ Un peón</h5><p>Puede abrir una diagonal.</p></div>
+      <div class="mini"><h5>♘ Un caballo</h5><p>Puede controlar una casilla de escape.</p></div>
+      <div class="mini"><h5>♗ Un alfil</h5><p>Puede sostener un mate.</p></div>
+      <div class="mini"><h5>♕ Una dama</h5><p>Puede sacrificarse para desviar a otra.</p></div>
+      <div class="mini"><h5>♖ Una torre</h5><p>Puede ganar un tiempo decisivo.</p></div>
+      <div class="mini"><h5>⬛ Una sola casilla</h5><p>Puede ser el punto alrededor del cual gira toda la partida.</p></div>
+    </div>
+    <p style="margin-top:16px">Por eso, cuando vuelvas a mirar una posición, <strong>no pienses inmediatamente</strong>: “¿Qué puedo comer?”</p>
+    <div class="co co-purple"><div class="co-t">◆ RITUAL</div>
+      <p><strong>Haz una pausa. Mira el tablero. Respira.</strong> Y pregunta:</p>
+      <p>“¿Qué está pasando realmente?”</p>
+      <p>Después: “¿Qué quiere hacer mi rival?”</p>
+      <p>Después: “¿Cuál es mi amenaza?”</p>
+      <p>Después: “¿Quién defiende esa casilla?”</p>
+      <p>Y finalmente: “Si sacrifico algo aquí, ¿qué consigo?”</p>
+    </div>
+    <div class="co co-info"><div class="co-t">ℹ INFO</div><p>Ese cambio de mentalidad es <strong>mucho más importante que aprender una trampa</strong>.</p></div>
+    <div class="quote">No juegues movimientos. Juega ideas.</div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent)">
+    <h3 style="margin-top:0">📜 Regla final</h3>
+    <div class="formula" style="font-size:clamp(16px,3.6vw,24px)">Mira → Pregunta → Calcula → Comprueba → Juega<small>No al revés · Fin del contenido</small></div>
+  </div>
+</section>
+
+<!-- ===================== 17. GLOSARIO ===================== -->
+<section class="page" id="sec-glosario">
+  <div class="sec-head">
+    <div class="sec-ico">📖</div>
+    <div>
+      <span class="sec-tag">Capítulo 17 · Glosario mínimo</span>
+      <h2>Glosario mínimo</h2>
+      <p>Los quince términos esenciales del documento, con buscador integrado.</p>
+    </div>
+  </div>
+  <div class="card">
+    <input type="text" class="gloss-search" id="glossSearch" placeholder="🔍 Buscar término o definición… (ej.: desviación, tempo, clavada)" aria-label="Buscar en el glosario">
+    <div class="chips" id="glossFilters" style="margin-bottom:14px"></div>
+    <div id="glossList"></div>
+    <p id="glossEmpty" style="display:none;color:var(--dim);text-align:center;padding:20px">No se encontraron términos con ese criterio.</p>
+  </div>
+</section>
+
+<!-- ===================== CRÉDITOS ===================== -->
+<section class="page" id="sec-creditos">
+  <div class="cover-wrap" id="coverCredits" aria-label="Portada animada del tutorial (créditos)"></div>
+
+  <div class="card" style="text-align:center;border-color:var(--purple)">
+    <div class="home-badge" style="margin-bottom:14px">
+      <span class="bb p">Créditos</span>
+      <span class="bb">Material educativo</span>
+    </div>
+    <h2 style="font-size:clamp(22px,4.6vw,36px);color:#fff;line-height:1.2;margin-bottom:10px">El Gambito Blackmar-Diemer y la Trampa de Desviación</h2>
+    <p style="color:var(--amber);font-size:clamp(15px,2.6vw,19px);font-weight:600;margin-bottom:22px">Cómo aprender a pensar como un ajedrecista</p>
+
+    <div style="width:88px;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple));margin:0 auto 22px;border-radius:2px"></div>
+
+    <p style="font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Autor</p>
+    <p style="font-size:clamp(26px,5.4vw,42px);font-weight:800;color:#fff;letter-spacing:-.5px;margin-bottom:26px">Rubén Sbarsky</p>
+
+    <div class="dt-row">
+      <div class="dt-box"><div class="k">📅 Fecha</div><div class="v">08/09/2026</div></div>
+      <div class="dt-box"><div class="k">🕐 Hora</div><div class="v">16:29:08</div></div>
+    </div>
+
+    <div class="co co-info" style="text-align:left;margin-top:24px">
+      <div class="co-t">🎓 Indicación educativa</div>
+      <p>Este tutorial ha sido creado <strong>exclusivamente con fines educativos y de divulgación</strong>. Su objetivo no es que memorices una trampa de apertura, sino que aprendas a <strong>mirar el tablero como un ajedrecista</strong>: identificar amenazas, contar tiempos, valorar la actividad de las piezas, detectar piezas defensoras y calcular variantes antes de mover.</p>
+      <p>Todo el contenido procede del documento original <em>“El Gambito Blackmar-Diemer y la Trampa de Desviación — Cómo aprender a pensar como un ajedrecista”</em>, by Rubén Sbarsky. Los tableros interactivos son herramientas didácticas: cada movimiento se muestra y explica individualmente, indicando siempre COLOR, PIEZA, ORIGEN y DESTINO.</p>
+    </div>
+
+    <div class="fsep" style="width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:26px auto"></div>
+    <p style="font-style:italic;color:var(--accent);font-size:clamp(17px,3.4vw,23px);letter-spacing:1.2px;margin:0">Fiat iustitia, ruat caelum.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="fl">📚 Tutorial solo con fines Educativos y Divulgación</div>
+  <div class="fl">👨‍💻 Créditos: Rubén Sbarsky</div>
+  <div class="fl">📅 FECHA: 08/09/2026 &nbsp;·&nbsp; Hora: 16:29:08</div>
+  <div class="fsep"></div>
+  <div class="lat">Fiat iustitia, ruat caelum.</div>
+</footer>
+
+<button id="toTop" type="button" aria-label="Volver arriba" title="Volver arriba">↑</button>
+
+<script>
+"use strict";
+/* ==================================================================
+   1. PORTADA SVG ANIMADA (tema: desviación → mate en el BDG)
+   ================================================================== */
+var FILES = ["a","b","c","d","e","f","g","h"];
+var GLYPH = {K:"♔",Q:"♕",R:"♖",B:"♗",N:"♘",P:"♙",k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟"};
+
+var COVER_POS = {
+  a8:"r", h8:"r", b8:"n", f8:"b", e8:"k",
+  d8:"", c8:"", g8:"",
+  a7:"p", b7:"p", c7:"p", f7:"p", g7:"p", h7:"p",
+  e5:"p",
+  b4:"q", g4:"b",
+  f3:"Q", e3:"B",
+  a2:"P", b2:"P", c2:"P", g2:"P", h2:"P",
+  c1:"K", d1:"R", b5:"N", g1:"N", h1:"R"
+};
+
+function coverSvgMarkup(){
+  var BX = 486, BY = 128, S = 78;
+  function sx(f){ return BX + f*S; }
+  function sy(r){ return BY + (7-r)*S; }
+  function sqIdx(name){ return { f: FILES.indexOf(name[0]), r: parseInt(name[1],10)-1 }; }
+  var out = [];
+  out.push('<svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Portada animada: tablero de ajedrez con la combinación de desviación Qxb7 y mate Bc5#" preserveAspectRatio="xMidYMid meet">');
+  out.push('<defs>');
+  out.push('<linearGradient id="cvBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0a1224"/><stop offset="45%" stop-color="#070d18"/><stop offset="100%" stop-color="#0d1428"/></linearGradient>');
+  out.push('<radialGradient id="cvGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00d4ff" stop-opacity=".30"/><stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>');
+  out.push('<radialGradient id="cvGlowP" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#a855f7" stop-opacity=".28"/><stop offset="100%" stop-color="#a855f7" stop-opacity="0"/></radialGradient>');
+  out.push('<linearGradient id="cvTitle" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00d4ff"/><stop offset="55%" stop-color="#7dd3fc"/><stop offset="100%" stop-color="#a855f7"/></linearGradient>');
+  out.push('<linearGradient id="cvSweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00d4ff" stop-opacity="0"/><stop offset="50%" stop-color="#00d4ff" stop-opacity=".18"/><stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/></linearGradient>');
+  out.push('<filter id="cvSoft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>');
+  out.push('<filter id="cvStrong" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="16" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>');
+  out.push('<clipPath id="cvClip"><rect x="0" y="0" width="1600" height="900" rx="18"/></clipPath>');
+  out.push('</defs>');
+  out.push('<g clip-path="url(#cvClip)">');
+
+  /* background */
+  out.push('<rect x="0" y="0" width="1600" height="900" fill="url(#cvBg)"/>');
+  out.push('<ellipse cx="430" cy="300" rx="480" ry="360" fill="url(#cvGlow)" class="cv-anim a-glow"/>');
+  out.push('<ellipse cx="1240" cy="640" rx="440" ry="340" fill="url(#cvGlowP)" class="cv-anim a-glow" style="animation-delay:-1.7s"/>');
+  var gi;
+  for(gi=0; gi<=1600; gi+=50){ out.push('<line x1="'+gi+'" y1="0" x2="'+gi+'" y2="900" stroke="#1e3a5f" stroke-opacity=".20" stroke-width="1"/>'); }
+  for(gi=0; gi<=900; gi+=50){ out.push('<line x1="0" y1="'+gi+'" x2="1600" y2="'+gi+'" stroke="#1e3a5f" stroke-opacity=".20" stroke-width="1"/>'); }
+  /* scanning line */
+  out.push('<g class="cv-anim a-scan"><rect x="0" y="0" width="1600" height="3" fill="#00d4ff" opacity=".5"/><rect x="0" y="-26" width="1600" height="30" fill="url(#cvSweep)"/></g>');
+  out.push('<g class="cv-anim a-sweep" opacity=".55"><rect x="-460" y="0" width="460" height="900" fill="url(#cvSweep)"/></g>');
+
+  /* decorative rotating rings (top-left / bottom-right) */
+  out.push('<g class="cv-anim a-ring" style="animation-duration:44s"><circle cx="120" cy="780" r="86" fill="none" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="8 14"/></g>');
+  out.push('<g class="cv-anim a-ring" style="animation-duration:34s;animation-direction:reverse"><circle cx="1500" cy="140" r="70" fill="none" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="5 12"/></g>');
+
+  /* ---------- BOARD ---------- */
+  out.push('<g>');
+  out.push('<rect x="'+(BX-16)+'" y="'+(BY-16)+'" width="'+(S*8+32)+'" height="'+(S*8+32)+'" rx="14" fill="#0b1424" stroke="#1e3a5f" stroke-width="2"/>');
+  out.push('<rect x="'+(BX-16)+'" y="'+(BY-16)+'" width="'+(S*8+32)+'" height="'+(S*8+32)+'" rx="14" fill="none" stroke="#00d4ff" stroke-opacity=".28" stroke-width="1.5" class="cv-anim a-glow"/>');
+  var f,r;
+  for(r=0;r<8;r++){
+    for(f=0;f<8;f++){
+      var light = ((f+r)%2===1);
+      out.push('<rect x="'+sx(f)+'" y="'+sy(r)+'" width="'+S+'" height="'+S+'" fill="'+(light?"#2b4a72":"#16233c")+'" stroke="#0a0e1a" stroke-opacity=".55" stroke-width="1"/>');
+    }
+  }
+  /* critical square c5 */
+  var c5 = sqIdx("c5");
+  out.push('<rect x="'+sx(c5.f)+'" y="'+sy(c5.r)+'" width="'+S+'" height="'+S+'" class="cv-anim a-c5p a-c5m" fill="#f59e0b" fill-opacity=".5"/>');
+  out.push('<rect x="'+(sx(c5.f)+3)+'" y="'+(sy(c5.r)+3)+'" width="'+(S-6)+'" height="'+(S-6)+'" fill="none" stroke="#f59e0b" stroke-width="3" class="cv-anim a-c5p"/>');
+  /* highlight squares for the combination */
+  function hl(name,color,cls,delay){
+    var p = sqIdx(name);
+    return '<rect x="'+(sx(p.f)+3)+'" y="'+(sy(p.r)+3)+'" width="'+(S-6)+'" height="'+(S-6)+'" fill="none" stroke="'+color+'" stroke-width="3" class="cv-anim '+cls+'" style="animation-delay:'+(delay||0)+'s"/>';
+  }
+  out.push(hl("b5","#00d4ff","a-glow",-0.4));
+  out.push(hl("b4","#a855f7","a-glow",-1.1));
+  out.push(hl("f3","#00d4ff","a-glow",-2.0));
+  out.push(hl("e3","#00d4ff","a-glow",-2.6));
+  out.push(hl("e7","#ef4444","a-check"));
+
+  /* coordinates */
+  for(f=0;f<8;f++){ out.push('<text x="'+(sx(f)+S/2)+'" y="'+(BY+S*8+30)+'" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="19" font-weight="700" fill="#6b82a3">'+FILES[f]+'</text>'); }
+  for(r=0;r<8;r++){ out.push('<text x="'+(BX-28)+'" y="'+(sy(r)+S/2+7)+'" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="19" font-weight="700" fill="#6b82a3">'+(r+1)+'</text>'); }
+
+  /* geometry lines: rook d-file, bishop diagonal, defence line b4-c5 */
+  out.push('<line x1="'+(sx(3)+S/2)+'" y1="'+sy(0)+'" x2="'+(sx(3)+S/2)+'" y2="'+sy(7)+'" stroke="#22c55e" stroke-width="3" stroke-dasharray="12 10" opacity=".55" class="cv-anim a-dash"/>');
+  out.push('<text x="'+(sx(3)+S/2+10)+'" y="'+(sy(6)+22)+'" font-family="Segoe UI,system-ui,sans-serif" font-size="14" font-weight="700" fill="#22c55e" opacity=".8">Td1 · columna d</text>');
+
+  /* defence line b4 -> c5 (the unique defender) */
+  var b4 = sqIdx("b4");
+  out.push('<line x1="'+(sx(b4.f)+S/2)+'" y1="'+(sy(b4.r)+S/2)+'" x2="'+(sx(c5.f)+S/2)+'" y2="'+(sy(c5.r)+S/2)+'" stroke="#a855f7" stroke-width="5" stroke-dasharray="10 8" class="cv-anim a-def"/>');
+  out.push('<g class="cv-anim a-defx"><line x1="'+(sx(c5.f)+16)+'" y1="'+(sy(c5.r)+16)+'" x2="'+(sx(c5.f)+S-16)+'" y2="'+(sy(c5.r)+S-16)+'" stroke="#ef4444" stroke-width="7" stroke-linecap="round"/><line x1="'+(sx(c5.f)+S-16)+'" y1="'+(sy(c5.r)+16)+'" x2="'+(sx(c5.f)+16)+'" y2="'+(sy(c5.r)+S-16)+'" stroke="#ef4444" stroke-width="7" stroke-linecap="round"/></g>');
+
+  /* queen travel trail f3 -> b7 */
+  var f3p = sqIdx("f3"), b7p = sqIdx("b7");
+  out.push('<line x1="'+(sx(f3p.f)+S/2)+'" y1="'+(sy(f3p.r)+S/2)+'" x2="'+(sx(b7p.f)+S/2)+'" y2="'+(sy(b7p.r)+S/2)+'" stroke="#00d4ff" stroke-width="6" stroke-dasharray="600" stroke-linecap="round" filter="url(#cvSoft)" class="cv-anim a-trail"/>');
+
+  /* mate beam c5 -> d6 -> e7 */
+  var d6 = sqIdx("d6"), e7 = sqIdx("e7");
+  out.push('<line x1="'+(sx(c5.f)+S/2)+'" y1="'+(sy(c5.r)+S/2)+'" x2="'+(sx(e7.f)+S/2)+'" y2="'+(sy(e7.r)+S/2)+'" stroke="#ef4444" stroke-width="9" stroke-linecap="round" stroke-dasharray="260" filter="url(#cvStrong)" class="cv-anim a-beam"/>');
+
+  /* shockwave on mate */
+  out.push('<circle cx="'+(sx(e7.f)+S/2)+'" cy="'+(sy(e7.r)+S/2)+'" r="34" fill="none" stroke="#ef4444" stroke-width="6" class="cv-anim a-shock"/>');
+  out.push('<circle cx="'+(sx(e7.f)+S/2)+'" cy="'+(sy(e7.r)+S/2)+'" r="34" fill="none" stroke="#f59e0b" stroke-width="3" class="cv-anim a-shock" style="animation-delay:-.12s"/>');
+
+  /* ---------- PIECES ---------- */
+  function piece(name, cls, delay, anchor){
+    var pc = COVER_POS[name];
+    if(!pc) return "";
+    var p = sqIdx(name);
+    var white = pc === pc.toUpperCase();
+    var x = sx(p.f)+S/2, y = sy(p.r)+S/2+ (S*0.34);
+    var g = '<g class="cv-anim '+cls+'"'+(delay?' style="animation-delay:'+delay+'s"':'')+'>';
+    g += '<circle cx="'+x+'" cy="'+(y-8)+'" r="'+(S*0.36)+'" fill="'+(white?"#e6f6ff":"#050a14")+'" opacity="'+(white?".10":".22")+'"/>';
+    g += '<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="'+(S*0.74)+'" font-family="Segoe UI,system-ui,sans-serif" fill="'+(white?"#f8fafc":"#05080f")+'" stroke="'+(white?"rgba(0,0,0,.55)":"rgba(190,220,255,.55)")+'" stroke-width="'+(white?"1":"1.4")+'" filter="url(#cvSoft)">'+GLYPH[pc]+'</text>';
+    g += '</g>';
+    return g;
+  }
+  var staticPieces = ["a8","h8","b8","f8","a7","f7","g7","h7","e5","g4","a2","b2","c2","g2","h2","c1","d1","g1","h1"];
+  for(var k=0;k<staticPieces.length;k++){ out.push(piece(staticPieces[k],"a-float", (-(k*0.28)%5).toFixed(2))); }
+  /* animated pieces */
+  out.push(piece("c7","a-pawnc7"));                 /* black pawn captured by knight */
+  out.push(piece("b7","a-pawnb7"));                 /* black pawn captured by queen  */
+  out.push(piece("b5","a-knight"));                 /* Nb5 -> Nxc7+                  */
+  out.push(piece("e8","a-king"));                   /* Ke8 -> Ke7                    */
+  out.push(piece("f3","a-qw"));                     /* Qf3 -> Qxb7!!                 */
+  out.push(piece("b4","a-qb"));                     /* Qb4 -> Qxb7                   */
+  out.push(piece("e3","a-bish"));                   /* Be3 -> Bc5#                   */
+
+  /* check flash over king */
+  out.push('<g class="cv-anim a-check"><circle cx="'+(sx(4)+S/2)+'" cy="'+(sy(7)+S/2)+'" r="'+(S*0.44)+'" fill="#f59e0b" opacity=".55" filter="url(#cvStrong)"/></g>');
+  /* MATE burst */
+  out.push('<g class="cv-anim a-matetxt"><text x="'+(sx(4)+S/2)+'" y="'+(sy(4)+S/2)+'" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="60" font-weight="900" letter-spacing="6" fill="#ffffff" stroke="#ef4444" stroke-width="3" filter="url(#cvStrong)">MATE</text></g>');
+  out.push('</g>');
+
+  /* ---------- LEFT PANEL ---------- */
+  out.push('<g>');
+  out.push('<rect x="48" y="86" width="366" height="34" rx="17" fill="#0f172a" stroke="#00d4ff" stroke-opacity=".55"/>');
+  out.push('<text x="231" y="109" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="14" font-weight="800" letter-spacing="3.4" fill="#a5e9ff">TUTORIAL INTERACTIVO · AJEDREZ</text>');
+
+  out.push('<text x="50" y="192" font-family="Segoe UI,system-ui,sans-serif" font-size="46" font-weight="900" letter-spacing="-1" fill="#ffffff">GAMBITO</text>');
+  out.push('<text x="50" y="248" font-family="Segoe UI,system-ui,sans-serif" font-size="46" font-weight="900" letter-spacing="-1" fill="url(#cvTitle)">BLACKMAR-</text>');
+  out.push('<text x="50" y="304" font-family="Segoe UI,system-ui,sans-serif" font-size="46" font-weight="900" letter-spacing="-1" fill="url(#cvTitle)">DIEMER</text>');
+  out.push('<rect x="50" y="322" width="180" height="4" rx="2" fill="#f59e0b"/>');
+  out.push('<text x="50" y="360" font-family="Segoe UI,system-ui,sans-serif" font-size="21" font-weight="700" fill="#f59e0b">La Trampa de Desviación</text>');
+  out.push('<text x="50" y="390" font-family="Segoe UI,system-ui,sans-serif" font-size="16" fill="#94a8c4">Cómo aprender a pensar</text>');
+  out.push('<text x="50" y="413" font-family="Segoe UI,system-ui,sans-serif" font-size="16" fill="#94a8c4">como un ajedrecista</text>');
+  out.push('<text x="50" y="452" font-family="Segoe UI,system-ui,sans-serif" font-size="13" letter-spacing="2.6" fill="#6b82a3">BY RUBÉN SBARSKY</text>');
+
+  /* phase list */
+  out.push('<text x="50" y="508" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="800" letter-spacing="2.6" fill="#6b82a3">CADENA TÁCTICA</text>');
+  var phases = [
+    ["01 · DESARROLLO CON TEMPO","a-ph1","#00d4ff"],
+    ["02 · REY EXPUESTO EN e8","a-ph2","#00d4ff"],
+    ["03 · JAQUE Nxc7+","a-ph3","#f59e0b"],
+    ["04 · DESVIACIÓN Qxb7!!","a-ph4","#a855f7"],
+    ["05 · MATE Bc5#","a-ph5","#ef4444"]
+  ];
+  for(var pi=0; pi<phases.length; pi++){
+    var py = 546 + pi*48;
+    out.push('<rect x="50" y="'+(py-20)+'" width="372" height="36" rx="9" fill="#0f172a" stroke="#1e3a5f"/>');
+    out.push('<circle cx="70" cy="'+(py-2)+'" r="5" fill="#00d4ff" class="cv-anim '+phases[pi][1]+'"/>');
+    out.push('<text x="88" y="'+(py+4)+'" font-family="Consolas,monospace" font-size="16" font-weight="800" letter-spacing=".8" fill="#6b82a3" class="cv-anim '+phases[pi][1]+'">'+phases[pi][0]+'</text>');
+  }
+  out.push('</g>');
+
+  /* ---------- RIGHT PANEL ---------- */
+  out.push('<g>');
+  out.push('<rect x="1146" y="150" width="404" height="216" rx="14" fill="#0f172a" stroke="#1e3a5f" stroke-opacity=".9"/>');
+  out.push('<text x="1170" y="184" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="800" letter-spacing="2.6" fill="#6b82a3">EVALUACIÓN DINÁMICA</text>');
+  var bars = [
+    ["MATERIAL · NEGRAS +1",150,"#a855f7","a-b1",210],
+    ["ACTIVIDAD · BLANCAS",210,"#00d4ff","a-b2",236],
+    ["INICIATIVA · BLANCAS",236,"#22c55e","a-b3",262],
+    ["COORDINACIÓN · BLANCAS",262,"#f59e0b","a-b4",290]
+  ];
+  for(var bi=0; bi<bars.length; bi++){
+    var by2 = 206 + bi*40;
+    out.push('<text x="1170" y="'+by2+'" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" letter-spacing="1" fill="#94a8c4">'+bars[bi][0]+'</text>');
+    out.push('<rect x="1170" y="'+(by2+7)+'" width="356" height="9" rx="5" fill="#132038" stroke="#1e3a5f" stroke-width="1"/>');
+    out.push('<rect x="1170" y="'+(by2+7)+'" width="6" height="9" rx="5" fill="'+bars[bi][2]+'" class="cv-anim '+bars[bi][3]+'"><animate attributeName="width" values="6;'+bars[bi][4]+';'+bars[bi][4]+';6" keyTimes="0;'+(bars[bi][1]/300)+';0.94;1" dur="22s" repeatCount="indefinite" calcMode="spline" keySplines="0.2 0.8 0.2 1;0 0 1 1;0.4 0 0.6 1"/></rect>');
+  }
+
+  /* notation stream */
+  out.push('<rect x="1146" y="392" width="404" height="292" rx="14" fill="#0f172a" stroke="#1e3a5f" stroke-opacity=".9"/>');
+  out.push('<text x="1170" y="426" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="800" letter-spacing="2.6" fill="#6b82a3">NOTACIÓN EN VIVO</text>');
+  var notas = [
+    ["1.d4  d5","#94a8c4","a-n1"],
+    ["2.e4!?  dxe4","#94a8c4","a-n2"],
+    ["3.Nc3  Nf6  4.f3  exf3  5.Qxf3","#00d4ff","a-n3"],
+    ["9.Nxc7+  Ke7","#f59e0b","a-n4"],
+    ["10.Qxb7!!  Qxb7  11.Bc5#","#ef4444","a-n5"]
+  ];
+  for(var ni=0; ni<notas.length; ni++){
+    var ny = 462 + ni*44;
+    out.push('<rect x="1170" y="'+(ny-20)+'" width="356" height="32" rx="8" fill="#0b1424" stroke="#1e3a5f" class="cv-anim '+notas[ni][2]+'" opacity="0"/>');
+    out.push('<text x="1186" y="'+ny+'" font-family="Consolas,monospace" font-size="15" font-weight="700" fill="'+notas[ni][1]+'" class="cv-anim '+notas[ni][2]+'" opacity="0">'+notas[ni][0]+'</text>');
+  }
+  out.push('<text x="1170" y="668" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#6b82a3">Movimiento individual ≠ jugada completa</text>');
+
+  /* key question */
+  out.push('<rect x="1146" y="712" width="404" height="86" rx="14" fill="#0b1424" stroke="#a855f7" stroke-opacity=".55"/>');
+  out.push('<text x="1170" y="742" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="800" letter-spacing="2" fill="#a855f7">LA PREGUNTA CLAVE</text>');
+  out.push('<text x="1170" y="770" font-family="Segoe UI,system-ui,sans-serif" font-size="16" font-style="italic" fill="#e2e8f0">¿Qué pieza defiende esa casilla</text>');
+  out.push('<text x="1170" y="790" font-family="Segoe UI,system-ui,sans-serif" font-size="16" font-style="italic" fill="#e2e8f0">y puedo desviarla?</text>');
+  out.push('</g>');
+
+  /* bottom strip */
+  out.push('<rect x="48" y="812" width="1502" height="52" rx="12" fill="#0b1424" stroke="#1e3a5f" stroke-opacity=".8"/>');
+  out.push('<text x="72" y="845" font-family="Consolas,monospace" font-size="17" font-weight="700" fill="#00d4ff" letter-spacing="1">MIRA → PREGUNTA → CALCULA → COMPRUEBA → JUGAR</text>');
+  out.push('<text x="1526" y="845" text-anchor="end" font-family="Segoe UI,system-ui,sans-serif" font-size="13" fill="#6b82a3" letter-spacing="1.6">08/09/2026 · 16:29:08</text>');
+
+  /* floating glyph decoration */
+  out.push('<g class="cv-anim a-float" opacity=".16"><text x="1050" y="860" font-size="120" fill="#00d4ff">♞</text></g>');
+  out.push('<g class="cv-anim a-float" style="animation-delay:-2.4s" opacity=".12"><text x="392" y="120" font-size="86" fill="#a855f7">♛</text></g>');
+
+  out.push('</g></svg>');
+  return out.join("");
+}
+
+/* ==================================================================
+   2. MOTOR DE TABLEROS INTERACTIVOS
+   ================================================================== */
+function initialPosition(){
+  var p = {};
+  var back = ["R","N","B","Q","K","B","N","R"];
+  for(var f=0; f<8; f++){
+    p[FILES[f]+"1"] = back[f];
+    p[FILES[f]+"2"] = "P";
+    p[FILES[f]+"7"] = "p";
+    p[FILES[f]+"8"] = back[f].toLowerCase();
+  }
+  return p;
+}
+var PIECE_NAME = {K:"Rey",Q:"Dama",R:"Torre",B:"Alfil",N:"Caballo",P:"Peón"};
+function pieceName(code){
+  var t = PIECE_NAME[code.toUpperCase()] || "Pieza";
+  var col = (code === code.toUpperCase()) ? "blanco" : "negro";
+  if(t === "Rey") return "Rey " + col;
+  if(t === "Dama") return "Dama " + col;
+  if(t === "Torre") return "Torre " + col;
+  if(t === "Alfil") return "Alfil " + col;
+  if(t === "Caballo") return "Caballo " + col;
+  return "Peón " + col;
+}
+function clonePos(p){ var o={}; for(var k in p){ if(p[k]) o[k]=p[k]; } return o; }
+
+function applyStep(pos, st){
+  var np = clonePos(pos);
+  if(st.castle){
+    if(st.castle === "w"){ np["c1"]=np["e1"]; delete np["e1"]; np["d1"]=np["a1"]; delete np["a1"]; }
+    else { np["c8"]=np["e8"]; delete np["e8"]; np["d8"]=np["a8"]; delete np["a8"]; }
+    return np;
+  }
+  var pc = np[st.from];
+  delete np[st.from];
+  np[st.to] = st.promo ? st.promo : pc;
+  return np;
+}
+function applySteps(startPos, steps){
+  var arr = [clonePos(startPos)];
+  for(var i=0;i<steps.length;i++){ arr.push(applyStep(arr[i], steps[i])); }
+  return arr;
+}
+function buildGrid(boardEl){
+  boardEl.innerHTML = "";
+  for(var r=8; r>=1; r--){
+    for(var f=0; f<8; f++){
+      var name = FILES[f]+r;
+      var d = document.createElement("div");
+      var isLight = ((f + (r-1)) % 2 === 1);
+      d.className = "sq " + (isLight ? "light" : "dark");
+      d.setAttribute("data-sq", name);
+      boardEl.appendChild(d);
+    }
+  }
+}
+function renderBoard(boardEl, position, marks){
+  marks = marks || {};
+  var squares = boardEl.querySelectorAll(".sq");
+  for(var i=0;i<squares.length;i++){
+    var s = squares[i];
+    var name = s.getAttribute("data-sq");
+    var code = position[name];
+    s.className = "sq " + (((FILES.indexOf(name[0]) + (parseInt(name[1],10)-1)) % 2 === 1) ? "light" : "dark");
+    if(marks.from === name) s.classList.add("hl-from");
+    if(marks.to === name) s.classList.add(marks.mate ? "hl-mate" : "hl");
+    if(marks.checkSq === name) s.classList.add("hl-check");
+    s.innerHTML = "";
+    if(code){
+      var sp = document.createElement("span");
+      sp.className = (code === code.toUpperCase()) ? "pw" : "pb";
+      sp.textContent = GLYPH[code];
+      s.appendChild(sp);
+    }
+    if(marks.tag && marks.tag.sq === name){
+      var tg = document.createElement("span");
+      tg.className = "tag";
+      tg.textContent = marks.tag.txt;
+      s.appendChild(tg);
+    }
+  }
+}
+function fillCoords(rowEl, colEl){
+  rowEl.innerHTML = ""; colEl.innerHTML = "";
+  for(var r=8;r>=1;r--){ var a=document.createElement("span"); a.textContent=r; rowEl.appendChild(a); }
+  for(var f=0;f<8;f++){ var b=document.createElement("span"); b.textContent=FILES[f]; colEl.appendChild(b); }
+}
+function kingSquare(position, white){
+  var target = white ? "K" : "k";
+  for(var s in position){ if(position[s] === target) return s; }
+  return null;
+}
+
+function createStepper(cfg){
+  var host = document.getElementById(cfg.mount);
+  if(!host) return;
+
+  /* DOM skeleton */
+  host.innerHTML =
+    '<div class="board-title">' +
+      '<h4>' + cfg.title + '</h4>' +
+      (cfg.badges||[]).map(function(b){ return '<span class="chip '+b.c+'">'+b.t+'</span>'; }).join('') +
+    '</div>' +
+    (cfg.intro ? '<p style="color:var(--muted);font-size:14.5px;margin-bottom:12px">'+cfg.intro+'</p>' : '') +
+    '<div class="board-stage">' +
+      '<div class="board-area">' +
+        '<div class="row-coords" data-role="rows"></div>' +
+        '<div class="board-grid" data-role="grid"></div>' +
+      '</div>' +
+      '<div class="col-coords" data-role="cols"></div>' +
+    '</div>' +
+    '<div class="board-ctrl">' +
+      '<div class="ctrl-row">' +
+        '<button class="cbtn" type="button" data-role="first" aria-label="Volver a la posición inicial">⏮ Inicio</button>' +
+        '<button class="cbtn" type="button" data-role="prev" aria-label="Movimiento anterior">◀ Anterior</button>' +
+        '<button class="cbtn primary" type="button" data-role="next" aria-label="Movimiento siguiente">Siguiente ▶</button>' +
+        '<button class="cbtn" type="button" data-role="play" aria-label="Reproducir automáticamente">▶ Auto</button>' +
+        '<button class="cbtn warn" type="button" data-role="reset" aria-label="Reiniciar">↺ Reset</button>' +
+      '</div>' +
+      '<div class="slider-row">' +
+        '<label for="'+cfg.mount+'-sl">Paso</label>' +
+        '<input type="range" id="'+cfg.mount+'-sl" min="0" max="'+cfg.steps.length+'" value="0" step="1" data-role="slider" aria-label="Desplazarse por los movimientos">' +
+      '</div>' +
+      '<div class="ind-row">' +
+        '<span class="ind on" data-role="indStep">Posición inicial</span>' +
+        '<span class="ind" data-role="indTurn">—</span>' +
+        '<span class="ind" data-role="indFull">Jugada completa: —</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="move-panel" data-role="panel"></div>';
+
+  var grid = host.querySelector('[data-role="grid"]');
+  var rows = host.querySelector('[data-role="rows"]');
+  var cols = host.querySelector('[data-role="cols"]');
+  var slider = host.querySelector('[data-role="slider"]');
+  var panel = host.querySelector('[data-role="panel"]');
+  var indStep = host.querySelector('[data-role="indStep"]');
+  var indTurn = host.querySelector('[data-role="indTurn"]');
+  var indFull = host.querySelector('[data-role="indFull"]');
+  var bFirst = host.querySelector('[data-role="first"]');
+  var bPrev = host.querySelector('[data-role="prev"]');
+  var bNext = host.querySelector('[data-role="next"]');
+  var bPlay = host.querySelector('[data-role="play"]');
+  var bReset = host.querySelector('[data-role="reset"]');
+
+  buildGrid(grid);
+  fillCoords(rows, cols);
+
+  var positions = applySteps(initialPosition(), cfg.steps);
+  var current = 0;
+  var timer = null;
+
+  function stopPlay(){
+    if(timer){ clearInterval(timer); timer = null; bPlay.textContent = "▶ Auto"; }
+  }
+
+  function fullMoveLabel(i){
+    if(i <= 0) return "—";
+    var num = Math.ceil(i/2);
+    var isWhite = (i % 2 === 1);
+    return num + (isWhite ? "." : "...");
+  }
+
+  function paint(){
+    var st = current > 0 ? cfg.steps[current-1] : null;
+    var marks = {};
+    if(st){
+      if(st.castle){
+        marks.from = st.castle === "w" ? "e1" : "e8";
+        marks.to   = st.castle === "w" ? "c1" : "c8";
+      } else {
+        marks.from = st.from; marks.to = st.to;
+      }
+      marks.mate = !!st.mate;
+      marks.checkSq = st.check ? (st.mate ? null : kingSquare(positions[current], false)) : null;
+      if(st.tag) marks.tag = st.tag;
+    }
+    renderBoard(grid, positions[current], marks);
+
+    slider.value = current;
+    slider.style.setProperty("--pct", (current / cfg.steps.length * 100) + "%");
+
+    indStep.textContent = current === 0
+      ? "Posición inicial · 0 de " + cfg.steps.length
+      : "Movimiento " + current + " de " + cfg.steps.length;
+
+    if(!st){
+      indTurn.textContent = "Turno: BLANCAS";
+      indFull.textContent = "Jugada completa: —";
+      panel.className = "move-panel";
+      panel.innerHTML =
+        '<div class="mp-id"><span class="mp-badge">Posición inicial</span></div>' +
+        '<div class="mp-move">Tablero en la posición de partida</div>' +
+        '<div class="mp-nota">32 piezas · 8×8 · filas 1–8 · columnas a–h</div>' +
+        '<div class="mp-q"><b>¿Qué ocurre?</b><p>Ambos ejércitos están formados. Las blancas ocupan las filas 1 y 2; las negras las filas 7 y 8. Nadie ha movido todavía.</p></div>' +
+        '<div class="mp-q why"><b>¿Por qué es importante?</b><p>Toda la partida se decide a partir de aquí: quien desarrolle antes y controle el centro tendrá la iniciativa. Pulsa <strong>Siguiente ▶</strong> para avanzar un único movimiento.</p></div>';
+    } else {
+      var isWhite = st.color === "w";
+      var colorTxt = isWhite ? "BLANCAS" : "NEGRAS";
+      var fullName;
+      if(st.castle){
+        fullName = (isWhite ? "Enroque largo: rey e1 → c1 y torre a1 → d1" : "Enroque largo: rey e8 → c8 y torre a8 → d8");
+      } else {
+        fullName = pieceName(st.piece || positions[current-1][st.from]) + ": " + st.from + " → " + st.to;
+      }
+      var flags = "";
+      if(st.castle) flags += '<span class="mp-flag f-cas">Enroque</span>';
+      if(st.capture) flags += '<span class="mp-flag f-cap">Captura</span>';
+      if(st.mate) flags += '<span class="mp-flag f-mate">Jaque mate</span>';
+      else if(st.check) flags += '<span class="mp-flag f-chk">Jaque</span>';
+      if(st.motive) flags += '<span class="mp-flag f-cas" style="background:rgba(168,85,247,.15);border-color:var(--purple);color:#e9d5ff">'+st.motive+'</span>';
+
+      panel.className = "move-panel" + (st.mate ? " mate" : (st.check ? " check" : ""));
+      panel.innerHTML =
+        '<div class="mp-id">' +
+          '<span class="mp-badge '+(isWhite?"":"black")+'">Movimiento '+current+' — '+colorTxt+'</span>' +
+          '<span class="mp-badge" style="background:rgba(30,58,95,.45);border-color:var(--border);color:var(--muted)">'+fullMoveLabel(current)+' '+colorTxt+'</span>' +
+          flags +
+        '</div>' +
+        '<div class="mp-move">'+fullName.replace(" → ", '<span class="ar">→</span>')+'</div>' +
+        (st.nota ? '<div class="mp-nota">Notación: '+st.nota+'</div>' : '<div class="mp-nota">Notación: —</div>') +
+        '<div class="mp-q"><b>¿Qué ocurre?</b><p>'+st.what+'</p></div>' +
+        (st.why ? '<div class="mp-q why"><b>¿Por qué es importante?</b><p>'+st.why+'</p></div>' : '') +
+        (st.mate ? '<div class="mp-q why" style="margin-top:14px"><b style="color:var(--red)">¿Por qué es jaque mate?</b><p>'+st.mateWhy+'</p></div>' : '');
+    }
+
+    bPrev.disabled = (current === 0);
+    bFirst.disabled = (current === 0);
+    bNext.disabled = (current === cfg.steps.length);
+    if(current === cfg.steps.length) stopPlay();
+  }
+
+  function go(n){
+    current = Math.max(0, Math.min(cfg.steps.length, n));
+    paint();
+  }
+
+  bNext.addEventListener("click", function(){ stopPlay(); go(current+1); });
+  bPrev.addEventListener("click", function(){ stopPlay(); go(current-1); });
+  bFirst.addEventListener("click", function(){ stopPlay(); go(0); });
+  bReset.addEventListener("click", function(){ stopPlay(); go(0); });
+  slider.addEventListener("input", function(){ stopPlay(); go(parseInt(slider.value,10)); });
+  bPlay.addEventListener("click", function(){
+    if(timer){ stopPlay(); return; }
+    if(current >= cfg.steps.length) go(0);
+    bPlay.textContent = "⏸ Pausa";
+    timer = setInterval(function(){
+      if(current >= cfg.steps.length){ stopPlay(); return; }
+      go(current+1);
+    }, 2600);
+  });
+
+  host.addEventListener("keydown", function(e){
+    if(e.key === "ArrowRight"){ stopPlay(); go(current+1); e.preventDefault(); }
+    if(e.key === "ArrowLeft"){ stopPlay(); go(current-1); e.preventDefault(); }
+  });
+
+  paint();
+  return { go: go, repaint: paint, stop: stopPlay };
+}
+
+/* ==================================================================
+   3. DATOS DE LAS SECUENCIAS
+   ================================================================== */
+var OPEN5 = [
+  {color:"w", from:"d2", to:"d4", piece:"P", nota:"1.d4", capture:false,
+   what:"El peón blanco avanza dos casillas, de d2 a d4, y ocupa una casilla central.",
+   why:"Controla e5 y c5, ayuda a liberar el alfil de c1 y contribuye a construir una estructura central. No memorices “en el Blackmar-Diemer se juega d4”: piensa “quiero controlar el centro y liberar mis piezas”."},
+  {color:"b", from:"d7", to:"d5", piece:"p", nota:"1...d5", capture:false,
+   what:"El peón negro avanza dos casillas, de d7 a d5, y ocupa también el centro.",
+   why:"Ahora ambos jugadores tienen un peón central: la posición está equilibrada en material y en estrategia. Las blancas buscarán alterar inmediatamente ese equilibrio."},
+  {color:"w", from:"e2", to:"e4", piece:"P", nota:"2.e4!?", capture:false,
+   what:"El peón blanco avanza de e2 a e4, ofreciéndose a la captura del peón negro de d5. Aquí aparece el gambito.",
+   why:"Provoca 2...dxe4. Las blancas perderán un peón, pero conseguirán que el peón negro abandone d5 y se coloque en e4, modificando la estructura central, las casillas disponibles, las líneas de las piezas y las posibilidades de desarrollo. La pregunta correcta es: ¿qué he ganado además de perder un peón?"},
+  {color:"b", from:"d5", to:"e4", piece:"p", nota:"2...dxe4", capture:true,
+   what:"El peón negro captura al peón blanco de e4 y se coloca en esa casilla. Las negras ganan material.",
+   why:"Es perfectamente razonable, pero ahora las negras deben responder a un problema: ¿cómo van a conservar ese peón sin perder tiempos de desarrollo? Ése es el corazón del gambito."},
+  {color:"w", from:"b1", to:"c3", piece:"N", nota:"3.Nc3", capture:false,
+   what:"El caballo blanco sale de b1 y se instala en c3, atacando inmediatamente el peón negro de e4.",
+   why:"Las blancas han desarrollado una pieza CON GANANCIA DE TIEMPO: el caballo se desarrolla y, simultáneamente, ataca algo. Desarrolla, presiona e4, ayuda a controlar el centro, prepara un rápido desarrollo y puede contribuir a un ataque sobre el rey. Ésta es una de las mejores clases de jugada en la apertura."}
+];
+
+var LINE9 = OPEN5.concat([
+  {color:"b", from:"g8", to:"f6", piece:"n", nota:"3...Nf6", capture:false,
+   what:"El caballo negro sale de g8 y se desarrolla a f6.",
+   why:"Es una respuesta natural de desarrollo. Pero obliga a las blancas a volver a pensar en lugar de jugar automáticamente: ¿qué amenaza el negro?, ¿qué quiero conseguir?, ¿dónde está mi rey?, ¿qué piezas necesito desarrollar?, ¿puedo atacar el peón de e4 otra vez?, ¿qué sucede si abro la posición?"},
+  {color:"w", from:"f2", to:"f3", piece:"P", nota:"4.f3", capture:false,
+   what:"El peón blanco avanza de f2 a f3 y ataca directamente al peón negro de e4.",
+   why:"Es el segundo golpe característico del gambito: f3 + Nc3 ejercen presión conjunta sobre e4. Se abre además la diagonal de la dama blanca hacia f3."},
+  {color:"b", from:"e4", to:"f3", piece:"p", nota:"4...exf3", capture:true,
+   what:"El peón negro de e4 captura al peón blanco de f3 y se coloca en f3.",
+   why:"Las negras aceptan el cambio y conservan material, pero el peón queda en f3, muy expuesto, y las negras siguen sin completar su desarrollo. Cada captura debe pasar la prueba: ¿qué gano?, ¿qué pierdo?, ¿qué línea abro?"},
+  {color:"w", from:"d1", to:"f3", piece:"Q", nota:"5.Qxf3", capture:true,
+   what:"La dama blanca sale de d1, captura el peón negro de f3 y se sitúa en el centro del tablero.",
+   why:"Las blancas recuperan el peón y colocan la dama en una casilla muy activa. Pero atención: una pieza activa no es necesariamente una pieza bien colocada. La dama en f3 puede convertirse en un objetivo y permitir al rival ganar tiempos atacándola. La pregunta es: ¿qué puede hacer el rival contra mi dama en f3?"}
+]);
+
+var LINE21 = LINE9.concat([
+  {color:"b", from:"d8", to:"d4", piece:"q", nota:"5...Qxd4", capture:true,
+   what:"La dama negra sale de d8, recorre la columna d y captura el peón blanco de d4.",
+   why:"Gana material y a primera vista parece excelente. Pero aparece la pregunta interesante: ¿cuántos movimientos ha hecho la dama y cuántos movimientos de desarrollo ha hecho el resto del ejército negro? Si después debe volver a moverse porque una pieza menor la ataca, las negras perderán tiempos."},
+  {color:"w", from:"c1", to:"e3", piece:"B", nota:"6.Be3", capture:false,
+   what:"El alfil blanco sale de c1 y se desarrolla a e3, atacando a la dama negra de d4.",
+   why:"Jugada multifunción: desarrolla una pieza, gana un tiempo atacando la dama, ayuda a controlar casillas centrales (entre ellas c5, por la diagonal e3–d4–c5) y prepara el enroque largo. Cuantas más funciones útiles tenga una jugada, más merece nuestra atención."},
+  {color:"b", from:"d4", to:"b4", piece:"q", nota:"6...Qb4", capture:false,
+   what:"La dama negra huye del ataque del alfil y se traslada de d4 a b4.",
+   why:"Segundo movimiento consecutivo de la misma pieza: las blancas ganan un tempo de desarrollo. Pero cuidado: desde b4 la dama queda sobrecargada, porque defiende a la vez la casilla c5 (diagonal b4–c5) y la casilla b7 (columna b). Un defensor único y con dos tareas es el objetivo de toda desviación."},
+  {color:"w", castle:"w", nota:"7.O-O-O", capture:false, motive:"ENROQUE LARGO",
+   what:"Las blancas enrocan largo: el rey pasa de e1 a c1 y la torre de a1 aparece en d1.",
+   why:"El rey queda relativamente seguro y la torre se centraliza sobre una columna d abierta o semiabierta. Antes de enrocar largo hay que comprobar si es seguro el flanco de dama: qué piezas negras apuntan allí, si hay peones avanzados cerca del rey, si hay columnas abiertas, qué casillas rodean al rey y si el rival puede abrir líneas rápidamente. El enroque es una herramienta, no un botón automático."},
+  {color:"b", from:"c8", to:"g4", piece:"b", nota:"7...Bg4", capture:false, motive:"CLAVADA",
+   what:"El alfil negro sale de c8 y se coloca en g4, atacando a la dama blanca de f3.",
+   why:"Según la configuración puede producirse una relación de clavada o ataque sobre una pieza alineada con otra de mayor valor (aquí la dama de f3 queda alineada con la torre de d1 en la diagonal g4–f3–e2–d1). Pero una pieza clavada puede seguir siendo útil: puede proteger casillas, atacar y participar indirectamente en una combinación. Nunca valores una pieza sólo por estar clavada: pregunta qué defiende y qué ocurriría si desaparece."},
+  {color:"w", from:"c3", to:"b5", piece:"N", nota:"8.Nb5", capture:false,
+   what:"El caballo blanco salta de c3 a b5, acercándose al campo negro.",
+   why:"Amenaza el salto Nc7+, que atacaría simultáneamente al rey en e8 y a la torre de a8. Es una jugada que crea una amenaza concreta: antes de jugarla hay que preguntarse qué amenazas crea en ESTA posición, no ejecutarla por automatismo."},
+  {color:"b", from:"e7", to:"e5", piece:"p", nota:"8...e5", capture:false,
+   what:"El peón negro avanza de e7 a e5.",
+   why:"Consecuencia decisiva y poco visible: al vaciar e7 abre una casilla de escape para su rey, pero deja de proteger d6 y debilita la geometría alrededor del monarca. Además, no defiende c7. Éste es el tipo de jugada que sólo se entiende contando casillas y no material."},
+  {color:"w", from:"b5", to:"c7", piece:"N", nota:"9.Nxc7+", capture:true, check:true, motive:"JAQUE",
+   what:"El caballo blanco captura el peón negro de c7 y da JAQUE al rey negro en e8.",
+   why:"Aplicando el procedimiento de cálculo del jaque: ¿puede el rey capturar mi pieza? No (e8 no llega a c7 y ninguna pieza negra ataca c7). ¿Puede moverse? Hay que contar casillas. ¿Puede bloquear? No: el jaque de caballo no se bloquea. ¿Puede capturar el caballo con otra pieza? No. Un jaque no es automáticamente bueno: aquí sí lo es porque elimina las salidas del rey."},
+  {color:"b", from:"e8", to:"e7", piece:"k", nota:"9...Ke7", capture:false, motive:"ÚNICA LEGAL",
+   what:"El rey negro se ve obligado a moverse de e8 a e7. Es la ÚNICA respuesta legal al jaque.",
+   why:"Verificación de casillas de escape: d8 y d7 están controladas por la torre blanca de d1 (columna d totalmente vacía); f8 está ocupada por el alfil negro; f7 está ocupada por el peón negro; e7 quedó libre porque el peón acaba de ir a e5 y ninguna pieza blanca la ataca. El rey queda expuesto en el centro: exactamente lo que necesita un ataque por coordinación."},
+  {color:"w", from:"f3", to:"b7", piece:"Q", nota:"10.Qxb7!!", capture:true, motive:"SACRIFICIO · DESVIACIÓN",
+   what:"¡La dama blanca recorre la diagonal f3–e4–d5–c6, captura el peón negro de b7 y se ofrece a la dama negra!",
+   why:"No es una entrega “porque sí”: se está comprando una consecuencia táctica. La dama blanca ataca a la dama negra de b4 a lo largo de la columna b (b5 y b6 están vacías). La dama negra estaba defendiendo c5 y b7 al mismo tiempo: está SOBRECARGADA. Si captura, abandona la defensa de c5; si no captura, pierde material. El valor de una pieza depende también de su función: cuando una táctica obliga a la dama a abandonar una función crítica, su valor funcional es enorme."},
+  {color:"b", from:"b4", to:"b7", piece:"q", nota:"10...Qxb7", capture:true, motive:"EL DEFENSOR ABANDONA c5",
+   what:"La dama negra captura a la dama blanca en b7 y abandona la casilla b4.",
+   why:"Éste es el momento exacto de la DESVIACIÓN: la pieza que defendía c5 ha sido obligada a abandonar su puesto. La casilla crítica queda indefensa. La pregunta del “último defensor” (¿qué impide que pueda dar mate?) acaba de responderse: era la dama negra, y ya no está donde debía."},
+  {color:"w", from:"e3", to:"c5", piece:"B", nota:"11.Bc5#", capture:false, check:true, mate:true, motive:"JAQUE MATE",
+   what:"El alfil blanco se desliza de e3 a c5 por la diagonal e3–d4–c5 y da JAQUE MATE al rey negro en e7.",
+   why:"La dama ha sido intercambiada por mate, y mate significa que la partida termina: Mate > cualquier cantidad de material. El mate no lo produce una pieza aislada, sino la coordinación: la dama creó la desviación, el caballo controla las casillas de escape, la torre domina la columna d y el alfil da el jaque.",
+   mateWhy:"1) El rey está en jaque: el alfil de c5 controla e7 por la diagonal c5–d6–e7 (d6 está vacía). 2) El rey no puede escapar: d8 y d7 las controla la torre de d1; e8 y e6 las controla el caballo de c7; f8 está ocupada por su alfil; f7 por su peón; f6 por su caballo; d6 está atacada por el alfil y por la torre. 3) No puede eliminarse la amenaza: ninguna pieza negra ataca c5 (la dama en b7 no llega, el alfil de g4 no llega, el caballo de f6 no llega, el alfil de f8 está bloqueado por su propio rey) y no existe ninguna pieza que pueda bloquear en d6."}
+]);
+
+/* ==================================================================
+   4. MONTAJE DE TABLEROS
+   ================================================================== */
+var steppers = [];
+function mountBoards(){
+  steppers.push(createStepper({
+    mount:"board1",
+    title:"Tablero 1 · El Gambito Blackmar-Diemer: 1.d4 d5 2.e4 dxe4 3.Nc3",
+    badges:[{c:"a",t:"5 movimientos individuales"},{c:"g",t:"Apertura"}],
+    intro:"Posición inicial estándar. Avanza un paso cada vez: cada paso corresponde al movimiento de UN SOLO bando.",
+    steps: OPEN5
+  }));
+  steppers.push(createStepper({
+    mount:"board2",
+    title:"Tablero 2 · El segundo golpe: 3...Nf6 4.f3 exf3 5.Qxf3",
+    badges:[{c:"a",t:"9 movimientos individuales"},{c:"w",t:"Recuperación del peón"}],
+    intro:"Desde la posición inicial hasta la dama blanca en f3. Observa cómo las blancas presionan e4 con f3 + Nc3.",
+    steps: LINE9
+  }));
+  steppers.push(createStepper({
+    mount:"board3",
+    title:"Tablero 3 · La secuencia táctica completa: de 1.d4 a Bc5#",
+    badges:[{c:"r",t:"21 movimientos individuales"},{c:"p",t:"Desviación"},{c:"r",t:"Jaque mate"}],
+    intro:"Línea didáctica completa. Incluye enroque largo, capturas, clavada, jaque, sacrificio de dama por desviación y jaque mate final.",
+    steps: LINE21
+  }));
+}
+
+/* ==================================================================
+   5. NAVEGACIÓN SPA
+   ================================================================== */
+var NAV = [
+  {id:"inicio",        n:"00", t:"Inicio",          ic:"🏠"},
+  {id:"fundamentos",   n:"01", t:"Fundamentos",     ic:"♟"},
+  {id:"apertura",      n:"02", t:"La apertura",     ic:"♙"},
+  {id:"tempo",         n:"03", t:"Tempo",           ic:"⏱"},
+  {id:"golpe",         n:"04", t:"Segundo golpe",   ic:"♛"},
+  {id:"cct",           n:"05", t:"Método CCT",      ic:"🔎"},
+  {id:"enroque",       n:"06", t:"Enroque",         ic:"♜"},
+  {id:"clavada",       n:"07", t:"La clavada",      ic:"📌"},
+  {id:"defensor",      n:"08", t:"El defensor",     ic:"🛡"},
+  {id:"mate",          n:"09", t:"Jaque y mate",    ic:"👑"},
+  {id:"combinacion",   n:"10", t:"La combinación",  ic:"⚡"},
+  {id:"calculo",       n:"11", t:"Cálculo",         ic:"🧮"},
+  {id:"metodo",        n:"12", t:"Método Rubén",    ic:"🧠"},
+  {id:"ataque",        n:"13", t:"El ataque",       ic:"⚔"},
+  {id:"evaluacion",    n:"14", t:"Evaluación",      ic:"⚖"},
+  {id:"ejercicios",    n:"15", t:"Ejercicios",      ic:"🏋"},
+  {id:"conclusiones",  n:"16", t:"Conclusiones",    ic:"🎓"},
+  {id:"glosario",      n:"17", t:"Glosario",        ic:"📖"},
+  {id:"creditos",      n:"18", t:"Créditos",        ic:"★", credits:true}
+];
+
+function buildNav(){
+  var nav = document.getElementById("navScroll");
+  NAV.forEach(function(item){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "nav-btn" + (item.credits ? " credits" : "");
+    b.setAttribute("data-target", item.id);
+    b.innerHTML = '<span class="n">'+item.n+'</span> '+item.ic+' '+item.t;
+    b.addEventListener("click", function(){ showSection(item.id); });
+    nav.appendChild(b);
+  });
+}
+
+var currentSection = "inicio";
+function showSection(id){
+  if(steppers && steppers.length){ steppers.forEach(function(s){ if(s && s.stop) s.stop(); }); }
+  var pages = document.querySelectorAll(".page");
+  for(var i=0;i<pages.length;i++){ pages[i].classList.remove("active"); }
+  var target = document.getElementById("sec-"+id);
+  if(target) target.classList.add("active");
+
+  var btns = document.querySelectorAll(".nav-btn");
+  for(var j=0;j<btns.length;j++){
+    btns[j].classList.toggle("active", btns[j].getAttribute("data-target") === id);
+    if(btns[j].getAttribute("data-target") === id){
+      var scroller = document.getElementById("navScroll");
+      var bl = btns[j].offsetLeft, bw = btns[j].offsetWidth, sw = scroller.clientWidth, sl = scroller.scrollLeft;
+      if(bl < sl + 20 || bl + bw > sl + sw - 20){
+        scroller.scrollTo({ left: bl - sw/2 + bw/2, behavior: "smooth" });
+      }
+    }
+  }
+  currentSection = id;
+
+  /* re-inyectar / reiniciar el SVG animado compartido */
+  if(id === "inicio" || id === "creditos"){
+    var slot = (id === "inicio") ? document.getElementById("coverHome") : document.getElementById("coverCredits");
+    if(slot && !slot.firstChild){ slot.innerHTML = coverSvgMarkup(); }
+    else if(slot){ slot.innerHTML = coverSvgMarkup(); }   /* reinicia la animación */
+  }
+
+  window.scrollTo({ top: 0, behavior: "auto" });
+  updateProgress();
+}
+
+/* ==================================================================
+   6. BARRA DE PROGRESO + VOLVER ARRIBA
+   ================================================================== */
+function updateProgress(){
+  var h = document.documentElement;
+  var max = h.scrollHeight - h.clientHeight;
+  var pct = max > 0 ? (window.pageYOffset || h.scrollTop) / max * 100 : 0;
+  if(pct < 0) pct = 0; if(pct > 100) pct = 100;
+  document.getElementById("progressBar").style.width = pct + "%";
+  document.getElementById("toTop").classList.toggle("show", (window.pageYOffset || h.scrollTop) > 260);
+}
+
+/* ==================================================================
+   7. GLOSARIO
+   ================================================================== */
+var GLOSSARY = [
+  {t:"Actividad", d:"Capacidad de una pieza para influir eficazmente en la posición.", c:"a"},
+  {t:"Ataque", d:"Presión sobre una pieza, casilla, estructura o rey.", c:"r"},
+  {t:"Casilla crítica", d:"Casilla cuya ocupación o control tiene una importancia táctica o estratégica especial.", c:"w"},
+  {t:"Clavada", d:"Situación en la que mover una pieza expone detrás de ella una pieza de mayor importancia o permite una pérdida grave.", c:"p"},
+  {t:"Coordinación", d:"Cooperación eficaz entre varias piezas.", c:"g"},
+  {t:"Desarrollo", d:"Sacar las piezas de sus posiciones iniciales hacia casillas útiles.", c:"a"},
+  {t:"Desviación", d:"Obligar a una pieza a abandonar la función defensiva que estaba realizando.", c:"p"},
+  {t:"Gambito", d:"Entrega voluntaria de material buscando compensación.", c:"w"},
+  {t:"Iniciativa", d:"Capacidad de imponer amenazas y obligar al rival a responder.", c:"g"},
+  {t:"Mate", d:"Posición en la que el rey está en jaque y no existe ninguna defensa legal.", c:"r"},
+  {t:"Profilaxis", d:"Prevenir el plan o amenaza del rival.", c:"a"},
+  {t:"Sacrificio", d:"Entrega voluntaria de material para conseguir una compensación.", c:"r"},
+  {t:"Tempo", d:"Un tiempo de juego; en particular, una jugada que puede representar una ganancia temporal frente al rival.", c:"w"},
+  {t:"Sobrecarga", d:"Situación en la que una pieza tiene demasiadas funciones defensivas.", c:"p"},
+  {t:"Señuelo", d:"Táctica que atrae una pieza hacia una casilla donde puede ser explotada.", c:"g"}
+];
+function buildGlossary(){
+  var list = document.getElementById("glossList");
+  var filters = document.getElementById("glossFilters");
+  list.innerHTML = GLOSSARY.map(function(g,i){
+    return '<div class="gterm" data-i="'+i+'" data-txt="'+(g.t+" "+g.d).toLowerCase()+'"><b>'+g.t+'</b><p>'+g.d+'</p></div>';
+  }).join("");
+  filters.innerHTML = '<button class="cbtn" type="button" style="flex:0 0 auto;min-width:auto" data-all="1">✕ Mostrar los 15 términos</button>';
+  filters.querySelector("[data-all]").addEventListener("click", function(){
+    document.getElementById("glossSearch").value = "";
+    filterGloss("");
+  });
+  document.getElementById("glossSearch").addEventListener("input", function(e){
+    filterGloss(e.target.value);
+  });
+}
+function filterGloss(q){
+  q = (q||"").toLowerCase().trim();
+  var items = document.querySelectorAll("#glossList .gterm");
+  var visible = 0;
+  for(var i=0;i<items.length;i++){
+    var ok = !q || items[i].getAttribute("data-txt").indexOf(q) !== -1;
+    items[i].style.display = ok ? "" : "none";
+    if(ok) visible++;
+  }
+  document.getElementById("glossEmpty").style.display = visible ? "none" : "block";
+}
+
+/* ==================================================================
+   8. EJERCICIO DEFINITIVO (§80) — checklist interactivo
+   ================================================================== */
+var EXITEMS = [
+  ["A","¿Quién está mejor materialmente?"],
+  ["B","¿Quién tiene mejor desarrollo?"],
+  ["C","¿Qué rey está más seguro?"],
+  ["D","¿Cuál es la pieza peor colocada?"],
+  ["E","¿Cuál es la pieza más importante del rival?"],
+  ["F","¿Qué casilla crítica existe?"],
+  ["G","¿Quién la defiende?"],
+  ["H","¿Puede desviarse ese defensor?"],
+  ["I","¿Hay algún jaque?"],
+  ["J","¿Hay alguna captura?"],
+  ["K","¿Hay alguna amenaza?"],
+  ["L","¿Cuál es la mejor defensa del rival?"]
+];
+function buildExercise(){
+  var box = document.getElementById("exChk");
+  box.innerHTML = EXITEMS.map(function(it,i){
+    return '<div class="chk-i" role="button" tabindex="0" data-i="'+i+'"><span class="box">✓</span><span class="tx"><span class="lt">'+it[0]+'.</span>'+it[1]+'</span></div>';
+  }).join("");
+  var nodes = box.querySelectorAll(".chk-i");
+  for(var i=0;i<nodes.length;i++){
+    (function(node){
+      function tog(){ node.classList.toggle("done"); }
+      node.addEventListener("click", tog);
+      node.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.key === " "){ tog(); e.preventDefault(); }
+      });
+    })(nodes[i]);
+  }
+  document.getElementById("exReset").addEventListener("click", function(){
+    var n = box.querySelectorAll(".chk-i");
+    for(var j=0;j<n.length;j++){ n[j].classList.remove("done"); }
+  });
+}
+
+/* ==================================================================
+   9. EVALUADOR DE POSICIONES (§72)
+   ================================================================== */
+var EVALFACTORS = [
+  ["Material","¿Quién tiene más?"],
+  ["Desarrollo","¿Quién tiene más piezas desarrolladas?"],
+  ["Seguridad del rey","¿Quién está más expuesto?"],
+  ["Actividad","¿Quién tiene piezas más activas?"],
+  ["Estructura","¿Quién tiene mejores peones y menos debilidades?"],
+  ["Iniciativa","¿Quién está haciendo las preguntas y quién está contestando?"]
+];
+function buildEval(){
+  var host = document.getElementById("evalTool");
+  var html = '<div class="tw"><table><thead><tr><th>Factor</th><th>Pregunta</th><th>Mejor: BLANCAS</th><th>Igual</th><th>Mejor: NEGRAS</th></tr></thead><tbody>';
+  EVALFACTORS.forEach(function(f,i){
+    html += '<tr><td><b>'+f[0]+'</b></td><td style="color:var(--muted)">'+f[1]+'</td>' +
+      '<td><label class="chk-i" style="display:inline-flex;padding:6px 10px;min-height:0"><input type="radio" name="ev'+i+'" value="w" style="accent-color:#00d4ff"></label></td>' +
+      '<td><label class="chk-i" style="display:inline-flex;padding:6px 10px;min-height:0"><input type="radio" name="ev'+i+'" value="e" style="accent-color:#f59e0b"></label></td>' +
+      '<td><label class="chk-i" style="display:inline-flex;padding:6px 10px;min-height:0"><input type="radio" name="ev'+i+'" value="b" style="accent-color:#a855f7"></label></td></tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '<div class="ctrl-row" style="margin-top:12px"><button class="cbtn primary" type="button" id="evGo">⚖ Evaluar posición</button><button class="cbtn warn" type="button" id="evClear">↺ Limpiar</button></div>';
+  html += '<div id="evOut" style="margin-top:14px"></div>';
+  host.innerHTML = html;
+  document.getElementById("evGo").addEventListener("click", function(){
+    var w=0,b=0,e=0,missing=[];
+    EVALFACTORS.forEach(function(f,i){
+      var sel = host.querySelector('input[name="ev'+i+'"]:checked');
+      if(!sel){ missing.push(f[0]); return; }
+      if(sel.value === "w") w++;
+      else if(sel.value === "b") b++;
+      else e++;
+    });
+    var out = document.getElementById("evOut");
+    if(missing.length){
+      out.innerHTML = '<div class="co co-warn"><div class="co-t">⚠ ADVERTENCIA</div><p>Faltan factores por evaluar: <strong>'+missing.join(", ")+'</strong>. La evaluación de una posición no depende de una sola variable: completa los seis apartados antes de decidir.</p></div>';
+      return;
+    }
+    var verdict, cls;
+    if(w > b){ verdict = "Las BLANCAS están mejor."; cls = "co-info"; }
+    else if(b > w){ verdict = "Las NEGRAS están mejor."; cls = "co-purple"; }
+    else { verdict = "Posición EQUILIBRADA."; cls = "co-ok"; }
+    out.innerHTML = '<div class="co '+cls+'"><div class="co-t">⚖ RESULTADO DEL CONTEO</div>' +
+      '<p><strong>'+verdict+'</strong> &nbsp;·&nbsp; Blancas: '+w+' factores &nbsp;·&nbsp; Igualados: '+e+' &nbsp;·&nbsp; Negras: '+b+' factores.</p>' +
+      '<p>Recuerda: un gambito compra actividad con material. Si tienes menos material pero más desarrollo, actividad e iniciativa, pregúntate <strong>qué has recibido a cambio</strong> y cómo vas a <strong>convertir</strong> esa iniciativa en algo tangible (recuperar material, ganar una pieza, abrir el rey, ventaja permanente o mate).</p></div>';
+  });
+  document.getElementById("evClear").addEventListener("click", function(){
+    var all = host.querySelectorAll('input[type=radio]');
+    for(var i=0;i<all.length;i++){ all[i].checked = false; }
+    document.getElementById("evOut").innerHTML = "";
+  });
+}
+
+/* ==================================================================
+   10. INIT
+   ================================================================== */
+function init(){
+  document.getElementById("coverHome").innerHTML = coverSvgMarkup();
+  document.getElementById("coverCredits").innerHTML = coverSvgMarkup();
+  buildNav();
+  mountBoards();
+  buildGlossary();
+  buildExercise();
+  buildEval();
+
+  document.getElementById("toTop").addEventListener("click", function(){
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  window.addEventListener("scroll", updateProgress, {passive:true});
+  window.addEventListener("resize", updateProgress);
+
+  document.addEventListener("keydown", function(e){
+    if(e.target && /input|textarea/i.test(e.target.tagName)) return;
+    if(e.key === "ArrowRight" && e.altKey){
+      var i = NAV.findIndex(function(x){ return x.id === currentSection; });
+      if(i > -1 && i < NAV.length-1) showSection(NAV[i+1].id);
+    }
+    if(e.key === "ArrowLeft" && e.altKey){
+      var k = NAV.findIndex(function(x){ return x.id === currentSection; });
+      if(k > 0) showSection(NAV[k-1].id);
+    }
+  });
+
+  showSection("inicio");
+  updateProgress();
+}
+
+if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", init); }
+else { init(); }
+</script>
+</body>
+</html>
