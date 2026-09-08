@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamentos Estratégicos: Peones y Casillas Débiles</title>
+    <style>
+        :root {
+            --bg-color: #0a0e1a;
+            --card-bg: #0f172a;
+            --border-color: #1e3a5f;
+            --accent: #00d4ff;
+            --green: #22c55e;
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --font-stack: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-stack);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Progress Bar --- */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: transparent;
+            z-index: 1000;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* --- Navbar --- */
+        nav {
+            position: fixed;
+            top: 4px;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            padding: 0.5rem 0;
+        }
+
+        .nav-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 0 1rem;
+            max-width: 1200px;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .nav-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            color: var(--accent);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .nav-btn.active {
+            color: var(--bg-color);
+            background: var(--accent);
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+        }
+
+        /* --- Layout --- */
+        main {
+            max-width: 1000px;
+            margin: 80px auto 40px;
+            padding: 0 1rem;
+            min-height: 80vh;
+        }
+
+        section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Typography & Components --- */
+        h1, h2, h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        h1 { font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        h2 { font-size: 1.8rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 2rem; }
+        h3 { font-size: 1.4rem; color: var(--purple); margin-top: 1.5rem; }
+
+        p { margin-bottom: 1rem; color: var(--text-muted); text-align: justify; }
+        
+        .highlight { color: var(--accent); font-weight: bold; }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .callout {
+            padding: 1rem;
+            border-left: 4px solid;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+            background: rgba(255,255,255,0.03);
+        }
+        .callout.info { border-color: var(--accent); }
+        .callout.warn { border-color: var(--amber); }
+        .callout.tip { border-color: var(--green); }
+
+        /* --- SVG Container --- */
+        .svg-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: #050810;
+        }
+
+        /* --- Chess Board (22 BIS) --- */
+        .board-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .board-frame {
+            display: grid;
+            grid-template-columns: 30px auto;
+            grid-template-rows: auto 30px;
+            gap: 5px;
+            user-select: none;
+        }
+
+        .coords-row {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+
+        .coords-col {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: bold;
+            grid-column: 2;
+        }
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            width: 100%;
+            max-width: 480px; /* Responsive max */
+            aspect-ratio: 1/1;
+            border: 4px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .sq {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            cursor: default;
+            position: relative;
+        }
+
+        .sq.light { background-color: #2d3748; color: #fff; }
+        .sq.dark { background-color: #1a202c; color: #fff; }
+        
+        /* Piece Colors via CSS for glyphs */
+        .piece-w { color: #fff; text-shadow: 0 0 2px #000; }
+        .piece-b { color: #000; text-shadow: 0 0 2px #fff; } /* Black pieces need contrast on dark board */
+        /* Alternative: Make black pieces dark grey with light outline or just use standard unicode rendering */
+        .sq .piece-b { color: #cbd5e1; filter: drop-shadow(0 0 1px #000); } 
+        .sq .piece-w { color: #fff; filter: drop-shadow(0 0 2px #000); }
+
+        .sq.hl {
+            background-color: rgba(0, 212, 255, 0.4) !important;
+            box-shadow: inset 0 0 10px var(--accent);
+        }
+
+        /* Stepper Controls */
+        .stepper-controls {
+            width: 100%;
+            max-width: 480px;
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .ctrl-btn {
+            flex: 1;
+            padding: 0.8rem;
+            background: var(--border-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .ctrl-btn:hover:not(:disabled) { background: var(--accent); color: var(--bg-color); }
+        .ctrl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .move-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .move-title { font-weight: bold; color: var(--accent); margin-bottom: 0.5rem; display: block;}
+        .move-desc { font-size: 0.95rem; color: var(--text-main); }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 3rem;
+        }
+
+        /* --- Back to Top --- */
+        #back-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: var(--bg-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 900;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--accent);
+        }
+        #back-top.visible { opacity: 1; pointer-events: auto; }
+
+        /* --- Responsive Mobile --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .board-grid { max-width: 100%; }
+            .stepper-controls { max-width: 100%; }
+            .nav-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Progress Bar -->
+    <div id="progress-container"><div id="progress-bar"></div></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-scroll">
+            <button class="nav-btn active" onclick="showSection('home')">HOME</button>
+            <button class="nav-btn" onclick="showSection('intro')">Introducción</button>
+            <button class="nav-btn" onclick="showSection('tipos')">Tipos de Estructuras</button>
+            <button class="nav-btn" onclick="showSection('debiles')">Casillas Débiles</button>
+            <button class="nav-btn" onclick="showSection('practica')">Tablero Práctico</button>
+            <button class="nav-btn" onclick="showSection('creditos')">CRÉDITOS</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- HOME SECTION -->
+        <section id="home" class="active">
+            <div class="svg-container" id="home-svg-container">
+                <!-- SVG Injected via JS -->
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span style="background: var(--accent); color: var(--bg-color); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">TUTORIAL INTERACTIVO DE AJEDREZ</span>
+                <h1 style="margin-top: 1rem;">Fundamentos Estratégicos</h1>
+                <h2 style="border:none; font-size: 1.5rem; color: var(--text-main);">Peones y Casillas Débiles</h2>
+                <p style="text-align: center; max-width: 600px; margin: 1rem auto;">
+                    Una guía técnica profunda sobre la estructura de peones, el esqueleto del ajedrez. Aprende a identificar fortalezas, debilidades y planes estratégicos derivados de la configuración de peones.
+                </p>
+                
+                <div class="card" style="display: inline-block; text-align: left; border-left: 4px solid var(--purple);">
+                    <p style="margin:0; font-style: italic; color: var(--text-main);">
+                        "Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien."
+                    </p>
+                </div>
+
+                <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; flex-wrap: wrap;">
+                    <div>
+                        <div style="font-size: 2rem; color: var(--accent); font-weight: bold;">07/09/2026</div>
+                        <div style="color: var(--text-muted);">Fecha de Edición</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2rem; color: var(--accent); font-weight: bold;">20:20:08</div>
+                        <div style="color: var(--text-muted);">Hora</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTRO SECTION -->
+        <section id="intro">
+            <h2>La Importancia de la Estructura de Peones</h2>
+            <div class="card">
+                <p>André Philidor afirmó célebremente: <strong>"Los peones son el alma del ajedrez"</strong>. Esta afirmación sigue vigente porque la estructura de peones determina:</p>
+                <ul style="margin-left: 20px; color: var(--text-muted);">
+                    <li>La movilidad de las piezas.</li>
+                    <li>La seguridad de los reyes.</li>
+                    <li>Los planes estratégicos a largo plazo.</li>
+                    <li>Las casillas fuertes y débiles permanentes.</li>
+                </ul>
+            </div>
+
+            <h3>Conceptos Fundamentales</h3>
+            <p>A diferencia de las piezas mayores, los peones no pueden retroceder. Cada avance crea cambios irreversibles en la posición. Comprender estas consecuencias es vital para la evaluación posicional.</p>
+            
+            <div class="callout info">
+                <strong>Nota Técnica:</strong> La estructura de peones actúa como un "terreno" sobre el cual se desarrolla la batalla. Un terreno favorable potencia tus piezas; un terreno desfavorable las restringe.
+            </div>
+        </section>
+
+        <!-- TIPOS SECTION -->
+        <section id="tipos">
+            <h2>Clasificación de Estructuras</h2>
+            <p>Las configuraciones de peones definen el carácter de la partida. A continuación, se detallan las más relevantes:</p>
+
+            <div class="card">
+                <h3>1. Peón Aislado</h3>
+                <p>Un peón que no tiene peones amigos en columnas adyacentes.</p>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <div style="flex:1;">
+                        <strong>Ventajas:</strong> Espacio, columnas abiertas para torres, dinamismo.<br>
+                        <strong>Desventajas:</strong> La casilla frente al peón es débil (bloqueo), el peón requiere defensa constante.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>2. Peones Doblados</h3>
+                <p>Dos o más peones del mismo color en la misma columna.</p>
+                <div class="callout warn">
+                    Generalmente considerados una debilidad estática debido a su inmovilidad y dificultad para defenderse mutuamente. Sin embargo, pueden controlar casillas importantes o abrir líneas.
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>3. Peón Pasado</h3>
+                <p>Un peón que no tiene peones enemigos ni en su columna ni en las adyacentes para impedir su avance hacia la coronación.</p>
+                <p>Es una ventaja decisiva en finales y una potente herramienta de distracción en el medio juego.</p>
+            </div>
+
+            <div class="card">
+                <h3>4. Cadena de Peones</h3>
+                <p>Una línea diagonal de peones que se protegen entre sí (ej. e4-d5-c6). La estrategia suele girar en torno a atacar la base de la cadena.</p>
+            </div>
+        </section>
+
+        <!-- CASILLAS DÉBILES SECTION -->
+        <section id="debiles">
+            <h2>Casillas Débiles y Fuertes</h2>
+            <p>Una casilla débil es aquella que ya no puede ser defendida por un peón. Esto ocurre cuando los peones avanzan dejando huecos a sus espaldas o lados.</p>
+
+            <div class="card" style="border-left: 4px solid var(--red);">
+                <h3>El "Hole" (Agujero)</h3>
+                <p>Una casilla débil en territorio propio, generalmente en la tercera o cuarta fila, que sirve como puesto avanzado ideal para las piezas enemigas (especialmente caballos).</p>
+            </div>
+
+            <h3>Estrategia contra Casillas Débiles</h3>
+            <ol style="margin-left: 20px; color: var(--text-muted);">
+                <li><strong>Identificar:</strong> Localizar casillas indefendibles por peones.</li>
+                <li><strong>Ocupar:</strong> Colocar una pieza (preferiblemente caballo o alfil) en esa casilla.</li>
+                <li><strong>Explotar:</strong> Usar la casilla como trampolín para ataques o penetración.</li>
+            </ol>
+        </section>
+
+        <!-- PRACTICA SECTION (Interactive Board) -->
+        <section id="practica">
+            <h2>Laboratorio Táctico</h2>
+            <p>Analiza la siguiente secuencia que demuestra cómo crear y explotar una casilla débil mediante una ruptura de peones.</p>
+            
+            <div class="board-wrapper">
+                <div class="board-frame">
+                    <div class="coords-row" id="coords-row-prac"></div>
+                    <div class="board-grid" id="board-prac"></div>
+                    <div class="coords-col" id="coords-col-prac" style="grid-column: 2;"></div>
+                </div>
+                
+                <!-- Controls immediately below board -->
+                <div class="stepper-controls">
+                    <div class="control-buttons">
+                        <button class="ctrl-btn" id="btn-prev-prac">Anterior</button>
+                        <button class="ctrl-btn" id="btn-reset-prac">Reset</button>
+                        <button class="ctrl-btn" id="btn-next-prac">Siguiente</button>
+                    </div>
+                    <input type="range" id="slider-prac" min="0" value="0">
+                    <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+                        Paso <span id="step-indicator-prac">0</span> de <span id="total-steps-prac">0</span>
+                    </div>
+                    
+                    <div class="move-info">
+                        <span class="move-title" id="move-title-prac">Posición Inicial</span>
+                        <div class="move-desc" id="move-desc-prac">Tablero listo. Utiliza los controles para avanzar.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CREDITOS SECTION -->
+        <section id="creditos">
+            <div class="svg-container" id="credits-svg-container">
+                <!-- Same SVG injected here -->
+            </div>
+            
+            <div style="text-align: center;">
+                <h2>Créditos y Reconocimientos</h2>
+                <div class="card">
+                    <h3>Rubén Sbarsky</h3>
+                    <p>Autor y Desarrollador del Tutorial</p>
+                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1rem 0;">
+                    <p><strong>Fecha:</strong> 07/09/2026</p>
+                    <p><strong>Hora:</strong> 20:20:08</p>
+                    <p style="margin-top: 1rem; font-style: italic; color: var(--accent);">Fiat iustitia, ruat caelum.</p>
+                </div>
+                <p style="font-size: 0.9rem;">Tutorial generado con fines educativos y divulgativos.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        📚 Tutorial solo con fines Educativos y Divulgación<br>
+        👨‍💻 Créditos: Rubén Sbarsky<br>
+        📅 FECHA: 07/09/2026 | Hora: 20:20:08<br>
+        Fiat iustitia, ruat caelum.
+    </footer>
+
+    <div id="back-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑</div>
+
+    <script>
+        // --- DATA & CONFIG ---
+        const FECHA = "07/09/2026";
+        const HORA = "20:20:08";
+        
+        // Initial Position FEN-like array (8x8)
+        // Lowercase = black, Uppercase = white
+        const INITIAL_POS = [
+            ['r','n','b','q','k','b','n','r'],
+            ['p','p','p','p','p','p','p','p'],
+            ['','','','','','','',''],
+            ['','','','','','','',''],
+            ['','','','','','','',''],
+            ['','','','','','','',''],
+            ['P','P','P','P','P','P','P','P'],
+            ['R','N','B','Q','K','B','N','R']
+        ];
+
+        // Demo Sequence: Creating a weak square / Outpost
+        // Scenario: White plays d4, Black d5, White c4 (Queen's Gambit structure leading to isolated pawn or outpost)
+        const PRACTICE_STEPS = [
+            { from: "d2", to: "d4", color: "BLANCAS", piece: "Peón", desc: "Las BLANCAS ocupan el centro y abren líneas para el alfil de c1.", notation: "d4" },
+            { from: "d7", to: "d5", color: "NEGRAS", piece: "Peón", desc: "Las NEGRAS responden simétricamente disputando el control central.", notation: "d5" },
+            { from: "c2", to: "c4", color: "BLANCAS", piece: "Peón", desc: "Las BLANCAS atacan el centro negro. Esto define la estructura del Gambito de Dama.", notation: "c4" },
+            { from: "d5", to: "c4", color: "NEGRAS", piece: "Peón", desc: "Las NEGRAS capturan en c4. Esto altera la simetría y deja a las blancas con mayoría central momentánea.", notation: "dxc4" },
+            { from: "e2", to: "e3", color: "BLANCAS", piece: "Peón", desc: "Las BLANCAS preparan la recaptura y solidifican d4. Se crea una estructura donde d4 podría quedar aislado si se cambian peones.", notation: "e3" },
+            { from: "b7", to: "b5", color: "NEGRAS", piece: "Peón", desc: "Las NEGRAS intentan defender el peón de c4. Esto debilita la casilla c5 y la diagonal a8-h1.", notation: "b5" },
+            { from: "a2", to: "a4", color: "BLANCAS", piece: "Peón", desc: "Las BLANCAS atacan la cadena negra. Si b5 cae, c4 queda débil.", notation: "a4" }
+        ];
+
+        // --- SVG GENERATION ---
+        function getAnimatedSVG() {
+            return `
+            <svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#0a0e1a;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#1e3a5f;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Background Grid -->
+                <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                    <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.05"/>
+                </pattern>
+                <rect width="100%" height="100%" fill="url(#bgGrad)" />
+                <rect width="100%" height="100%" fill="url(#grid)" />
+
+                <!-- Central Pawn Structure Visualization -->
+                <g transform="translate(800, 450)">
+                    <!-- Base Platform -->
+                    <ellipse cx="0" cy="200" rx="300" ry="50" fill="#000" opacity="0.5" filter="url(#glow)"/>
+                    
+                    <!-- Animated Data Lines connecting squares -->
+                    <path d="M-200,100 L0,0 L200,100" fill="none" stroke="#00d4ff" stroke-width="2" stroke-dasharray="10,10">
+                        <animate attributeName="stroke-dashoffset" from="20" to="0" dur="1s" repeatCount="indefinite"/>
+                    </path>
+
+                    <!-- Pawn 1 (Left - Support) -->
+                    <g transform="translate(-200, 100)">
+                        <rect x="-30" y="-30" width="60" height="60" fill="#0f172a" stroke="#22c55e" stroke-width="2">
+                            <animate attributeName="stroke-opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+                        </rect>
+                        <text x="0" y="15" font-family="sans-serif" font-size="40" fill="#22c55e" text-anchor="middle">♟</text>
+                        <text x="0" y="60" font-family="sans-serif" font-size="14" fill="#fff" text-anchor="middle">BASE</text>
+                    </g>
+
+                    <!-- Pawn 2 (Center - Advanced) -->
+                    <g transform="translate(0, 0)">
+                        <rect x="-40" y="-40" width="80" height="80" fill="#0f172a" stroke="#00d4ff" stroke-width="3" filter="url(#glow)">
+                            <animateTransform attributeName="transform" type="scale" values="1;1.05;1" dur="2s" repeatCount="indefinite"/>
+                        </rect>
+                        <text x="0" y="20" font-family="sans-serif" font-size="50" fill="#00d4ff" text-anchor="middle">♟</text>
+                        <text x="0" y="70" font-family="sans-serif" font-size="16" fill="#fff" text-anchor="middle" font-weight="bold">AVANZADO</text>
+                        
+                        <!-- Scanning effect -->
+                        <line x1="-40" y1="-40" x2="40" y2="-40" stroke="#00d4ff" stroke-width="1">
+                            <animate attributeName="y1" values="-40;40;-40" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="y2" values="-40;40;-40" dur="2s" repeatCount="indefinite"/>
+                        </line>
+                    </g>
+
+                    <!-- Weak Square Indicator (Right) -->
+                    <g transform="translate(200, 100)">
+                        <rect x="-30" y="-30" width="60" height="60" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,5">
+                            <animateTransform attributeName="transform" type="rotate" values="0;90;180;270;360" dur="10s" repeatCount="indefinite"/>
+                        </rect>
+                        <text x="0" y="10" font-family="sans-serif" font-size="30" fill="#ef4444" text-anchor="middle">?</text>
+                        <text x="0" y="60" font-family="sans-serif" font-size="14" fill="#ef4444" text-anchor="middle">DÉBIL</text>
+                    </g>
+
+                    <!-- Connecting Particles -->
+                    <circle r="5" fill="#fff">
+                        <animateMotion dur="3s" repeatCount="indefinite" path="M-200,100 L0,0 L200,100" />
+                    </circle>
+                </g>
+
+                <!-- Title Overlay -->
+                <text x="800" y="100" font-family="'Segoe UI', sans-serif" font-size="60" fill="#fff" text-anchor="middle" font-weight="bold" letter-spacing="5" filter="url(#glow)">ESTRUCTURA DE PEONES</text>
+                <text x="800" y="160" font-family="'Segoe UI', sans-serif" font-size="30" fill="#00d4ff" text-anchor="middle" letter-spacing="2">ANÁLISIS DINÁMICO</text>
+            </svg>
+            `;
+        }
+
+        // --- CHESS ENGINE LOGIC (Vanilla) ---
+        
+        function coordsToIndex(sq) {
+            // sq like "e4" -> col e (4), row 4 (index 4 from bottom -> 7-3=4?)
+            // Internal array: 0 is rank 8, 7 is rank 1.
+            // e4: col 4, rank 4. Array row = 8 - 4 = 4.
+            const file = sq.charCodeAt(0) - 97; // a=0
+            const rank = parseInt(sq[1]);
+            const row = 8 - rank;
+            return { r: row, c: file };
+        }
+
+        function renderBoard(boardId, position, lastMove = null) {
+            const grid = document.getElementById(boardId);
+            grid.innerHTML = '';
+            
+            for(let r=0; r<8; r++) {
+                for(let c=0; c<8; c++) {
+                    const sqDiv = document.createElement('div');
+                    const isLight = (r + c) % 2 === 0;
+                    sqDiv.className = `sq ${isLight ? 'light' : 'dark'}`;
+                    
+                    // Coordinate ID for highlighting
+                    const fileChar = String.fromCharCode(97 + c);
+                    const rankNum = 8 - r;
+                    const sqName = `${fileChar}${rankNum}`;
+                    sqDiv.dataset.sq = sqName;
+
+                    // Highlight last move
+                    if(lastMove && (lastMove.from === sqName || lastMove.to === sqName)) {
+                        sqDiv.classList.add('hl');
+                    }
+
+                    const pieceCode = position[r][c];
+                    if(pieceCode) {
+                        const span = document.createElement('span');
+                        const isWhite = pieceCode === pieceCode.toUpperCase();
+                        span.className = isWhite ? 'piece-w' : 'piece-b';
+                        
+                        // Map code to glyph
+                        const glyphs = {
+                            'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔',
+                            'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚'
+                        };
+                        span.textContent = glyphs[pieceCode];
+                        sqDiv.appendChild(span);
+                    }
+                    grid.appendChild(sqDiv);
+                }
+            }
+        }
+
+        function initBoard(containerId, stepsData) {
+            const boardGridId = containerId; // Assuming ID passed is the grid ID
+            const wrapper = document.getElementById(boardGridId).closest('.board-wrapper');
+            const slider = wrapper.querySelector('input[type="range"]');
+            const btnPrev = wrapper.querySelector('#btn-prev-prac'); // Specific IDs for now as per single instance
+            const btnNext = wrapper.querySelector('#btn-next-prac');
+            const btnReset = wrapper.querySelector('#btn-reset-prac');
+            const titleEl = wrapper.querySelector('#move-title-prac');
+            const descEl = wrapper.querySelector('#move-desc-prac');
+            const stepInd = wrapper.querySelector('#step-indicator-prac');
+            const totalInd = wrapper.querySelector('#total-steps-prac');
+
+            // Fill Coords
+            const rowCoords = wrapper.querySelector('.coords-row');
+            const colCoords = wrapper.querySelector('.coords-col');
+            rowCoords.innerHTML = '<div>8</div><div>7</div><div>6</div><div>5</div><div>4</div><div>3</div><div>2</div><div>1</div>';
+            colCoords.innerHTML = '<div>a</div><div>b</div><div>c</div><div>d</div><div>e</div><div>f</div><div>g</div><div>h</div>';
+
+            // State
+            let currentStep = 0;
+            let positions = [];
+            
+            // Generate Positions
+            let currentPos = JSON.parse(JSON.stringify(INITIAL_POS));
+            positions.push(JSON.parse(JSON.stringify(currentPos))); // Pos 0
+
+            stepsData.forEach(step => {
+                const fromIdx = coordsToIndex(step.from);
+                const toIdx = coordsToIndex(step.to);
+                
+                // Move piece
+                const piece = currentPos[fromIdx.r][fromIdx.c];
+                currentPos[toIdx.r][toIdx.c] = piece;
+                currentPos[fromIdx.r][fromIdx.c] = '';
+                
+                positions.push(JSON.parse(JSON.stringify(currentPos)));
+            });
+
+            totalInd.textContent = stepsData.length;
+            slider.max = stepsData.length;
+
+            function updateUI() {
+                // Render Board
+                const lastMove = currentStep > 0 ? stepsData[currentStep - 1] : null;
+                renderBoard(boardGridId, positions[currentStep], lastMove);
+                
+                // Update Info Panel
+                if(currentStep === 0) {
+                    titleEl.textContent = "Posición Inicial";
+                    descEl.textContent = "Tablero listo. Utiliza los controles para avanzar.";
+                } else {
+                    const move = stepsData[currentStep - 1];
+                    titleEl.textContent = `MOVIMIENTO ${currentStep} — ${move.color}`;
+                    descEl.innerHTML = `<strong>${move.piece} ${move.color}: ${move.from} → ${move.to}</strong><br>${move.desc}`;
+                }
+
+                stepInd.textContent = currentStep;
+                slider.value = currentStep;
+
+                // Button States
+                btnPrev.disabled = currentStep === 0;
+                btnReset.disabled = currentStep === 0;
+                btnNext.disabled = currentStep === stepsData.length;
+            }
+
+            // Event Listeners
+            btnNext.onclick = () => { if(currentStep < stepsData.length) { currentStep++; updateUI(); } };
+            btnPrev.onclick = () => { if(currentStep > 0) { currentStep--; updateUI(); } };
+            btnReset.onclick = () => { currentStep = 0; updateUI(); };
+            slider.oninput = (e) => { currentStep = parseInt(e.target.value); updateUI(); };
+
+            // Initial Render
+            updateUI();
+        }
+
+        // --- SPA NAVIGATION ---
+        function showSection(id) {
+            // Hide all sections
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            // Show target
+            document.getElementById(id).classList.add('active');
+            
+            // Update Nav
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            // Find button that calls this function with this ID (simple approximation)
+            const btns = document.querySelectorAll('.nav-btn');
+            btns.forEach(b => {
+                if(b.getAttribute('onclick').includes(id)) b.classList.add('active');
+            });
+
+            // Scroll to top
+            window.scrollTo(0,0);
+
+            // Re-inject SVG if credits to ensure animation restarts/persists correctly if needed
+            if(id === 'creditos') {
+                document.getElementById('credits-svg-container').innerHTML = getAnimatedSVG();
+            }
+        }
+
+        // --- PROGRESS BAR & SCROLL ---
+        window.onscroll = function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+
+            // Back to top button
+            const btn = document.getElementById("back-top");
+            if(winScroll > 300) btn.classList.add("visible");
+            else btn.classList.remove("visible");
+        };
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inject SVGs
+            document.getElementById('home-svg-container').innerHTML = getAnimatedSVG();
+            // Credits SVG injected only when visited to save resources or keep sync
+            
+            // Init Chess Board
+            initBoard('board-prac', PRACTICE_STEPS);
+        });
+
+    </script>
+</body>
+</html>
